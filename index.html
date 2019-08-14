@@ -50,11 +50,11 @@
     // 测试代码
     const b = Barrage({
       container: document.body,
-      height: 56, // 轨道高度
+      height: 60, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'left', // 弹幕的方向 left or right
       times: [2, 10], // 弹幕动画的时间取值范围
-      limit: 100, // 能够渲染的最大数量
+      limit: 50, // 能够渲染的最大数量
       hooks: {
         // 弹幕创建时
         create (node, barrage) {
