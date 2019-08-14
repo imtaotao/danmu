@@ -3,12 +3,6 @@ export function warning (condition, message) {
   throw new Error(`Warning: ${message}`)
 }
 
-export function assertArray (data) {
-  if (!Array.isArray(data)) {
-    throw TypeError('The barrage data must be an array.')
-  }
-}
-
 export function callHook (hooks, name, args = []) {
   if (typeof hooks[name] === 'function') {
     hooks[name].apply(null, args)

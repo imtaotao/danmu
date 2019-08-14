@@ -73,7 +73,7 @@ export default class RuntimeManager {
     return this.getTrajectory(alreadyFound)
   }
 
-  // 移动弹幕
+  // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
   move (barrage, isShow) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
@@ -86,7 +86,8 @@ export default class RuntimeManager {
           const containerWidth = this.containerWidth + w
 
           node.style.opacity = 1
-          node.style.display = isShow ? 'inline-block' : 'none'
+          node.style.pointerEvents = isShow ? 'auto' : 'none'
+          node.style.visibility = isShow ? 'visible' : 'hidden'
           node.style.transform = `translateX(${des * (containerWidth)}px)`
           node.style[transitionProp] = `transform linear ${barrage.duration}s`
           node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`

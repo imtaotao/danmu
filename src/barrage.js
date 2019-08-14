@@ -103,7 +103,7 @@ export default class Barrage {
           moveDistance *= -1
         }
 
-        this.node
+        this.node.style.zIndex = 1
         this.node.style[transitionDuration] = '0s'
         this.node.style.transform = `translateX(${moveDistance}px)`
       }
@@ -123,6 +123,7 @@ export default class Barrage {
       const containerWidth = this.RuntimeManager.containerWidth + this.width
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration
 
+      this.node.style.zIndex = 0
       this.node.style[transitionDuration] = `${remainingTime}s`
       this.node.style.transform = `translateX(${containerWidth * des}px)`
     }

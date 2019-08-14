@@ -1,5 +1,5 @@
 import Barrage from './barrage'
-import { assertArray } from './utils'
+import { callHook } from './utils'
 import RuntimeManager from './runtime'
 
 export default class BarrageManager {
@@ -18,7 +18,9 @@ export default class BarrageManager {
 
   // 发送弹幕
   send (data) {
-    assertArray(data)
+    if (!Array.isArray(data)) {
+      data = [data]
+    }
 
     if (data.length + this.length > this.opts.capcity) {
       console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
@@ -33,7 +35,8 @@ export default class BarrageManager {
     if (!this.isShow) {
       this.isShow = true
       this.each(barrage => {
-        barrage.node.style.display = 'inline-block'
+        barrage.node.style.visibility = 'visible'
+        barrage.node.style.pointerEvents = 'auto'
       })
     }
     return this
@@ -44,7 +47,8 @@ export default class BarrageManager {
     if (this.isShow) {
       this.isShow = false
       this.each(barrage => {
-        barrage.node.style.display = 'none'
+        barrage.node.style.visibility = 'hidden'
+        barrage.node.style.pointerEvents = 'none'
       })
     }
     return this    
@@ -77,6 +81,26 @@ export default class BarrageManager {
     this.stop()
     core()
     return this
+  }
+
+  // 重新设置参数
+  setOptions (opts) {
+    if (opts) {
+      this.opts = Object.assign(this.opts, opts)
+      if ('interval' in opts) {
+        this.stop()
+        this.start()
+      }
+    }
+    return this
+  }
+
+  // 立即销毁当前实例
+  clear () {
+    this.stop()
+    this.each(barrage => barrage.remove())
+    this.showBarrages = []
+    this.stashBarrages = []
   }
 
   // 初始化弹幕
@@ -173,16 +197,13 @@ export default class BarrageManager {
   setBarrageStyle (node, barrage) {
     const { hooks = {}, direction } = this.opts
 
-    if (typeof hooks.create === 'function') {
-      hooks.create(node, barrage)
-    } else {
-      node.textContent = barrage.content
-      node.style.height = this.RuntimeManager.height
-    }
+    callHook(hooks, 'create', [node, barrage])
 
     node.style.opacity = 0
     node.style[direction] = 0
     node.style.position = 'absolute'
-    node.style.display = this.isShow ? 'inline-block' : 'none'
+    node.style.display = 'inline-block'
+    node.style.pointerEvents = this.isShow ? 'auto' : 'none'
+    node.style.visibility = this.isShow ? 'visible' : 'hidden'
   }
 }

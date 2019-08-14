@@ -2,11 +2,6 @@ function warning (condition, message) {
   if (condition) return
   throw new Error(`Warning: ${message}`)
 }
-function assertArray (data) {
-  if (!Array.isArray(data)) {
-    throw TypeError('The barrage data must be an array.')
-  }
-}
 function callHook (hooks, name, args = []) {
   if (typeof hooks[name] === 'function') {
     hooks[name].apply(null, args);
@@ -145,7 +140,7 @@ class Barrage {
         if (this.direction === 'right') {
           moveDistance *= -1;
         }
-        this.node;
+        this.node.style.zIndex = 1;
         this.node.style[transitionDuration] = '0s';
         this.node.style.transform = `translateX(${moveDistance}px)`;
       }
@@ -159,6 +154,7 @@ class Barrage {
       const des = this.direction === 'left' ? 1 : -1;
       const containerWidth = this.RuntimeManager.containerWidth + this.width;
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
+      this.node.style.zIndex = 0;
       this.node.style[transitionDuration] = `${remainingTime}s`;
       this.node.style.transform = `translateX(${containerWidth * des}px)`;
     }
@@ -234,7 +230,8 @@ class RuntimeManager {
           const des = barrage.direction === 'left' ? 1 : -1;
           const containerWidth = this.containerWidth + w;
           node.style.opacity = 1;
-          node.style.display = isShow ? 'inline-block' : 'none';
+          node.style.pointerEvents = isShow ? 'auto' : 'none';
+          node.style.visibility = isShow ? 'visible' : 'hidden';
           node.style.transform = `translateX(${des * (containerWidth)}px)`;
           node.style[transitionProp] = `transform linear ${barrage.duration}s`;
           node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`;
@@ -265,7 +262,9 @@ class BarrageManager {
     return this.showBarrages.length + this.stashBarrages.length
   }
   send (data) {
-    assertArray(data);
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
     if (data.length + this.length > this.opts.capcity) {
       console.warn(`The number of barrage is greater than "${this.opts.capcity}".`);
       return false
@@ -277,7 +276,8 @@ class BarrageManager {
     if (!this.isShow) {
       this.isShow = true;
       this.each(barrage => {
-        barrage.node.style.display = 'inline-block';
+        barrage.node.style.visibility = 'visible';
+        barrage.node.style.pointerEvents = 'auto';
       });
     }
     return this
@@ -286,7 +286,8 @@ class BarrageManager {
     if (this.isShow) {
       this.isShow = false;
       this.each(barrage => {
-        barrage.node.style.display = 'none';
+        barrage.node.style.visibility = 'hidden';
+        barrage.node.style.pointerEvents = 'none';
       });
     }
     return this
@@ -314,6 +315,22 @@ class BarrageManager {
     this.stop();
     core();
     return this
+  }
+  setOptions (opts) {
+    if (opts) {
+      this.opts = Object.assign(this.opts, opts);
+      if ('interval' in opts) {
+        this.stop();
+        this.start();
+      }
+    }
+    return this
+  }
+  clear () {
+    this.stop();
+    this.each(barrage => barrage.remove());
+    this.showBarrages = [];
+    this.stashBarrages = [];
   }
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
@@ -383,16 +400,13 @@ class BarrageManager {
   }
   setBarrageStyle (node, barrage) {
     const { hooks = {}, direction } = this.opts;
-    if (typeof hooks.create === 'function') {
-      hooks.create(node, barrage);
-    } else {
-      node.textContent = barrage.content;
-      node.style.height = this.RuntimeManager.height;
-    }
+    callHook(hooks, 'create', [node, barrage]);
     node.style.opacity = 0;
     node.style[direction] = 0;
     node.style.position = 'absolute';
-    node.style.display = this.isShow ? 'inline-block' : 'none';
+    node.style.display = 'inline-block';
+    node.style.pointerEvents = this.isShow ? 'auto' : 'none';
+    node.style.visibility = this.isShow ? 'visible' : 'hidden';
   }
 }
 
