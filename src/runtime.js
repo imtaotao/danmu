@@ -81,19 +81,28 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       nextFrame(() => {
-        const des = barrage.direction === 'left' ? 1 : -1
-        const containerWidth = this.containerWidth + (barrage.width || 0)
+        const fn = w => {
+          const des = barrage.direction === 'left' ? 1 : -1
+          const containerWidth = this.containerWidth + w
 
-        node.style.opacity = 1
-        node.style.display = isShow ? 'inline-block' : 'none'
-        node.style.transform = `translateX(${des * (containerWidth)}px)`
-        node.style[transitionProp] = `transform linear ${barrage.duration}s`
-        node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`
+          node.style.opacity = 1
+          node.style.display = isShow ? 'inline-block' : 'none'
+          node.style.transform = `translateX(${des * (containerWidth)}px)`
+          node.style[transitionProp] = `transform linear ${barrage.duration}s`
+          node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`
 
-        barrage.moveing = true
-        barrage.timeInfo.startTime = Date.now()
+          barrage.moveing = true
+          barrage.timeInfo.startTime = Date.now()
 
-        resolve(whenTransitionEnds(node))
+          resolve(whenTransitionEnds(node))
+        }
+
+        // 得到高度
+        if (!barrage.width) {
+          barrage.getWidth().then(fn)
+        } else {
+          fn(barrage.width)
+        }
       })
     })
   }

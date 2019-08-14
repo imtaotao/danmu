@@ -48,7 +48,7 @@ export default class Barrage {
     return new Promise(resolve => {
       let i = 0
       const fn = () => {
-        warning(++i < 99, 'Unable to get the barr width.')
+        warning(++i < 999, 'Unable to get the barr width.')
         setTimeout(() => {
           let width = getComputedStyle(this.node).width
           if (width == null || width === '') {

@@ -28,13 +28,14 @@
     }
 
     .active {
-      font-size: 22px;
+      /* font-size: 22px; */
       color: #3ab2e9;
     }
   </style>
 </head>
 <body>
   <script src="./dist/barrage.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/gh/imtaotao/barrage/dist/barrage.min.js"></script> -->
   <script>
     const testData = [
       '陈涛',
@@ -49,17 +50,19 @@
     // 测试代码
     const i = Barrage({
       container: document.body,
-      height: 60,
-      rowGap: 350,
-      direction: 'left',
-      times: [5, 20],
-      limit: 100,
+      height: 30, // 轨道高度
+      rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
+      direction: 'right', // 弹幕的方向 left or right
+      times: [5, 20], // 弹幕动画的时间取值范围
+      limit: 500, // 能够渲染的最大数量
       hooks: {
+        // 弹幕创建时
         create (node, barrage) {
           node.textContent = barrage.data
           node.classList.add('barrage')
         },
 
+        // 弹幕渲染到页面上时
         append (node, barrage) {
           node.onmouseenter = e => {
             barrage.pause()
@@ -71,15 +74,17 @@
           }
         },
 
+        // 弹幕销毁时
         remove (node) {
         }
       }
     })
+    
     i.start()
 
     setInterval(() => {
       i.send(testData)
-    }, 1000)
+    }, 100)
   </script>
 </body>
 </html>

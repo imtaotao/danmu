@@ -101,7 +101,7 @@ class Barrage {
     return new Promise(resolve => {
       let i = 0;
       const fn = () => {
-        warning(++i < 99, 'Unable to get the barr width.');
+        warning(++i < 999, 'Unable to get the barr width.');
         setTimeout(() => {
           let width = getComputedStyle(this.node).width;
           if (width == null || width === '') {
@@ -232,16 +232,23 @@ class RuntimeManager {
     node.style.top = `${barrage.position.y}px`;
     return new Promise(resolve => {
       nextFrame(() => {
-        const des = barrage.direction === 'left' ? 1 : -1;
-        const containerWidth = this.containerWidth + (barrage.width || 0);
-        node.style.opacity = 1;
-        node.style.display = isShow ? 'inline-block' : 'none';
-        node.style.transform = `translateX(${des * (containerWidth)}px)`;
-        node.style[transitionProp] = `transform linear ${barrage.duration}s`;
-        node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`;
-        barrage.moveing = true;
-        barrage.timeInfo.startTime = Date.now();
-        resolve(whenTransitionEnds(node));
+        const fn = w => {
+          const des = barrage.direction === 'left' ? 1 : -1;
+          const containerWidth = this.containerWidth + w;
+          node.style.opacity = 1;
+          node.style.display = isShow ? 'inline-block' : 'none';
+          node.style.transform = `translateX(${des * (containerWidth)}px)`;
+          node.style[transitionProp] = `transform linear ${barrage.duration}s`;
+          node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`;
+          barrage.moveing = true;
+          barrage.timeInfo.startTime = Date.now();
+          resolve(whenTransitionEnds(node));
+        };
+        if (!barrage.width) {
+          barrage.getWidth().then(fn);
+        } else {
+          fn(barrage.width);
+        }
       });
     })
   }
@@ -406,4 +413,3 @@ function createBarrage (opts = {}) {
 }
 
 module.exports = createBarrage;
-//# sourceMappingURL=barrage.common.js.map
