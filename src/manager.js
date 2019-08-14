@@ -167,7 +167,6 @@ export default class BarrageManager {
   // 设置弹幕的样式
   setBarrageStyle (node, barrage) {
     const { hooks = {}, direction } = this.opts
-    const moveDis = direction === 'left' ? -1 : 1
 
     if (typeof hooks.create === 'function') {
       hooks.create(node, barrage)
@@ -176,9 +175,8 @@ export default class BarrageManager {
       node.style.height = this.RuntimeManager.height
     }
 
-    node.style.position = 'absolute'
     node.style[direction] = 0
-    node.style.transform = `translateX(${moveDis * 100}%)`
+    node.style.position = 'absolute'
     node.style.display = this.isShow ? 'inline-block' : 'none'
 
   }

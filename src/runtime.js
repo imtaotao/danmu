@@ -1,4 +1,4 @@
-import { nextFrame, transitionProp, whenTransitionEnds } from './utils'
+import { toNumber, nextFrame, transitionProp, whenTransitionEnds } from './utils'
 
 export default class RuntimeManager {
   constructor ({container, rowGap = 0, height = 60}) {
@@ -10,8 +10,8 @@ export default class RuntimeManager {
 
     this.rowGap = rowGap
     this.singleHeight = height
-    this.containerWidth = parseInt(styles.width)
-    this.containerHeight = parseInt(styles.height)
+    this.containerWidth = toNumber(styles.width)
+    this.containerHeight = toNumber(styles.height)
     this.init()
   }
 
@@ -76,6 +76,7 @@ export default class RuntimeManager {
     return new Promise(resolve => {
       nextFrame(() => {
         const moveDirect = barrage.direction === 'left' ? 1 : -1
+
         node.style.display = isShow ? 'inline-block' : 'none'
         node.style[transitionProp] = `transform linear ${barrage.duration}s`
         node.style.transform = `translateX(${moveDirect * this.containerWidth}px)`

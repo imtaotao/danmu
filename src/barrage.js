@@ -1,4 +1,11 @@
-import { warning, callHook, createKey  } from './utils'
+import {
+  warning,
+  toNumber,
+  callHook,
+  createKey,
+  transitionDuration,
+  transitionEndEvent,
+} from './utils'
 
 export default class Barrage {
   constructor (itemData, time, container, RuntimeManager, direction, hooks) {
@@ -51,7 +58,7 @@ export default class Barrage {
           if (width == null || width === '') {
             fn()
           } else {
-            width = parseInt(width)
+            width = toNumber(width)
             this._width = width
             resolve(width)
           }
@@ -87,24 +94,38 @@ export default class Barrage {
   // 暂停当前动画
   pause () {
     if (this.moveing && !this.paused) {
-      this.paused = true
-      this.timeInfo.prevPauseTime = Date.now()
+      let moveDistance = this.getMoveDistance()
+  
+      if (!Number.isNaN(moveDistance)) {
+        this.paused = true
+        this.timeInfo.prevPauseTime = Date.now()
 
-      this.width().then(w => {
-        const moveDistance = this.getMoveDistance()
-        if (!Number.isNaN(moveDistance)) {
-          // this.node.style.tranf
+        if (this.direction === 'right') {
+          moveDistance *= -1
         }
-      })
+
+        this.node
+        this.node.style[transitionDuration] = '0s'
+        this.node.style.transform = `translateX(${moveDistance}px)`
+      }
     }
   }
 
-  // 暂定当前
+  // 恢复当前
   resume () {
     if (this.moveing && this.paused) {
       this.paused = false
-      this.timeInfo.prevPauseTime = null
+
       // 增加暂停时间段
+      this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime
+      this.timeInfo.prevPauseTime = null
+      
+      const des = this.direction === 'left' ? 1 : -1
+      const containerWidth = this.RuntimeManager.containerWidth
+      const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration
+
+      this.node.style[transitionDuration] = `${remainingTime}s`
+      this.node.style.transform = `translateX(${containerWidth * des}px)`
     }
   }
 

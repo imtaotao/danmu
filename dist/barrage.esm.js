@@ -12,10 +12,17 @@ function callHook (hooks, name, args = []) {
     hooks[name].apply(null, args);
   }
 }
-function createKey() {
+function createKey () {
   return Math.random()
     .toString(36)
     .substr(2, 8)
+}
+function toNumber (val) {
+  return typeof val === 'number'
+    ? val
+    : typeof val === 'string'
+      ? Number(val.replace('px', ''))
+      : NaN
 }
 const raf = window.requestAnimationFrame
       ? window.requestAnimationFrame.bind(window)
@@ -27,12 +34,14 @@ function nextFrame (fn) {
 }
 let transitionProp = 'transition';
 let transitionEndEvent = 'transitionend';
+let transitionDuration = 'transitionDuration';
 if (
     window.ontransitionend === undefined &&
     window.onwebkittransitionend !== undefined
 ) {
   transitionProp = 'WebkitTransition';
   transitionEndEvent = 'webkitTransitionEnd';
+  transitionDuration = 'webkitTransitionDuration';
 }
 function whenTransitionEnds (node) {
   return new Promise(resolve => {
@@ -41,7 +50,7 @@ function whenTransitionEnds (node) {
       node.removeEventListener(transitionEndEvent, onEnd);
       resolve();
     };
-    const onEnd = e => {
+    const onEnd = () => {
       if (!isCalled) {
         isCalled = true;
         end();
@@ -95,7 +104,7 @@ class Barrage {
           if (width == null || width === '') {
             fn();
           } else {
-            width = parseInt(width);
+            width = toNumber(width);
             this._width = width;
             resolve(width);
           }
@@ -126,17 +135,29 @@ class Barrage {
   }
   pause () {
     if (this.moveing && !this.paused) {
-      this.paused = true;
-      this.timeInfo.prevPauseTime = Date.now();
-      this.width().then(w => {
-        const moveDistance = this.getMoveDistance();
-      });
+      let moveDistance = this.getMoveDistance();
+      if (!Number.isNaN(moveDistance)) {
+        this.paused = true;
+        this.timeInfo.prevPauseTime = Date.now();
+        if (this.direction === 'right') {
+          moveDistance *= -1;
+        }
+        this.node;
+        this.node.style[transitionDuration] = '0s';
+        this.node.style.transform = `translateX(${moveDistance}px)`;
+      }
     }
   }
   resume () {
     if (this.moveing && this.paused) {
       this.paused = false;
+      this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime;
       this.timeInfo.prevPauseTime = null;
+      const des = this.direction === 'left' ? 1 : -1;
+      const containerWidth = this.RuntimeManager.containerWidth;
+      const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
+      this.node.style[transitionDuration] = `${remainingTime}s`;
+      this.node.style.transform = `translateX(${containerWidth * des}px)`;
     }
   }
   reset () {
@@ -160,8 +181,8 @@ class RuntimeManager {
     }
     this.rowGap = rowGap;
     this.singleHeight = height;
-    this.containerWidth = parseInt(styles.width);
-    this.containerHeight = parseInt(styles.height);
+    this.containerWidth = toNumber(styles.width);
+    this.containerHeight = toNumber(styles.height);
     this.init();
   }
   init () {
@@ -342,16 +363,14 @@ class BarrageManager {
   }
   setBarrageStyle (node, barrage) {
     const { hooks = {}, direction } = this.opts;
-    const moveDis = direction === 'left' ? -1 : 1;
     if (typeof hooks.create === 'function') {
       hooks.create(node, barrage);
     } else {
       node.textContent = barrage.content;
       node.style.height = this.RuntimeManager.height;
     }
-    node.style.position = 'absolute';
     node.style[direction] = 0;
-    node.style.transform = `translateX(${moveDis * 100}%)`;
+    node.style.position = 'absolute';
     node.style.display = this.isShow ? 'inline-block' : 'none';
   }
 }

@@ -15,10 +15,18 @@ export function callHook (hooks, name, args = []) {
   }
 }
 
-export function createKey() {
+export function createKey () {
   return Math.random()
     .toString(36)
     .substr(2, 8)
+}
+
+export function toNumber (val) {
+  return typeof val === 'number'
+    ? val
+    : typeof val === 'string'
+      ? Number(val.replace('px', ''))
+      : NaN
 }
 
 const raf = window.requestAnimationFrame
@@ -33,12 +41,14 @@ export function nextFrame (fn) {
 
 export let transitionProp = 'transition'
 export let transitionEndEvent = 'transitionend'
+export let transitionDuration = 'transitionDuration'
 if (
     window.ontransitionend === undefined &&
     window.onwebkittransitionend !== undefined
 ) {
   transitionProp = 'WebkitTransition'
   transitionEndEvent = 'webkitTransitionEnd'
+  transitionDuration = 'webkitTransitionDuration'
 }
 
 export function whenTransitionEnds (node) {
@@ -48,7 +58,7 @@ export function whenTransitionEnds (node) {
       node.removeEventListener(transitionEndEvent, onEnd)
       resolve()
     }
-    const onEnd = e => {
+    const onEnd = () => {
       if (!isCalled) {
         isCalled = true
         end()
