@@ -413,9 +413,9 @@ class BarrageManager {
 function createBarrage (opts = {}) {
   opts = Object.assign({
     hooks: {},
-    limit: 20,
+    limit: 50,
     height: 50,
-    rowGap: 100,
+    rowGap: 50,
     capcity: 1024,
     times: [8, 15],
     interval: 1000,
