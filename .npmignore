@@ -1,0 +1,10 @@
+.gitignore
+.npmignore
+
+
+build.js
+.babelrc
+
+src/
+demo/
+index.html

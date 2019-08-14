@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dev</title>
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: #ddd;
+      overflow: hidden;
+    }
+
+    .barrage {
+      height: 56px;
+      line-height: 56px;
+      font-size: 20px;
+      border-radius: 28px;
+      background: rgba(0,0,0,0.5);
+      text-align: center;
+      color: #fff;
+      padding: 0 20px;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <script src="./dist/barrage.min.js"></script>
+  <script>
+    const data = [
+      '陈涛',
+      'chentao',
+      'imtaotao',
+      'supertaotao',
+      'i can see it',
+      'show me the sky falling down',
+      'tell me someday we\'ll get together'
+    ]
+
+    // 测试代码
+    const i = Barrage(data, {
+      container: document.body,
+      height: 60,
+      rowGap: 350,
+      direction: 'right',
+      times: [10, 20],
+      limit: 100,
+      hooks: {
+        create (node, barrage) {
+          node.textContent = barrage.data
+          node.classList.add('barrage')
+        },
+
+        append (node, barrage) {
+          node.onmouseenter = e => {
+            barrage.pause()
+          }
+        },
+
+        remove (node) {
+        }
+      }
+    })
+    i.start()
+    i.loop()
+
+    setInterval(() => {
+      i.push(data)
+    }, 1000)
+  </script>
+</body>
+</html>
