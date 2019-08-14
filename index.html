@@ -26,6 +26,11 @@
       box-sizing: border-box;
       cursor: pointer;
     }
+
+    .active {
+      font-size: 24px;
+      color: #3ab2e9;
+    }
   </style>
 </head>
 <body>
@@ -47,8 +52,8 @@
       height: 60,
       rowGap: 350,
       direction: 'right',
-      times: [7, 20],
-      limit: 10,
+      times: [5, 20],
+      limit: 100,
       hooks: {
         create (node, barrage) {
           node.textContent = barrage.data
@@ -58,9 +63,11 @@
         append (node, barrage) {
           node.onmouseenter = e => {
             barrage.pause()
+            node.classList.add('active')
           }
           node.onmouseleave = e => {
             barrage.resume()
+            node.classList.remove('active')
           }
         },
 

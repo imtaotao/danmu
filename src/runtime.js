@@ -82,7 +82,7 @@ export default class RuntimeManager {
     return new Promise(resolve => {
       nextFrame(() => {
         const des = barrage.direction === 'left' ? 1 : -1
-        const containerWidth = this.containerWidth + barrage.width
+        const containerWidth = this.containerWidth + (barrage.width || 0)
 
         node.style.opacity = 1
         node.style.display = isShow ? 'inline-block' : 'none'
