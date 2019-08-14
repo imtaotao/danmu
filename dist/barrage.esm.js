@@ -24,6 +24,9 @@ function toNumber (val) {
       ? Number(val.replace('px', ''))
       : NaN
 }
+function upperCase ([first, ...remaing]) {
+  return first.toUpperCase() + remaing.join('')
+}
 const raf = window.requestAnimationFrame
       ? window.requestAnimationFrame.bind(window)
       : setTimeout;
@@ -85,18 +88,16 @@ class Barrage {
   }
   getMoveDistance () {
     if (!this.moveing) return 0
+    const extendDis = this.width || 0;
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
-    const containerWidth = this.RuntimeManager.containerWidth;
     const currentTime = this.paused ? prevPauseTime : Date.now();
+    const containerWidth = this.RuntimeManager.containerWidth + extendDis;
     const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration;
     return percent * containerWidth
   }
-  width () {
+  getWidth () {
     return new Promise(resolve => {
       let i = 0;
-      if (this._width) {
-        return resolve(this._width)
-      }
       const fn = () => {
         warning(++i < 99, 'Unable to get the barr width.');
         setTimeout(() => {
@@ -105,7 +106,6 @@ class Barrage {
             fn();
           } else {
             width = toNumber(width);
-            this._width = width;
             resolve(width);
           }
         });
@@ -123,7 +123,10 @@ class Barrage {
     warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.appendChild(this.node);
-      callHook(this.hooks, 'append', [this.node, this]);
+      this.getWidth().then(width => {
+        this.width = width;
+        callHook(this.hooks, 'append', [this.node, this]);
+      });
     }
   }
   remove () {
@@ -154,7 +157,7 @@ class Barrage {
       this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime;
       this.timeInfo.prevPauseTime = null;
       const des = this.direction === 'left' ? 1 : -1;
-      const containerWidth = this.RuntimeManager.containerWidth;
+      const containerWidth = this.RuntimeManager.containerWidth + this.width;
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
       this.node.style[transitionDuration] = `${remainingTime}s`;
       this.node.style.transform = `translateX(${containerWidth * des}px)`;
@@ -227,10 +230,13 @@ class RuntimeManager {
     node.style.top = `${barrage.position.y}px`;
     return new Promise(resolve => {
       nextFrame(() => {
-        const moveDirect = barrage.direction === 'left' ? 1 : -1;
+        const des = barrage.direction === 'left' ? 1 : -1;
+        const containerWidth = this.containerWidth + barrage.width;
+        node.style.opacity = 1;
         node.style.display = isShow ? 'inline-block' : 'none';
+        node.style.transform = `translateX(${des * (containerWidth)}px)`;
         node.style[transitionProp] = `transform linear ${barrage.duration}s`;
-        node.style.transform = `translateX(${moveDirect * this.containerWidth}px)`;
+        node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`;
         barrage.moveing = true;
         barrage.timeInfo.startTime = Date.now();
         resolve(whenTransitionEnds(node));
@@ -240,19 +246,69 @@ class RuntimeManager {
 }
 
 class BarrageManager {
-  constructor (data, opts) {
-    this.data = data;
+  constructor (opts) {
     this.opts = opts;
     this.isShow = true;
     this.loopTimer = null;
     this.showBarrages = [];
-    this.stashBarrages = this.data.slice();
+    this.stashBarrages = [];
     this.RuntimeManager = new RuntimeManager(opts);
   }
   get length () {
-    return  this.showBarrages.length + this.stashBarrages.length
+    return this.showBarrages.length + this.stashBarrages.length
+  }
+  send (data) {
+    assertArray(data);
+    if (data.length + this.length > this.opts.capcity) {
+      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`);
+      return false
+    }
+    this.stashBarrages.push.apply(this.stashBarrages, data);
+    return true
+  }
+  show () {
+    if (!this.isShow) {
+      this.isShow = true;
+      this.each(barrage => {
+        barrage.node.style.display = 'inline-block';
+      });
+    }
+    return this
+  }
+  hiden () {
+    if (this.isShow) {
+      this.isShow = false;
+      this.each(barrage => {
+        barrage.node.style.display = 'none';
+      });
+    }
+    return this
+  }
+  each (cb) {
+    if (typeof cb === 'function') {
+      this.showBarrages.forEach(cb);
+    }
+    return this
+  }
+  stop () {
+    if (this.loopTimer) {
+      clearTimeout(this.loopTimer);
+      this.loopTimer = null;
+    }
+    return this
   }
   start () {
+    const core = () => {
+      this.loopTimer = setTimeout(() => {
+        this.renderBarrage();
+        core();
+      }, this.opts.interval);
+    };
+    this.stop();
+    core();
+    return this
+  }
+  renderBarrage () {
     if (this.stashBarrages.length > 0) {
       let length = this.opts.limit - this.showBarrages.length;
       if (length > this.stashBarrages.length) {
@@ -268,52 +324,7 @@ class BarrageManager {
       }
     }
   }
-  push (data) {
-    assertArray(data);
-    if (data.length + this.length > this.opts.capcity) {
-      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`);
-      return false
-    }
-    this.stashBarrages.push.apply(this.stashBarrages, data);
-    return true
-  }
-  show () {
-    if (this.isShow) return
-    this.isShow = true;
-    this.each(barrage => {
-      barrage.node.style.display = 'inline-block';
-    });
-  }
-  hiden () {
-    if (!this.isShow) return
-    this.isShow = false;
-    this.each(barrage => {
-      barrage.node.style.display = 'none';
-    });
-  }
-  each (cb) {
-    if (typeof cb === 'function') {
-      this.showBarrages.forEach(cb);
-    }
-  }
-  loop (interval = 1000) {
-    const stop = () => {
-      if (this.loopTimer) {
-        clearTimeout(this.loopTimer);
-        this.loopTimer = null;
-      }
-    };
-    const core = () => {
-      this.loopTimer = setTimeout(() => {
-        this.start();
-        core();
-      }, interval);
-    };
-    stop();
-    core();
-    return stop
-  }
-  async initSingleBarrage (data) {
+  initSingleBarrage (data) {
     const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data);
     const newBarrage = this.sureBarrageInfo(barrage);
     if (newBarrage) {
@@ -321,18 +332,20 @@ class BarrageManager {
       newBarrage.append();
       this.showBarrages.push(newBarrage);
       trajectory.values.push(newBarrage);
-      await this.RuntimeManager.move(newBarrage, this.isShow);
-      newBarrage.remove();
-      newBarrage.moveing = false;
-      let index = -1;
-      if (trajectory.values.length > 0) {
-        index = trajectory.values.indexOf(newBarrage);
-        if (~index) trajectory.values.splice(index, 1);
-      }
-      if (this.showBarrages.length > 0) {
-        index = this.showBarrages.indexOf(newBarrage);
-        if (~index) this.showBarrages.splice(index, 1);
-      }
+      this.RuntimeManager.move(newBarrage, this.isShow)
+        .then(() => {
+          newBarrage.remove();
+          newBarrage.moveing = false;
+          let index = -1;
+          if (trajectory.values.length > 0) {
+            index = trajectory.values.indexOf(newBarrage);
+            if (~index) trajectory.values.splice(index, 1);
+          }
+          if (this.showBarrages.length > 0) {
+            index = this.showBarrages.indexOf(newBarrage);
+            if (~index) this.showBarrages.splice(index, 1);
+          }
+        });
     } else {
       this.stashBarrages.unshift(barrage);
     }
@@ -369,14 +382,14 @@ class BarrageManager {
       node.textContent = barrage.content;
       node.style.height = this.RuntimeManager.height;
     }
+    node.style.opacity = 0;
     node.style[direction] = 0;
     node.style.position = 'absolute';
     node.style.display = this.isShow ? 'inline-block' : 'none';
   }
 }
 
-function createBarrage (data = [], opts = {}) {
-  assertArray(data);
+function createBarrage (opts = {}) {
   opts = Object.assign({
     hooks: {},
     limit: 20,
@@ -384,12 +397,10 @@ function createBarrage (data = [], opts = {}) {
     rowGap: 100,
     capcity: 1024,
     times: [8, 15],
+    interval: 1000,
     direction: 'right',
   }, opts);
-  if (data.length > opts.capcity) {
-    throw ReferenceError(`The number of barrage is greater than "${opts.capcity}".`)
-  }
-  return new BarrageManager(data, opts)
+  return new BarrageManager(opts)
 }
 
 export default createBarrage;

@@ -31,7 +31,7 @@
 <body>
   <script src="./dist/barrage.min.js"></script>
   <script>
-    const data = [
+    const testData = [
       '陈涛',
       'chentao',
       'imtaotao',
@@ -42,12 +42,12 @@
     ]
 
     // 测试代码
-    const i = Barrage(data, {
+    const i = Barrage({
       container: document.body,
-      height: 20,
+      height: 60,
       rowGap: 350,
       direction: 'right',
-      times: [10, 20],
+      times: [7, 20],
       limit: 10,
       hooks: {
         create (node, barrage) {
@@ -69,10 +69,10 @@
       }
     })
     i.start()
-    i.loop()
 
+    // i.send([testData[6]])
     setInterval(() => {
-      i.push(data)
+      i.send(testData)
     }, 1000)
   </script>
 </body>

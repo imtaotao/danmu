@@ -4,7 +4,6 @@ import {
   callHook,
   createKey,
   transitionDuration,
-  transitionEndEvent,
 } from './utils'
 
 export default class Barrage {
@@ -35,22 +34,19 @@ export default class Barrage {
   // 得到当前移动了多少距离
   getMoveDistance () {
     if (!this.moveing) return 0
+    const extendDis = this.width || 0
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo
 
-    const containerWidth = this.RuntimeManager.containerWidth
     const currentTime = this.paused ? prevPauseTime : Date.now()
+    const containerWidth = this.RuntimeManager.containerWidth + extendDis
     const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration
 
     return percent * containerWidth
   }
 
-  width () {
+  getWidth () {
     return new Promise(resolve => {
       let i = 0
-      if (this._width) {
-        return resolve(this._width)
-      }
-
       const fn = () => {
         warning(++i < 99, 'Unable to get the barr width.')
         setTimeout(() => {
@@ -59,7 +55,6 @@ export default class Barrage {
             fn()
           } else {
             width = toNumber(width)
-            this._width = width
             resolve(width)
           }
         })
@@ -79,7 +74,11 @@ export default class Barrage {
     warning(this.container, 'Need container element.')
     if (this.node) {
       this.container.appendChild(this.node)
-      callHook(this.hooks, 'append', [this.node, this])
+      // 添加宽度
+      this.getWidth().then(width => {
+        this.width = width
+        callHook(this.hooks, 'append', [this.node, this])
+      })
     }
   }
 
@@ -121,7 +120,7 @@ export default class Barrage {
       this.timeInfo.prevPauseTime = null
       
       const des = this.direction === 'left' ? 1 : -1
-      const containerWidth = this.RuntimeManager.containerWidth
+      const containerWidth = this.RuntimeManager.containerWidth + this.width
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration
 
       this.node.style[transitionDuration] = `${remainingTime}s`

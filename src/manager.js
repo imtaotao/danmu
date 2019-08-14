@@ -3,22 +3,84 @@ import { assertArray } from './utils'
 import RuntimeManager from './runtime'
 
 export default class BarrageManager {
-  constructor (data, opts) {
-    this.data = data
+  constructor (opts) {
     this.opts = opts
     this.isShow = true
     this.loopTimer = null
     this.showBarrages = [] // 渲染在页面上的弹幕数量
-    this.stashBarrages = this.data.slice() // 暂存的弹幕数量
+    this.stashBarrages = []// 暂存的弹幕数量
     this.RuntimeManager = new RuntimeManager(opts)
   }
 
   get length () {
-    return  this.showBarrages.length + this.stashBarrages.length
+    return this.showBarrages.length + this.stashBarrages.length
+  }
+
+  // 发送弹幕
+  send (data) {
+    assertArray(data)
+
+    if (data.length + this.length > this.opts.capcity) {
+      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
+      return false
+    }
+    this.stashBarrages.push.apply(this.stashBarrages, data)
+    return true
+  }
+
+  // 显示所有弹幕
+  show () {
+    if (!this.isShow) {
+      this.isShow = true
+      this.each(barrage => {
+        barrage.node.style.display = 'inline-block'
+      })
+    }
+    return this
+  }
+
+  // 隐藏所有弹幕
+  hiden () {
+    if (this.isShow) {
+      this.isShow = false
+      this.each(barrage => {
+        barrage.node.style.display = 'none'
+      })
+    }
+    return this    
+  }
+
+  // 遍历在渲染中的节点
+  each (cb) {
+    if (typeof cb === 'function') {
+      this.showBarrages.forEach(cb)
+    }
+    return this
+  }
+
+  stop () {
+    if (this.loopTimer) {
+      clearTimeout(this.loopTimer)
+      this.loopTimer = null
+    }
+    return this
+  }
+
+  // 循环检测添加弹幕
+  start () {
+    const core = () => {
+      this.loopTimer = setTimeout(() => {
+        this.renderBarrage()
+        core()
+      }, this.opts.interval)
+    }
+    this.stop()
+    core()
+    return this
   }
 
   // 初始化弹幕
-  start () {
+  renderBarrage () {
     if (this.stashBarrages.length > 0) {
       let length = this.opts.limit - this.showBarrages.length
 
@@ -37,66 +99,8 @@ export default class BarrageManager {
     }
   }
 
-  // 增添弹幕数量
-  push (data) {
-    assertArray(data)
-
-    if (data.length + this.length > this.opts.capcity) {
-      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
-      return false
-    }
-    this.stashBarrages.push.apply(this.stashBarrages, data)
-    return true
-  }
-
-  // 显示所有弹幕
-  show () {
-    if (this.isShow) return
-    this.isShow = true
-    this.each(barrage => {
-      barrage.node.style.display = 'inline-block'
-    })
-  }
-
-  // 隐藏所有弹幕
-  hiden () {
-    if (!this.isShow) return
-    this.isShow = false
-    this.each(barrage => {
-      barrage.node.style.display = 'none'
-    })
-  }
-
-  // 遍历在渲染中的节点
-  each (cb) {
-    if (typeof cb === 'function') {
-      this.showBarrages.forEach(cb)
-    }
-  }
-
-  // 循环检测添加弹幕
-  loop (interval = 1000) {
-    const stop = () => {
-      if (this.loopTimer) {
-        clearTimeout(this.loopTimer)
-        this.loopTimer = null
-      }
-    }
-
-    const core = () => {
-      this.loopTimer = setTimeout(() => {
-        this.start()
-        core()
-      }, interval)
-    }
-    
-    stop()
-    core()
-    return stop
-  }
-
   // 初始化一个弹幕
-  async initSingleBarrage (data) {
+  initSingleBarrage (data) {
     const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data)
     const newBarrage = this.sureBarrageInfo(barrage)
 
@@ -108,23 +112,24 @@ export default class BarrageManager {
       this.showBarrages.push(newBarrage)
       trajectory.values.push(newBarrage)
 
-      await this.RuntimeManager.move(newBarrage, this.isShow)
+      this.RuntimeManager.move(newBarrage, this.isShow)
+        .then(() => {
+          // 弹幕运动结束后删掉
+          newBarrage.remove()
+          newBarrage.moveing = false
 
-      // 弹幕运动结束后删掉
-      newBarrage.remove()
-      newBarrage.moveing = false
+          // 删除存起来的
+          let index = -1
+          if (trajectory.values.length > 0) {
+            index = trajectory.values.indexOf(newBarrage)
+            if (~index) trajectory.values.splice(index, 1)
+          }
 
-      // 删除存起来的
-      let index = -1
-      if (trajectory.values.length > 0) {
-        index = trajectory.values.indexOf(newBarrage)
-        if (~index) trajectory.values.splice(index, 1)
-      }
-
-      if (this.showBarrages.length > 0) {
-        index = this.showBarrages.indexOf(newBarrage)
-        if (~index) this.showBarrages.splice(index, 1)
-      }
+          if (this.showBarrages.length > 0) {
+            index = this.showBarrages.indexOf(newBarrage)
+            if (~index) this.showBarrages.splice(index, 1)
+          }
+        })
     } else {
       // 否则就先存起来，按道理说只会存一个
       // 按照现有的逻辑，最后一个会不停的取出来，然后存起来
@@ -175,9 +180,9 @@ export default class BarrageManager {
       node.style.height = this.RuntimeManager.height
     }
 
+    node.style.opacity = 0
     node.style[direction] = 0
     node.style.position = 'absolute'
     node.style.display = this.isShow ? 'inline-block' : 'none'
-
   }
 }

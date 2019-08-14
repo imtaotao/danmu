@@ -1,4 +1,10 @@
-import { toNumber, nextFrame, transitionProp, whenTransitionEnds } from './utils'
+import {
+  toNumber,
+  upperCase,
+  nextFrame,
+  transitionProp,
+  whenTransitionEnds,
+} from './utils'
 
 export default class RuntimeManager {
   constructor ({container, rowGap = 0, height = 60}) {
@@ -75,14 +81,18 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       nextFrame(() => {
-        const moveDirect = barrage.direction === 'left' ? 1 : -1
+        const des = barrage.direction === 'left' ? 1 : -1
+        const containerWidth = this.containerWidth + barrage.width
 
+        node.style.opacity = 1
         node.style.display = isShow ? 'inline-block' : 'none'
+        node.style.transform = `translateX(${des * (containerWidth)}px)`
         node.style[transitionProp] = `transform linear ${barrage.duration}s`
-        node.style.transform = `translateX(${moveDirect * this.containerWidth}px)`
+        node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`
 
         barrage.moveing = true
         barrage.timeInfo.startTime = Date.now()
+
         resolve(whenTransitionEnds(node))
       })
     })

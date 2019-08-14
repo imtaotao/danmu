@@ -29,6 +29,10 @@ export function toNumber (val) {
       : NaN
 }
 
+export function upperCase ([first, ...remaing]) {
+  return first.toUpperCase() + remaing.join('')
+}
+
 const raf = window.requestAnimationFrame
       ? window.requestAnimationFrame.bind(window)
       : setTimeout
