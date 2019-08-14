@@ -97,9 +97,7 @@ export default class BarrageManager {
 
   // 初始化一个弹幕
   async initSingleBarrage (data) {
-    const barrage = data instanceof Barrage
-      ? data
-      : this.createSingleBarrage(data)
+    const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data)
     const newBarrage = this.sureBarrageInfo(barrage)
 
     if (newBarrage) {
@@ -137,12 +135,14 @@ export default class BarrageManager {
   createSingleBarrage (data) {
     const [max, min] = this.opts.times
     const container = this.opts.container
-
     const time = (Math.random() * (max - min) + min).toFixed(0)
+
     return new Barrage(
       data,
       time,
       container,
+      this.RuntimeManager,
+      this.opts.direction,
       Object.assign({}, this.opts.hooks, {
         create: this.setBarrageStyle.bind(this),
       })
@@ -153,7 +153,6 @@ export default class BarrageManager {
   sureBarrageInfo (barrage) {
     const position = barrage.position
     const runtime = this.RuntimeManager
-    const showBarrages = this.showBarrages
     const trajectory = runtime.getTrajectory()
 
     // 没有弹道信息代表现在页面上不能出现
@@ -167,8 +166,8 @@ export default class BarrageManager {
 
   // 设置弹幕的样式
   setBarrageStyle (node, barrage) {
-    const hooks = this.opts.hooks || {}
-    const moveDis = this.opts.direction === 'left' ? -1 : 1
+    const { hooks = {}, direction } = this.opts
+    const moveDis = direction === 'left' ? -1 : 1
 
     if (typeof hooks.create === 'function') {
       hooks.create(node, barrage)
@@ -178,8 +177,8 @@ export default class BarrageManager {
     }
 
     node.style.position = 'absolute'
-    node.style[this.opts.direction] = 0
-    // node.style.transform = `translateX(${moveDis * 100}%)`
+    node.style[direction] = 0
+    node.style.transform = `translateX(${moveDis * 100}%)`
     node.style.display = this.isShow ? 'inline-block' : 'none'
 
   }

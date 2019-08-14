@@ -55,18 +55,10 @@ export default class RuntimeManager {
 
     alreadyFound.push(index)
 
-    // 计算最后一个弹幕移动了多远
-    // 如果超过了我们限制的距离，就允许加入新的弹幕
-    const duration = lastBarrage.duration
-    const startTime = lastBarrage.position.startTime
+    // 最后一个弹幕移动超过了我们限制的距离，就允许加入新的弹幕
+    if (lastBarrage.moveing) {
+      const distance = lastBarrage.getMoveDistance()
 
-    // 如果没有开始时间，代表还没有开始移动
-    if (startTime !== null) {
-      const precent = (Date.now() - startTime) / 1000 / duration
-      // 移动的距离 + 弹幕本身的宽度
-      const distance = precent * this.containerWidth
-
-      // 两个弹幕之间允许的弹幕间距
       return distance > this.rowGap
         ? currentTragectory
         : this.getTrajectory(alreadyFound)
@@ -76,21 +68,20 @@ export default class RuntimeManager {
   }
 
   // 移动弹幕
-  async move (barrage, isShow) {
+  move (barrage, isShow) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
-    const width = await barrage.width()
     node.style.top = `${barrage.position.y}px`
-    node.style.transform = `translateX(${width}px)`
 
     return new Promise(resolve => {
-      nextFrame(() => { 
+      nextFrame(() => {
+        const moveDirect = barrage.direction === 'left' ? 1 : -1
         node.style.display = isShow ? 'inline-block' : 'none'
         node.style[transitionProp] = `transform linear ${barrage.duration}s`
-        node.style.transform = `translateX(-${this.containerWidth}px)`
+        node.style.transform = `translateX(${moveDirect * this.containerWidth}px)`
 
         barrage.moveing = true
-        barrage.position.startTime = Date.now()
+        barrage.timeInfo.startTime = Date.now()
         resolve(whenTransitionEnds(node))
       })
     })

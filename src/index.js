@@ -5,7 +5,7 @@ function createBarrage (data = [], opts = {}) {
   assertArray(data)
 
   opts = Object.assign({
-    hooks: {},
+    hooks: {}, // 钩子函数
     limit: 20, // 页面上允许渲染的数量
     height: 50, // 弹道的高
     rowGap: 100, // 同一条轨道上两条弹幕的间隔

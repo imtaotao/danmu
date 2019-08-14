@@ -59,6 +59,9 @@
           node.onmouseenter = e => {
             barrage.pause()
           }
+          node.onmouseleave = e => {
+            barrage.resume()
+          }
         },
 
         remove (node) {

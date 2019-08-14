@@ -1,22 +1,40 @@
 import { warning, callHook, createKey  } from './utils'
 
 export default class Barrage {
-  constructor (itemData, time, container, hooks) {
+  constructor (itemData, time, container, RuntimeManager, direction, hooks) {
     this._width = null
     this.hooks = hooks
     this.paused = false
     this.moveing = false
     this.data = itemData
+    this.direction = direction
     this.container = container
     this.duration = Number(time)
+    this.RuntimeManager = RuntimeManager
     this.key = itemData.id || createKey()
     this.position = {
       y: null,
-      startTime: null,
       trajectory: null,
+    }
+    this.timeInfo = {
+      pauseTime: 0, // 总共暂停了多少时间
+      startTime: null, // 开始移动时间
+      prevPauseTime: null, // 上次暂停的时间
     }
 
     this.create()
+  }
+
+  // 得到当前移动了多少距离
+  getMoveDistance () {
+    if (!this.moveing) return 0
+    const { pauseTime, startTime, prevPauseTime } = this.timeInfo
+
+    const containerWidth = this.RuntimeManager.containerWidth
+    const currentTime = this.paused ? prevPauseTime : Date.now()
+    const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration
+
+    return percent * containerWidth
   }
 
   width () {
@@ -45,7 +63,7 @@ export default class Barrage {
 
   create () {
     const node = document.createElement('div')
-    node.id = 'barrage_' + this.key
+    node.id = this.key
     this.node = node
     callHook(this.hooks, 'create', [node, this])
   }
@@ -70,9 +88,13 @@ export default class Barrage {
   pause () {
     if (this.moveing && !this.paused) {
       this.paused = true
+      this.timeInfo.prevPauseTime = Date.now()
+
       this.width().then(w => {
-        const percent = (Date.now() - this.position.startTime) / this.duration
-        console.log(percent);
+        const moveDistance = this.getMoveDistance()
+        if (!Number.isNaN(moveDistance)) {
+          // this.node.style.tranf
+        }
       })
     }
   }
@@ -81,6 +103,8 @@ export default class Barrage {
   resume () {
     if (this.moveing && this.paused) {
       this.paused = false
+      this.timeInfo.prevPauseTime = null
+      // 增加暂停时间段
     }
   }
 
@@ -88,8 +112,12 @@ export default class Barrage {
   reset () {
     this.position = {
       y: null,
-      startTime: null,
       trajectory: null,
+    }
+    this.timeInfo = {
+      pauseTime: 0,
+      startTime: null,
+      prevPauseTime: null,
     }
   }
 }

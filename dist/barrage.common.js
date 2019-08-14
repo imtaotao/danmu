@@ -54,21 +54,35 @@ function whenTransitionEnds (node) {
 }
 
 class Barrage {
-  constructor (itemData, time, container, hooks) {
+  constructor (itemData, time, container, RuntimeManager, direction, hooks) {
     this._width = null;
     this.hooks = hooks;
     this.paused = false;
     this.moveing = false;
     this.data = itemData;
+    this.direction = direction;
     this.container = container;
     this.duration = Number(time);
+    this.RuntimeManager = RuntimeManager;
     this.key = itemData.id || createKey();
     this.position = {
       y: null,
-      startTime: null,
       trajectory: null,
     };
+    this.timeInfo = {
+      pauseTime: 0,
+      startTime: null,
+      prevPauseTime: null,
+    };
     this.create();
+  }
+  getMoveDistance () {
+    if (!this.moveing) return 0
+    const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
+    const containerWidth = this.RuntimeManager.containerWidth;
+    const currentTime = this.paused ? prevPauseTime : Date.now();
+    const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration;
+    return percent * containerWidth
   }
   width () {
     return new Promise(resolve => {
@@ -94,7 +108,7 @@ class Barrage {
   }
   create () {
     const node = document.createElement('div');
-    node.id = 'barrage_' + this.key;
+    node.id = this.key;
     this.node = node;
     callHook(this.hooks, 'create', [node, this]);
   }
@@ -115,22 +129,27 @@ class Barrage {
   pause () {
     if (this.moveing && !this.paused) {
       this.paused = true;
+      this.timeInfo.prevPauseTime = Date.now();
       this.width().then(w => {
-        const percent = (Date.now() - this.position.startTime) / this.duration;
-        console.log(percent);
+        const moveDistance = this.getMoveDistance();
       });
     }
   }
   resume () {
     if (this.moveing && this.paused) {
       this.paused = false;
+      this.timeInfo.prevPauseTime = null;
     }
   }
   reset () {
     this.position = {
       y: null,
-      startTime: null,
       trajectory: null,
+    };
+    this.timeInfo = {
+      pauseTime: 0,
+      startTime: null,
+      prevPauseTime: null,
     };
   }
 }
@@ -176,29 +195,25 @@ class RuntimeManager {
       return currentTragectory
     }
     alreadyFound.push(index);
-    const duration = lastBarrage.duration;
-    const startTime = lastBarrage.position.startTime;
-    if (startTime !== null) {
-      const precent = (Date.now() - startTime) / 1000 / duration;
-      const distance = precent * this.containerWidth;
+    if (lastBarrage.moveing) {
+      const distance = lastBarrage.getMoveDistance();
       return distance > this.rowGap
         ? currentTragectory
         : this.getTrajectory(alreadyFound)
     }
     return this.getTrajectory(alreadyFound)
   }
-  async move (barrage, isShow) {
+  move (barrage, isShow) {
     const node = barrage.node;
-    const width = await barrage.width();
     node.style.top = `${barrage.position.y}px`;
-    node.style.transform = `translateX(${width}px)`;
     return new Promise(resolve => {
       nextFrame(() => {
+        const moveDirect = barrage.direction === 'left' ? 1 : -1;
         node.style.display = isShow ? 'inline-block' : 'none';
         node.style[transitionProp] = `transform linear ${barrage.duration}s`;
-        node.style.transform = `translateX(-${this.containerWidth}px)`;
+        node.style.transform = `translateX(${moveDirect * this.containerWidth}px)`;
         barrage.moveing = true;
-        barrage.position.startTime = Date.now();
+        barrage.timeInfo.startTime = Date.now();
         resolve(whenTransitionEnds(node));
       });
     })
@@ -280,9 +295,7 @@ class BarrageManager {
     return stop
   }
   async initSingleBarrage (data) {
-    const barrage = data instanceof Barrage
-      ? data
-      : this.createSingleBarrage(data);
+    const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data);
     const newBarrage = this.sureBarrageInfo(barrage);
     if (newBarrage) {
       const trajectory = newBarrage.position.trajectory;
@@ -313,6 +326,8 @@ class BarrageManager {
       data,
       time,
       container,
+      this.RuntimeManager,
+      this.opts.direction,
       Object.assign({}, this.opts.hooks, {
         create: this.setBarrageStyle.bind(this),
       })
@@ -321,7 +336,6 @@ class BarrageManager {
   sureBarrageInfo (barrage) {
     const position = barrage.position;
     const runtime = this.RuntimeManager;
-    const showBarrages = this.showBarrages;
     const trajectory = runtime.getTrajectory();
     if (!trajectory) return null
     position.y = trajectory.gaps[0];
@@ -329,8 +343,8 @@ class BarrageManager {
     return barrage
   }
   setBarrageStyle (node, barrage) {
-    const hooks = this.opts.hooks || {};
-    const moveDis = this.opts.direction === 'left' ? -1 : 1;
+    const { hooks = {}, direction } = this.opts;
+    const moveDis = direction === 'left' ? -1 : 1;
     if (typeof hooks.create === 'function') {
       hooks.create(node, barrage);
     } else {
@@ -338,7 +352,8 @@ class BarrageManager {
       node.style.height = this.RuntimeManager.height;
     }
     node.style.position = 'absolute';
-    node.style[this.opts.direction] = 0;
+    node.style[direction] = 0;
+    node.style.transform = `translateX(${moveDis * 100}%)`;
     node.style.display = this.isShow ? 'inline-block' : 'none';
   }
 }
