@@ -140,7 +140,6 @@ class Barrage {
         if (this.direction === 'right') {
           moveDistance *= -1;
         }
-        this.node.style.zIndex = 1;
         this.node.style[transitionDuration] = '0s';
         this.node.style.transform = `translateX(${moveDistance}px)`;
       }
@@ -154,7 +153,6 @@ class Barrage {
       const des = this.direction === 'left' ? 1 : -1;
       const containerWidth = this.RuntimeManager.containerWidth + this.width;
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
-      this.node.style.zIndex = 0;
       this.node.style[transitionDuration] = `${remainingTime}s`;
       this.node.style.transform = `translateX(${containerWidth * des}px)`;
     }
@@ -418,7 +416,7 @@ function createBarrage (opts = {}) {
     rowGap: 50,
     capcity: 1024,
     times: [8, 15],
-    interval: 1000,
+    interval: 2000,
     direction: 'right',
   }, opts);
   return new BarrageManager(opts)

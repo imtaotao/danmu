@@ -8,7 +8,7 @@ function createBarrage (opts = {}) {
     rowGap: 50, // 同一条轨道上两条弹幕的间隔
     capcity: 1024, // 内存中能存放的弹幕数量
     times: [8, 15], // 弹幕移动时间取值范围
-    interval: 1000, // 轮询间隔时间
+    interval: 2000, // 轮询间隔时间
     direction: 'right', // 弹幕左边出来还是右边
   }, opts)
 
