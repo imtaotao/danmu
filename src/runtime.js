@@ -83,7 +83,7 @@ export default class RuntimeManager {
     const index = getIndex()
     const currentTragectory = this.container[index]
     const lastBarrage = currentTragectory.values[currentTragectory.values.length - 1]
-    
+
     if (!lastBarrage) {
       return currentTragectory
     }

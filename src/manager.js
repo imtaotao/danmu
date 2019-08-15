@@ -24,7 +24,7 @@ export default class BarrageManager {
     return this.stashBarrages.length
   }
 
-  // 发送弹幕
+  // API 发送弹幕
   send (data) {
     if (!Array.isArray(data)) {
       data = [data]
@@ -40,7 +40,7 @@ export default class BarrageManager {
     return true
   }
 
-  // 显示所有弹幕
+  // API 显示所有弹幕
   show () {
     if (!this.isShow) {
       this.isShow = true
@@ -48,23 +48,25 @@ export default class BarrageManager {
         barrage.node.style.visibility = 'visible'
         barrage.node.style.pointerEvents = 'auto'
       })
+      callHook(this.opts.hooks, 'show', [this])
     }
     return this
   }
 
-  // 隐藏所有弹幕
-  hiden () {
+  // API 隐藏所有弹幕
+  hidden () {
     if (this.isShow) {
       this.isShow = false
       this.each(barrage => {
         barrage.node.style.visibility = 'hidden'
         barrage.node.style.pointerEvents = 'none'
       })
+      callHook(this.opts.hooks, 'hidden', [this])
     }
     return this    
   }
 
-  // 遍历在渲染中的节点
+  // API 遍历在渲染中的节点
   each (cb) {
     if (typeof cb === 'function') {
       this.showBarrages.forEach(cb)
@@ -72,6 +74,7 @@ export default class BarrageManager {
     return this
   }
 
+  // API 停止轮询添加弹幕
   stop (noCallHook) {
     if (this.loopTimer) {
       clearTimeout(this.loopTimer)
@@ -84,7 +87,7 @@ export default class BarrageManager {
     return this
   }
 
-  // 循环检测添加弹幕
+  // API 循环检测添加弹幕
   start (noCallHook) {
     const core = () => {
       this.loopTimer = setTimeout(() => {
@@ -103,7 +106,7 @@ export default class BarrageManager {
     return this
   }
 
-  // 重新设置参数
+  // API 重新设置参数
   setOptions (opts) {
     if (opts) {
       this.opts = Object.assign(this.opts, opts)
@@ -116,13 +119,14 @@ export default class BarrageManager {
     return this
   }
 
-  // 重新初始化 container
+  // API 重新初始化 container
   resize () {
     this.RuntimeManager.resize()
+    callHook(this.opts.hooks, 'resize', [this])
     return this
   }
 
-  // 清空缓存，立即终止
+  // API 清空缓存，立即终止
   clear () {
     this.stop(true)
     this.each(barrage => barrage.remove())
@@ -169,32 +173,15 @@ export default class BarrageManager {
       const trajectory = newBarrage.position.trajectory
 
       newBarrage.append()
+
       this.showBarrages.push(newBarrage)
       trajectory.values.push(newBarrage)
+      newBarrage.trajectory = trajectory
 
-      this.RuntimeManager.move(newBarrage, this.isShow)
-        .then(() => {
-          // 弹幕运动结束后删掉
-          newBarrage.remove()
-          newBarrage.moveing = false
-
-          // 删除存起来的
-          let index = -1
-          if (trajectory.values.length > 0) {
-            index = trajectory.values.indexOf(newBarrage)
-            if (~index) trajectory.values.splice(index, 1)
-          }
-
-          if (this.showBarrages.length > 0) {
-            index = this.showBarrages.indexOf(newBarrage)
-            if (~index) this.showBarrages.splice(index, 1)
-          }
-
-          // 如果没有弹幕了
-          if (this.length === 0) {
-            callHook(this.opts.hooks, 'ended')
-          }
-        })
+      this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
+        // 弹幕运动结束后删掉
+        newBarrage.destroy(true)
+      })
     } else {
       // 否则就先存起来，按道理说只会存一个
       // 按照现有的逻辑，最后一个会不停的取出来，然后存起来
@@ -204,17 +191,14 @@ export default class BarrageManager {
 
   createSingleBarrage (data) {
     const [max, min] = this.opts.times
-    const container = this.opts.container
     const time = (Math.random() * (max - min) + min).toFixed(0)
 
     return new Barrage(
       data,
       time,
-      container,
-      this.RuntimeManager,
-      this.opts.direction,
+      this,
       Object.assign({}, this.opts.hooks, {
-        create: this.setBarrageStyle.bind(this),
+        barrageCreate: this.setBarrageStyle.bind(this),
       })
     )
   }
@@ -238,7 +222,7 @@ export default class BarrageManager {
   setBarrageStyle (node, barrage) {
     const { hooks = {}, direction } = this.opts
 
-    callHook(hooks, 'create', [node, barrage])
+    callHook(hooks, 'barrageCreate', [node, barrage])
 
     node.style.opacity = 0
     node.style[direction] = 0

@@ -7,12 +7,17 @@ import {
 } from './utils'
 
 export default class Barrage {
-  constructor (itemData, time, container, RuntimeManager, direction, hooks) {
+  constructor (itemData, time, manager, hooks) {
+    const RuntimeManager = manager.RuntimeManager
+    const { direction, container } = manager.opts
+
     this._width = null
     this.hooks = hooks
     this.paused = false
     this.moveing = false
     this.data = itemData
+    this.trajectory = null
+    this.manager = manager
     this.direction = direction
     this.container = container
     this.duration = Number(time)
@@ -67,7 +72,7 @@ export default class Barrage {
     const node = document.createElement('div')
     node.id = this.key
     this.node = node
-    callHook(this.hooks, 'create', [node, this])
+    callHook(this.hooks, 'barrageCreate', [node, this])
   }
 
   append () {
@@ -77,20 +82,46 @@ export default class Barrage {
       // 添加宽度
       this.getWidth().then(width => {
         this.width = width
-        callHook(this.hooks, 'append', [this.node, this])
+        callHook(this.hooks, 'barrageAppend', [this.node, this])
       })
     }
   }
-
+  
   remove () {
     warning(this.container, 'Need container element.')
     if (this.node) {
       this.container.removeChild(this.node)
-      callHook(this.hooks, 'remove', [this.node, this])
+      callHook(this.hooks, 'barrageRemove', [this.node, this])
     }
   }
 
-  // 暂停当前动画
+  // API 销毁当前节点
+  destroy (noCallHook) {
+    this.remove()
+    this.moveing = false
+
+    
+    let index = -1
+    const trajectory = this.trajectory
+    const showBarrages = this.manager.showBarrages
+
+    // 删除内存中存起来的弹幕类
+    if (trajectory && trajectory.values.length > 0) {
+      index = trajectory.values.indexOf(this)
+      if (~index) trajectory.values.splice(index, 1)
+    }
+
+    if (showBarrages && showBarrages.length > 0) {
+      index = showBarrages.indexOf(this)
+      if (~index) showBarrages.splice(index, 1)
+    }
+
+    if (!noCallHook) {
+      callHook(this.hooks, 'barrageDestroy', [this.node, this])
+    }
+  }
+
+  // API 暂停当前动画
   pause () {
     if (this.moveing && !this.paused) {
       let moveDistance = this.getMoveDistance()
@@ -109,7 +140,7 @@ export default class Barrage {
     }
   }
 
-  // 恢复当前
+  // API 恢复当前
   resume () {
     if (this.moveing && this.paused) {
       this.paused = false
@@ -138,5 +169,6 @@ export default class Barrage {
       startTime: null,
       prevPauseTime: null,
     }
+    this.trajectory = null
   }
 }

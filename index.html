@@ -34,8 +34,8 @@
   </style>
 </head>
 <body>
-  <!-- <script src="./dist/barrage.min.js"></script> -->
-  <script src="https://cdn.jsdelivr.net/gh/imtaotao/barrage/dist/barrage.min.js"></script>
+  <script src="./dist/barrage.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/gh/imtaotao/barrage/dist/barrage.min.js"></script> -->
   <script>
     const testData = [
       '陈涛',
@@ -53,18 +53,18 @@
       height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
-      times: [5, 15], // 弹幕动画的时间取值范围
-      limit: 400, // 能够渲染的最大数量
+      times: [5, 10], // 弹幕动画的时间取值范围
+      limit: 150, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
         // 弹幕创建时
-        create (node, barrage) {
+        barrageCreate (node, barrage) {
           node.textContent = barrage.data
           node.classList.add('barrage')
         },
 
         // 弹幕渲染到页面上时
-        append (node, barrage) {
+        barrageAppend (node, barrage) {
           node.onmouseenter = e => {
             barrage.pause()
             node.classList.add('active')
@@ -73,10 +73,17 @@
             barrage.resume()
             node.classList.remove('active')
           }
+          node.onclick = e => {
+            barrage.destroy()
+          }
         },
 
         // 弹幕销毁时
-        remove (node) {
+        barrageRemove (node) {
+        },
+
+        barrageDestroy (node) {
+          console.log(node)
         },
 
         ended () {

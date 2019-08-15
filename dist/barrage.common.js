@@ -61,12 +61,16 @@ function whenTransitionEnds (node) {
 }
 
 class Barrage {
-  constructor (itemData, time, container, RuntimeManager, direction, hooks) {
+  constructor (itemData, time, manager, hooks) {
+    const RuntimeManager = manager.RuntimeManager;
+    const { direction, container } = manager.opts;
     this._width = null;
     this.hooks = hooks;
     this.paused = false;
     this.moveing = false;
     this.data = itemData;
+    this.trajectory = null;
+    this.manager = manager;
     this.direction = direction;
     this.container = container;
     this.duration = Number(time);
@@ -114,7 +118,7 @@ class Barrage {
     const node = document.createElement('div');
     node.id = this.key;
     this.node = node;
-    callHook(this.hooks, 'create', [node, this]);
+    callHook(this.hooks, 'barrageCreate', [node, this]);
   }
   append () {
     warning(this.container, 'Need container element.');
@@ -122,7 +126,7 @@ class Barrage {
       this.container.appendChild(this.node);
       this.getWidth().then(width => {
         this.width = width;
-        callHook(this.hooks, 'append', [this.node, this]);
+        callHook(this.hooks, 'barrageAppend', [this.node, this]);
       });
     }
   }
@@ -130,7 +134,25 @@ class Barrage {
     warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.removeChild(this.node);
-      callHook(this.hooks, 'remove', [this.node, this]);
+      callHook(this.hooks, 'barrageRemove', [this.node, this]);
+    }
+  }
+  destroy (noCallHook) {
+    this.remove();
+    this.moveing = false;
+    let index = -1;
+    const trajectory = this.trajectory;
+    const showBarrages = this.manager.showBarrages;
+    if (trajectory && trajectory.values.length > 0) {
+      index = trajectory.values.indexOf(this);
+      if (~index) trajectory.values.splice(index, 1);
+    }
+    if (showBarrages && showBarrages.length > 0) {
+      index = showBarrages.indexOf(this);
+      if (~index) showBarrages.splice(index, 1);
+    }
+    if (!noCallHook) {
+      callHook(this.hooks, 'barrageDestroy', [this.node, this]);
     }
   }
   pause () {
@@ -169,6 +191,7 @@ class Barrage {
       startTime: null,
       prevPauseTime: null,
     };
+    this.trajectory = null;
   }
 }
 
@@ -307,16 +330,18 @@ class BarrageManager {
         barrage.node.style.visibility = 'visible';
         barrage.node.style.pointerEvents = 'auto';
       });
+      callHook(this.opts.hooks, 'show', [this]);
     }
     return this
   }
-  hiden () {
+  hidden () {
     if (this.isShow) {
       this.isShow = false;
       this.each(barrage => {
         barrage.node.style.visibility = 'hidden';
         barrage.node.style.pointerEvents = 'none';
       });
+      callHook(this.opts.hooks, 'hidden', [this]);
     }
     return this
   }
@@ -363,6 +388,7 @@ class BarrageManager {
   }
   resize () {
     this.RuntimeManager.resize();
+    callHook(this.opts.hooks, 'resize', [this]);
     return this
   }
   clear () {
@@ -400,39 +426,23 @@ class BarrageManager {
       newBarrage.append();
       this.showBarrages.push(newBarrage);
       trajectory.values.push(newBarrage);
-      this.RuntimeManager.move(newBarrage, this.isShow)
-        .then(() => {
-          newBarrage.remove();
-          newBarrage.moveing = false;
-          let index = -1;
-          if (trajectory.values.length > 0) {
-            index = trajectory.values.indexOf(newBarrage);
-            if (~index) trajectory.values.splice(index, 1);
-          }
-          if (this.showBarrages.length > 0) {
-            index = this.showBarrages.indexOf(newBarrage);
-            if (~index) this.showBarrages.splice(index, 1);
-          }
-          if (this.length === 0) {
-            callHook(this.opts.hooks, 'ended');
-          }
-        });
+      newBarrage.trajectory = trajectory;
+      this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
+        newBarrage.destroy(true);
+      });
     } else {
       this.stashBarrages.unshift(barrage);
     }
   }
   createSingleBarrage (data) {
     const [max, min] = this.opts.times;
-    const container = this.opts.container;
     const time = (Math.random() * (max - min) + min).toFixed(0);
     return new Barrage(
       data,
       time,
-      container,
-      this.RuntimeManager,
-      this.opts.direction,
+      this,
       Object.assign({}, this.opts.hooks, {
-        create: this.setBarrageStyle.bind(this),
+        barrageCreate: this.setBarrageStyle.bind(this),
       })
     )
   }
@@ -447,7 +457,7 @@ class BarrageManager {
   }
   setBarrageStyle (node, barrage) {
     const { hooks = {}, direction } = this.opts;
-    callHook(hooks, 'create', [node, barrage]);
+    callHook(hooks, 'barrageCreate', [node, barrage]);
     node.style.opacity = 0;
     node.style[direction] = 0;
     node.style.position = 'absolute';
