@@ -8,25 +8,27 @@
     body {
       margin: 0;
       padding: 0;
+      background: rgba(0,0,0,0.7);
     }
 
     #container {
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.7);
       overflow: hidden;
     }
 
     .barrage {
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
       height: 30px;
-      line-height: 30px;
       font-size: 15px;
       border-radius: 28px;
-      text-align: center;
       color: #fff;
       padding: 0 20px;
       box-sizing: border-box;
       cursor: pointer;
+      /* background: rgba(255, 255, 255, 0.1); */
     }
 
     .active {
@@ -49,6 +51,30 @@
       background: rgba(0,0,0,0.7);
     }
 
+    .item {
+      width: 100%;
+      text-align: left;
+      color: #fff;
+      font-size: 16px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      display: block;
+      cursor: pointer;
+      background: url(./static/github.png) no-repeat;
+      background-size: cover;
+    }
+
     .btns {
       display: flex;
       justify-content: space-between;
@@ -64,6 +90,10 @@
       background: rgba(255, 255, 255, 0.3);
       border-radius: 8px;
       cursor: pointer;
+    }
+
+    .small-button {
+      width: 30px; 
     }
 
     .button.select {
@@ -99,46 +129,45 @@
       margin-left: 20px;
     }
 
-    .item {
-      width: 100%;
-      text-align: left;
-      color: #fff;
-      font-size: 16px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
     .input-range {
       width: 120px;
       margin-left: 20px;
-      outline: none; /*去掉点击时出现的外边框*/
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none; /*这三个是去掉那条线原有的默认样式，划重点！！*/
-      width: 30%;
-      height: 0.3rem;
-      background: orange;
+      outline: none;
     }
 
-    input[type="range"]::-webkit-slider-thumb {
+    .tips {
+      font-size: 14px;
+      color: #40f2b2;
+    }
+
+    input[type=range] {
       -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none; /*//这三个是去掉滑块原有的默认样式，划重点！！*/
-      -webkit-box-shadow:0 0 2px ; /*设置滑块的阴影*/
-      width: 2.6rem;
-      height:1.6rem;
-      background: url("images/js2-d_03.png");
-      background-size: cover;
+      background: #ed803c;
+      background-size: 75% 100%;
+      height: 3px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 15px;
+      width: 15px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.5);
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class='operation-panel'>
+    <a class='icon' alt='github' href='https://github.com/imtaotao/barrage'></a>
+    <div class='item tips'>
+      点击弹幕会消失
+    </div>
+
     <div class='item'>
       <span>透明度: </span>
-      <input type='range' class='input-range' min='0' max='1' value='1' id='opacity'>
+      <input type='range' class='input-range' min='0' max='100' value='100' id='opacity'>
     </div>
     <div class='item'>
       <span>height: </span>
@@ -153,6 +182,15 @@
     <div class='item'>
       <span>rowGap: </span>
       <input type='text' class='input' placeholder='同轨道弹幕间距' id='rowGap'>
+    </div>
+
+    <div class='item'>
+      <span>显示区域: </span>
+      <div class='btns'>
+        <div class='button small-button select' id='allArea'>全</div>
+        <div class='button small-button margin' id='topArea'>上</div>
+        <div class='button small-button margin' id='bottomArea'>下</div>
+      </div>
     </div>
 
     <div class='item'>
@@ -198,12 +236,12 @@
     </div>
 
     <div class='item'>
-      <span>实时渲染弹幕数量: </span>
+      <span>视图渲染弹幕数量: </span>
       <div class='button margin' id='showNumber'>0</div>
     </div>
 
     <div class='item'>
-      <span>总弹幕数量: </span>
+      <span>现有总弹幕数量: </span>
       <div class='button margin' id='allNumber'>0</div>
     </div>
   </div>
@@ -230,7 +268,7 @@
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [5, 10], // 弹幕动画的时间取值范围
-      limit: 50, // 能够渲染的最大数量
+      limit: 100, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
         // 弹幕创建时
@@ -258,9 +296,13 @@
           }
         },
 
+        // 弹幕开始移动时
+        barrageMove (node, barrage) {
+          node.style.opacity = opacity.value / 100
+        },
+
         // 弹幕销毁时
         barrageRemove (node) {
-          console.log('remove')
         },
 
         barrageDestroy (node) {
@@ -312,8 +354,9 @@
     // 模拟从服务器得到的数据，不停的发送
     setInterval(() => {
       b.send(testData)
-    }, 1000)
+    }, 500)
   </script>
+
   <script>
     // 定义初始值
     height.value = b.opts.height
@@ -407,6 +450,49 @@
 
     clear.onclick = e => {
       b.clear()
+    }
+
+    // 透明度
+    input(opacity, val => {
+      val /= 100
+      b.each(barrage => {
+        barrage.node.style.opacity = val
+      })
+    })
+
+    // 显示区域
+    const toggle = node => {
+      [allArea, topArea, bottomArea].forEach(v => {
+        if (v === node) {
+          v.classList.add('select')
+        } else {
+          v.classList.remove('select')
+        }
+      })
+    }
+
+    // 全部半部分区域
+    allArea.onclick = e => {
+      b.container.style.height = '100vh'
+      b.container.style.transform = 'translateY(0)'
+      b.resize()
+      toggle(allArea)
+    }
+
+    // 上半部分区域
+    topArea.onclick = e => {
+      b.container.style.height = '50vh'
+      b.container.style.transform = 'translateY(0)'
+      b.resize()
+      toggle(topArea)
+    }
+
+    // 下半部分区域
+    bottomArea.onclick = e => {
+      b.container.style.height = '50vh'
+      b.container.style.transform = 'translateY(100%)'
+      b.resize()
+      toggle(bottomArea)
     }
   </script>
 </body>

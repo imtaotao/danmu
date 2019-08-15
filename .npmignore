@@ -7,4 +7,5 @@ build.js
 
 src/
 demo/
+static/
 index.html

@@ -1,4 +1,5 @@
 import {
+  callHook,
   toNumber,
   upperCase,
   nextFrame,
@@ -7,7 +8,7 @@ import {
 } from './utils'
 
 export default class RuntimeManager {
-  constructor ({container, rowGap = 0, height = 60}) {
+  constructor ({container, rowGap, height}) {
     const styles = getComputedStyle(container)
 
     if (!styles.position || styles.position === 'static') {
@@ -49,18 +50,17 @@ export default class RuntimeManager {
     const container = []
 
     for (let i = 0; i < this.rows; i++) {
+      const start = this.singleHeight * i
+      const end = this.singleHeight * (i + 1) - 1
+      const gaps = [start, end]
+
       // 把原先的移进来
       if (this.container[i]) {
+        this.container[i].gaps = gaps
         container.push(this.container[i])
       } else {
         // 新的轨道
-        const start = this.singleHeight * i
-        const end = this.singleHeight * (i + 1) - 1
-
-        container.push({
-          values: [],
-          gaps: [start, end],
-        })
+        container.push({ gaps, values: [] })
       }
     }
 
@@ -123,6 +123,10 @@ export default class RuntimeManager {
 
           barrage.moveing = true
           barrage.timeInfo.startTime = Date.now()
+          
+          if (barrage.hooks) {
+            callHook(barrage.hooks, 'barrageMove', [node, barrage])
+          }
 
           resolve(whenTransitionEnds(node))
         }

@@ -115,16 +115,25 @@ export default class BarrageManager {
   setOptions (opts) {
     if (opts) {
       this.opts = Object.assign(this.opts, opts)
+
+      // 清除定时器，重新根据新的时间开始
       if ('interval' in opts) {
         this.stop(true)
         this.start(true)
       }
-      callHook(this.opts.hooks, 'setOptions', [this])
+
+      // 如果有高度，要重新计算轨道
+      if ('height' in opts) {
+        this.RuntimeManager.singleHeight = opts.height
+        this.RuntimeManager.resize()
+      }
+
+      callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
     return this
   }
 
-  // API 重新初始化 container
+  // API 重新计算轨道
   resize () {
     this.RuntimeManager.resize()
     callHook(this.opts.hooks, 'resize', [this])
@@ -151,7 +160,10 @@ export default class BarrageManager {
 
       // 一次弹出的弹幕最多只能把所有的轨道塞满
       // 如果大于轨道树就需要优化，避免不必要的计（实测，内存占用好像区别不大...）
-      if (length > this.RuntimeManager.rows) {
+      // 但是如果我们发现 rowGap <= 0，就是没有限制，那么弹幕会实时出现
+      // 所有的轨道都会不停出现弹幕，就要去掉这个优化
+      // 但此时如果不小心就会导致内存飙升，这个种场景适合弹幕立即发送，立即出现的场景
+      if (length > this.RuntimeManager.rows && this.RuntimeManager.rowGap > 0) {
         length = this.RuntimeManager.rows
       }
 
@@ -160,14 +172,14 @@ export default class BarrageManager {
       }
 
       if (length > 0 && this.runing) {
-        callHook(this.opts.hooks, 'render', [this])
-
         for (let i = 0; i < length; i++) {
           const data = this.stashBarrages.shift()
           if (data) {
             this.initSingleBarrage(data)
           }
         }
+
+        callHook(this.opts.hooks, 'render', [this])
       }
     }
   }
@@ -190,6 +202,7 @@ export default class BarrageManager {
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         // 弹幕运动结束后删掉
         newBarrage.destroy(true)
+        callHook(this.opts.hooks, 'render', [this])
 
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this])
@@ -204,7 +217,9 @@ export default class BarrageManager {
 
   createSingleBarrage (data) {
     const [max, min] = this.opts.times
-    const time = (Math.random() * (max - min) + min).toFixed(0)
+    const time = max === min
+      ? max
+      : (Math.random() * (max - min) + min).toFixed(0)
 
     return new Barrage(
       data,

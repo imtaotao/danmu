@@ -196,7 +196,7 @@ class Barrage {
 }
 
 class RuntimeManager {
-  constructor ({container, rowGap = 0, height = 60}) {
+  constructor ({container, rowGap, height}) {
     const styles = getComputedStyle(container);
     if (!styles.position || styles.position === 'static') {
       container.style.position = 'relative';
@@ -227,15 +227,14 @@ class RuntimeManager {
     this.rows = parseInt(this.containerHeight / this.singleHeight);
     const container = [];
     for (let i = 0; i < this.rows; i++) {
+      const start = this.singleHeight * i;
+      const end = this.singleHeight * (i + 1) - 1;
+      const gaps = [start, end];
       if (this.container[i]) {
+        this.container[i].gaps = gaps;
         container.push(this.container[i]);
       } else {
-        const start = this.singleHeight * i;
-        const end = this.singleHeight * (i + 1) - 1;
-        container.push({
-          values: [],
-          gaps: [start, end],
-        });
+        container.push({ gaps, values: [] });
       }
     }
     this.container = container;
@@ -281,6 +280,9 @@ class RuntimeManager {
           node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`;
           barrage.moveing = true;
           barrage.timeInfo.startTime = Date.now();
+          if (barrage.hooks) {
+            callHook(barrage.hooks, 'barrageMove', [node, barrage]);
+          }
           resolve(whenTransitionEnds(node));
         };
         if (!barrage.width) {
@@ -386,7 +388,11 @@ class BarrageManager {
         this.stop(true);
         this.start(true);
       }
-      callHook(this.opts.hooks, 'setOptions', [this]);
+      if ('height' in opts) {
+        this.RuntimeManager.singleHeight = opts.height;
+        this.RuntimeManager.resize();
+      }
+      callHook(this.opts.hooks, 'setOptions', [this, opts]);
     }
     return this
   }
@@ -407,20 +413,20 @@ class BarrageManager {
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
       let length = this.opts.limit - this.showBarrages.length;
-      if (length > this.RuntimeManager.rows) {
+      if (length > this.RuntimeManager.rows && this.RuntimeManager.rowGap > 0) {
         length = this.RuntimeManager.rows;
       }
       if (length > this.stashBarrages.length) {
         length = this.stashBarrages.length;
       }
       if (length > 0 && this.runing) {
-        callHook(this.opts.hooks, 'render', [this]);
         for (let i = 0; i < length; i++) {
           const data = this.stashBarrages.shift();
           if (data) {
             this.initSingleBarrage(data);
           }
         }
+        callHook(this.opts.hooks, 'render', [this]);
       }
     }
   }
@@ -435,6 +441,7 @@ class BarrageManager {
       newBarrage.trajectory = trajectory;
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         newBarrage.destroy(true);
+        callHook(this.opts.hooks, 'render', [this]);
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this]);
         }
@@ -445,7 +452,9 @@ class BarrageManager {
   }
   createSingleBarrage (data) {
     const [max, min] = this.opts.times;
-    const time = (Math.random() * (max - min) + min).toFixed(0);
+    const time = max === min
+      ? max
+      : (Math.random() * (max - min) + min).toFixed(0);
     return new Barrage(
       data,
       time,
