@@ -9,6 +9,7 @@ export default class BarrageManager {
     this.loopTimer = null
     this.showBarrages = [] // 渲染在页面上的弹幕数量
     this.stashBarrages = []// 暂存的弹幕数量
+    this.container = opts.container
     this.RuntimeManager = new RuntimeManager(opts)
   }
 
@@ -24,6 +25,10 @@ export default class BarrageManager {
     return this.stashBarrages.length
   }
 
+  get runing () {
+    return this.loopTimer !== null
+  }
+
   // API 发送弹幕
   send (data) {
     if (!Array.isArray(data)) {
@@ -36,7 +41,7 @@ export default class BarrageManager {
     }
 
     this.stashBarrages.push.apply(this.stashBarrages, data)
-    callHook(this.opts.hooks, 'send', data)
+    callHook(this.opts.hooks, 'send', [this, data])
     return true
   }
 
@@ -129,10 +134,14 @@ export default class BarrageManager {
   // API 清空缓存，立即终止
   clear () {
     this.stop(true)
-    this.each(barrage => barrage.remove())
     this.showBarrages = []
     this.stashBarrages = []
     this.RuntimeManager.container = []
+
+    this.each(barrage => {
+      barrage.remove()
+      barrage.moveing = false
+    })
 
     callHook(this.opts.hooks, 'clear', [this])
   }
@@ -181,6 +190,10 @@ export default class BarrageManager {
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         // 弹幕运动结束后删掉
         newBarrage.destroy(true)
+
+        if (this.length === 0) {
+          callHook(this.opts.hooks, 'ended', [this])
+        }
       })
     } else {
       // 否则就先存起来，按道理说只会存一个

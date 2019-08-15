@@ -96,15 +96,17 @@ class Barrage {
   }
   getWidth () {
     return new Promise(resolve => {
-      let i = 0;
+      if (this.width != null) {
+        return resolve(this.width)
+      }
       const fn = () => {
-        warning(++i < 999, 'Unable to get the barr width.');
         setTimeout(() => {
           let width = getComputedStyle(this.node).width;
           if (width == null || width === '') {
             fn();
           } else {
             width = toNumber(width);
+            this.width = width;
             resolve(width);
           }
         });
@@ -298,6 +300,7 @@ class BarrageManager {
     this.loopTimer = null;
     this.showBarrages = [];
     this.stashBarrages = [];
+    this.container = opts.container;
     this.RuntimeManager = new RuntimeManager(opts);
   }
   get length () {
@@ -309,6 +312,9 @@ class BarrageManager {
   get stashLength () {
     return this.stashBarrages.length
   }
+  get runing () {
+    return this.loopTimer !== null
+  }
   send (data) {
     if (!Array.isArray(data)) {
       data = [data];
@@ -318,7 +324,7 @@ class BarrageManager {
       return false
     }
     this.stashBarrages.push.apply(this.stashBarrages, data);
-    callHook(this.opts.hooks, 'send', data);
+    callHook(this.opts.hooks, 'send', [this, data]);
     return true
   }
   show () {
@@ -391,10 +397,13 @@ class BarrageManager {
   }
   clear () {
     this.stop(true);
-    this.each(barrage => barrage.remove());
     this.showBarrages = [];
     this.stashBarrages = [];
     this.RuntimeManager.container = [];
+    this.each(barrage => {
+      barrage.remove();
+      barrage.moveing = false;
+    });
     callHook(this.opts.hooks, 'clear', [this]);
   }
   renderBarrage () {
@@ -427,6 +436,9 @@ class BarrageManager {
       newBarrage.trajectory = trajectory;
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         newBarrage.destroy(true);
+        if (this.length === 0) {
+          callHook(this.opts.hooks, 'ended', [this]);
+        }
       });
     } else {
       this.stashBarrages.unshift(barrage);

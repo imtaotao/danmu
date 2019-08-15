@@ -10,7 +10,7 @@
       height: 100vh;
       margin: 0;
       padding: 0;
-       background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.7);
       overflow: hidden;
     }
 
@@ -54,8 +54,8 @@
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [5, 10], // 弹幕动画的时间取值范围
-      limit: 150, // 能够渲染的最大数量
-      interval: 1000,
+      limit: 20, // 能够渲染的最大数量
+      interval: 2000,
       hooks: {
         // 弹幕创建时
         barrageCreate (node, barrage) {
