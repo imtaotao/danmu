@@ -62,7 +62,6 @@ class Barrage {
   constructor (itemData, time, manager, hooks) {
     const RuntimeManager = manager.RuntimeManager;
     const { direction, container } = manager.opts;
-    this._width = null;
     this.hooks = hooks;
     this.paused = false;
     this.moveing = false;
@@ -87,7 +86,7 @@ class Barrage {
   }
   getMoveDistance () {
     if (!this.moveing) return 0
-    const extendDis = this.width || 0;
+    const extendDis = this.getWidth();
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
     const currentTime = this.paused ? prevPauseTime : Date.now();
     const containerWidth = this.RuntimeManager.containerWidth + extendDis;
@@ -95,24 +94,7 @@ class Barrage {
     return percent * containerWidth
   }
   getWidth () {
-    return new Promise(resolve => {
-      if (this.width != null) {
-        return resolve(this.width)
-      }
-      const fn = () => {
-        setTimeout(() => {
-          let width = getComputedStyle(this.node).width;
-          if (width == null || width === '') {
-            fn();
-          } else {
-            width = toNumber(width);
-            this.width = width;
-            resolve(width);
-          }
-        });
-      };
-      fn();
-    })
+    return this.node.clientWidth || 0
   }
   create () {
     const node = document.createElement('div');
@@ -124,10 +106,7 @@ class Barrage {
     warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.appendChild(this.node);
-      this.getWidth().then(width => {
-        this.width = width;
-        callHook(this.hooks, 'barrageAppend', [this.node, this]);
-      });
+      callHook(this.hooks, 'barrageAppend', [this.node, this]);
     }
   }
   remove () {
@@ -173,7 +152,7 @@ class Barrage {
       this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime;
       this.timeInfo.prevPauseTime = null;
       const des = this.direction === 'left' ? 1 : -1;
-      const containerWidth = this.RuntimeManager.containerWidth + this.width;
+      const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
       this.node.style[transitionDuration] = `${remainingTime}s`;
       this.node.style.transform = `translateX(${containerWidth * des}px)`;
@@ -267,27 +246,21 @@ class RuntimeManager {
     node.style.top = `${barrage.position.y}px`;
     return new Promise(resolve => {
       nextFrame(() => {
-        const fn = w => {
-          const des = barrage.direction === 'left' ? 1 : -1;
-          const containerWidth = this.containerWidth + w;
-          node.style.opacity = 1;
-          node.style.pointerEvents = isShow ? 'auto' : 'none';
-          node.style.visibility = isShow ? 'visible' : 'hidden';
-          node.style.transform = `translateX(${des * (containerWidth)}px)`;
-          node.style[transitionProp] = `transform linear ${barrage.duration}s`;
-          node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`;
-          barrage.moveing = true;
-          barrage.timeInfo.startTime = Date.now();
-          if (barrage.hooks) {
-            callHook(barrage.hooks, 'barrageMove', [node, barrage]);
-          }
-          resolve(whenTransitionEnds(node));
-        };
-        if (!barrage.width) {
-          barrage.getWidth().then(fn);
-        } else {
-          fn(barrage.width);
+        const width = barrage.getWidth();
+        const des = barrage.direction === 'left' ? 1 : -1;
+        const containerWidth = this.containerWidth + width;
+        node.style.opacity = 1;
+        node.style.pointerEvents = isShow ? 'auto' : 'none';
+        node.style.visibility = isShow ? 'visible' : 'hidden';
+        node.style.transform = `translateX(${des * (containerWidth)}px)`;
+        node.style[transitionProp] = `transform linear ${barrage.duration}s`;
+        node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`;
+        barrage.moveing = true;
+        barrage.timeInfo.startTime = Date.now();
+        if (barrage.hooks) {
+          callHook(barrage.hooks, 'barrageMove', [node, barrage]);
         }
+        resolve(whenTransitionEnds(node));
       });
     })
   }

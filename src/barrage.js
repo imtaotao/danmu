@@ -11,7 +11,6 @@ export default class Barrage {
     const RuntimeManager = manager.RuntimeManager
     const { direction, container } = manager.opts
 
-    this._width = null
     this.hooks = hooks
     this.paused = false
     this.moveing = false
@@ -39,7 +38,7 @@ export default class Barrage {
   // 得到当前移动了多少距离
   getMoveDistance () {
     if (!this.moveing) return 0
-    const extendDis = this.width || 0
+    const extendDis = this.getWidth()
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo
 
     const currentTime = this.paused ? prevPauseTime : Date.now()
@@ -50,25 +49,7 @@ export default class Barrage {
   }
 
   getWidth () {
-    return new Promise(resolve => {
-      if (this.width != null) {
-        return resolve(this.width)
-      }
-
-      const fn = () => {
-        setTimeout(() => {
-          let width = getComputedStyle(this.node).width
-          if (width == null || width === '') {
-            fn()
-          } else {
-            width = toNumber(width)
-            this.width = width
-            resolve(width)
-          }
-        })
-      }
-      fn()
-    })
+    return this.node.clientWidth || 0
   }
 
   create () {
@@ -82,11 +63,7 @@ export default class Barrage {
     warning(this.container, 'Need container element.')
     if (this.node) {
       this.container.appendChild(this.node)
-      // 添加宽度
-      this.getWidth().then(width => {
-        this.width = width
-        callHook(this.hooks, 'barrageAppend', [this.node, this])
-      })
+      callHook(this.hooks, 'barrageAppend', [this.node, this])
     }
   }
   
@@ -151,7 +128,7 @@ export default class Barrage {
       this.timeInfo.prevPauseTime = null
       
       const des = this.direction === 'left' ? 1 : -1
-      const containerWidth = this.RuntimeManager.containerWidth + this.width
+      const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration
 
       this.node.style[transitionDuration] = `${remainingTime}s`

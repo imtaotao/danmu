@@ -110,33 +110,25 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       nextFrame(() => {
-        const fn = w => {
-          const des = barrage.direction === 'left' ? 1 : -1
-          const containerWidth = this.containerWidth + w
+        const width = barrage.getWidth()
+        const des = barrage.direction === 'left' ? 1 : -1
+        const containerWidth = this.containerWidth + width
 
-          node.style.opacity = 1
-          node.style.pointerEvents = isShow ? 'auto' : 'none'
-          node.style.visibility = isShow ? 'visible' : 'hidden'
-          node.style.transform = `translateX(${des * (containerWidth)}px)`
-          node.style[transitionProp] = `transform linear ${barrage.duration}s`
-          node.style[`margin${upperCase(barrage.direction)}`] = `-${barrage.width}px`
+        node.style.opacity = 1
+        node.style.pointerEvents = isShow ? 'auto' : 'none'
+        node.style.visibility = isShow ? 'visible' : 'hidden'
+        node.style.transform = `translateX(${des * (containerWidth)}px)`
+        node.style[transitionProp] = `transform linear ${barrage.duration}s`
+        node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`
 
-          barrage.moveing = true
-          barrage.timeInfo.startTime = Date.now()
-          
-          if (barrage.hooks) {
-            callHook(barrage.hooks, 'barrageMove', [node, barrage])
-          }
-
-          resolve(whenTransitionEnds(node))
+        barrage.moveing = true
+        barrage.timeInfo.startTime = Date.now()
+        
+        if (barrage.hooks) {
+          callHook(barrage.hooks, 'barrageMove', [node, barrage])
         }
 
-        // 得到高度
-        if (!barrage.width) {
-          barrage.getWidth().then(fn)
-        } else {
-          fn(barrage.width)
-        }
+        resolve(whenTransitionEnds(node))
       })
     })
   }
