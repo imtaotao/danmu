@@ -6,10 +6,13 @@
   <title>dev</title>
   <style>
     body {
-      width: 100%;
-      height: 100vh;
       margin: 0;
       padding: 0;
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
       background: rgba(0,0,0,0.7);
       overflow: hidden;
     }
@@ -31,12 +34,185 @@
       color: #3ab2e9;
       background: rgba(0,0,0,0.4);
     }
+
+    .operation-panel {
+      position: fixed;
+      width: 270px;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-x: hidden;
+      padding: 20px;
+      z-index: 999;
+      border-radius: 0 10px 10px 0;
+      box-sizing: border-box;
+      background: rgba(0,0,0,0.7);
+    }
+
+    .btns {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 20px;
+    }
+
+    .button {
+      width: 50px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .button.select {
+      background: #5aa9a2;
+    }
+
+    .input {
+      width: 120px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 20px;
+      outline: none;
+      padding: 0 10px;
+      font-size: 16px;
+      color: #e14eba;
+      margin-left: 10px;
+    }
+
+    .small-input {
+      width: 40px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 20px;
+      padding: 0 10px;
+      outline: none;
+      font-size: 16px;
+      color: #e14eba;
+    }
+
+    .margin {
+      margin-left: 20px;
+    }
+
+    .item {
+      width: 100%;
+      text-align: left;
+      color: #fff;
+      font-size: 16px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .input-range {
+      width: 120px;
+      margin-left: 20px;
+      outline: none; /*去掉点击时出现的外边框*/
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none; /*这三个是去掉那条线原有的默认样式，划重点！！*/
+      width: 30%;
+      height: 0.3rem;
+      background: orange;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none; /*//这三个是去掉滑块原有的默认样式，划重点！！*/
+      -webkit-box-shadow:0 0 2px ; /*设置滑块的阴影*/
+      width: 2.6rem;
+      height:1.6rem;
+      background: url("images/js2-d_03.png");
+      background-size: cover;
+    }
   </style>
 </head>
 <body>
+  <div class='operation-panel'>
+    <div class='item'>
+      <span>透明度: </span>
+      <input type='range' class='input-range' min='0' max='1' value='1' id='opacity'>
+    </div>
+    <div class='item'>
+      <span>height: </span>
+      <input type='text' class='input' placeholder='轨道的高度' id='height'>
+    </div>
+
+    <div class='item'>
+      <span>limit: </span>
+      <input type='text' class='input' placeholder='最大渲染弹幕数' id='limit'>
+    </div>
+
+    <div class='item'>
+      <span>rowGap: </span>
+      <input type='text' class='input' placeholder='同轨道弹幕间距' id='rowGap'>
+    </div>
+
+    <div class='item'>
+      <span>显示/隐藏: </span>
+      <div class='btns'>
+        <div class='button select' id='show'>显示</div>
+        <div class='button margin' id='hidden'>隐藏</div>
+      </div>
+    </div>
+
+    <div class='item'>
+      <span>direction: </span>
+      <div class='btns'>
+        <div class='button select' id='left'>left</div>
+        <div class='button margin' id='right'>right</div>
+      </div>
+    </div>
+
+    <div class='item'>
+      <span>启动: </span>
+      <div class='btns'>
+        <div class='button' id='start'>start</div>
+        <div class='button margin' id='stopBtn'>stop</div>
+      </div>
+    </div>
+
+    <div class='item'>
+      <span>times: </span>
+      <div class='btns'>
+        <input class='small-input' placeholder='min' id='minTime'>
+        <input class='small-input margin' placeholder='max' id='maxTime'>
+      </div>
+    </div>
+
+    <div class='item'>
+      <div class='button' id='send'>发送</div>
+      <input class='input' type='text' placeholder='发送弹幕' id='barrageText'>
+    </div>
+
+    <div class='item'>
+      <span>clear: </span>
+      <div class='button margin' id='clear'>清空</div>
+    </div>
+
+    <div class='item'>
+      <span>实时渲染弹幕数量: </span>
+      <div class='button margin' id='showNumber'>0</div>
+    </div>
+
+    <div class='item'>
+      <span>总弹幕数量: </span>
+      <div class='button margin' id='allNumber'>0</div>
+    </div>
+  </div>
+  <div id='container'></div>
+
   <script src="./dist/barrage.min.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/gh/imtaotao/barrage/dist/barrage.min.js"></script> -->
   <script>
+    let currentBarrage = null
+
     const testData = [
       '陈涛',
       'chentao',
@@ -49,18 +225,22 @@
 
     // 测试代码
     const b = Barrage({
-      container: document.body,
+      container: document.getElementById('container'),
       height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [5, 10], // 弹幕动画的时间取值范围
-      limit: 20, // 能够渲染的最大数量
-      interval: 2000,
+      limit: 50, // 能够渲染的最大数量
+      interval: 1000,
       hooks: {
         // 弹幕创建时
         barrageCreate (node, barrage) {
+          if (barrage.data === currentBarrage) {
+            node.style.border = '3px solid #fff'
+          }
           node.textContent = barrage.data
           node.classList.add('barrage')
+          currentBarrage = null
         },
 
         // 弹幕渲染到页面上时
@@ -80,6 +260,7 @@
 
         // 弹幕销毁时
         barrageRemove (node) {
+          console.log('remove')
         },
 
         barrageDestroy (node) {
@@ -90,20 +271,38 @@
           console.log('end')
         },
 
+        render () {
+          allNumber.textContent = b.length
+          showNumber.textContent = b.showLength
+        },
+
         start () {
-          console.log('start')
+          start.classList.add('select')
+          stopBtn.classList.remove('select')
         },
 
         stop () {
-          console.log('stop')
+          start.classList.remove('select')
+          stopBtn.classList.add('select')
         },
 
         clear () {
-          console.log('clear')
+          allNumber.textContent = b.length
+          showNumber.textContent = b.showLength
         },
 
         setOptions () {
-          console.log('set')
+          console.log('setOptions')
+        },
+
+        show () {
+          show.classList.add('select')
+          hidden.classList.remove('select')
+        },
+
+        hidden () {
+          show.classList.remove('select')
+          hidden.classList.add('select')
         }
       }
     })
@@ -114,6 +313,101 @@
     setInterval(() => {
       b.send(testData)
     }, 1000)
+  </script>
+  <script>
+    // 定义初始值
+    height.value = b.opts.height
+    limit.value = b.opts.limit
+    rowGap.value = b.opts.rowGap
+    minTime.value = b.opts.times[0]
+    maxTime.value = b.opts.times[1]
+
+    const setDirection = direction => {
+      if (direction === 'left') {
+        left.classList.add('select')
+        right.classList.remove('select')
+      } else {
+        left.classList.remove('select')
+        right.classList.add('select')
+      }
+    }
+    setDirection(b.opts.direction)
+
+    const input = (node, cb) => {
+      node.oninput = e => {
+        const val = Number(e.currentTarget.value)
+        if (typeof val === 'number' && !isNaN(val)) {
+          cb(val)
+        }
+      }
+    }
+    
+    // 轨道高度
+    input(height, val => {
+      b.setOptions({ height: val })
+    })
+
+    // limit
+    input(limit, val => {
+      b.setOptions({ limit: val })
+    })
+
+    // rowgap
+    input(rowGap, val => {
+      b.setOptions({ rowGap: val })
+    })
+
+    // 隐藏显示
+    show.onclick = e => {
+      b.show()
+    }
+
+    hidden.onclick = e => {
+      b.hidden()
+    }
+
+    // direction
+    left.onclick = e => {
+      setDirection('left')
+      b.setOptions({ direction: 'left' })
+    }
+
+    right.onclick = e => {
+      setDirection('right')
+      b.setOptions({ direction: 'right' })
+    }
+
+    // 启动
+    start.onclick = e => {
+      b.start()
+    }
+
+    stopBtn.onclick = e => {
+      b.stop()
+    }
+
+    // times
+    input(minTime, min => {
+      const max = b.opts.times[1]
+      this.setOptions({ times: [min, max]})
+    })
+
+    input(maxTime, max => {
+      const min = b.opts.times[0]
+      this.setOptions({ times: [min, max]})
+    })
+
+    // 发送弹幕
+    send.onclick = e => {
+      const val = barrageText.value
+      currentBarrage = val
+      b.send(val)
+      barrageText.value = ''
+    }
+
+    clear.onclick = e => {
+      b.clear()
+    }
   </script>
 </body>
 </html>

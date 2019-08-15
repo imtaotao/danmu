@@ -296,10 +296,10 @@ class RuntimeManager {
 class BarrageManager {
   constructor (opts) {
     this.opts = opts;
-    this.isShow = true;
     this.loopTimer = null;
     this.showBarrages = [];
     this.stashBarrages = [];
+    this.isShow = opts.isShow;
     this.container = opts.container;
     this.RuntimeManager = new RuntimeManager(opts);
   }
@@ -396,14 +396,12 @@ class BarrageManager {
     return this
   }
   clear () {
-    this.stop(true);
+    this.stop();
+    this.each(barrage => barrage.remove());
     this.showBarrages = [];
     this.stashBarrages = [];
     this.RuntimeManager.container = [];
-    this.each(barrage => {
-      barrage.remove();
-      barrage.moveing = false;
-    });
+    this.RuntimeManager.resize();
     callHook(this.opts.hooks, 'clear', [this]);
   }
   renderBarrage () {
@@ -415,7 +413,8 @@ class BarrageManager {
       if (length > this.stashBarrages.length) {
         length = this.stashBarrages.length;
       }
-      if (length > 0) {
+      if (length > 0 && this.runing) {
+        callHook(this.opts.hooks, 'render', [this]);
         for (let i = 0; i < length; i++) {
           const data = this.stashBarrages.shift();
           if (data) {
@@ -483,6 +482,7 @@ function createBarrage (opts = {}) {
     limit: 50,
     height: 50,
     rowGap: 50,
+    isShow: true,
     capcity: 1024,
     times: [8, 15],
     interval: 2000,
