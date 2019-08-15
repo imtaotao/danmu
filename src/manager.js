@@ -201,8 +201,7 @@ export default class BarrageManager {
 
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         // 弹幕运动结束后删掉
-        newBarrage.destroy(true)
-        callHook(this.opts.hooks, 'render', [this])
+        newBarrage.destroy()
 
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this])

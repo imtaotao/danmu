@@ -99,7 +99,7 @@ export default class Barrage {
   }
 
   // API 销毁当前节点
-  destroy (noCallHook) {
+  destroy () {
     this.remove()
     this.moveing = false
 
@@ -119,9 +119,7 @@ export default class Barrage {
       if (~index) showBarrages.splice(index, 1)
     }
 
-    if (!noCallHook) {
-      callHook(this.hooks, 'barrageDestroy', [this.node, this])
-    }
+    callHook(this.hooks, 'barrageDestroy', [this.node, this])
   }
 
   // API 暂停当前动画

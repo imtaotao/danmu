@@ -176,7 +176,7 @@
 </head>
 <body>
   <div class='top-tips'>
-    如果需要实时响应发送的弹幕，可以设置 limit 为 Infinity, rowGap 为 0。但需要特别小心弹幕的存储容量和渲染数量过多，导致的内存飙升
+    如果需要实时响应发送的弹幕，可以设置 limit 为 Infinity, rowGap 为 -1。但需要特别小心弹幕的存储容量和渲染数量过多，导致的内存飙升
   </div>
 
   <div class='operation-panel'>
@@ -286,7 +286,7 @@
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [5, 10], // 弹幕动画的时间取值范围
-      limit: 100, // 能够渲染的最大数量
+      limit: 50, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
         // 弹幕创建时
@@ -322,12 +322,13 @@
           node.style.opacity = opacity.value / 100
         },
 
-        // 弹幕销毁时
+        // 弹幕节点移除视图时
         barrageRemove (node) {
         },
 
         barrageDestroy (node) {
-          console.log(node)
+          allNumber.textContent = b.length
+          showNumber.textContent = b.showLength
         },
 
         ended () {
@@ -375,6 +376,7 @@
     // 模拟从服务器得到的数据，不停的发送
     setInterval(() => {
       b.send(testData)
+      allNumber.textContent = b.length
     }, 1000)
   </script>
 

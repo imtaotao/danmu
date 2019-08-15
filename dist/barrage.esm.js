@@ -137,7 +137,7 @@ class Barrage {
       callHook(this.hooks, 'barrageRemove', [this.node, this]);
     }
   }
-  destroy (noCallHook) {
+  destroy () {
     this.remove();
     this.moveing = false;
     let index = -1;
@@ -151,9 +151,7 @@ class Barrage {
       index = showBarrages.indexOf(this);
       if (~index) showBarrages.splice(index, 1);
     }
-    if (!noCallHook) {
-      callHook(this.hooks, 'barrageDestroy', [this.node, this]);
-    }
+    callHook(this.hooks, 'barrageDestroy', [this.node, this]);
   }
   pause () {
     if (this.moveing && !this.paused) {
@@ -440,8 +438,7 @@ class BarrageManager {
       trajectory.values.push(newBarrage);
       newBarrage.trajectory = trajectory;
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
-        newBarrage.destroy(true);
-        callHook(this.opts.hooks, 'render', [this]);
+        newBarrage.destroy();
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this]);
         }
