@@ -15,9 +15,9 @@
     }
 
     .barrage {
-      height: 56px;
-      line-height: 56px;
-      font-size: 20px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 15px;
       border-radius: 28px;
       background: rgba(0,0,0,0.5);
       text-align: center;
@@ -28,7 +28,6 @@
     }
 
     .active {
-      font-size: 22px;
       color: #3ab2e9;
       z-index: 1;
     }
@@ -51,11 +50,12 @@
     // 测试代码
     const b = Barrage({
       container: document.body,
-      height: 60, // 轨道高度
+      height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
-      times: [2, 10], // 弹幕动画的时间取值范围
-      limit: 150, // 能够渲染的最大数量
+      times: [10, 20], // 弹幕动画的时间取值范围
+      limit: 400, // 能够渲染的最大数量
+      interval: 1000,
       hooks: {
         // 弹幕创建时
         create (node, barrage) {
@@ -77,6 +77,26 @@
 
         // 弹幕销毁时
         remove (node) {
+        },
+
+        ended () {
+          console.log('end')
+        },
+
+        start () {
+          console.log('start')
+        },
+
+        stop () {
+          console.log('stop')
+        },
+
+        clear () {
+          console.log('clear')
+        },
+
+        setOptions () {
+          console.log('set')
         }
       }
     })
@@ -84,6 +104,7 @@
     b.start()
 
     setInterval(() => {
+      console.log(b.showLength)
       b.send(testData)
     }, 300)
   </script>

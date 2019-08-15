@@ -16,6 +16,14 @@ export default class BarrageManager {
     return this.showBarrages.length + this.stashBarrages.length
   }
 
+  get showLength () {
+    return this.showBarrages.length
+  }
+
+  get stashLength () {
+    return this.stashBarrages.length
+  }
+
   // 发送弹幕
   send (data) {
     if (!Array.isArray(data)) {
@@ -26,7 +34,9 @@ export default class BarrageManager {
       console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
       return false
     }
+
     this.stashBarrages.push.apply(this.stashBarrages, data)
+    callHook(this.opts.hooks, 'send', data)
     return true
   }
 
@@ -62,24 +72,34 @@ export default class BarrageManager {
     return this
   }
 
-  stop () {
+  stop (noCallHook) {
     if (this.loopTimer) {
       clearTimeout(this.loopTimer)
       this.loopTimer = null
+
+      if (!noCallHook) {
+        callHook(this.opts.hooks, 'stop', [this])
+      }
     }
     return this
   }
 
   // 循环检测添加弹幕
-  start () {
+  start (noCallHook) {
     const core = () => {
       this.loopTimer = setTimeout(() => {
         this.renderBarrage()
         core()
       }, this.opts.interval)
     }
-    this.stop()
+
+    this.stop(true)
     core()
+
+    if (!noCallHook) {
+      callHook(this.opts.hooks, 'start', [this])
+    }
+  
     return this
   }
 
@@ -88,25 +108,35 @@ export default class BarrageManager {
     if (opts) {
       this.opts = Object.assign(this.opts, opts)
       if ('interval' in opts) {
-        this.stop()
-        this.start()
+        this.stop(true)
+        this.start(true)
       }
+      callHook(this.opts.hooks, 'setOptions', [this])
     }
     return this
   }
 
-  // 立即销毁当前实例
+  // 清空缓存，立即终止
   clear () {
-    this.stop()
+    this.stop(true)
     this.each(barrage => barrage.remove())
     this.showBarrages = []
     this.stashBarrages = []
+    this.RuntimeManager.container = []
+
+    callHook(this.opts.hooks, 'clear', [this])
   }
 
   // 初始化弹幕
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
       let length = this.opts.limit - this.showBarrages.length
+
+      // 一次弹出的弹幕最多只能把所有的轨道塞满
+      // 如果大于轨道树就需要优化，避免不必要的计（实测，内存占用好像区别不大...）
+      if (length > this.RuntimeManager.rows) {
+        length = this.RuntimeManager.rows
+      }
 
       if (length > this.stashBarrages.length) {
         length = this.stashBarrages.length
@@ -152,6 +182,11 @@ export default class BarrageManager {
           if (this.showBarrages.length > 0) {
             index = this.showBarrages.indexOf(newBarrage)
             if (~index) this.showBarrages.splice(index, 1)
+          }
+
+          // 如果没有弹幕了
+          if (this.length === 0) {
+            callHook(this.opts.hooks, 'ended')
           }
         })
     } else {

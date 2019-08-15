@@ -261,6 +261,12 @@ class BarrageManager {
   get length () {
     return this.showBarrages.length + this.stashBarrages.length
   }
+  get showLength () {
+    return this.showBarrages.length
+  }
+  get stashLength () {
+    return this.stashBarrages.length
+  }
   send (data) {
     if (!Array.isArray(data)) {
       data = [data];
@@ -270,6 +276,7 @@ class BarrageManager {
       return false
     }
     this.stashBarrages.push.apply(this.stashBarrages, data);
+    callHook(this.opts.hooks, 'send', data);
     return true
   }
   show () {
@@ -298,43 +305,55 @@ class BarrageManager {
     }
     return this
   }
-  stop () {
+  stop (noCallHook) {
     if (this.loopTimer) {
       clearTimeout(this.loopTimer);
       this.loopTimer = null;
+      if (!noCallHook) {
+        callHook(this.opts.hooks, 'stop', [this]);
+      }
     }
     return this
   }
-  start () {
+  start (noCallHook) {
     const core = () => {
       this.loopTimer = setTimeout(() => {
         this.renderBarrage();
         core();
       }, this.opts.interval);
     };
-    this.stop();
+    this.stop(true);
     core();
+    if (!noCallHook) {
+      callHook(this.opts.hooks, 'start', [this]);
+    }
     return this
   }
   setOptions (opts) {
     if (opts) {
       this.opts = Object.assign(this.opts, opts);
       if ('interval' in opts) {
-        this.stop();
-        this.start();
+        this.stop(true);
+        this.start(true);
       }
+      callHook(this.opts.hooks, 'setOptions', [this]);
     }
     return this
   }
   clear () {
-    this.stop();
+    this.stop(true);
     this.each(barrage => barrage.remove());
     this.showBarrages = [];
     this.stashBarrages = [];
+    this.RuntimeManager.container = [];
+    callHook(this.opts.hooks, 'clear', [this]);
   }
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
       let length = this.opts.limit - this.showBarrages.length;
+      if (length > this.RuntimeManager.rows) {
+        length = this.RuntimeManager.rows;
+      }
       if (length > this.stashBarrages.length) {
         length = this.stashBarrages.length;
       }
@@ -368,6 +387,9 @@ class BarrageManager {
           if (this.showBarrages.length > 0) {
             index = this.showBarrages.indexOf(newBarrage);
             if (~index) this.showBarrages.splice(index, 1);
+          }
+          if (this.length === 0) {
+            callHook(this.opts.hooks, 'ended');
           }
         });
     } else {
