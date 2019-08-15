@@ -16,6 +16,7 @@ export default class RuntimeManager {
 
     this.rowGap = rowGap
     this.singleHeight = height
+    this.containerElement = container
     this.containerWidth = toNumber(styles.width)
     this.containerHeight = toNumber(styles.height)
     this.init()
@@ -36,6 +37,34 @@ export default class RuntimeManager {
         gaps: [start, end],
       })
     }
+  }
+
+  resize () {
+    const styles = getComputedStyle(this.containerElement)
+
+    this.containerWidth = toNumber(styles.width)
+    this.containerHeight = toNumber(styles.height)
+    this.rows = parseInt(this.containerHeight / this.singleHeight)
+
+    const container = []
+
+    for (let i = 0; i < this.rows; i++) {
+      // 把原先的移进来
+      if (this.container[i]) {
+        container.push(this.container[i])
+      } else {
+        // 新的轨道
+        const start = this.singleHeight * i
+        const end = this.singleHeight * (i + 1) - 1
+
+        container.push({
+          values: [],
+          gaps: [start, end],
+        })
+      }
+    }
+
+    this.container = container
   }
 
   getTrajectory (alreadyFound = []) {

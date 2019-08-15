@@ -116,6 +116,12 @@ export default class BarrageManager {
     return this
   }
 
+  // 重新初始化 container
+  resize () {
+    this.RuntimeManager.resize()
+    return this
+  }
+
   // 清空缓存，立即终止
   clear () {
     this.stop(true)
