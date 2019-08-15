@@ -37,6 +37,22 @@
       background: rgba(0,0,0,0.4);
     }
 
+    .top-tips {
+      top: 5px;
+      width: 800px;
+      height: 30px;
+      z-index: 999;
+      font-size: 11px;
+      padding: 0 10px;
+      position: fixed;
+      color: #d6fadd;
+      line-height: 30px;
+      border-radius: 5px;
+      text-align: center;
+      left: calc(50% - 400px);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
     .operation-panel {
       position: fixed;
       width: 270px;
@@ -159,6 +175,10 @@
   </style>
 </head>
 <body>
+  <div class='top-tips'>
+    如果需要实时响应发送的弹幕，可以设置 limit 为 Infinity, rowGap 为 0。但需要特别小心弹幕的存储容量和渲染数量过多，导致的内存飙升
+  </div>
+
   <div class='operation-panel'>
     <a class='icon' alt='github' href='https://github.com/imtaotao/barrage'></a>
     <div class='item tips'>
@@ -247,10 +267,8 @@
   </div>
   <div id='container'></div>
 
-  <script src="./dist/barrage.min.js"></script>
+  <script src='./dist/barrage.min.js'></script>
   <script>
-    let currentBarrage = null
-
     const testData = [
       '陈涛',
       'chentao',
@@ -268,17 +286,20 @@
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [5, 10], // 弹幕动画的时间取值范围
-      limit: 100, // 能够渲染的最大数量
+      limit: 50, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
         // 弹幕创建时
         barrageCreate (node, barrage) {
-          if (barrage.data === currentBarrage) {
+          // 如果是我们自己发送的弹幕，给一个特殊标记
+          if (typeof barrage.data !== 'string') {
             node.style.border = '3px solid #fff'
+            node.textContent = barrage.data.content
+          } else {
+            node.textContent = barrage.data
           }
-          node.textContent = barrage.data
+
           node.classList.add('barrage')
-          currentBarrage = null
         },
 
         // 弹幕渲染到页面上时
@@ -442,9 +463,7 @@
 
     // 发送弹幕
     send.onclick = e => {
-      const val = barrageText.value
-      currentBarrage = val
-      b.send(val)
+      b.send({ content: barrageText.value })
       barrageText.value = ''
     }
 
