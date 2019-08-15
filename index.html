@@ -432,12 +432,12 @@
     // times
     input(minTime, min => {
       const max = b.opts.times[1]
-      this.setOptions({ times: [min, max]})
+      b.setOptions({ times: [min, max]})
     })
 
     input(maxTime, max => {
       const min = b.opts.times[0]
-      this.setOptions({ times: [min, max]})
+      b.setOptions({ times: [min, max]})
     })
 
     // 发送弹幕
