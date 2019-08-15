@@ -10,7 +10,7 @@
       height: 100vh;
       margin: 0;
       padding: 0;
-      background: #ddd;
+       background: rgba(0,0,0,0.7);
       overflow: hidden;
     }
 
@@ -19,7 +19,6 @@
       line-height: 30px;
       font-size: 15px;
       border-radius: 28px;
-      background: rgba(0,0,0,0.5);
       text-align: center;
       color: #fff;
       padding: 0 20px;
@@ -28,14 +27,15 @@
     }
 
     .active {
-      color: #3ab2e9;
       z-index: 1;
+      color: #3ab2e9;
+      background: rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
-  <script src="./dist/barrage.min.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/gh/imtaotao/barrage/dist/barrage.min.js"></script> -->
+  <!-- <script src="./dist/barrage.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/gh/imtaotao/barrage/dist/barrage.min.js"></script>
   <script>
     const testData = [
       '陈涛',
@@ -53,7 +53,7 @@
       height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
-      times: [10, 20], // 弹幕动画的时间取值范围
+      times: [5, 15], // 弹幕动画的时间取值范围
       limit: 400, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
@@ -103,9 +103,10 @@
     
     b.start()
 
+    // 模拟从服务器得到的数据，不停的发送
     setInterval(() => {
       b.send(testData)
-    }, 300)
+    }, 1000)
   </script>
 </body>
 </html>
