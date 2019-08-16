@@ -190,7 +190,7 @@
       <input type='range' class='input-range' min='0' max='100' value='100' id='opacity'>
     </div>
     <div class='item'>
-      <span>height: </span>
+      <span>弹道高度: </span>
       <input type='text' class='input' placeholder='轨道的高度' id='height'>
     </div>
 
@@ -227,7 +227,7 @@
     </div>
 
     <div class='item'>
-      <span>direction: </span>
+      <span>方向: </span>
       <div class='btns'>
         <div class='button select' id='left'>left</div>
         <div class='button margin' id='right'>right</div>
@@ -243,7 +243,7 @@
     </div>
 
     <div class='item'>
-      <span>times: </span>
+      <span>时间范围: </span>
       <div class='btns'>
         <input class='small-input' placeholder='min' id='minTime'>
         <input class='small-input margin' placeholder='max' id='maxTime'>
@@ -290,7 +290,7 @@
       height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
-      times: [3, 6], // 弹幕动画的时间取值范围
+      times: [7, 14], // 弹幕动画的时间取值范围
       limit: 100, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
@@ -334,6 +334,10 @@
         barrageDestroy (node) {
           allNumber.textContent = b.length
           showNumber.textContent = b.showLength
+        },
+
+        send () {
+          allNumber.textContent = b.length
         },
 
         ended () {
@@ -381,7 +385,6 @@
     // 模拟从服务器得到的数据，不停的发送
     setInterval(() => {
       b.send(testData)
-      allNumber.textContent = b.length
     }, 500)
   </script>
 

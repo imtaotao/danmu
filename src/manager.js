@@ -114,7 +114,6 @@ export default class BarrageManager {
   // API 重新设置参数
   setOptions (opts) {
     if (opts) {
-      this.opts = Object.assign(this.opts, opts)
       // 清除定时器，重新根据新的时间开始
       if ('interval' in opts) {
         this.stop(true)
@@ -130,6 +129,7 @@ export default class BarrageManager {
         this.RuntimeManager.rowGap = opts.rowGap
       }
 
+      this.opts = Object.assign(this.opts, opts)
       callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
     return this
@@ -197,15 +197,7 @@ export default class BarrageManager {
       this.showBarrages.push(newBarrage)
       newBarrage.trajectory.values.push(newBarrage)
 
-      // 如果发现没有合适的位置可以移动，就等待下一次 render
-      const failed = () => {
-        newBarrage.remove(true)
-        newBarrage.deletedInMemory()
-        newBarrage.node.style.top = null
-        this.stashBarrages.unshift(newBarrage)
-      }
-
-      this.RuntimeManager.move(newBarrage, this.isShow, failed).then(() => {
+      this.RuntimeManager.move(newBarrage, this).then(() => {
         // 弹幕运动结束后删掉
         newBarrage.destroy()
 

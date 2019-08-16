@@ -193,6 +193,9 @@ class Barrage {
     }
   }
   reset () {
+    this.paused = false;
+    this.moveing = false;
+    this.trajectory = null;
     this.position = {
       y: null,
     };
@@ -202,7 +205,8 @@ class Barrage {
       prevPauseTime: null,
       currentDuration: this.duration,
     };
-    this.trajectory = null;
+    this.remove(true);
+    this.deletedInMemory();
   }
 }
 
@@ -294,13 +298,11 @@ class RuntimeManager {
     if (meetTime >= currentBarrage.duration) {
       return null
     }
-    const containerWidth = this.containerWidth + prevWidth;
-    const remainingTime = (1 - prevBarrage.getMoveDistance() / containerWidth) * prevBarrage.duration;
-    const fixSpeed = containerWidth / remainingTime;
-    const nodeMoveTime = prevWidth / prevSpeed + (currentWidth + prevWidth) / fixSpeed;
-    return remainingTime + nodeMoveTime
+    const containerWidth = this.containerWidth + currentWidth + prevWidth;
+    const remainingTime = (1 - prevBarrage.getMovePrecent()) * prevBarrage.duration;
+    return containerWidth * remainingTime / this.containerWidth
   }
-  move (barrage, isShow, failed) {
+  move (barrage, manager) {
     const node = barrage.node;
     const prevBarrage = lastElement(barrage.trajectory.values, 2);
     node.style.top = `${barrage.position.y}px`;
@@ -321,14 +323,16 @@ class RuntimeManager {
               barrage.duration = fixTime;
               barrage.timeInfo.currentDuration = fixTime;
             } else {
-              failed();
+              barrage.reset();
+              node.style.top = null;
+              manager.stashBarrages.unshift(barrage);
               return
             }
           }
         }
         node.style.opacity = 1;
-        node.style.pointerEvents = isShow ? 'auto' : 'none';
-        node.style.visibility = isShow ? 'visible' : 'hidden';
+        node.style.pointerEvents = manager.isShow ? 'auto' : 'none';
+        node.style.visibility = manager.isShow ? 'visible' : 'hidden';
         node.style.transform = `translateX(${des * (containerWidth)}px)`;
         node.style[transitionProp] = `transform linear ${barrage.duration}s`;
         node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`;
@@ -429,7 +433,6 @@ class BarrageManager {
   }
   setOptions (opts) {
     if (opts) {
-      this.opts = Object.assign(this.opts, opts);
       if ('interval' in opts) {
         this.stop(true);
         this.start(true);
@@ -441,6 +444,7 @@ class BarrageManager {
       if ('rowGap' in opts) {
         this.RuntimeManager.rowGap = opts.rowGap;
       }
+      this.opts = Object.assign(this.opts, opts);
       callHook(this.opts.hooks, 'setOptions', [this, opts]);
     }
     return this
@@ -486,13 +490,7 @@ class BarrageManager {
       newBarrage.append();
       this.showBarrages.push(newBarrage);
       newBarrage.trajectory.values.push(newBarrage);
-      const failed = () => {
-        newBarrage.remove(true);
-        newBarrage.deletedInMemory();
-        newBarrage.node.style.top = null;
-        this.stashBarrages.unshift(newBarrage);
-      };
-      this.RuntimeManager.move(newBarrage, this.isShow, failed).then(() => {
+      this.RuntimeManager.move(newBarrage, this).then(() => {
         newBarrage.destroy();
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this]);

@@ -166,15 +166,23 @@ export default class Barrage {
 
   // 恢复初始状态，以便复用
   reset () {
+    this.paused = false
+    this.moveing = false
+    this.trajectory = null
+
     this.position = {
       y: null,
     }
+
     this.timeInfo = {
       pauseTime: 0,
       startTime: null,
       prevPauseTime: null,
       currentDuration: this.duration,
     }
-    this.trajectory = null
+
+    // 从视图中删除，在内存中删除
+    this.remove(true)
+    this.deletedInMemory()
   }
 }

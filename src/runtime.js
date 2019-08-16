@@ -110,7 +110,7 @@ export default class RuntimeManager {
     return this.getTrajectory(alreadyFound)
   }
 
-  // 计算追尾的时间
+  // 计算追尾的时间，由于 css 动画的误差导致追尾的时间计算会有一定的误差，5% 以内
   computingDuration (prevBarrage, currentBarrage) {
     const prevWidth = prevBarrage.getWidth()
     const currentWidth = currentBarrage.getWidth()
@@ -131,17 +131,15 @@ export default class RuntimeManager {
     }
   
     // 把此次弹幕运动时间修改为上一个弹幕移除屏幕的时间，这样追尾的情况在刚刚移除视图的时候进行
-    const containerWidth = this.containerWidth + prevWidth
-    const remainingTime = (1 - prevBarrage.getMoveDistance() / containerWidth) * prevBarrage.duration
+    const containerWidth = this.containerWidth + currentWidth + prevWidth
+    const remainingTime = (1 - prevBarrage.getMovePrecent()) * prevBarrage.duration
 
-    const fixSpeed = containerWidth / remainingTime
-    const nodeMoveTime = prevWidth / prevSpeed + (currentWidth + prevWidth) / fixSpeed
-
-    return remainingTime + nodeMoveTime
+    // c1 / t1 = c2 / t2 => t2 = c2 * t1 / c1
+    return containerWidth * remainingTime / this.containerWidth
   }
 
   // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
-  move (barrage, isShow, failed) {
+  move (barrage, manager) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
     const prevBarrage = lastElement(barrage.trajectory.values, 2)
@@ -172,15 +170,18 @@ export default class RuntimeManager {
               barrage.duration = fixTime
               barrage.timeInfo.currentDuration = fixTime
             } else {
-              failed()
+              // 如果不在范围内，就恢复初始状态，并等待下次 render
+              barrage.reset()
+              node.style.top = null
+              manager.stashBarrages.unshift(barrage)
               return
             }
           }
         }
 
         node.style.opacity = 1
-        node.style.pointerEvents = isShow ? 'auto' : 'none'
-        node.style.visibility = isShow ? 'visible' : 'hidden'
+        node.style.pointerEvents = manager.isShow ? 'auto' : 'none'
+        node.style.visibility = manager.isShow ? 'visible' : 'hidden'
         node.style.transform = `translateX(${des * (containerWidth)}px)`
         node.style[transitionProp] = `transform linear ${barrage.duration}s`
         node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`
