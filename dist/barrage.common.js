@@ -21,6 +21,9 @@ function toNumber (val) {
       ? Number(val.replace('px', ''))
       : NaN
 }
+function lastElement (arr) {
+  return arr[arr.length - 1]
+}
 function upperCase ([first, ...remaing]) {
   return first.toUpperCase() + remaing.join('')
 }
@@ -64,39 +67,50 @@ class Barrage {
   constructor (itemData, time, manager, hooks) {
     const RuntimeManager = manager.RuntimeManager;
     const { direction, container } = manager.opts;
+    time = Number(time);
+    this.node = null;
     this.hooks = hooks;
     this.paused = false;
     this.moveing = false;
     this.data = itemData;
+    this.duration = time;
     this.trajectory = null;
     this.manager = manager;
     this.direction = direction;
     this.container = container;
-    this.duration = Number(time);
     this.RuntimeManager = RuntimeManager;
     this.key = itemData.id || createKey();
     this.position = {
       y: null,
-      trajectory: null,
     };
     this.timeInfo = {
       pauseTime: 0,
       startTime: null,
       prevPauseTime: null,
+      currentDuration: time,
     };
     this.create();
   }
   getMoveDistance () {
     if (!this.moveing) return 0
-    const extendDis = this.getWidth();
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
     const currentTime = this.paused ? prevPauseTime : Date.now();
-    const containerWidth = this.RuntimeManager.containerWidth + extendDis;
+    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
     const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration;
     return percent * containerWidth
   }
+  getHeight () {
+    return (this.node && this.node.clientHeight) || 0
+  }
   getWidth () {
-    return this.node.clientWidth || 0
+    return (this.node && this.node.clientWidth) || 0
+  }
+  getSpeed () {
+    const duration = this.timeInfo.currentDuration;
+    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
+    return duration == null || containerWidth == null
+      ? 0
+      : containerWidth / duration
   }
   create () {
     const node = document.createElement('div');
@@ -156,6 +170,7 @@ class Barrage {
       const des = this.direction === 'left' ? 1 : -1;
       const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
+      this.timeInfo.currentDuration = remainingTime;
       this.node.style[transitionDuration] = `${remainingTime}s`;
       this.node.style.transform = `translateX(${containerWidth * des}px)`;
     }
@@ -163,12 +178,12 @@ class Barrage {
   reset () {
     this.position = {
       y: null,
-      trajectory: null,
     };
     this.timeInfo = {
       pauseTime: 0,
       startTime: null,
       prevPauseTime: null,
+      currentDuration: this.duration,
     };
     this.trajectory = null;
   }
@@ -218,39 +233,56 @@ class RuntimeManager {
     }
     this.container = container;
   }
+  getRandomIndex (exclude) {
+    const randomIndex = Math.floor(Math.random() * this.rows);
+    return exclude.includes(randomIndex)
+      ? this.getRandomIndex(exclude)
+      : randomIndex
+  }
   getTrajectory (alreadyFound = []) {
     if (alreadyFound.length === this.container.length) {
       return null
     }
-    const getIndex = () => {
-      const randomIndex = Math.floor(Math.random() * this.rows);
-      return alreadyFound.includes(randomIndex)
-        ? getIndex()
-        : randomIndex
-    };
-    const index = getIndex();
-    const currentTragectory = this.container[index];
-    const lastBarrage = currentTragectory.values[currentTragectory.values.length - 1];
+    const index = this.getRandomIndex(alreadyFound);
+    const currentTrajectory = this.container[index];
+    const lastBarrage = lastElement(currentTrajectory.values);
     if (!lastBarrage) {
-      return currentTragectory
+      return currentTrajectory
     }
     alreadyFound.push(index);
     if (lastBarrage.moveing) {
       const distance = lastBarrage.getMoveDistance();
       return distance > this.rowGap
-        ? currentTragectory
+        ? currentTrajectory
         : this.getTrajectory(alreadyFound)
     }
     return this.getTrajectory(alreadyFound)
   }
+  computingDuration (prevBarrage, currentBarrage) {
+    const acceleration = currentBarrage.getSpeed() - prevBarrage.getSpeed();
+    if (acceleration <= 0) {
+      return currentBarrage.duration
+    }
+    const distance = prevBarrage.getMoveDistance();
+  }
   move (barrage, isShow) {
     const node = barrage.node;
+    const prevBarrage = lastElement(barrage.trajectory.values);
+    barrage.trajectory.values.push(barrage);
     node.style.top = `${barrage.position.y}px`;
     return new Promise(resolve => {
       nextFrame(() => {
         const width = barrage.getWidth();
         const des = barrage.direction === 'left' ? 1 : -1;
         const containerWidth = this.containerWidth + width;
+        if (
+            prevBarrage &&
+            this.rowGap > 0 &&
+            prevBarrage.moveing &&
+            !prevBarrage.paused
+        ) {
+          this.computingDuration(prevBarrage, barrage);
+        }
         node.style.opacity = 1;
         node.style.pointerEvents = isShow ? 'auto' : 'none';
         node.style.visibility = isShow ? 'visible' : 'hidden';
@@ -407,11 +439,8 @@ class BarrageManager {
     const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data);
     const newBarrage = this.sureBarrageInfo(barrage);
     if (newBarrage) {
-      const trajectory = newBarrage.position.trajectory;
       newBarrage.append();
       this.showBarrages.push(newBarrage);
-      trajectory.values.push(newBarrage);
-      newBarrage.trajectory = trajectory;
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         newBarrage.destroy();
         if (this.length === 0) {
@@ -437,12 +466,10 @@ class BarrageManager {
     )
   }
   sureBarrageInfo (barrage) {
-    const position = barrage.position;
-    const runtime = this.RuntimeManager;
-    const trajectory = runtime.getTrajectory();
+    const trajectory = this.RuntimeManager.getTrajectory();
     if (!trajectory) return null
-    position.y = trajectory.gaps[0];
-    position.trajectory = trajectory;
+    barrage.trajectory = trajectory;
+    barrage.position.y = trajectory.gaps[0];
     return barrage
   }
   setBarrageStyle (node, barrage) {

@@ -23,6 +23,10 @@ export function toNumber (val) {
       : NaN
 }
 
+export function lastElement (arr) {
+  return arr[arr.length - 1]
+}
+
 export function upperCase ([first, ...remaing]) {
   return first.toUpperCase() + remaing.join('')
 }

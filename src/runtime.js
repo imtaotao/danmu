@@ -3,6 +3,7 @@ import {
   toNumber,
   upperCase,
   nextFrame,
+  lastElement,
   transitionProp,
   whenTransitionEnds,
 } from './utils'
@@ -67,25 +68,26 @@ export default class RuntimeManager {
     this.container = container
   }
 
+  // 随机取一个轨道
+  getRandomIndex (exclude) {
+    const randomIndex = Math.floor(Math.random() * this.rows)
+    return exclude.includes(randomIndex)
+      ? this.getRandomIndex(exclude)
+      : randomIndex
+  }
+
   getTrajectory (alreadyFound = []) {
     // 如果发现全部都找过了，则代表没有合适的弹道可以选择
     if (alreadyFound.length === this.container.length) {
       return null
     }
 
-    const getIndex = () => {
-      const randomIndex = Math.floor(Math.random() * this.rows)
-      return alreadyFound.includes(randomIndex)
-        ? getIndex()
-        : randomIndex
-    }
-
-    const index = getIndex()
-    const currentTragectory = this.container[index]
-    const lastBarrage = currentTragectory.values[currentTragectory.values.length - 1]
+    const index = this.getRandomIndex(alreadyFound)
+    const currentTrajectory = this.container[index]
+    const lastBarrage = lastElement(currentTrajectory.values)
 
     if (!lastBarrage) {
-      return currentTragectory
+      return currentTrajectory
     }
 
     alreadyFound.push(index)
@@ -95,17 +97,33 @@ export default class RuntimeManager {
       const distance = lastBarrage.getMoveDistance()
 
       return distance > this.rowGap
-        ? currentTragectory
+        ? currentTrajectory
         : this.getTrajectory(alreadyFound)
     }
 
     return this.getTrajectory(alreadyFound)
   }
 
+  // 计算追尾的时间
+  computingDuration (prevBarrage, currentBarrage) {
+    const acceleration = currentBarrage.getSpeed() - prevBarrage.getSpeed()
+ 
+    // 如果加速度小于等于 0，永远不可能追上
+    if (acceleration <= 0) {
+      return currentBarrage.duration
+    }
+    const distance = prevBarrage.getMoveDistance()
+    // const meetTime = 
+  }
+
   // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
   move (barrage, isShow) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
+    const prevBarrage = lastElement(barrage.trajectory.values)
+
+    // 添加到轨道中去
+    barrage.trajectory.values.push(barrage)
     node.style.top = `${barrage.position.y}px`
 
     return new Promise(resolve => {
@@ -113,6 +131,19 @@ export default class RuntimeManager {
         const width = barrage.getWidth()
         const des = barrage.direction === 'left' ? 1 : -1
         const containerWidth = this.containerWidth + width
+
+        // 计算追尾的情况
+        // 如果 rowGap <= 0，那么就是没有做限制，不需要计算追尾的情况
+        // 如果上一个弹幕没有移动，那么肯定是不能出现的
+        // 如果上一个弹幕处于暂停状态，不需要 计算追尾
+        if (
+            prevBarrage &&
+            this.rowGap > 0 &&
+            prevBarrage.moveing &&
+            !prevBarrage.paused
+        ) {
+          this.computingDuration(prevBarrage, barrage)
+        }
 
         node.style.opacity = 1
         node.style.pointerEvents = isShow ? 'auto' : 'none'

@@ -191,13 +191,9 @@ export default class BarrageManager {
 
     if (newBarrage) {
       // 当前这个弹幕需要渲染到屏幕上
-      const trajectory = newBarrage.position.trajectory
-
       newBarrage.append()
 
       this.showBarrages.push(newBarrage)
-      trajectory.values.push(newBarrage)
-      newBarrage.trajectory = trajectory
 
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         // 弹幕运动结束后删掉
@@ -232,15 +228,13 @@ export default class BarrageManager {
 
   // 初始化弹幕的位置信息
   sureBarrageInfo (barrage) {
-    const position = barrage.position
-    const runtime = this.RuntimeManager
-    const trajectory = runtime.getTrajectory()
+    const trajectory = this.RuntimeManager.getTrajectory()
 
     // 没有弹道信息代表现在页面上不能出现
     if (!trajectory) return null
 
-    position.y = trajectory.gaps[0]
-    position.trajectory = trajectory
+    barrage.trajectory = trajectory
+    barrage.position.y = trajectory.gaps[0]
 
     return barrage
   }

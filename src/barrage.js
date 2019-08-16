@@ -10,26 +10,29 @@ export default class Barrage {
   constructor (itemData, time, manager, hooks) {
     const RuntimeManager = manager.RuntimeManager
     const { direction, container } = manager.opts
+    
+    time = Number(time)
 
+    this.node = null
     this.hooks = hooks
     this.paused = false
     this.moveing = false
     this.data = itemData
+    this.duration = time
     this.trajectory = null
     this.manager = manager
     this.direction = direction
     this.container = container
-    this.duration = Number(time)
     this.RuntimeManager = RuntimeManager
     this.key = itemData.id || createKey()
     this.position = {
       y: null,
-      trajectory: null,
     }
     this.timeInfo = {
       pauseTime: 0, // 总共暂停了多少时间
       startTime: null, // 开始移动时间
       prevPauseTime: null, // 上次暂停的时间
+      currentDuration: time, // 当前实时运动时间，因为每次暂停会重置 transition duration
     }
 
     this.create()
@@ -38,18 +41,31 @@ export default class Barrage {
   // 得到当前移动了多少距离
   getMoveDistance () {
     if (!this.moveing) return 0
-    const extendDis = this.getWidth()
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo
 
     const currentTime = this.paused ? prevPauseTime : Date.now()
-    const containerWidth = this.RuntimeManager.containerWidth + extendDis
+    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
     const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration
 
     return percent * containerWidth
   }
 
+  getHeight () {
+    return (this.node && this.node.clientHeight) || 0
+  }
+
   getWidth () {
-    return this.node.clientWidth || 0
+    return (this.node && this.node.clientWidth) || 0
+  }
+
+  // 得到当前弹幕的运动速度
+  getSpeed () {
+    const duration = this.timeInfo.currentDuration
+    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
+    
+    return duration == null || containerWidth == null
+      ? 0
+      : containerWidth / duration
   }
 
   create () {
@@ -131,6 +147,7 @@ export default class Barrage {
       const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
       const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration
 
+      this.timeInfo.currentDuration = remainingTime
       this.node.style[transitionDuration] = `${remainingTime}s`
       this.node.style.transform = `translateX(${containerWidth * des}px)`
     }
@@ -140,12 +157,12 @@ export default class Barrage {
   reset () {
     this.position = {
       y: null,
-      trajectory: null,
     }
     this.timeInfo = {
       pauseTime: 0,
       startTime: null,
       prevPauseTime: null,
+      currentDuration: this.duration,
     }
     this.trajectory = null
   }
