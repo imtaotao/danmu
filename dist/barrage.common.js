@@ -438,6 +438,9 @@ class BarrageManager {
         this.RuntimeManager.singleHeight = opts.height;
         this.RuntimeManager.resize();
       }
+      if ('rowGap' in opts) {
+        this.RuntimeManager.rowGap = opts.rowGap;
+      }
       callHook(this.opts.hooks, 'setOptions', [this, opts]);
     }
     return this

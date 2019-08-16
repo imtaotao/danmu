@@ -115,17 +115,19 @@ export default class BarrageManager {
   setOptions (opts) {
     if (opts) {
       this.opts = Object.assign(this.opts, opts)
-
       // 清除定时器，重新根据新的时间开始
       if ('interval' in opts) {
         this.stop(true)
         this.start(true)
       }
-
       // 如果有高度，要重新计算轨道
       if ('height' in opts) {
         this.RuntimeManager.singleHeight = opts.height
         this.RuntimeManager.resize()
+      }
+      // 设置 rowGap
+      if ('rowGap' in opts) {
+        this.RuntimeManager.rowGap = opts.rowGap
       }
 
       callHook(this.opts.hooks, 'setOptions', [this, opts])
