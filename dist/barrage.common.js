@@ -447,7 +447,9 @@ class BarrageManager {
       newBarrage.append();
       this.showBarrages.push(newBarrage);
       newBarrage.trajectory.values.push(newBarrage);
-      this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
+      const failed = () => {
+      };
+      this.RuntimeManager.move(newBarrage, this.isShow, failed).then(() => {
         newBarrage.destroy();
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this]);

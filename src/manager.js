@@ -196,10 +196,10 @@ export default class BarrageManager {
       newBarrage.trajectory.values.push(newBarrage)
 
       const failed = () => {
-        
+
       }
 
-      this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
+      this.RuntimeManager.move(newBarrage, this.isShow, failed).then(() => {
         // 弹幕运动结束后删掉
         newBarrage.destroy()
 
