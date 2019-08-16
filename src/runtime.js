@@ -1,4 +1,5 @@
 import {
+  isRange,
   callHook,
   toNumber,
   upperCase,
@@ -84,7 +85,7 @@ export default class RuntimeManager {
 
     const index = this.getRandomIndex(alreadyFound)
     const currentTrajectory = this.container[index]
-    const lastBarrage = lastElement(currentTrajectory.values)
+    const lastBarrage = lastElement(currentTrajectory.values, 1)
 
     if (!lastBarrage) {
       return currentTrajectory
@@ -117,13 +118,11 @@ export default class RuntimeManager {
   }
 
   // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
-  move (barrage, isShow) {
+  move (barrage, isShow, failed) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
-    const prevBarrage = lastElement(barrage.trajectory.values)
+    const prevBarrage = lastElement(barrage.trajectory.values, 2)
 
-    // 添加到轨道中去
-    barrage.trajectory.values.push(barrage)
     node.style.top = `${barrage.position.y}px`
 
     return new Promise(resolve => {

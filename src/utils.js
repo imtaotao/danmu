@@ -4,7 +4,7 @@ export function warning (condition, message) {
 }
 
 export function callHook (hooks, name, args = []) {
-  if (typeof hooks[name] === 'function') {
+  if (hooks && typeof hooks[name] === 'function') {
     hooks[name].apply(null, args)
   }
 }
@@ -23,8 +23,15 @@ export function toNumber (val) {
       : NaN
 }
 
-export function lastElement (arr) {
-  return arr[arr.length - 1]
+export function lastElement (arr, lastIndex) {
+  return arr[arr.length - lastIndex]
+}
+
+export function isRange ([a, b], val) {
+  if (a === val || b === val) return true
+  const min = Math.min(a, b)
+  const max = min === a ? b : a
+  return min < val && val < max
 }
 
 export function upperCase ([first, ...remaing]) {

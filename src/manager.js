@@ -192,8 +192,12 @@ export default class BarrageManager {
     if (newBarrage) {
       // 当前这个弹幕需要渲染到屏幕上
       newBarrage.append()
-
       this.showBarrages.push(newBarrage)
+      newBarrage.trajectory.values.push(newBarrage)
+
+      const failed = () => {
+        
+      }
 
       this.RuntimeManager.move(newBarrage, this.isShow).then(() => {
         // 弹幕运动结束后删掉

@@ -1,6 +1,5 @@
 import {
   warning,
-  toNumber,
   callHook,
   createKey,
   transitionDuration,
@@ -38,14 +37,17 @@ export default class Barrage {
     this.create()
   }
 
+  getMovePrecent () {
+    const { pauseTime, startTime, prevPauseTime } = this.timeInfo
+    const currentTime = this.paused ? prevPauseTime : Date.now()
+    return (currentTime - startTime - pauseTime) / 1000 / this.duration
+  }
+
   // 得到当前移动了多少距离
   getMoveDistance () {
     if (!this.moveing) return 0
-    const { pauseTime, startTime, prevPauseTime } = this.timeInfo
-
-    const currentTime = this.paused ? prevPauseTime : Date.now()
+    const percent = this.getMovePrecent()
     const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
-    const percent = (currentTime - startTime - pauseTime) / 1000 / this.duration
 
     return percent * containerWidth
   }
@@ -92,26 +94,29 @@ export default class Barrage {
   }
 
   // API 销毁当前节点
-  destroy () {
-    this.remove()
-    this.moveing = false
-
-    
+  deletedInMemory () {
     let index = -1
     const trajectory = this.trajectory
     const showBarrages = this.manager.showBarrages
-
+  
     // 删除内存中存起来的弹幕类
     if (trajectory && trajectory.values.length > 0) {
       index = trajectory.values.indexOf(this)
       if (~index) trajectory.values.splice(index, 1)
     }
-
+  
     if (showBarrages && showBarrages.length > 0) {
       index = showBarrages.indexOf(this)
       if (~index) showBarrages.splice(index, 1)
     }
-
+  }
+  
+  // API 销毁当前节点
+  destroy () {
+    this.remove()
+    this.moveing = false
+    this.deletedInMemory()
+  
     callHook(this.hooks, 'barrageDestroy', [this.node, this])
   }
 
