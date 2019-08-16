@@ -195,8 +195,12 @@ export default class BarrageManager {
       this.showBarrages.push(newBarrage)
       newBarrage.trajectory.values.push(newBarrage)
 
+      // 如果发现没有合适的位置可以移动，就等待下一次 render
       const failed = () => {
-
+        newBarrage.remove(true)
+        newBarrage.deletedInMemory()
+        newBarrage.node.style.top = null
+        this.stashBarrages.unshift(newBarrage)
       }
 
       this.RuntimeManager.move(newBarrage, this.isShow, failed).then(() => {
@@ -216,10 +220,12 @@ export default class BarrageManager {
 
   createSingleBarrage (data) {
     const [max, min] = this.opts.times
-    const time = max === min
-      ? max
-      : (Math.random() * (max - min) + min).toFixed(0)
-
+    const time = Number(
+      max === min
+        ? max
+        : (Math.random() * (max - min) + min).toFixed(0)
+    )
+    
     return new Barrage(
       data,
       time,

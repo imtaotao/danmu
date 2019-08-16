@@ -10,13 +10,15 @@ import {
 } from './utils'
 
 export default class RuntimeManager {
-  constructor ({container, rowGap, height}) {
+  constructor (opts) {
+    const {container, rowGap, height} = opts
     const styles = getComputedStyle(container)
 
     if (!styles.position || styles.position === 'static') {
       container.style.position = 'relative'
     }
 
+    this.opts = opts
     this.rowGap = rowGap
     this.singleHeight = height
     this.containerElement = container
@@ -96,8 +98,11 @@ export default class RuntimeManager {
     // 最后一个弹幕移动超过了我们限制的距离，就允许加入新的弹幕
     if (lastBarrage.moveing) {
       const distance = lastBarrage.getMoveDistance()
+      const spacing = this.rowGap > 0
+        ? this.rowGap + lastBarrage.getWidth()
+        : this.rowGap
 
-      return distance > this.rowGap
+      return distance > spacing
         ? currentTrajectory
         : this.getTrajectory(alreadyFound)
     }
@@ -107,14 +112,32 @@ export default class RuntimeManager {
 
   // 计算追尾的时间
   computingDuration (prevBarrage, currentBarrage) {
-    const acceleration = currentBarrage.getSpeed() - prevBarrage.getSpeed()
- 
+    const prevWidth = prevBarrage.getWidth()
+    const currentWidth = currentBarrage.getWidth()
+    const prevSpeed = prevBarrage.getSpeed()
+    const currentSpeed = currentBarrage.getSpeed()
+    const acceleration = currentSpeed - prevSpeed
+    
     // 如果加速度小于等于 0，永远不可能追上
     if (acceleration <= 0) {
-      return currentBarrage.duration
+      return null
     }
-    const distance = prevBarrage.getMoveDistance()
-    // const meetTime = 
+    const distance = prevBarrage.getMoveDistance(false)
+    const meetTime = distance / acceleration
+  
+    // 如果相遇时间大于于当前弹幕的运动时间，则肯会在容器视图外面追尾，不用管
+    if (meetTime >= currentBarrage.duration) {
+      return null
+    }
+  
+    // 把此次弹幕运动时间修改为上一个弹幕移除屏幕的时间，这样追尾的情况在刚刚移除视图的时候进行
+    const containerWidth = this.containerWidth + prevWidth
+    const remainingTime = (1 - prevBarrage.getMoveDistance() / containerWidth) * prevBarrage.duration
+
+    const fixSpeed = containerWidth / remainingTime
+    const nodeMoveTime = prevWidth / prevSpeed + (currentWidth + prevWidth) / fixSpeed
+
+    return remainingTime + nodeMoveTime
   }
 
   // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
@@ -141,7 +164,18 @@ export default class RuntimeManager {
             prevBarrage.moveing &&
             !prevBarrage.paused
         ) {
-          this.computingDuration(prevBarrage, barrage)
+          const fixTime = this.computingDuration(prevBarrage, barrage)
+
+          // 如果需要修正时间
+          if (fixTime !== null) {
+            if (isRange(this.opts.times, fixTime)) {
+              barrage.duration = fixTime
+              barrage.timeInfo.currentDuration = fixTime
+            } else {
+              failed()
+              return
+            }
+          }
         }
 
         node.style.opacity = 1
@@ -154,10 +188,7 @@ export default class RuntimeManager {
         barrage.moveing = true
         barrage.timeInfo.startTime = Date.now()
         
-        if (barrage.hooks) {
-          callHook(barrage.hooks, 'barrageMove', [node, barrage])
-        }
-
+        callHook(barrage.hooks, 'barrageMove', [node, barrage])
         resolve(whenTransitionEnds(node))
       })
     })

@@ -10,8 +10,6 @@ export default class Barrage {
     const RuntimeManager = manager.RuntimeManager
     const { direction, container } = manager.opts
     
-    time = Number(time)
-
     this.node = null
     this.hooks = hooks
     this.paused = false
@@ -40,14 +38,19 @@ export default class Barrage {
   getMovePrecent () {
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo
     const currentTime = this.paused ? prevPauseTime : Date.now()
+
     return (currentTime - startTime - pauseTime) / 1000 / this.duration
   }
 
   // 得到当前移动了多少距离
-  getMoveDistance () {
+  getMoveDistance (fix = true) {
     if (!this.moveing) return 0
     const percent = this.getMovePrecent()
-    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
+    const containerWidth = this.RuntimeManager.containerWidth + (
+      fix
+        ? this.getWidth()
+        : 0
+    )
 
     return percent * containerWidth
   }
@@ -85,11 +88,14 @@ export default class Barrage {
     }
   }
   
-  remove () {
+  remove (noCallHook) {
     warning(this.container, 'Need container element.')
     if (this.node) {
       this.container.removeChild(this.node)
-      callHook(this.hooks, 'barrageRemove', [this.node, this])
+
+      if (!noCallHook) {
+        callHook(this.hooks, 'barrageRemove', [this.node, this])
+      }
     }
   }
 

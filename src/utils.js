@@ -28,7 +28,7 @@ export function lastElement (arr, lastIndex) {
 }
 
 export function isRange ([a, b], val) {
-  if (a === val || b === val) return true
+  if (val === a || val === b) return true
   const min = Math.min(a, b)
   const max = min === a ? b : a
   return min < val && val < max

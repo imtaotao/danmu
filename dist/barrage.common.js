@@ -24,6 +24,12 @@ function toNumber (val) {
 function lastElement (arr, lastIndex) {
   return arr[arr.length - lastIndex]
 }
+function isRange ([a, b], val) {
+  if (val === a || val === b) return true
+  const min = Math.min(a, b);
+  const max = min === a ? b : a;
+  return min < val && val < max
+}
 function upperCase ([first, ...remaing]) {
   return first.toUpperCase() + remaing.join('')
 }
@@ -67,7 +73,6 @@ class Barrage {
   constructor (itemData, time, manager, hooks) {
     const RuntimeManager = manager.RuntimeManager;
     const { direction, container } = manager.opts;
-    time = Number(time);
     this.node = null;
     this.hooks = hooks;
     this.paused = false;
@@ -96,10 +101,14 @@ class Barrage {
     const currentTime = this.paused ? prevPauseTime : Date.now();
     return (currentTime - startTime - pauseTime) / 1000 / this.duration
   }
-  getMoveDistance () {
+  getMoveDistance (fix = true) {
     if (!this.moveing) return 0
     const percent = this.getMovePrecent();
-    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
+    const containerWidth = this.RuntimeManager.containerWidth + (
+      fix
+        ? this.getWidth()
+        : 0
+    );
     return percent * containerWidth
   }
   getHeight () {
@@ -128,11 +137,13 @@ class Barrage {
       callHook(this.hooks, 'barrageAppend', [this.node, this]);
     }
   }
-  remove () {
+  remove (noCallHook) {
     warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.removeChild(this.node);
-      callHook(this.hooks, 'barrageRemove', [this.node, this]);
+      if (!noCallHook) {
+        callHook(this.hooks, 'barrageRemove', [this.node, this]);
+      }
     }
   }
   deletedInMemory () {
@@ -196,11 +207,13 @@ class Barrage {
 }
 
 class RuntimeManager {
-  constructor ({container, rowGap, height}) {
+  constructor (opts) {
+    const {container, rowGap, height} = opts;
     const styles = getComputedStyle(container);
     if (!styles.position || styles.position === 'static') {
       container.style.position = 'relative';
     }
+    this.opts = opts;
     this.rowGap = rowGap;
     this.singleHeight = height;
     this.containerElement = container;
@@ -258,18 +271,34 @@ class RuntimeManager {
     alreadyFound.push(index);
     if (lastBarrage.moveing) {
       const distance = lastBarrage.getMoveDistance();
-      return distance > this.rowGap
+      const spacing = this.rowGap > 0
+        ? this.rowGap + lastBarrage.getWidth()
+        : this.rowGap;
+      return distance > spacing
         ? currentTrajectory
         : this.getTrajectory(alreadyFound)
     }
     return this.getTrajectory(alreadyFound)
   }
   computingDuration (prevBarrage, currentBarrage) {
-    const acceleration = currentBarrage.getSpeed() - prevBarrage.getSpeed();
+    const prevWidth = prevBarrage.getWidth();
+    const currentWidth = currentBarrage.getWidth();
+    const prevSpeed = prevBarrage.getSpeed();
+    const currentSpeed = currentBarrage.getSpeed();
+    const acceleration = currentSpeed - prevSpeed;
     if (acceleration <= 0) {
-      return currentBarrage.duration
+      return null
     }
-    const distance = prevBarrage.getMoveDistance();
+    const distance = prevBarrage.getMoveDistance(false);
+    const meetTime = distance / acceleration;
+    if (meetTime >= currentBarrage.duration) {
+      return null
+    }
+    const containerWidth = this.containerWidth + prevWidth;
+    const remainingTime = (1 - prevBarrage.getMoveDistance() / containerWidth) * prevBarrage.duration;
+    const fixSpeed = containerWidth / remainingTime;
+    const nodeMoveTime = prevWidth / prevSpeed + (currentWidth + prevWidth) / fixSpeed;
+    return remainingTime + nodeMoveTime
   }
   move (barrage, isShow, failed) {
     const node = barrage.node;
@@ -286,7 +315,16 @@ class RuntimeManager {
             prevBarrage.moveing &&
             !prevBarrage.paused
         ) {
-          this.computingDuration(prevBarrage, barrage);
+          const fixTime = this.computingDuration(prevBarrage, barrage);
+          if (fixTime !== null) {
+            if (isRange(this.opts.times, fixTime)) {
+              barrage.duration = fixTime;
+              barrage.timeInfo.currentDuration = fixTime;
+            } else {
+              failed();
+              return
+            }
+          }
         }
         node.style.opacity = 1;
         node.style.pointerEvents = isShow ? 'auto' : 'none';
@@ -296,9 +334,7 @@ class RuntimeManager {
         node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`;
         barrage.moveing = true;
         barrage.timeInfo.startTime = Date.now();
-        if (barrage.hooks) {
-          callHook(barrage.hooks, 'barrageMove', [node, barrage]);
-        }
+        callHook(barrage.hooks, 'barrageMove', [node, barrage]);
         resolve(whenTransitionEnds(node));
       });
     })
@@ -448,6 +484,10 @@ class BarrageManager {
       this.showBarrages.push(newBarrage);
       newBarrage.trajectory.values.push(newBarrage);
       const failed = () => {
+        newBarrage.remove(true);
+        newBarrage.deletedInMemory();
+        newBarrage.node.style.top = null;
+        this.stashBarrages.unshift(newBarrage);
       };
       this.RuntimeManager.move(newBarrage, this.isShow, failed).then(() => {
         newBarrage.destroy();
@@ -461,9 +501,11 @@ class BarrageManager {
   }
   createSingleBarrage (data) {
     const [max, min] = this.opts.times;
-    const time = max === min
-      ? max
-      : (Math.random() * (max - min) + min).toFixed(0);
+    const time = Number(
+      max === min
+        ? max
+        : (Math.random() * (max - min) + min).toFixed(0)
+    );
     return new Barrage(
       data,
       time,
