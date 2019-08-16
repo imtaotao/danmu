@@ -55,7 +55,7 @@
 
     .operation-panel {
       position: fixed;
-      width: 270px;
+      width: 280px;
       top: 0;
       bottom: 0;
       left: 0;
@@ -75,7 +75,7 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .icon {
@@ -205,6 +205,11 @@
     </div>
 
     <div class='item'>
+      <span>渲染间隔: </span>
+      <input type='text' class='input' placeholder='渲染间隔时间' id='renderTime'>
+    </div>
+
+    <div class='item'>
       <span>显示区域: </span>
       <div class='btns'>
         <div class='button small-button select' id='allArea'>全</div>
@@ -285,7 +290,7 @@
       height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
-      times: [5, 10], // 弹幕动画的时间取值范围
+      times: [3, 6], // 弹幕动画的时间取值范围
       limit: 100, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
@@ -385,6 +390,7 @@
     height.value = b.opts.height
     limit.value = b.opts.limit
     rowGap.value = b.opts.rowGap
+    renderTime.value = b.opts.interval
     minTime.value = b.opts.times[0]
     maxTime.value = b.opts.times[1]
 
@@ -421,6 +427,11 @@
     // rowgap
     input(rowGap, val => {
       b.setOptions({ rowGap: val })
+    })
+
+    // render time
+    input(renderTime, val => {
+      b.setOptions({ interval: val })
     })
 
     // 隐藏显示
