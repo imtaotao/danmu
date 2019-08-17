@@ -8,7 +8,6 @@ import {
   transitionProp,
   whenTransitionEnds,
 } from './utils'
-import SpecialBarrage from './special'
 
 export default class RuntimeManager {
   constructor (opts) {
@@ -199,7 +198,12 @@ export default class RuntimeManager {
   // 移动特殊弹幕
   moveSpecialBarrage (barrage, manager) {
     return new Promise(resolve => {
+      const { node, opts } = barrage
+      console.log(121);
+      node.style.pointerEvents = manager.isShow ? 'auto' : 'none'
+      node.style.visibility = manager.isShow ? 'visible' : 'hidden'
 
+      callHook(manager.opts.hooks, 'barrageMove', [barrage.node, barrage])
     })
   }
 }

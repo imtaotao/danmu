@@ -301,6 +301,9 @@
         // 弹幕创建时
         barrageCreate (node, barrage) {
           // 如果是我们自己发送的弹幕，给一个特殊标记
+          if (barrage.isSpecial) {
+            return
+          }
           if (typeof barrage.data !== 'string') {
             node.style.border = '3px solid #fff'
             node.textContent = barrage.data.content
@@ -313,6 +316,9 @@
 
         // 弹幕渲染到页面上时
         barrageAppend (node, barrage) {
+          if (barrage.isSpecial) {
+            return
+          }
           node.onmouseenter = e => {
             barrage.pause()
             node.classList.add('active')
@@ -484,7 +490,6 @@
     // 发送弹幕
     send.onclick = e => {
       b.send({ content: barrageText.value })
-      barrageText.value = ''
     }
 
     clear.onclick = e => {

@@ -1,7 +1,7 @@
 import Barrage from './barrage'
 import { callHook } from './utils'
 import RuntimeManager from './runtime'
-import SpecialBarrage from './special'
+import { SpecialBarrage } from './special'
 
 export default class BarrageManager {
   constructor (opts) {
@@ -31,6 +31,14 @@ export default class BarrageManager {
     return this.showBarrages.length + this.specialBarrages.length + this.stashBarrages.length
   }
 
+  get containerWidth () {
+    return this.RuntimeManager.containerWidth
+  }
+
+  get containerHeight () {
+    return this.RuntimeManager.containerHeight
+  }
+
   get runing () {
     return this.loopTimer !== null
   }
@@ -38,7 +46,7 @@ export default class BarrageManager {
   // API 发送普通弹幕
   send (data) {
     if (!Array.isArray(data)) data = [data]
-    if (this.assertCapcity(data.length)) return false
+    if (this.assertCapacity(data.length)) return false
 
     this.stashBarrages.push.apply(this.stashBarrages, data)
     callHook(this.opts.hooks, 'send', [this, data])
@@ -47,15 +55,20 @@ export default class BarrageManager {
 
   // API 发送特殊弹幕
   sendSpecial (data) {
+    if (!this.runing) return false
     if (!Array.isArray(data)) data = [data]
-    if (this.assertCapcity(data.length)) return false
+    if (this.assertCapacity(data.length)) return false
 
     for (let i = 0; i < data.length; i++) {
       const barrage = data[i]
 
       if (barrage instanceof SpecialBarrage) {
-        this.specialBarrages.push(barrage)
+        if (barrage.opts.duration <= 0) continue
+
+        barrage.create(this)
         barrage.append(this)
+        this.specialBarrages.push(barrage)
+
         this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
           barrage.destroy(this)
           if (this.length === 0) {
@@ -65,7 +78,6 @@ export default class BarrageManager {
       }
     }
 
-    callHook(this.opts.hooks, 'send', [this, data])
     callHook(this.opts.hooks, 'sendSpecial', [this, data])
     return true
   }
@@ -75,8 +87,10 @@ export default class BarrageManager {
     if (!this.isShow) {
       this.isShow = true
       this.each(barrage => {
-        barrage.node.style.visibility = 'visible'
-        barrage.node.style.pointerEvents = 'auto'
+        if (barrage.node) {
+          barrage.node.style.visibility = 'visible'
+          barrage.node.style.pointerEvents = 'auto'
+        }
       })
       callHook(this.opts.hooks, 'show', [this])
     }
@@ -88,8 +102,10 @@ export default class BarrageManager {
     if (this.isShow) {
       this.isShow = false
       this.each(barrage => {
-        barrage.node.style.visibility = 'hidden'
-        barrage.node.style.pointerEvents = 'none'
+        if (barrage.node) {
+          barrage.node.style.visibility = 'hidden'
+          barrage.node.style.pointerEvents = 'none'
+        }
       })
       callHook(this.opts.hooks, 'hidden', [this])
     }
@@ -99,13 +115,17 @@ export default class BarrageManager {
   // API 遍历在渲染中的节点
   each (cb) {
     if (typeof cb === 'function') {
-      for (let i = 0; i < this.showBarrages.length; i++) {
+      let i = 0
+      for (; i < this.showBarrages.length; i++) {
         const barrage = this.showBarrages[i]
         if (barrage.moveing) {
           cb(barrage, i)
         }
       }
-      this.showBarrages.forEach(cb)
+
+      for (i = 0; i < this.specialBarrages.length; i++) {
+        cb(this.specialBarrages[i], i)
+      }
     }
     return this
   }
@@ -176,10 +196,16 @@ export default class BarrageManager {
   // API 清空缓存，立即终止
   clear () {
     this.stop()
-    this.each(barrage => barrage.remove())
+
+    this.each(barrage => {
+      barrage.isSpecial
+        ? barrage.remove(this)
+        : barrage.remove()
+    })
 
     this.showBarrages = []
     this.stashBarrages = []
+    this.specialBarrages = []
     this.RuntimeManager.container = []
     this.RuntimeManager.resize()
 
@@ -187,10 +213,10 @@ export default class BarrageManager {
   }
 
   // 判断是否超过容量
-  assertCapcity (n) {
-    const res = n + this.length > this.opts.opacity
+  assertCapacity (n) {
+    const res = n + this.length > this.opts.capacity
     if (res) {
-      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
+      console.warn(`The number of barrage is greater than "${this.opts.capacity}".`)
     }
     return res
   }
@@ -199,7 +225,7 @@ export default class BarrageManager {
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
       const { rows, rowGap } = this.RuntimeManager
-      let length = this.opts.limit - this.showBarrages.length
+      let length = this.opts.limit - this.showLength
 
       // 一次弹出的弹幕最多只能把所有的轨道塞满
       // 如果大于轨道树就需要优化，避免不必要的计（实测，内存占用好像区别不大...）
@@ -230,7 +256,7 @@ export default class BarrageManager {
   // 初始化一个弹幕
   initSingleBarrage (data) {
     const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data)
-    const newBarrage = this.sureBarrageInfo(barrage)
+    const newBarrage = barrage && this.sureBarrageInfo(barrage)
 
     if (newBarrage) {
       // 当前这个弹幕需要渲染到屏幕上
@@ -260,6 +286,9 @@ export default class BarrageManager {
         ? max
         : (Math.random() * (max - min) + min).toFixed(0)
     )
+
+    // 时间小于等于 0，将不会渲染
+    if (time <= 0) return null
     
     return new Barrage(
       data,

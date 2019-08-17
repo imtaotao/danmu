@@ -16,6 +16,7 @@ export default class Barrage {
     this.moveing = false
     this.data = itemData
     this.duration = time
+    this.isSpecial = false
     this.trajectory = null
     this.manager = manager
     this.direction = direction
@@ -74,10 +75,8 @@ export default class Barrage {
   }
 
   create () {
-    const node = document.createElement('div')
-    node.id = this.key
-    this.node = node
-    callHook(this.hooks, 'barrageCreate', [node, this])
+    this.node = document.createElement('div')
+    callHook(this.hooks, 'barrageCreate', [this.node, this])
   }
 
   append () {
@@ -124,6 +123,7 @@ export default class Barrage {
     this.deletedInMemory()
   
     callHook(this.hooks, 'barrageDestroy', [this.node, this])
+    this.node = null
   }
 
   // API 暂停当前动画

@@ -1,5 +1,5 @@
 import BarrageManager from './manager'
-import SpecialBarrage from './special'
+import createSpecialBarrage from './special'
 
 function createBarrageManager (opts = {}) {
   opts = Object.assign({
@@ -8,17 +8,13 @@ function createBarrageManager (opts = {}) {
     height: 50, // 弹道的高
     rowGap: 50, // 同一条轨道上两条弹幕的间隔
     isShow: true, // 默认 show
-    capcity: 1024, // 内存中能存放的弹幕数量
+    capacity: 1024, // 内存中能存放的弹幕数量
     times: [8, 15], // 弹幕移动时间取值范围
     interval: 2000, // 轮询间隔时间
     direction: 'right', // 弹幕左边出来还是右边
   }, opts)
 
   return new BarrageManager(opts)
-}
-
-function createSpecialBarrage (opts = {}) {
-  return new SpecialBarrage(opts)
 }
 
 export {
