@@ -74,6 +74,12 @@ export default class BarrageManager {
   // API 遍历在渲染中的节点
   each (cb) {
     if (typeof cb === 'function') {
+      for (let i = 0; i < this.showBarrages.length; i++) {
+        const barrage = this.showBarrages[i]
+        if (barrage.moveing) {
+          cb(barrage, i)
+        }
+      }
       this.showBarrages.forEach(cb)
     }
     return this
@@ -158,6 +164,7 @@ export default class BarrageManager {
   // 初始化弹幕
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
+      const { rows, rowGap } = this.RuntimeManager
       let length = this.opts.limit - this.showBarrages.length
 
       // 一次弹出的弹幕最多只能把所有的轨道塞满
@@ -165,7 +172,7 @@ export default class BarrageManager {
       // 但是如果我们发现 rowGap <= 0，就是没有限制，那么弹幕会实时出现
       // 所有的轨道都会不停出现弹幕，就要去掉这个优化
       // 但此时如果不小心就会导致内存飙升，这个种场景适合弹幕立即发送，立即出现的场景
-      if (length > this.RuntimeManager.rows && this.RuntimeManager.rowGap > 0) {
+      if (rowGap > 0 && length > rows) {
         length = this.RuntimeManager.rows
       }
 

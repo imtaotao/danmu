@@ -267,7 +267,7 @@ class RuntimeManager {
     const index = this.getRandomIndex(alreadyFound);
     const currentTrajectory = this.container[index];
     const lastBarrage = lastElement(currentTrajectory.values, 1);
-    if (!lastBarrage) {
+    if (this.rowGap <= 0 || !lastBarrage) {
       return currentTrajectory
     }
     alreadyFound.push(index);
@@ -401,6 +401,12 @@ class BarrageManager {
   }
   each (cb) {
     if (typeof cb === 'function') {
+      for (let i = 0; i < this.showBarrages.length; i++) {
+        const barrage = this.showBarrages[i];
+        if (barrage.moveing) {
+          cb(barrage, i);
+        }
+      }
       this.showBarrages.forEach(cb);
     }
     return this
@@ -463,8 +469,9 @@ class BarrageManager {
   }
   renderBarrage () {
     if (this.stashBarrages.length > 0) {
+      const { rows, rowGap } = this.RuntimeManager;
       let length = this.opts.limit - this.showBarrages.length;
-      if (length > this.RuntimeManager.rows && this.RuntimeManager.rowGap > 0) {
+      if (rowGap > 0 && length > rows) {
         length = this.RuntimeManager.rows;
       }
       if (length > this.stashBarrages.length) {

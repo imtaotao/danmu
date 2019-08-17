@@ -89,7 +89,7 @@ export default class RuntimeManager {
     const currentTrajectory = this.container[index]
     const lastBarrage = lastElement(currentTrajectory.values, 1)
 
-    if (!lastBarrage) {
+    if (this.rowGap <= 0 || !lastBarrage) {
       return currentTrajectory
     }
 

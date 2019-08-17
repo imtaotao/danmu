@@ -256,7 +256,11 @@
     </div>
 
     <div class='item'>
-      <span>clear: </span>
+      
+    </div>
+
+    <div class='item'>
+      <div class='button' style='width: 80px;' id='responsive'>实时响应</div>
       <div class='button margin' id='clear'>清空</div>
     </div>
 
@@ -291,7 +295,7 @@
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [7, 14], // 弹幕动画的时间取值范围
-      limit: 100, // 能够渲染的最大数量
+      limit: 50, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
         // 弹幕创建时
@@ -385,7 +389,7 @@
     // 模拟从服务器得到的数据，不停的发送
     setInterval(() => {
       b.send(testData)
-    }, 500)
+    }, 200)
   </script>
 
   <script>
@@ -528,6 +532,16 @@
       b.container.style.transform = 'translateY(100%)'
       b.resize()
       toggle(bottomArea)
+    }
+
+    // 实时响应
+    responsive.onclick = e => {
+      b.setOptions({
+        rowGap: -1,
+        limit: Infinity,
+      })
+      rowGap.value = -1
+      limit.value = Infinity
     }
   </script>
 </body>
