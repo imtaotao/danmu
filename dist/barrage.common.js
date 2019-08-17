@@ -813,6 +813,11 @@ function () {
       return this.stashBarrages.length;
     }
   }, {
+    key: "specialLength",
+    get: function get() {
+      return this.specialBarrages.length;
+    }
+  }, {
     key: "showLength",
     get: function get() {
       return this.showBarrages.length + this.specialBarrages.length;

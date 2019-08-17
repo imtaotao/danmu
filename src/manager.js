@@ -19,6 +19,10 @@ export default class BarrageManager {
     return this.stashBarrages.length
   }
 
+  get specialLength () {
+    return this.specialBarrages.length
+  }
+
   get showLength () {
     return this.showBarrages.length + this.specialBarrages.length
   }
