@@ -43,10 +43,10 @@ async function build (cfg, sourcemap = false) {
     plugins: [
       cleanup(),
       resolve(),
-      // babel({
-      //   babelrc: true,
-      //   exclude: 'node_modules/**',
-      // }),
+      babel({
+        babelrc: true,
+        exclude: 'node_modules/**',
+      }),
       cmd(),
     ]
   })

@@ -1,6 +1,7 @@
 import Barrage from './barrage'
 import { callHook } from './utils'
 import RuntimeManager from './runtime'
+import SpecialBarrage from './special'
 
 export default class BarrageManager {
   constructor (opts) {
@@ -8,40 +9,60 @@ export default class BarrageManager {
     this.loopTimer = null
     this.showBarrages = [] // 渲染在页面上的弹幕数量
     this.stashBarrages = []// 暂存的弹幕数量
+    this.specialBarrages = [] // 特殊弹幕，特殊弹幕立即发立即渲染，移动完毕结束
     this.isShow = opts.isShow
     this.container = opts.container
     this.RuntimeManager = new RuntimeManager(opts)
-  }
-
-  get length () {
-    return this.showBarrages.length + this.stashBarrages.length
-  }
-
-  get showLength () {
-    return this.showBarrages.length
   }
 
   get stashLength () {
     return this.stashBarrages.length
   }
 
+  get showLength () {
+    return this.showBarrages.length + this.specialBarrages.length
+  }
+
+  get length () {
+    return this.showBarrages.length + this.specialBarrages.length + this.stashBarrages.length
+  }
+
   get runing () {
     return this.loopTimer !== null
   }
 
-  // API 发送弹幕
+  // API 发送普通弹幕
   send (data) {
-    if (!Array.isArray(data)) {
-      data = [data]
-    }
-
-    if (data.length + this.length > this.opts.capcity) {
-      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
-      return false
-    }
+    if (!Array.isArray(data)) data = [data]
+    if (this.assertCapcity(data.length)) return false
 
     this.stashBarrages.push.apply(this.stashBarrages, data)
     callHook(this.opts.hooks, 'send', [this, data])
+    return true
+  }
+
+  // API 发送特殊弹幕
+  sendSpecial (data) {
+    if (!Array.isArray(data)) data = [data]
+    if (this.assertCapcity(data.length)) return false
+
+    for (let i = 0; i < data.length; i++) {
+      const barrage = data[i]
+
+      if (barrage instanceof SpecialBarrage) {
+        this.specialBarrages.push(barrage)
+        barrage.append(this)
+        this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
+          barrage.destroy(this)
+          if (this.length === 0) {
+            callHook(this.opts.hooks, 'ended', [this])
+          }
+        })
+      }
+    }
+
+    callHook(this.opts.hooks, 'send', [this, data])
+    callHook(this.opts.hooks, 'sendSpecial', [this, data])
     return true
   }
 
@@ -159,6 +180,15 @@ export default class BarrageManager {
     this.RuntimeManager.resize()
 
     callHook(this.opts.hooks, 'clear', [this])
+  }
+
+  // 判断是否超过容量
+  assertCapcity (n) {
+    const res = n + this.length > this.opts.opacity
+    if (res) {
+      console.warn(`The number of barrage is greater than "${this.opts.capcity}".`)
+    }
+    return res
   }
 
   // 初始化弹幕

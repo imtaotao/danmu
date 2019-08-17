@@ -1,6 +1,7 @@
 import BarrageManager from './manager'
+import SpecialBarrage from './special'
 
-function createBarrage (opts = {}) {
+function createBarrageManager (opts = {}) {
   opts = Object.assign({
     hooks: {}, // 钩子函数
     limit: 50, // 页面上允许渲染的数量
@@ -16,4 +17,16 @@ function createBarrage (opts = {}) {
   return new BarrageManager(opts)
 }
 
-export default createBarrage
+function createSpecialBarrage (opts = {}) {
+  return new SpecialBarrage(opts)
+}
+
+export {
+  createSpecialBarrage,
+  createBarrageManager as create,
+}
+
+export default {
+  createSpecialBarrage,
+  create: createBarrageManager
+}

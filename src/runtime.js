@@ -8,6 +8,7 @@ import {
   transitionProp,
   whenTransitionEnds,
 } from './utils'
+import SpecialBarrage from './special'
 
 export default class RuntimeManager {
   constructor (opts) {
@@ -192,6 +193,13 @@ export default class RuntimeManager {
         callHook(barrage.hooks, 'barrageMove', [node, barrage])
         resolve(whenTransitionEnds(node))
       })
+    })
+  }
+
+  // 移动特殊弹幕
+  moveSpecialBarrage (barrage, manager) {
+    return new Promise(resolve => {
+
     })
   }
 }
