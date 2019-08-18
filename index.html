@@ -402,9 +402,10 @@
     b.start()
 
     // 模拟从服务器得到的数据，不停的发送
-    // setInterval(() => {
+    setInterval(() => {
       b.send(testData)
-    // }, 200)
+    }, 200)
+
     b.sendSpecial({
       position (barrage) {
         return {
