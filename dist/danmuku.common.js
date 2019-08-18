@@ -767,12 +767,12 @@ class BarrageManager {
 function createBarrageManager (opts = {}) {
   opts = Object.assign({
     hooks: {},
-    limit: 50,
+    limit: 100,
     height: 50,
     rowGap: 50,
     isShow: true,
     capacity: 1024,
-    times: [8, 15],
+    times: [5, 10],
     interval: 2000,
     direction: 'right',
   }, opts);
