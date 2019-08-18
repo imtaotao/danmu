@@ -6,7 +6,8 @@
   "module": "dist/danmuku.esm.js",
   "scripts": {
     "dev": "node build.js -w",
-    "build": "node build.js"
+    "build": "node build.js",
+    "publish": "npm version major"
   },
   "author": "imtaotao",
   "license": "ISC",
@@ -20,7 +21,12 @@
     "rollup-plugin-commonjs": "^10.0.2",
     "rollup-plugin-node-resolve": "^5.2.0"
   },
-  "keywords": ["barrage", "danmuku", "css3", "dom"],
+  "keywords": [
+    "barrage",
+    "danmuku",
+    "css3",
+    "dom"
+  ],
   "homepage": "https://github.com/imtaotao/danmuku",
   "repository": "https://github.com/imtaotao/danmuku.git",
   "bugs": {
