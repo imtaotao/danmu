@@ -520,6 +520,7 @@
     // 发送弹幕
     send.onclick = e => {
       b.send({ content: barrageText.value })
+      barrageText.value = ''
     }
 
     clear.onclick = e => {
