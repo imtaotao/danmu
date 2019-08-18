@@ -60,17 +60,17 @@ export default class BarrageManager {
     if (this.assertCapacity(data.length)) return false
 
     for (let i = 0; i < data.length; i++) {
-      const barrage =  createSpecialBarrage(data[i])
+      const barrage =  createSpecialBarrage(this, data[i])
       // 如果当前这个特殊弹幕时间小于等于 0，就不需要渲染
       if (barrage.opts.duration <= 0) continue
 
-      barrage.create(this)
-      barrage.append(this)
+      barrage.create()
+      barrage.append()
       this.specialBarrages.push(barrage)
 
       // 结束后销毁
       this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
-        barrage.destroy(this)
+        barrage.destroy()
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this])
         }

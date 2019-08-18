@@ -163,6 +163,7 @@
       color: #fff;
       text-align: center;
       border: 2px solid #fff;
+      cursor: pointer;
     }
 
     input[type=range] {
@@ -408,12 +409,12 @@
     b.sendSpecial({
       position (barrage) {
         return {
-          x: b.containerWidth / 2 + 'px',
-          y: '10px',
+          x: b.containerWidth / 2 ,
+          y: 100,
         }
       },
-      direction: 'none',
-      duration: 3,
+      direction: 'right',
+      duration: 13,
       hooks: {
         create (node) {
           node.textContent = '这是一条高级弹幕'

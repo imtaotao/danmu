@@ -207,23 +207,27 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       const { x = 0, y = 0 } = opts.position(barrage)
-      const xStyle = `translateX(${x})`
-      const yStyle = `translateY(${y})`
+      const translateX = `translateX(${x}px)`
+      const translateY = `translateY(${y}px)`
 
-      node.style.transform = xStyle + yStyle
+      node.style.transform = translateX + translateY
 
       // 是否移动
       nextFrame(() => {
         if (opts.direction === 'none') {
           // 稍微移动一点点，以便触发动画回调
-          node.style.transform = xStyle + yStyle + `translateX(${Number.MIN_VALUE}px)`
+          node.style.transform = translateX + translateY + `translateX(${Number.MIN_VALUE}px)`
         } else {
           const isNegative = opts.direction === 'left' ? 1 : -1
-          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${yStyle}`
+          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${translateY}`
         }
 
-        barrage.moveing = true
         node.style[transitionProp] = `transform linear ${opts.duration}s`
+
+        // 设置弹幕的运动信息
+        barrage.moveing = true
+        barrage.timeInfo.startTime = Date.now()
+        barrage.startPosition = { x, y }
 
         callHook(barrage.hooks, 'move', [node, barrage])
         callHook(manager.opts.hooks, 'barrageMove', [node, barrage])
