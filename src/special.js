@@ -21,6 +21,7 @@ export class SpecialBarrage {
     this.data = opts.data || null
     this.key = opts.key || createKey()
 
+    this.moveTimer = null // 当 direction 为 none, 用此变量保存定时器
     this.timeInfo = {
       pauseTime: 0, // 总共暂停了多少时间
       startTime: null, // 开始移动的时间
@@ -48,40 +49,80 @@ export class SpecialBarrage {
     callHook(this.manager.opts.hooks, 'barrageCreate', [this.node, this])
   }
 
-  getMovePrecent () {
+  getMovePercent () {
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo
     const currentTime = this.paused ? prevPauseTime : Date.now()
 
     return (currentTime - startTime - pauseTime) / 1000 / this.opts.duration
   }
 
-  pause () {
-    if (!this.moveing || this.paused) return
+  // (allDis - start) * percent
+  getMoveDistance (direction, startPosition) {
+    if (!this.moveing) return 0
+    const percent = this.getMovePercent()
     
-    const direction = this.opts.direction
-    const totalDistance = direction === 'none'
-      ? Number.MIN_VALUE
-      : this.RuntimeManager.containerWidth + this.getWidth()
-    const { x, y } = this.startPosition
-    let moveDistance = this.getMovePrecent() * totalDistance
-
-    if (direction === 'right') {
-      // moveDistance *= -1
+    if (direction === 'none') {
+      return startPosition
     }
 
-    console.log(moveDistance);
+    if (direction === 'left') {
+      const realMoveDistance = (this.RuntimeManager.containerWidth - startPosition) * percent
+      return startPosition + realMoveDistance
+    } else {
+      const allMoveDistance = startPosition + this.getWidth()
+      return startPosition - allMoveDistance * percent
+    }
+  }
 
+  pause () {
+    if (!this.moveing || this.paused) return
     this.paused = true
     this.timeInfo.prevPauseTime = Date.now()
+    const direction = this.opts.direction
 
-    this.node.style[transitionDuration] = '0s'
-    // this.node.style.transform = `translateX(${moveDistance}px) ${translateY}`
+    if (direction === 'none') {
+      // 删除定时器
+      if (this.moveTimer) {
+        this.moveTimer.clear()
+      }
+    } else {
+      const { x, y } = this.startPosition
+      const moveDistance = this.getMoveDistance(direction, x)
+      
+      this.node.style[transitionDuration] = '0s'
+      this.node.style.transform = `translateX(${moveDistance}px) translateY(${y}px)`
+    }
   }
 
   resume () {
     if (!this.moveing || !this.paused) return
 
     this.paused = false
+    this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime
+    this.timeInfo.prevPauseTime = null
+
+    const direction = this.opts.direction
+    const remainingTime = (1 - this.getMovePercent()) * this.opts.duration
+
+    if (direction === 'none') {
+      // 重新设置定时器
+      const fn = this.moveTimer.callback || (() => {})
+      let timer = setTimeout(fn, remainingTime * 1000)
+
+      this.moveTimer.clear = () => {
+        clearTimeout(timer)
+        timer = null
+      }
+    } else {
+      // 重新设置 style
+      const { x, y } = this.startPosition
+      const endPosition = this.opts.direction === 'left'
+            ? this.RuntimeManager.containerWidth
+            : -this.getWidth()
+
+      this.node.style[transitionDuration] = `${remainingTime}s`
+      this.node.style.transform = `translateX(${endPosition}px) translateY(${y}px)`
+    }
   }
 
   append () {
@@ -108,9 +149,16 @@ export class SpecialBarrage {
     this.remove()
     this.moveing = false
 
+    // 清除保存起来的，防止内存泄漏
     const index = this.manager.specialBarrages.indexOf(this)
     if (~index) {
       this.manager.specialBarrages.splice(index, 1)
+    }
+
+    // 如果存在定时器，清除
+    if (this.moveTimer) {
+      this.moveTimer.clear()
+      this.moveTimer = null
     }
 
     callHook(this.hooks, 'destroy', [this.node, this])

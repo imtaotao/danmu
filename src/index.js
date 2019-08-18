@@ -16,6 +16,7 @@ function createBarrageManager (opts = {}) {
   return new BarrageManager(opts)
 }
 
+// 以后可能增加新的 api
 export default {
   create: createBarrageManager,
 }

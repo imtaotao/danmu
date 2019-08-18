@@ -61,8 +61,12 @@ export default class BarrageManager {
 
     for (let i = 0; i < data.length; i++) {
       const barrage =  createSpecialBarrage(this, data[i])
+
       // 如果当前这个特殊弹幕时间小于等于 0，就不需要渲染
-      if (barrage.opts.duration <= 0) continue
+      // 如果渲染此视图会大于限制的数，也不应该渲染
+      if (barrage.opts.duration <= 0 || this.showLength + 1 > this.opts.limit) {
+        continue
+      }
 
       barrage.create()
       barrage.append()

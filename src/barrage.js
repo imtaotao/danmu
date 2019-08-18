@@ -36,7 +36,8 @@ export default class Barrage {
     this.create()
   }
 
-  getMovePrecent () {
+  // API
+  getMovePercent () {
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo
     const currentTime = this.paused ? prevPauseTime : Date.now()
 
@@ -46,20 +47,21 @@ export default class Barrage {
   // 得到当前移动了多少距离
   getMoveDistance (fix = true) {
     if (!this.moveing) return 0
-    const percent = this.getMovePrecent()
+    const percent = this.getMovePercent()
     const containerWidth = this.RuntimeManager.containerWidth + (
       fix
         ? this.getWidth()
         : 0
     )
-
     return percent * containerWidth
   }
 
+  // API
   getHeight () {
     return (this.node && this.node.clientHeight) || 0
   }
 
+  // API
   getWidth () {
     return (this.node && this.node.clientWidth) || 0
   }
@@ -98,7 +100,7 @@ export default class Barrage {
     }
   }
 
-  // API 销毁当前节点
+  // 从内从中清除当前的节点
   deletedInMemory () {
     let index = -1
     const trajectory = this.trajectory
@@ -129,7 +131,6 @@ export default class Barrage {
   // API 暂停当前动画
   pause () {
     if (!this.moveing || this.paused) return
-
     let moveDistance = this.getMoveDistance()
   
     if (!Number.isNaN(moveDistance)) {
@@ -157,7 +158,7 @@ export default class Barrage {
     
     const isNegative = this.direction === 'left' ? 1 : -1
     const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
-    const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration
+    const remainingTime = (1 - this.getMovePercent()) * this.duration
 
     this.timeInfo.currentDuration = remainingTime
     this.node.style[transitionDuration] = `${remainingTime}s`

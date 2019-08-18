@@ -132,13 +132,13 @@
     .small-input {
       width: 40px;
       height: 30px;
-      background: rgba(255, 255, 255, 0.1);
       border: none;
       border-radius: 20px;
       padding: 0 10px;
       outline: none;
       font-size: 16px;
       color: #e14eba;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .margin {
@@ -161,9 +161,11 @@
       height: 30px;
       line-height: 30px;
       color: #fff;
+      cursor: pointer;
+      padding: 0 10px;
       text-align: center;
       border: 2px solid #fff;
-      cursor: pointer;
+      background: rgba(124, 35, 191, 0.2);
     }
 
     input[type=range] {
@@ -266,7 +268,8 @@
     </div>
 
     <div class='item'>
-      
+      <div class='button' id='sendSpecial'>发送</div>
+      <input class='input' type='text' placeholder='发送高级弹幕' id='specialBarrage'>
     </div>
 
     <div class='item'>
@@ -305,7 +308,7 @@
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [7, 14], // 弹幕动画的时间取值范围
-      limit: 50, // 能够渲染的最大数量
+      limit: 80, // 能够渲染的最大数量
       interval: 1000,
       hooks: {
         // 弹幕创建时
@@ -326,9 +329,6 @@
 
         // 弹幕渲染到页面上时
         barrageAppend (node, barrage) {
-          if (barrage.isSpecial) {
-            // return
-          }
           node.onmouseenter = e => {
             barrage.pause()
             node.classList.add('active')
@@ -406,26 +406,6 @@
     setInterval(() => {
       b.send(testData)
     }, 200)
-
-    b.sendSpecial({
-      position (barrage) {
-        return {
-          x: b.containerWidth / 2 ,
-          y: 100,
-        }
-      },
-      direction: 'right',
-      duration: 13,
-      hooks: {
-        create (node) {
-          node.textContent = '这是一条高级弹幕'
-          node.classList.add('special-barrage')
-        },
-        destroy () {
-          console.log(121);
-        }
-      }
-    })
   </script>
 
   <script>
@@ -523,6 +503,35 @@
       barrageText.value = ''
     }
 
+    // 发送高级弹幕
+    sendSpecial.onclick = e => {
+      const text = specialBarrage.value
+      const directions = ['right', 'left', 'none']
+      const random = (min, max) => +(Math.random() * (max - min) + min).toFixed(0)
+      specialBarrage.value = ''
+
+      b.sendSpecial({
+        duration: random(3, 5),
+        direction: directions[random(0, 2)],
+        position (barrage) {
+          return {
+            x: b.containerWidth / 2 ,
+            y: 100,
+          }
+        },
+        hooks: {
+          create (node) {
+            node.textContent = `高级弹幕--${text}`
+            node.classList.add('special-barrage')
+          },
+          destroy () {
+            console.log('高级弹幕销毁')
+          }
+        }
+      })
+    }
+
+    // 清空弹幕
     clear.onclick = e => {
       b.clear()
     }

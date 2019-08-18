@@ -132,7 +132,7 @@ export default class RuntimeManager {
   
     // 把此次弹幕运动时间修改为上一个弹幕移除屏幕的时间，这样追尾的情况在刚刚移除视图的时候进行
     const containerWidth = this.containerWidth + currentWidth + prevWidth
-    const remainingTime = (1 - prevBarrage.getMovePrecent()) * prevBarrage.duration
+    const remainingTime = (1 - prevBarrage.getMovePercent()) * prevBarrage.duration
 
     // c1 / t1 = c2 / t2 => t2 = c2 * t1 / c1
     return containerWidth * remainingTime / this.containerWidth
@@ -207,31 +207,47 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       const { x = 0, y = 0 } = opts.position(barrage)
-      const translateX = `translateX(${x}px)`
-      const translateY = `translateY(${y}px)`
+      const setStyle = (a, b) => `translateX(${a}px) translateY(${b}px)`
 
-      node.style.transform = translateX + translateY
+      node.style.transform = setStyle(x, y)
 
       // 是否移动
       nextFrame(() => {
-        if (opts.direction === 'none') {
-          // 稍微移动一点点，以便触发动画回调
-          node.style.transform = translateX + translateY + `translateX(${Number.MIN_VALUE}px)`
-        } else {
-          const isNegative = opts.direction === 'left' ? 1 : -1
-          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${translateY}`
-        }
-
-        node.style[transitionProp] = `transform linear ${opts.duration}s`
-
         // 设置弹幕的运动信息
         barrage.moveing = true
         barrage.timeInfo.startTime = Date.now()
         barrage.startPosition = { x, y }
 
+        if (opts.direction === 'none') {
+          // 如果不需要移动就使用定时器，到达时间调用 resolve
+          const fn = () => {
+            barrage.moveTimer.clear()
+            barrage.moveTimer = null
+            resolve()
+          }
+
+          let timer = setTimeout(fn, opts.duration * 1000)
+
+          // 保存起来，以便暂停的时候清空
+          barrage.moveTimer = {
+            callback: fn,
+            clear () {
+              clearTimeout(timer)
+              timer = null
+            }
+          }
+        } else {
+          const endPosition = opts.direction === 'left'
+            ? this.containerWidth
+            : -barrage.getWidth()
+
+          node.style.transform = setStyle(endPosition, y)
+          node.style[transitionProp] = `transform linear ${opts.duration}s`
+          resolve(whenTransitionEnds(node))
+        }
+
         callHook(barrage.hooks, 'move', [node, barrage])
         callHook(manager.opts.hooks, 'barrageMove', [node, barrage])
-        resolve(whenTransitionEnds(node))
       })
     })
   }

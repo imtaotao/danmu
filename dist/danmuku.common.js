@@ -97,14 +97,14 @@ class Barrage {
     };
     this.create();
   }
-  getMovePrecent () {
+  getMovePercent () {
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
     const currentTime = this.paused ? prevPauseTime : Date.now();
     return (currentTime - startTime - pauseTime) / 1000 / this.duration
   }
   getMoveDistance (fix = true) {
     if (!this.moveing) return 0
-    const percent = this.getMovePrecent();
+    const percent = this.getMovePercent();
     const containerWidth = this.RuntimeManager.containerWidth + (
       fix
         ? this.getWidth()
@@ -185,7 +185,7 @@ class Barrage {
     this.timeInfo.prevPauseTime = null;
     const isNegative = this.direction === 'left' ? 1 : -1;
     const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
-    const remainingTime = (1 - this.getMoveDistance() / containerWidth) * this.duration;
+    const remainingTime = (1 - this.getMovePercent()) * this.duration;
     this.timeInfo.currentDuration = remainingTime;
     this.node.style[transitionDuration] = `${remainingTime}s`;
     this.node.style.transform = `translateX(${containerWidth * isNegative}px)`;
@@ -297,7 +297,7 @@ class RuntimeManager {
       return null
     }
     const containerWidth = this.containerWidth + currentWidth + prevWidth;
-    const remainingTime = (1 - prevBarrage.getMovePrecent()) * prevBarrage.duration;
+    const remainingTime = (1 - prevBarrage.getMovePercent()) * prevBarrage.duration;
     return containerWidth * remainingTime / this.containerWidth
   }
   move (barrage, manager) {
@@ -349,23 +349,36 @@ class RuntimeManager {
     node.style.visibility = manager.isShow ? 'visible' : 'hidden';
     return new Promise(resolve => {
       const { x = 0, y = 0 } = opts.position(barrage);
-      const translateX = `translateX(${x}px)`;
-      const translateY = `translateY(${y}px)`;
-      node.style.transform = translateX + translateY;
+      const setStyle = (a, b) => `translateX(${a}px) translateY(${b}px)`;
+      node.style.transform = setStyle(x, y);
       nextFrame(() => {
-        if (opts.direction === 'none') {
-          node.style.transform = translateX + translateY + `translateX(${Number.MIN_VALUE}px)`;
-        } else {
-          const isNegative = opts.direction === 'left' ? 1 : -1;
-          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${translateY}`;
-        }
-        node.style[transitionProp] = `transform linear ${opts.duration}s`;
         barrage.moveing = true;
         barrage.timeInfo.startTime = Date.now();
         barrage.startPosition = { x, y };
+        if (opts.direction === 'none') {
+          const fn = () => {
+            barrage.moveTimer.clear();
+            barrage.moveTimer = null;
+            resolve();
+          };
+          let timer = setTimeout(fn, opts.duration * 1000);
+          barrage.moveTimer = {
+            callback: fn,
+            clear () {
+              clearTimeout(timer);
+              timer = null;
+            }
+          };
+        } else {
+          const endPosition = opts.direction === 'left'
+            ? this.containerWidth
+            : -barrage.getWidth();
+          node.style.transform = setStyle(endPosition, y);
+          node.style[transitionProp] = `transform linear ${opts.duration}s`;
+          resolve(whenTransitionEnds(node));
+        }
         callHook(barrage.hooks, 'move', [node, barrage]);
         callHook(manager.opts.hooks, 'barrageMove', [node, barrage]);
-        resolve(whenTransitionEnds(node));
       });
     })
   }
@@ -384,6 +397,7 @@ class SpecialBarrage {
     this.hooks = opts.hooks;
     this.data = opts.data || null;
     this.key = opts.key || createKey();
+    this.moveTimer = null;
     this.timeInfo = {
       pauseTime: 0,
       startTime: null,
@@ -406,27 +420,63 @@ class SpecialBarrage {
     callHook(this.hooks, 'create', [this.node, this]);
     callHook(this.manager.opts.hooks, 'barrageCreate', [this.node, this]);
   }
-  getMovePrecent () {
+  getMovePercent () {
     const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
     const currentTime = this.paused ? prevPauseTime : Date.now();
     return (currentTime - startTime - pauseTime) / 1000 / this.opts.duration
   }
+  getMoveDistance (direction, startPosition) {
+    if (!this.moveing) return 0
+    const percent = this.getMovePercent();
+    if (direction === 'none') {
+      return startPosition
+    }
+    if (direction === 'left') {
+      const realMoveDistance = (this.RuntimeManager.containerWidth - startPosition) * percent;
+      return startPosition + realMoveDistance
+    } else {
+      const allMoveDistance = startPosition + this.getWidth();
+      return startPosition - allMoveDistance * percent
+    }
+  }
   pause () {
     if (!this.moveing || this.paused) return
-    const direction = this.opts.direction;
-    const totalDistance = direction === 'none'
-      ? Number.MIN_VALUE
-      : this.RuntimeManager.containerWidth + this.getWidth();
-    const { x, y } = this.startPosition;
-    let moveDistance = this.getMovePrecent() * totalDistance;
-    console.log(moveDistance);
     this.paused = true;
     this.timeInfo.prevPauseTime = Date.now();
-    this.node.style[transitionDuration] = '0s';
+    const direction = this.opts.direction;
+    if (direction === 'none') {
+      if (this.moveTimer) {
+        this.moveTimer.clear();
+      }
+    } else {
+      const { x, y } = this.startPosition;
+      const moveDistance = this.getMoveDistance(direction, x);
+      this.node.style[transitionDuration] = '0s';
+      this.node.style.transform = `translateX(${moveDistance}px) translateY(${y}px)`;
+    }
   }
   resume () {
     if (!this.moveing || !this.paused) return
     this.paused = false;
+    this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime;
+    this.timeInfo.prevPauseTime = null;
+    const direction = this.opts.direction;
+    const remainingTime = (1 - this.getMovePercent()) * this.opts.duration;
+    if (direction === 'none') {
+      const fn = this.moveTimer.callback || (() => {});
+      let timer = setTimeout(fn, remainingTime * 1000);
+      this.moveTimer.clear = () => {
+        clearTimeout(timer);
+        timer = null;
+      };
+    } else {
+      const { x, y } = this.startPosition;
+      const endPosition = this.opts.direction === 'left'
+            ? this.RuntimeManager.containerWidth
+            : -this.getWidth();
+      this.node.style[transitionDuration] = `${remainingTime}s`;
+      this.node.style.transform = `translateX(${endPosition}px) translateY(${y}px)`;
+    }
   }
   append () {
     warning(this.container, 'Need container element.');
@@ -450,6 +500,10 @@ class SpecialBarrage {
     const index = this.manager.specialBarrages.indexOf(this);
     if (~index) {
       this.manager.specialBarrages.splice(index, 1);
+    }
+    if (this.moveTimer) {
+      this.moveTimer.clear();
+      this.moveTimer = null;
     }
     callHook(this.hooks, 'destroy', [this.node, this]);
     callHook(this.manager.opts.hooks, 'barrageDestroy', [this.node, this]);
@@ -511,7 +565,9 @@ class BarrageManager {
     if (this.assertCapacity(data.length)) return false
     for (let i = 0; i < data.length; i++) {
       const barrage =  createSpecialBarrage(this, data[i]);
-      if (barrage.opts.duration <= 0) continue
+      if (barrage.opts.duration <= 0 || this.showLength + 1 > this.opts.limit) {
+        continue
+      }
       barrage.create();
       barrage.append();
       this.specialBarrages.push(barrage);
