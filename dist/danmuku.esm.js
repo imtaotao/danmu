@@ -307,7 +307,7 @@ class RuntimeManager {
     return new Promise(resolve => {
       nextFrame(() => {
         const width = barrage.getWidth();
-        const des = barrage.direction === 'left' ? 1 : -1;
+        const isNegative = barrage.direction === 'left' ? 1 : -1;
         const containerWidth = this.containerWidth + width;
         if (
             prevBarrage &&
@@ -331,7 +331,7 @@ class RuntimeManager {
         node.style.opacity = 1;
         node.style.pointerEvents = manager.isShow ? 'auto' : 'none';
         node.style.visibility = manager.isShow ? 'visible' : 'hidden';
-        node.style.transform = `translateX(${des * (containerWidth)}px)`;
+        node.style.transform = `translateX(${isNegative * (containerWidth)}px)`;
         node.style[transitionProp] = `transform linear ${barrage.duration}s`;
         node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`;
         barrage.moveing = true;
@@ -349,21 +349,22 @@ class RuntimeManager {
     node.style.visibility = manager.isShow ? 'visible' : 'hidden';
     return new Promise(resolve => {
       const { x = 0, y = 0 } = opts.position(barrage);
-      this.moveing = true;
-      callHook(manager.opts.hooks, 'barrageMove', [barrage.node, barrage]);
       const xStyle = `translateX(${x})`;
       const yStyle = `translateY(${y})`;
       node.style.transform = xStyle + yStyle;
-      if (opts.direction === 'none') {
-        setTimeout(resolve, opts.duration);
-      } else {
-        nextFrame(() => {
-          const des = opts.direction === 'left' ? 1 : -1;
-          node.style.transform = `translateX(${des * (this.containerWidth)}px) ${yStyle}`;
-          node.style[transitionProp] = `transform linear ${opts.duration}s`;
-          resolve(whenTransitionEnds(node));
-        });
-      }
+      nextFrame(() => {
+        if (opts.direction === 'none') {
+          node.style.transform = xStyle + yStyle + `translateX(${Number.MIN_VALUE}px)`;
+        } else {
+          const isNegative = opts.direction === 'left' ? 1 : -1;
+          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${yStyle}`;
+        }
+        barrage.moveing = true;
+        node.style[transitionProp] = `transform linear ${opts.duration}s`;
+        callHook(barrage.hooks, 'move', [node, barrage]);
+        callHook(manager.opts.hooks, 'barrageMove', [node, barrage]);
+        resolve(whenTransitionEnds(node));
+      });
     })
   }
 }
@@ -374,6 +375,7 @@ class SpecialBarrage {
     this.node = null;
     this.moveing = false;
     this.isSpecial = true;
+    this.renderTimer = null;
     this.hooks = opts.hooks;
     this.data = opts.data || null;
     this.key = opts.key || createKey();
@@ -699,3 +701,4 @@ var index = {
 };
 
 export default index;
+//# sourceMappingURL=danmuku.esm.js.map

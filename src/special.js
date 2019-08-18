@@ -6,6 +6,7 @@ export class SpecialBarrage {
     this.node = null
     this.moveing = false
     this.isSpecial = true
+    this.renderTimer = null
     this.hooks = opts.hooks
     this.data = opts.data || null
     this.key = opts.key || createKey()

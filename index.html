@@ -412,12 +412,15 @@
           y: '10px',
         }
       },
-      direction: 'left',
+      direction: 'none',
       duration: 3,
       hooks: {
         create (node) {
           node.textContent = '这是一条高级弹幕'
           node.classList.add('special-barrage')
+        },
+        destroy () {
+          console.log(121);
         }
       }
     })

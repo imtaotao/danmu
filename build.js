@@ -69,7 +69,7 @@ if (process.argv.includes('-w')) {
   let i = 0
   fs.watch('./src', () => {
     console.clear()
-    console.log('Rebuild times: ' + ++i)
+    console.log('Rebuild: ' + ++i)
     buildVersion(true)
   })
   buildVersion(true)

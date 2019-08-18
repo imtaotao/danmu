@@ -149,7 +149,7 @@ export default class RuntimeManager {
     return new Promise(resolve => {
       nextFrame(() => {
         const width = barrage.getWidth()
-        const des = barrage.direction === 'left' ? 1 : -1
+        const isNegative = barrage.direction === 'left' ? 1 : -1
         const containerWidth = this.containerWidth + width
 
         // 计算追尾的情况
@@ -182,7 +182,7 @@ export default class RuntimeManager {
         node.style.opacity = 1
         node.style.pointerEvents = manager.isShow ? 'auto' : 'none'
         node.style.visibility = manager.isShow ? 'visible' : 'hidden'
-        node.style.transform = `translateX(${des * (containerWidth)}px)`
+        node.style.transform = `translateX(${isNegative * (containerWidth)}px)`
         node.style[transitionProp] = `transform linear ${barrage.duration}s`
         node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`
 
@@ -207,26 +207,28 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       const { x = 0, y = 0 } = opts.position(barrage)
-
-      this.moveing = true
-      callHook(manager.opts.hooks, 'barrageMove', [barrage.node, barrage])
-
       const xStyle = `translateX(${x})`
       const yStyle = `translateY(${y})`
+
       node.style.transform = xStyle + yStyle
 
       // 是否移动
-      if (opts.direction === 'none') {
-        setTimeout(resolve, opts.duration)
-      } else {
-        nextFrame(() => {
-          const des = opts.direction === 'left' ? 1 : -1
-          node.style.transform = `translateX(${des * (this.containerWidth)}px) ${yStyle}`
-          node.style[transitionProp] = `transform linear ${opts.duration}s`
+      nextFrame(() => {
+        if (opts.direction === 'none') {
+          // 稍微移动一点点，以便触发动画回调
+          node.style.transform = xStyle + yStyle + `translateX(${Number.MIN_VALUE}px)`
+        } else {
+          const isNegative = opts.direction === 'left' ? 1 : -1
+          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${yStyle}`
+        }
 
-          resolve(whenTransitionEnds(node))
-        })
-      }
+        barrage.moveing = true
+        node.style[transitionProp] = `transform linear ${opts.duration}s`
+
+        callHook(barrage.hooks, 'move', [node, barrage])
+        callHook(manager.opts.hooks, 'barrageMove', [node, barrage])
+        resolve(whenTransitionEnds(node))
+      })
     })
   }
 }
