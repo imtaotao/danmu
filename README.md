@@ -2,7 +2,7 @@
 这是一个弹幕库，使用 `dom + css3` 的方式构建
 
 ## Demo
-[查看demo](https://imtaotao.github.io/barrage)
+[查看demo](https://imtaotao.github.io/danmuku)
 
 实时查看 fps 和 内存占用
 1. 打开 `Chrome DevTools`
