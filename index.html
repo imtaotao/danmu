@@ -189,7 +189,7 @@
   </div>
 
   <div class='operation-panel'>
-    <a class='icon' alt='github' href='https://github.com/imtaotao/barrage'></a>
+    <a class='icon' alt='github' href='https://github.com/imtaotao/danmuku'></a>
     <div class='item tips'>
       点击弹幕会消失
     </div>
@@ -519,6 +519,7 @@
     // 发送弹幕
     send.onclick = e => {
       b.send({ content: barrageText.value })
+      barrageText.value = ''
     }
 
     clear.onclick = e => {
