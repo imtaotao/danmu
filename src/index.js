@@ -1,5 +1,4 @@
 import BarrageManager from './manager'
-import createSpecialBarrage from './special'
 
 function createBarrageManager (opts = {}) {
   opts = Object.assign({
@@ -17,12 +16,6 @@ function createBarrageManager (opts = {}) {
   return new BarrageManager(opts)
 }
 
-export {
-  createSpecialBarrage,
-  createBarrageManager as create,
-}
-
 export default {
-  createSpecialBarrage,
-  create: createBarrageManager
+  create: createBarrageManager,
 }

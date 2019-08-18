@@ -1,7 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 function warning (condition, message) {
   if (condition) return
   throw new Error(`Warning: ${message}`)
@@ -87,7 +83,7 @@ class Barrage {
     this.direction = direction;
     this.container = container;
     this.RuntimeManager = RuntimeManager;
-    this.key = itemData.id || createKey();
+    this.key = itemData.key || createKey();
     this.position = {
       y: null,
     };
@@ -346,12 +342,28 @@ class RuntimeManager {
     })
   }
   moveSpecialBarrage (barrage, manager) {
+    const { node, opts } = barrage;
+    node.style.position = 'absolute';
+    node.style.display = 'inline-block';
+    node.style.pointerEvents = manager.isShow ? 'auto' : 'none';
+    node.style.visibility = manager.isShow ? 'visible' : 'hidden';
     return new Promise(resolve => {
-      const { node, opts } = barrage;
-      console.log(121);
-      node.style.pointerEvents = manager.isShow ? 'auto' : 'none';
-      node.style.visibility = manager.isShow ? 'visible' : 'hidden';
+      const { x = 0, y = 0 } = opts.position(barrage);
+      this.moveing = true;
       callHook(manager.opts.hooks, 'barrageMove', [barrage.node, barrage]);
+      const xStyle = `translateX(${x})`;
+      const yStyle = `translateY(${y})`;
+      node.style.transform = xStyle + yStyle;
+      if (opts.direction === 'none') {
+        setTimeout(resolve, opts.duration);
+      } else {
+        nextFrame(() => {
+          const des = opts.direction === 'left' ? 1 : -1;
+          node.style.transform = `translateX(${des * (this.containerWidth)}px) ${yStyle}`;
+          node.style[transitionProp] = `transform linear ${opts.duration}s`;
+          resolve(whenTransitionEnds(node));
+        });
+      }
     })
   }
 }
@@ -360,9 +372,17 @@ class SpecialBarrage {
   constructor (opts) {
     this.opts = opts;
     this.node = null;
+    this.moveing = false;
     this.isSpecial = true;
+    this.hooks = opts.hooks;
     this.data = opts.data || null;
-    this.key = opts.id || createKey();
+    this.key = opts.key || createKey();
+    this.timeInfo = {
+      pauseTime: 0,
+      startTime: null,
+      prevPauseTime: null,
+      currentDuration: opts.duration,
+    };
   }
   getHeight () {
     return (this.node && this.node.clientHeight) || 0
@@ -372,12 +392,19 @@ class SpecialBarrage {
   }
   create (manager) {
     this.node = document.createElement('div');
+    callHook(this.hooks, 'create', [this.node, this]);
     callHook(manager.opts.hooks, 'barrageCreate', [this.node, this]);
+  }
+  getMovePrecent () {
+    const { pauseTime, startTime, prevPauseTime } = this.timeInfo;
+    const currentTime = this.paused ? prevPauseTime : Date.now();
+    return (currentTime - startTime - pauseTime) / 1000 / this.duration
   }
   append (manager) {
     warning(manager.container, 'Need container element.');
     if (this.node) {
       manager.container.appendChild(this.node);
+      callHook(this.hooks, 'append', [this.node, this]);
       callHook(manager.opts.hooks, 'barrageAppend', [this.node, this]);
     }
   }
@@ -385,25 +412,28 @@ class SpecialBarrage {
     warning(manager.container, 'Need container element.');
     if (this.node) {
       manager.container.removeChild(this.node);
+      callHook(this.hooks, 'remove', [this.node, this]);
       callHook(manager.opts.hooks, 'barrageRemove', [this.node, this]);
     }
   }
   destroy (manager) {
     this.remove(manager);
+    this.moveing = false;
     const index = manager.specialBarrages.indexOf(this);
     if (~index) {
       manager.specialBarrages.splice(index, 1);
     }
+    callHook(this.hooks, 'destroy', [this.node, this]);
     callHook(manager.opts.hooks, 'barrageDestroy', [this.node, this]);
     this.node = null;
   }
 }
 function createSpecialBarrage (opts = {}) {
   opts = Object.assign({
-    x: 0,
-    y: 0,
+    hooks: {},
     duration: 0,
-    move: 'none',
+    direction: 'none',
+    position: () => ({ x: 0, y: 0 }),
   }, opts);
   return new SpecialBarrage(opts)
 }
@@ -452,19 +482,17 @@ class BarrageManager {
     if (!Array.isArray(data)) data = [data];
     if (this.assertCapacity(data.length)) return false
     for (let i = 0; i < data.length; i++) {
-      const barrage = data[i];
-      if (barrage instanceof SpecialBarrage) {
-        if (barrage.opts.duration <= 0) continue
-        barrage.create(this);
-        barrage.append(this);
-        this.specialBarrages.push(barrage);
-        this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
-          barrage.destroy(this);
-          if (this.length === 0) {
-            callHook(this.opts.hooks, 'ended', [this]);
-          }
-        });
-      }
+      const barrage =  createSpecialBarrage(data[i]);
+      if (barrage.opts.duration <= 0) continue
+      barrage.create(this);
+      barrage.append(this);
+      this.specialBarrages.push(barrage);
+      this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
+        barrage.destroy(this);
+        if (this.length === 0) {
+          callHook(this.opts.hooks, 'ended', [this]);
+        }
+      });
     }
     callHook(this.opts.hooks, 'sendSpecial', [this, data]);
     return true
@@ -498,14 +526,14 @@ class BarrageManager {
   each (cb) {
     if (typeof cb === 'function') {
       let i = 0;
-      for (; i < this.showBarrages.length; i++) {
+      for (; i < this.specialBarrages.length; i++) {
+        cb(this.specialBarrages[i], i);
+      }
+      for (i = 0; i < this.showBarrages.length; i++) {
         const barrage = this.showBarrages[i];
         if (barrage.moveing) {
           cb(barrage, i);
         }
-      }
-      for (i = 0; i < this.specialBarrages.length; i++) {
-        cb(this.specialBarrages[i], i);
       }
     }
     return this
@@ -667,10 +695,7 @@ function createBarrageManager (opts = {}) {
   return new BarrageManager(opts)
 }
 var index = {
-  createSpecialBarrage,
-  create: createBarrageManager
+  create: createBarrageManager,
 };
 
-exports.create = createBarrageManager;
-exports.createSpecialBarrage = createSpecialBarrage;
-exports.default = index;
+export default index;

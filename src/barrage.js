@@ -22,13 +22,13 @@ export default class Barrage {
     this.direction = direction
     this.container = container
     this.RuntimeManager = RuntimeManager
-    this.key = itemData.id || createKey()
+    this.key = itemData.key || createKey()
     this.position = {
       y: null,
     }
     this.timeInfo = {
       pauseTime: 0, // 总共暂停了多少时间
-      startTime: null, // 开始移动时间
+      startTime: null, // 开始移动的时间
       prevPauseTime: null, // 上次暂停的时间
       currentDuration: time, // 当前实时运动时间，因为每次暂停会重置 transition duration
     }

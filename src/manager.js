@@ -1,7 +1,7 @@
 import Barrage from './barrage'
 import { callHook } from './utils'
 import RuntimeManager from './runtime'
-import { SpecialBarrage } from './special'
+import createSpecialBarrage from './special'
 
 export default class BarrageManager {
   constructor (opts) {
@@ -60,22 +60,21 @@ export default class BarrageManager {
     if (this.assertCapacity(data.length)) return false
 
     for (let i = 0; i < data.length; i++) {
-      const barrage = data[i]
+      const barrage =  createSpecialBarrage(data[i])
+      // 如果当前这个特殊弹幕时间小于等于 0，就不需要渲染
+      if (barrage.opts.duration <= 0) continue
 
-      if (barrage instanceof SpecialBarrage) {
-        if (barrage.opts.duration <= 0) continue
+      barrage.create(this)
+      barrage.append(this)
+      this.specialBarrages.push(barrage)
 
-        barrage.create(this)
-        barrage.append(this)
-        this.specialBarrages.push(barrage)
-
-        this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
-          barrage.destroy(this)
-          if (this.length === 0) {
-            callHook(this.opts.hooks, 'ended', [this])
-          }
-        })
-      }
+      // 结束后销毁
+      this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
+        barrage.destroy(this)
+        if (this.length === 0) {
+          callHook(this.opts.hooks, 'ended', [this])
+        }
+      })
     }
 
     callHook(this.opts.hooks, 'sendSpecial', [this, data])
@@ -116,15 +115,15 @@ export default class BarrageManager {
   each (cb) {
     if (typeof cb === 'function') {
       let i = 0
-      for (; i < this.showBarrages.length; i++) {
+      for (; i < this.specialBarrages.length; i++) {
+        cb(this.specialBarrages[i], i)
+      }
+
+      for (i = 0; i < this.showBarrages.length; i++) {
         const barrage = this.showBarrages[i]
         if (barrage.moveing) {
           cb(barrage, i)
         }
-      }
-
-      for (i = 0; i < this.specialBarrages.length; i++) {
-        cb(this.specialBarrages[i], i)
       }
     }
     return this
@@ -264,10 +263,9 @@ export default class BarrageManager {
       this.showBarrages.push(newBarrage)
       newBarrage.trajectory.values.push(newBarrage)
 
+      // 弹幕运动结束后删掉
       this.RuntimeManager.move(newBarrage, this).then(() => {
-        // 弹幕运动结束后删掉
         newBarrage.destroy()
-
         if (this.length === 0) {
           callHook(this.opts.hooks, 'ended', [this])
         }

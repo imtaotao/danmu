@@ -1,9 +1,9 @@
 {
-  "name": "@rustle/barrage",
+  "name": "@rustle/danmuku",
   "version": "0.0.1",
   "description": "一个使用 dom + css 构建的弹幕库",
-  "main": "dist/barrage.common.js",
-  "module": "dist/barrage.esm.js",
+  "main": "dist/danmuku.common.js",
+  "module": "dist/danmuku.esm.js",
   "scripts": {
     "dev": "node build.js -w",
     "build": "node build.js"
@@ -20,11 +20,11 @@
     "rollup-plugin-commonjs": "^10.0.2",
     "rollup-plugin-node-resolve": "^5.2.0"
   },
-  "keywords": ["Barrage", "css3", "dom"],
-  "homepage": "https://github.com/imtaotao/barrage",
-  "repository": "https://github.com/imtaotao/barrage.git",
+  "keywords": ["barrage", "danmuku", "css3", "dom"],
+  "homepage": "https://github.com/imtaotao/danmuku",
+  "repository": "https://github.com/imtaotao/danmuku.git",
   "bugs": {
     "email": "dwchentao@163.com",
-    "url": "https://github.com/imtaotao/barrage/issues"
+    "url": "https://github.com/imtaotao/danmuku/issues"
   }
 }

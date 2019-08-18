@@ -197,13 +197,36 @@ export default class RuntimeManager {
 
   // 移动特殊弹幕
   moveSpecialBarrage (barrage, manager) {
-    return new Promise(resolve => {
-      const { node, opts } = barrage
-      console.log(121);
-      node.style.pointerEvents = manager.isShow ? 'auto' : 'none'
-      node.style.visibility = manager.isShow ? 'visible' : 'hidden'
+    const { node, opts } = barrage
 
+    // 先定义样式，后面的计算才会准确
+    node.style.position = 'absolute'
+    node.style.display = 'inline-block'
+    node.style.pointerEvents = manager.isShow ? 'auto' : 'none'
+    node.style.visibility = manager.isShow ? 'visible' : 'hidden'
+
+    return new Promise(resolve => {
+      const { x = 0, y = 0 } = opts.position(barrage)
+
+      this.moveing = true
       callHook(manager.opts.hooks, 'barrageMove', [barrage.node, barrage])
+
+      const xStyle = `translateX(${x})`
+      const yStyle = `translateY(${y})`
+      node.style.transform = xStyle + yStyle
+
+      // 是否移动
+      if (opts.direction === 'none') {
+        setTimeout(resolve, opts.duration)
+      } else {
+        nextFrame(() => {
+          const des = opts.direction === 'left' ? 1 : -1
+          node.style.transform = `translateX(${des * (this.containerWidth)}px) ${yStyle}`
+          node.style[transitionProp] = `transform linear ${opts.duration}s`
+
+          resolve(whenTransitionEnds(node))
+        })
+      }
     })
   }
 }

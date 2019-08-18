@@ -156,6 +156,15 @@
       color: #40f2b2;
     }
 
+    .special-barrage {
+      font-size: 20px;
+      height: 30px;
+      line-height: 30px;
+      color: #fff;
+      text-align: center;
+      border: 2px solid #fff;
+    }
+
     input[type=range] {
       -webkit-appearance: none;
       background: #ed803c;
@@ -276,7 +285,7 @@
   </div>
   <div id='container'></div>
 
-  <script src='./dist/barrage.min.js'></script>
+  <script src='./dist/danmuku.min.js'></script>
   <script>
     const testData = [
       '陈涛',
@@ -289,7 +298,7 @@
     ]
 
     // 测试代码
-    const b = Barrage.create({
+    const b = Danmuku.create({
       container: document.getElementById('container'),
       height: 30, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
@@ -317,7 +326,7 @@
         // 弹幕渲染到页面上时
         barrageAppend (node, barrage) {
           if (barrage.isSpecial) {
-            return
+            // return
           }
           node.onmouseenter = e => {
             barrage.pause()
@@ -393,9 +402,25 @@
     b.start()
 
     // 模拟从服务器得到的数据，不停的发送
-    setInterval(() => {
+    // setInterval(() => {
       b.send(testData)
-    }, 200)
+    // }, 200)
+    b.sendSpecial({
+      position (barrage) {
+        return {
+          x: b.containerWidth / 2 + 'px',
+          y: '10px',
+        }
+      },
+      direction: 'left',
+      duration: 3,
+      hooks: {
+        create (node) {
+          node.textContent = '这是一条高级弹幕'
+          node.classList.add('special-barrage')
+        }
+      }
+    })
   </script>
 
   <script>

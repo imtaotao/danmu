@@ -13,7 +13,7 @@ const outputPath = filename => path.resolve(__dirname, './dist', filename)
 const esm = {
   input: entryPath,
   output: {
-    file: outputPath('barrage.esm.js'),
+    file: outputPath('danmuku.esm.js'),
     format: 'es',
   }
 }
@@ -21,16 +21,16 @@ const esm = {
 const umd = {
   input: entryPath,
   output: {
-    file: outputPath('barrage.min.js'),
+    file: outputPath('danmuku.min.js'),
     format: 'umd',
-    name: 'Barrage',
+    name: 'Danmuku',
   }
 }
 
 const cjs = {
   input: entryPath,
   output: {
-    file: outputPath('barrage.common.js'),
+    file: outputPath('danmuku.common.js'),
     format: 'cjs',
   }
 }
