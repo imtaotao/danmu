@@ -8,6 +8,7 @@ src/
 demo/
 static/
 node_modules/
+docs/
 index.html
 
 npm-debug.log*

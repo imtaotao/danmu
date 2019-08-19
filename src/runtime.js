@@ -14,7 +14,11 @@ export default class RuntimeManager {
     const {container, rowGap, height} = opts
     const styles = getComputedStyle(container)
 
-    if (!styles.position || styles.position === 'static') {
+    if (
+        !styles.position ||
+        styles.position === 'none' ||
+        styles.position === 'static'
+    ) {
       container.style.position = 'relative'
     }
 

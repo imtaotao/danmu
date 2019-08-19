@@ -16,8 +16,8 @@ export class SpecialBarrage {
     this.container = manager.opts.container
     this.RuntimeManager = manager.RuntimeManager
 
-    this.data = opts
     this.hooks = opts.hooks
+    this.data = opts.data || null
     this.key = opts.key || createKey()
 
     this.moveTimer = null // 当 direction 为 none, 用此变量保存定时器
