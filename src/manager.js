@@ -163,6 +163,8 @@ export default class BarrageManager {
   setOptions (opts) {
     if (opts) {
       // 清除定时器，重新根据新的时间开始
+      this.opts = Object.assign(this.opts, opts)
+
       if ('interval' in opts) {
         this.stop(true)
         this.start(true)
@@ -177,7 +179,6 @@ export default class BarrageManager {
         this.RuntimeManager.rowGap = opts.rowGap
       }
 
-      this.opts = Object.assign(this.opts, opts)
       callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
   }

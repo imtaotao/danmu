@@ -884,6 +884,8 @@ function () {
     key: "setOptions",
     value: function setOptions(opts) {
       if (opts) {
+        this.opts = Object.assign(this.opts, opts);
+
         if ('interval' in opts) {
           this.stop(true);
           this.start(true);
@@ -898,7 +900,6 @@ function () {
           this.RuntimeManager.rowGap = opts.rowGap;
         }
 
-        this.opts = Object.assign(this.opts, opts);
         callHook(this.opts.hooks, 'setOptions', [this, opts]);
       }
     }
