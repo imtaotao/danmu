@@ -19,6 +19,9 @@
   3. 输入 `Show rendering`
   4. 勾选 `FPS meter`
 
+### [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
+
+### [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
 
 ## API 预览
 ### 全局 api
@@ -110,7 +113,7 @@ API
   + `position: (barrage: Barrage) => ({x: number, y: number })`：  特殊弹幕的位置信息，必须是一个函数，返回一个带有 `x` 和 `y` 的对象
 
 ## 注意事项
-由于本弹幕库使用 css 进行动画操作，所以弹幕的 `style` 属性值有些被占用，除非你很了解他们，否则不应该使用这些 style。以下 css style 被使用
+由于本弹幕库使用 css 进行动画操作，所以弹幕的 `style` 属性值有些被占用，除非你很了解他们，否则不应该使用这些 style。以下 css style 被占用
 
   + `style.left`
   + `style.right`
