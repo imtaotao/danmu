@@ -7,7 +7,7 @@
 这是一个弹幕库，使用 `dom + css3` 的方式构建。[Demo](https://imtaotao.github.io/danmuku)
 
 ## Installation
-`$ npm install @rustle/danmuku`
+`$ npm install @rustle/danmuku`<br>
 `<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>`
 
 ## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
