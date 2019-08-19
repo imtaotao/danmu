@@ -563,8 +563,8 @@ function () {
     this.manager = manager;
     this.container = manager.opts.container;
     this.RuntimeManager = manager.RuntimeManager;
+    this.data = opts;
     this.hooks = opts.hooks;
-    this.data = opts.data || null;
     this.key = opts.key || createKey();
     this.moveTimer = null;
     this.timeInfo = {
@@ -812,8 +812,6 @@ function () {
         });
         callHook(this.opts.hooks, 'show', [this]);
       }
-
-      return this;
     }
   }, {
     key: "hidden",
@@ -828,8 +826,6 @@ function () {
         });
         callHook(this.opts.hooks, 'hidden', [this]);
       }
-
-      return this;
     }
   }, {
     key: "each",
@@ -849,8 +845,6 @@ function () {
           }
         }
       }
-
-      return this;
     }
   }, {
     key: "stop",
@@ -863,8 +857,6 @@ function () {
           callHook(this.opts.hooks, 'stop', [this]);
         }
       }
-
-      return this;
     }
   }, {
     key: "start",
@@ -876,7 +868,7 @@ function () {
           _this2.renderBarrage();
 
           core();
-        }, _this2.opts.interval);
+        }, _this2.opts.interval * 1000);
       };
 
       this.stop(true);
@@ -885,8 +877,6 @@ function () {
       if (!noCallHook) {
         callHook(this.opts.hooks, 'start', [this]);
       }
-
-      return this;
     }
   }, {
     key: "setOptions",
@@ -909,15 +899,12 @@ function () {
         this.opts = Object.assign(this.opts, opts);
         callHook(this.opts.hooks, 'setOptions', [this, opts]);
       }
-
-      return this;
     }
   }, {
     key: "resize",
     value: function resize() {
       this.RuntimeManager.resize();
       callHook(this.opts.hooks, 'resize', [this]);
-      return this;
     }
   }, {
     key: "clear",
@@ -1092,7 +1079,7 @@ function createBarrageManager() {
     isShow: true,
     capacity: 1024,
     times: [5, 10],
-    interval: 2000,
+    interval: 2,
     direction: 'right'
   }, opts);
   return new BarrageManager(opts);

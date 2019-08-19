@@ -97,7 +97,6 @@ export default class BarrageManager {
       })
       callHook(this.opts.hooks, 'show', [this])
     }
-    return this
   }
 
   // API 隐藏所有弹幕
@@ -112,7 +111,6 @@ export default class BarrageManager {
       })
       callHook(this.opts.hooks, 'hidden', [this])
     }
-    return this    
   }
 
   // API 遍历在渲染中的节点
@@ -130,7 +128,6 @@ export default class BarrageManager {
         }
       }
     }
-    return this
   }
 
   // API 停止轮询添加弹幕
@@ -143,7 +140,6 @@ export default class BarrageManager {
         callHook(this.opts.hooks, 'stop', [this])
       }
     }
-    return this
   }
 
   // API 循环检测添加弹幕
@@ -152,7 +148,7 @@ export default class BarrageManager {
       this.loopTimer = setTimeout(() => {
         this.renderBarrage()
         core()
-      }, this.opts.interval)
+      }, this.opts.interval * 1000)
     }
 
     this.stop(true)
@@ -161,8 +157,6 @@ export default class BarrageManager {
     if (!noCallHook) {
       callHook(this.opts.hooks, 'start', [this])
     }
-  
-    return this
   }
 
   // API 重新设置参数
@@ -186,14 +180,12 @@ export default class BarrageManager {
       this.opts = Object.assign(this.opts, opts)
       callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
-    return this
   }
 
   // API 重新计算轨道
   resize () {
     this.RuntimeManager.resize()
     callHook(this.opts.hooks, 'resize', [this])
-    return this
   }
 
   // API 清空缓存，立即终止
