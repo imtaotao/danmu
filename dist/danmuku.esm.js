@@ -331,7 +331,7 @@ function () {
         height = opts.height;
     var styles = getComputedStyle(container);
 
-    if (!styles.position || styles.position === 'static') {
+    if (!styles.position || styles.position === 'none' || styles.position === 'static') {
       container.style.position = 'relative';
     }
 
@@ -563,8 +563,8 @@ function () {
     this.manager = manager;
     this.container = manager.opts.container;
     this.RuntimeManager = manager.RuntimeManager;
-    this.data = opts;
     this.hooks = opts.hooks;
+    this.data = opts.data || null;
     this.key = opts.key || createKey();
     this.moveTimer = null;
     this.timeInfo = {
