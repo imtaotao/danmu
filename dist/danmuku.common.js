@@ -302,6 +302,8 @@ function () {
   }, {
     key: "reset",
     value: function reset() {
+      this.remove(true);
+      this.deletedInMemory();
       this.paused = false;
       this.moveing = false;
       this.trajectory = null;
@@ -314,8 +316,6 @@ function () {
         prevPauseTime: null,
         currentDuration: this.duration
       };
-      this.remove(true);
-      this.deletedInMemory();
     }
   }]);
 
