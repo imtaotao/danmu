@@ -5,7 +5,12 @@
 [npm-url]: https://www.npmjs.com/package/@rustle/danmuku
 
 这是一个弹幕库，使用 `dom + css3` 的方式构建<br>
-[CDN](https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js) :   `<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>`
+
+## Installation
+`$ npm install @rustle/danmuku`
+
+[CDN](https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js)<br>
+`<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>`
 
 ## [Demo](https://imtaotao.github.io/danmuku)
 实时查看 fps 和 内存占用
@@ -14,12 +19,17 @@
   3. 输入 `Show rendering`
   4. 勾选 `FPS meter`
 
-## 设计思路
-  ### 弹幕
 
 ## API 预览
 ### 全局 api
   + `create(opts: Options) : barrageManager`
+
+```js
+  // 这将创建一个弹幕 manager，用于管理弹幕
+  const manager = Danmuku.create({
+
+  })
+```
 
 ### barrageManager
 属性
@@ -39,10 +49,10 @@ API
   + `each(cb: Function) : void`
   + `start() : void`
   + `stop() : void`
-  + `setOptions(opts: Options) : void`
+  + `setOptions(option: Options) : void`
   + `resize() : void`
   + `clear() : void`
-  + `clone(opts?: Options) : barrageManager`
+  + `clone(option?: Options) : barrageManager`
 
 ### Barrage
 属性
@@ -74,14 +84,15 @@ API
   + `hooks: Object`：钩子函数，下面会详细介绍。默认为 `{}`
 
 #### options.hooks
-通过定义钩子，能够参与到整个弹幕的创建，渲染和销毁等过程，完全能够自定义样式的样式和行为，这是整个弹幕库强大的扩展性的来源。
-所有与单个弹幕相关的钩子都以 `barrage` 开头，下面的钩子函数出现的先后顺序也是**执行顺序**，也就是说 `barrageCreate`最先，`barrageDestroy` 最后执行。如果是特殊弹幕的创建，还会调用自身的钩子，在后面的内容会介绍
+通过定义钩子，能够参与到整个弹幕的创建，渲染和销毁等过程，完全能够自定义样式的样式和行为，这是整个弹幕库强大的扩展性的来源<br>
+所有与单个弹幕相关的钩子都以 `barrage` 开头，下面的钩子函数出现的先后顺序也是**执行顺序**，也就是说 `barrageCreate`最先执行，`barrageDestroy` 最后执行。如果是特殊弹幕的创建，还会调用自身的钩子，在后面的内容会介绍<br>
+而 `manager` 的钩子没有先后顺序之分
   + `barrageCreate(barrage: Barrage, node: HTMLElement)`
   + `barrageAppend(barrage: Barrage, node: HTMLElement)`
   + `barrageRemove(barrage: Barrage, node: HTMLElement)`
   + `barrageDestroy(barrage: Barrage, node: HTMLElement)`
 
-barrage 相关的钩子函数，下面的钩子没有先后顺序之分
+
   + `send(manager: barrageManager, data: any)`
   + `sendSpecial(manager: barrageManager, data: any)`
   + `show(manager: barrageManager)`
@@ -120,6 +131,6 @@ demo
   })
 ```
 
-## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
+### [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
 
-## [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
+### [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)

@@ -563,8 +563,8 @@ function () {
     this.manager = manager;
     this.container = manager.opts.container;
     this.RuntimeManager = manager.RuntimeManager;
-    this.data = opts;
     this.hooks = opts.hooks;
+    this.data = opts.data || null;
     this.key = opts.key || createKey();
     this.moveTimer = null;
     this.timeInfo = {
