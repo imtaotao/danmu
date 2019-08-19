@@ -46,8 +46,11 @@ demo
 
 ## 特殊弹幕的 Options
 特殊弹幕与普通弹幕的区别在于，特殊弹幕允许自定义弹幕的位置和渲染时长。由于自定义弹幕位置，导致特殊弹幕将不参与碰撞检测计算。这意味着特殊弹幕会相互重叠和与普通弹幕重叠。如果需要碰撞检测，则需要开发者自己手动计算。
+
+特殊弹幕出现的初衷是允许开发者高度自定义弹幕，由于普通弹幕已经足够灵活和强大，所以特殊弹幕的很多计算与限制都被取消了
+
   + `hooks: Object`： 特殊弹幕创建的钩子。默认为 `{}`
-  + `duration: number`： 特殊弹幕的渲染时长。默认为 `0`
+  + `duration: number`： 特殊弹幕的渲染时长，时间为 0 将不会被渲染。默认为 `0`
   + `direction: 'left' | 'right' | 'none'`： 特殊弹幕的移动方向，为 `none` 时，弹幕将不会移动。默认为 `none`
   + `position: (barrage: Barrage) => ({x: number, y: number })`：  特殊弹幕的位置信息，必须是一个函数，返回一个带有 `x` 和 `y` 的对，你可以通过 barrage 的api 来计算位置信息，例如以下 demo。默认都是返回 `0`
 
@@ -75,13 +78,17 @@ demo
 特殊弹幕有自己的 hooks，这与 manager 的 hooks 并不冲突，而且特殊弹幕的 hooks 的优先级比 manager 的 hooks 高（优先调用）。
 
 ```js
+  const data = {}
+
   manager.sendSpecial({
+    data, // 特殊弹幕与普通弹幕在 data 上的行为不一样，特殊弹幕的 data 需要手动传入
     duration: 5,
     direction: 'right',
     position: () => ({ x: 100, y: 100 }),
     hooks: {
       create (barrage, node) {
         node.style.background = 'red'
+        console.log(barrage.data === data) // true
       },
       append (barrage, node) {
         ...

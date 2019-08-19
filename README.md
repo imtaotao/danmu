@@ -113,11 +113,11 @@ API
     const { limit, rowGap } = manager.opts
     manager.setOptions({
       rowGap: 0,
-      limit: Infinity
+      limit: Infinity,
     })
 
     // return 一个切换回去的函数
-    return () => manager.setOptons({ limit, rowGap })
+    return () => manager.setOptions({ limit, rowGap })
   }
 ```
 
@@ -135,6 +135,6 @@ API
   + `style.pointerEvents`
   + `style.transitionDuration`
 
-如果 `conatainer` 的 `position` 没有被设置或者 为 `static`，那么 `container` 的 `position` 将会被设置为 `relative`
+如果 `conatainer` 的 `position` 没有被设置或者为 `static`，那么 `container` 的 `position` 将会被设置为 `relative`
 
-欢迎加入前端小分队 QQ 群：`624921236`
+有问题或者需要讨论，欢迎加入前端小分队 QQ 群：`624921236`
