@@ -45,8 +45,8 @@ export class SpecialBarrage {
 
   create () {
     this.node = document.createElement('div')
-    callHook(this.hooks, 'create', [this.node, this])
-    callHook(this.manager.opts.hooks, 'barrageCreate', [this.node, this])
+    callHook(this.hooks, 'create', [this, this.node])
+    callHook(this.manager.opts.hooks, 'barrageCreate', [this, this.node])
   }
 
   getMovePercent () {
@@ -130,8 +130,8 @@ export class SpecialBarrage {
     if (this.node) {
       this.container.appendChild(this.node)
 
-      callHook(this.hooks, 'append', [this.node, this])
-      callHook(this.manager.opts.hooks, 'barrageAppend', [this.node, this])
+      callHook(this.hooks, 'append', [this, this.node])
+      callHook(this.manager.opts.hooks, 'barrageAppend', [this, this.node])
     }
   }
   
@@ -140,8 +140,8 @@ export class SpecialBarrage {
     if (this.node) {
       this.container.removeChild(this.node)
 
-      callHook(this.hooks, 'remove', [this.node, this])
-      callHook(this.manager.opts.hooks, 'barrageRemove', [this.node, this])
+      callHook(this.hooks, 'remove', [this, this.node])
+      callHook(this.manager.opts.hooks, 'barrageRemove', [this, this.node])
     }
   }
 
@@ -161,8 +161,8 @@ export class SpecialBarrage {
       this.moveTimer = null
     }
 
-    callHook(this.hooks, 'destroy', [this.node, this])
-    callHook(this.manager.opts.hooks, 'barrageDestroy', [this.node, this])
+    callHook(this.hooks, 'destroy', [this, this.node])
+    callHook(this.manager.opts.hooks, 'barrageDestroy', [this, this.node])
     this.node = null
   }
 }

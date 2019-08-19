@@ -78,14 +78,14 @@ export default class Barrage {
 
   create () {
     this.node = document.createElement('div')
-    callHook(this.hooks, 'barrageCreate', [this.node, this])
+    callHook(this.hooks, 'barrageCreate', [this, this.node])
   }
 
   append () {
     warning(this.container, 'Need container element.')
     if (this.node) {
       this.container.appendChild(this.node)
-      callHook(this.hooks, 'barrageAppend', [this.node, this])
+      callHook(this.hooks, 'barrageAppend', [this, this.node])
     }
   }
   
@@ -95,7 +95,7 @@ export default class Barrage {
       this.container.removeChild(this.node)
 
       if (!noCallHook) {
-        callHook(this.hooks, 'barrageRemove', [this.node, this])
+        callHook(this.hooks, 'barrageRemove', [this, this.node])
       }
     }
   }
@@ -124,7 +124,7 @@ export default class Barrage {
     this.moveing = false
     this.deletedInMemory()
   
-    callHook(this.hooks, 'barrageDestroy', [this.node, this])
+    callHook(this.hooks, 'barrageDestroy', [this, this.node])
     this.node = null
   }
 

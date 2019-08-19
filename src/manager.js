@@ -215,6 +215,14 @@ export default class BarrageManager {
     callHook(this.opts.hooks, 'clear', [this])
   }
 
+  // API clone 当前示例
+  clone (opts) {
+    opts = opts
+      ? Object.assign(this.opts, opts)
+      : this.opts
+    return new this.constructor(opts)
+  }
+
   // 判断是否超过容量
   assertCapacity (n) {
     const res = n + this.length > this.opts.capacity
@@ -316,10 +324,8 @@ export default class BarrageManager {
   }
 
   // 设置弹幕的样式
-  setBarrageStyle (node, barrage) {
+  setBarrageStyle (barrage, node) {
     const { hooks = {}, direction } = this.opts
-
-    callHook(hooks, 'barrageCreate', [node, barrage])
 
     node.style.opacity = 0
     node.style[direction] = 0
@@ -327,5 +333,7 @@ export default class BarrageManager {
     node.style.display = 'inline-block'
     node.style.pointerEvents = this.isShow ? 'auto' : 'none'
     node.style.visibility = this.isShow ? 'visible' : 'hidden'
+
+    callHook(hooks, 'barrageCreate', [barrage, node])
   }
 }

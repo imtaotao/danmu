@@ -310,13 +310,11 @@
       times: [7, 14], // 弹幕动画的时间取值范围
       limit: 150, // 能够渲染的最大数量
       interval: 1000,
-      hooks: {
+      hooks: {  // 这里的生命周期，特殊弹幕和普通弹幕都会调用
         // 弹幕创建时
-        barrageCreate (node, barrage) {
-          // 如果是我们自己发送的弹幕，给一个特殊标记
-          if (barrage.isSpecial) {
-            return
-          }
+        barrageCreate (barrage, node) {
+          if (barrage.isSpecial) return
+
           if (typeof barrage.data !== 'string') {
             node.style.border = '3px solid #fff'
             node.textContent = barrage.data.content
@@ -328,7 +326,7 @@
         },
 
         // 弹幕渲染到页面上时
-        barrageAppend (node, barrage) {
+        barrageAppend (barrage, node) {
           node.onmouseenter = e => {
             barrage.pause()
             node.classList.add('active')
@@ -343,15 +341,15 @@
         },
 
         // 弹幕开始移动时
-        barrageMove (node, barrage) {
+        barrageMove (barrage, node) {
           node.style.opacity = opacity.value / 100
         },
 
         // 弹幕节点移除视图时
-        barrageRemove (node) {
+        barrageRemove (barrage, node) {
         },
 
-        barrageDestroy (node) {
+        barrageDestroy (barrage, node) {
           allNumber.textContent = b.length
           showNumber.textContent = b.showLength
         },
@@ -518,7 +516,7 @@
           }
         },
         hooks: {
-          create (node) {
+          create (barrage, node) {
             node.textContent = `高级弹幕--${text}`
             node.classList.add('special-barrage')
           },
