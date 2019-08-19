@@ -1,8 +1,14 @@
 ## Description
-这是一个弹幕库，使用 `dom + css3` 的方式构建
+[![NPM version][npm-image]][npm-url]
 
-## Demo
-[demo地址](https://imtaotao.github.io/danmuku)，实时查看 fps 和 内存占用
+[npm-image]: https://img.shields.io/npm/v/@rustle/danmuku.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/@rustle/danmuku
+
+这是一个弹幕库，使用 `dom + css3` 的方式构建<br>
+[CDN](https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js) :   `<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>`
+
+## [Demo](https://imtaotao.github.io/danmuku)
+实时查看 fps 和 内存占用
   1. 打开 `Chrome DevTools`
   2. `ctrl + shift + p` 或者 `command + shift + p`
   3. 输入 `Show rendering`
