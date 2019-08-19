@@ -19,12 +19,6 @@
   3. 输入 `Show rendering`
   4. 勾选 `FPS meter`
 
-<<<<<<< HEAD
-### [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
-
-### [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
-=======
->>>>>>> 6deb43c6ba0f26a98079a546e2565d5322e427ff
 
 ## API 预览
 ### 全局 api
@@ -32,9 +26,7 @@
 
 ```js
   // 这将创建一个弹幕 manager，用于管理弹幕
-  const manager = Danmuku.create({
-
-  })
+  const manager = Danmuku.create({})
 ```
 
 ### barrageManager
