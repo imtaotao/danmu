@@ -14,6 +14,9 @@
   3. 输入 `Show rendering`
   4. 勾选 `FPS meter`
 
+## 设计思路
+  ### 弹幕
+
 ## API 预览
 ### 全局 api
   + `create(opts: Options) : barrageManager`
@@ -116,3 +119,7 @@ demo
     }
   })
 ```
+
+## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
+
+## [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
