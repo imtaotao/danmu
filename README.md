@@ -19,9 +19,12 @@
   3. 输入 `Show rendering`
   4. 勾选 `FPS meter`
 
+<<<<<<< HEAD
 ### [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
 
 ### [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
+=======
+>>>>>>> 6deb43c6ba0f26a98079a546e2565d5322e427ff
 
 ## API 预览
 ### 全局 api
@@ -112,6 +115,7 @@ API
   + `hooks: Object`： 特殊弹幕创建的钩子。默认为 `{}`
   + `duration: number`： 特殊弹幕的渲染时长。默认为 `0`
   + `direction: 'left' | 'right' | 'none'`： 特殊弹幕的移动方向，为 `none` 时，弹幕将不会移动。默认为 `none`
+<<<<<<< HEAD
   + `position: (barrage: Barrage) => ({x: number, y: number })`：  特殊弹幕的位置信息，必须是一个函数，返回一个带有 `x` 和 `y` 的对象
 
 ## 注意事项
@@ -129,3 +133,30 @@ API
   + `style.transitionDuration`
 
 如果 `conatainer` 的 `position` 没有被设置或者 为 `static`，那么 `container` 的 `position` 将会被设置为 `relative`
+=======
+  + `position: (barrage: Barrage) => ({x: number, y: number })`：  特殊弹幕的位置信息，必须是一个函数，返回一个带有 `x` 和 `y` 的对，你可以通过 barrage 的api 来计算位置信息，例如以下 demo。默认都是返回 `0`
+
+demo
+```js
+  // 这将使得整个特殊弹幕出现在容器居中的位置，而且弹幕的背景色为红色
+  manager.sendSpecial({
+    duration: 5,
+    direction: 'right',
+    position (barrage) {
+      return {
+        x: (manager.containerWidth - barrage.getWidth()) / 2,
+        y: (manager.containerHeight- barrage.getHeight()) / 2 
+      }
+    },
+    hooks: {
+      create (barrage) {
+        barrage.node.style.background = 'red'
+      }
+    }
+  })
+```
+
+### [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
+
+### [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
+>>>>>>> 6deb43c6ba0f26a98079a546e2565d5322e427ff
