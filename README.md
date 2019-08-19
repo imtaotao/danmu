@@ -4,24 +4,15 @@
 [npm-image]: https://img.shields.io/npm/v/@rustle/danmuku.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/@rustle/danmuku
 
-这是一个弹幕库，使用 `dom + css3` 的方式构建<br>
+这是一个弹幕库，使用 `dom + css3` 的方式构建。[Demo](https://imtaotao.github.io/danmuku)
 
 ## Installation
 `$ npm install @rustle/danmuku`
-
-[CDN](https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js)<br>
 `<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>`
 
-## [Demo](https://imtaotao.github.io/danmuku)
-实时查看 fps 和 内存占用
-  1. 打开 `Chrome DevTools`
-  2. `ctrl + shift + p` 或者 `command + shift + p`
-  3. 输入 `Show rendering`
-  4. 勾选 `FPS meter`
+## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
 
-### [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
-
-### [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
+## [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
 
 ## API 预览
 ### 全局 api
@@ -127,3 +118,5 @@ API
   + `style.transitionDuration`
 
 如果 `conatainer` 的 `position` 没有被设置或者 为 `static`，那么 `container` 的 `position` 将会被设置为 `relative`
+
+欢迎加入前端小分队 QQ 群：`624921236`
