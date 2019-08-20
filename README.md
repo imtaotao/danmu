@@ -8,7 +8,9 @@
 
 ## Installation
 `$ npm install @rustle/danmuku`<br>
-`<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>`
+```html
+<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>
+```
 
 ## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
 
