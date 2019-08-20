@@ -83,9 +83,6 @@ function createKey() {
 function toNumber(val) {
   return typeof val === 'number' ? val : typeof val === 'string' ? Number(val.replace('px', '')) : NaN;
 }
-function lastElement(arr, lastIndex) {
-  return arr[arr.length - lastIndex];
-}
 function isRange(_ref, val) {
   var _ref2 = _slicedToArray(_ref, 2),
       a = _ref2[0],
@@ -387,6 +384,19 @@ function () {
       this.container = container;
     }
   }, {
+    key: "getLastBarrage",
+    value: function getLastBarrage(barrages, lastIndex) {
+      for (var i = barrages.length - 1; i >= 0; i--) {
+        var barrage = barrages[i - lastIndex];
+
+        if (barrage && !barrage.paused) {
+          return barrage;
+        }
+      }
+
+      return null;
+    }
+  }, {
     key: "getRandomIndex",
     value: function getRandomIndex(exclude) {
       var randomIndex = Math.floor(Math.random() * this.rows);
@@ -403,7 +413,7 @@ function () {
 
       var index = this.getRandomIndex(alreadyFound);
       var currentTrajectory = this.container[index];
-      var lastBarrage = lastElement(currentTrajectory.values, 1);
+      var lastBarrage = this.getLastBarrage(currentTrajectory.values, 0);
 
       if (this.rowGap <= 0 || !lastBarrage) {
         return currentTrajectory;
@@ -449,7 +459,7 @@ function () {
       var _this = this;
 
       var node = barrage.node;
-      var prevBarrage = lastElement(barrage.trajectory.values, 2);
+      var prevBarrage = this.getLastBarrage(barrage.trajectory.values, 1);
       node.style.top = "".concat(barrage.position.y, "px");
       return new Promise(function (resolve) {
         nextFrame(function () {

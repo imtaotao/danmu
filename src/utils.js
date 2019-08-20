@@ -23,10 +23,6 @@ export function toNumber (val) {
       : NaN
 }
 
-export function lastElement (arr, lastIndex) {
-  return arr[arr.length - lastIndex]
-}
-
 export function isRange ([a, b], val) {
   if (val === a || val === b) return true
   const min = Math.min(a, b)

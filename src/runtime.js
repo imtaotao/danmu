@@ -4,7 +4,6 @@ import {
   toNumber,
   upperCase,
   nextFrame,
-  lastElement,
   transitionProp,
   whenTransitionEnds,
 } from './utils'
@@ -75,6 +74,17 @@ export default class RuntimeManager {
     this.container = container
   }
 
+  // 获取最后一个移动的弹幕，但是如果前一个弹幕处于暂停中，就要往前找
+  getLastBarrage (barrages, lastIndex) {
+    for (let i = barrages.length - 1; i >= 0; i--) {
+      const barrage = barrages[i - lastIndex]
+      if (barrage && !barrage.paused) {
+        return barrage
+      }
+    }
+    return null
+  }
+
   // 随机取一个轨道
   getRandomIndex (exclude) {
     const randomIndex = Math.floor(Math.random() * this.rows)
@@ -91,7 +101,7 @@ export default class RuntimeManager {
 
     const index = this.getRandomIndex(alreadyFound)
     const currentTrajectory = this.container[index]
-    const lastBarrage = lastElement(currentTrajectory.values, 1)
+    const lastBarrage = this.getLastBarrage(currentTrajectory.values, 0)
 
     if (this.rowGap <= 0 || !lastBarrage) {
       return currentTrajectory
@@ -146,7 +156,7 @@ export default class RuntimeManager {
   move (barrage, manager) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
-    const prevBarrage = lastElement(barrage.trajectory.values, 2)
+    const prevBarrage = this.getLastBarrage(barrage.trajectory.values, 1)
 
     node.style.top = `${barrage.position.y}px`
 

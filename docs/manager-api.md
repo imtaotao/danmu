@@ -83,7 +83,7 @@
 
 
 ### `sendSpecial(specialBarrageData: any | Array<any>) : boolean`
-`sendSpecial` 方法用于发送特殊弹幕。特殊弹幕的特性与差异，请看[这里](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)。`sendSpecial` 与 `send` 很相似，他同样接受一个或多个弹幕，返回一个 `boolean` 值标识是否发送成功。唯一不同的是，他将不参与碰撞计算，所以如果容器的渲染数量没有到达临界值，他将立即渲染在视图上。send 方法调用时会同步触发 `sendSpecial` 钩子
+`sendSpecial` 方法用于发送特殊弹幕。特殊弹幕的特性与差异，请看[这里](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md#%E7%89%B9%E6%AE%8A%E5%BC%B9%E5%B9%95%E7%9A%84-options)。`sendSpecial` 与 `send` 很相似，他同样接受一个或多个弹幕，返回一个 `boolean` 值标识是否发送成功。唯一不同的是，他将不参与碰撞计算，所以如果容器的渲染数量没有到达临界值，他将立即渲染在视图上。send 方法调用时会同步触发 `sendSpecial` 钩子
 ```js
   // 下面将发送一个特殊的弹幕，渲染在左上角
   // 最后会先打印 1，再打印 2，这也代表弹幕自身的 hook 先于 manager 的 hook 执行
