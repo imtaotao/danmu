@@ -8,7 +8,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.65);
     }
 
     #container {
@@ -22,13 +22,12 @@
       justify-content: center;
       align-items: center;
       height: 30px;
-      font-size: 15px;
+      font-size: 18px;
       border-radius: 28px;
       color: #fff;
       padding: 0 20px;
       box-sizing: border-box;
       cursor: pointer;
-      /* background: rgba(255, 255, 255, 0.1); */
     }
 
     .active {
@@ -201,10 +200,6 @@
       <span>透明度: </span>
       <input type='range' class='input-range' min='0' max='100' value='100' id='opacity'>
     </div>
-    <div class='item'>
-      <span>弹道高度: </span>
-      <input type='text' class='input' placeholder='轨道的高度' id='height'>
-    </div>
 
     <div class='item'>
       <span>limit: </span>
@@ -217,7 +212,12 @@
     </div>
 
     <div class='item'>
-      <span>渲染间隔: </span>
+      <span>弹道高度: </span>
+      <input type='text' class='input' placeholder='轨道的高度' id='height'>
+    </div>
+
+    <div class='item'>
+      <span>渲染频率(s): </span>
       <input type='text' class='input' placeholder='渲染间隔时间' id='renderTime'>
     </div>
 
@@ -305,7 +305,7 @@
     // 测试代码
     const m = Danmuku.create({
       container: document.getElementById('container'),
-      height: 30, // 轨道高度
+      height: 35, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
       times: [5, 10], // 弹幕动画的时间取值范围
