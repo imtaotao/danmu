@@ -54,7 +54,7 @@
 
 ## API
 ### `send(barrageData: any | Array<any>) : boolean`
-`send` 方法将发送一个普通弹幕或者一批普通弹幕，所以如果传入的是一个数组，他将判断是多个弹幕。send 方法将不会去检测传入的参数，所以即使传入的为 `undefined`，他同样将创建一个弹幕。当发送弹幕失败时，他将返回 `false`，同样的，发送成功将返回 `true`。send 方法调用时传入的参数将保持在弹幕实例中，你可以通过 `barrage.data` 拿到他。send 方法调用时会同步触发 `send` 钩子
+`send` 方法将发送一个普通弹幕或者一批普通弹幕，所以如果传入的是一个数组，他将判断是多个弹幕。send 方法将不会去检测传入的参数，所以即使传入的为 `undefined`，他同样将创建一个弹幕。当发送弹幕失败时，他将返回 `false`，同样的，发送成功将返回 `true`。send 方法调用时传入的参数将保持在弹幕实例中，你可以通过 `barrage.data` 拿到他。`send` 方法调用时会同步触发 `send` 钩子
 ```js
   // 这将发送三个普通弹幕，他会在合适的时机渲染到容器中
   const manager = Danmuku.create({
@@ -83,7 +83,7 @@
 
 
 ### `sendSpecial(specialBarrageData: any | Array<any>) : boolean`
-`sendSpecial` 方法用于发送特殊弹幕。特殊弹幕的特性与差异，请看[这里](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md#%E7%89%B9%E6%AE%8A%E5%BC%B9%E5%B9%95%E7%9A%84-options)。`sendSpecial` 与 `send` 很相似，他同样接受一个或多个弹幕，返回一个 `boolean` 值标识是否发送成功。唯一不同的是，他将不参与碰撞计算，所以如果容器的渲染数量没有到达临界值，他将立即渲染在视图上。send 方法调用时会同步触发 `sendSpecial` 钩子
+`sendSpecial` 方法用于发送特殊弹幕。特殊弹幕的特性与差异，请看[这里](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md#%E7%89%B9%E6%AE%8A%E5%BC%B9%E5%B9%95%E7%9A%84-options)。`sendSpecial` 与 `send` 很相似，他同样接受一个或多个弹幕，返回一个 `boolean` 值标识是否发送成功。唯一不同的是，他将不参与碰撞计算，所以如果容器的渲染数量没有到达临界值，他将立即渲染在视图上。`sendSpecial` 方法调用时会同步触发 `sendSpecial` 钩子
 ```js
   // 下面将发送一个特殊的弹幕，渲染在左上角
   // 最后会先打印 1，再打印 2，这也代表弹幕自身的 hook 先于 manager 的 hook 执行
@@ -123,7 +123,7 @@
 ```
 
 ### `each(cb: Function) : void`
-`each` 方法将遍历所有的渲染在容器中的弹幕。这允许你对所有的弹幕（包括特殊弹幕）进行操作。下面的 `show` 和 `hidden` 方法都是使用的此方法
+`each` 方法将遍历所有渲染在容器中的弹幕。这允许你对所有渲染中的弹幕（包括特殊弹幕）进行操作。下面的 `show` 和 `hidden` 方法都是使用的此方法
 ```js
   manager.each(barrage => {
     if (barrage.isSpecial) {
@@ -179,7 +179,7 @@
 ```
 
 ### `clear() : void`
-`clear` 方法将清空所有在视图中渲染的弹幕（包括特殊弹幕）和缓存区的弹幕。并停止 `manager` 的轮询渲染。这将会很好的缓解内存压力
+`clear` 方法将清空所有在视图中渲染的弹幕（包括特殊弹幕）和缓存区的弹幕。并停止 `manager` 的轮询渲染。这将会很好的缓解内存压力。他将调用 `stop` 和 `clear` 钩子
 ```js
   // 这将会清空所有弹幕，然后重新开始
   manager.clear()
@@ -201,7 +201,7 @@
 `height` 属性为轨道的高度，普通弹幕的将会随机出现在一条轨道上。轨道数目为 `containerHeight / height`
 
 ### `rowGap: number`
-`rowGap` 为同一轨道相邻两个弹幕的间距，只有前一个弹幕的移动距离大于这个值，当前轨道的下一个弹幕才被允许出现，但不代表两个相邻的弹幕用于都处于这个间距，他们的间距依赖于他们运动的时间。如果 `rowGap` 是一个大于 0 的值，同一个轨道相邻弹幕将进行碰撞计算，即使速度不一样，他们也不会再容器视图区域进行碰撞（由于是基于 css 动画，所以可能会有 5% 左右的误差）。默认值为 50
+`rowGap` 为同一轨道相邻两个弹幕的间距，只有前一个弹幕的移动距离大于这个值，当前轨道的下一个弹幕才被允许出现，但不代表两个相邻的弹幕永远都处于这个间距，他们的间距依赖于他们运动的时间。如果 `rowGap` 是一个大于 0 的值，同一个轨道相邻弹幕将进行碰撞计算，即使速度不一样，他们也不会再容器视图区域进行碰撞（由于是基于 css 动画，所以可能会有 5% 左右的误差）。默认值为 50
 
   + 如果 rowGap 为 20
   + 前一个弹幕移动 10
