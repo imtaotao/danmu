@@ -186,10 +186,9 @@ function () {
   }, {
     key: "getMoveDistance",
     value: function getMoveDistance() {
-      var fix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       if (!this.moveing) return 0;
       var percent = this.getMovePercent();
-      var containerWidth = this.RuntimeManager.containerWidth + (fix ? this.getWidth() : 0);
+      var containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
       return percent * containerWidth;
     }
   }, {
@@ -444,16 +443,16 @@ function () {
         return null;
       }
 
-      var distance = prevBarrage.getMoveDistance(false);
+      var distance = prevBarrage.getMoveDistance() - currentWidth - prevWidth;
       var meetTime = distance / acceleration;
 
       if (meetTime >= currentBarrage.duration) {
         return null;
       }
 
-      var containerWidth = this.containerWidth + currentWidth + prevWidth;
       var remainingTime = (1 - prevBarrage.getMovePercent()) * prevBarrage.duration;
-      return containerWidth * remainingTime / this.containerWidth;
+      var currentFixTime = currentWidth * remainingTime / this.containerWidth;
+      return remainingTime + currentFixTime;
     }
   }, {
     key: "move",

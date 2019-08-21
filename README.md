@@ -4,7 +4,8 @@
 [npm-image]: https://img.shields.io/npm/v/@rustle/danmuku.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/@rustle/danmuku
 
-这是一个弹幕库，使用 `dom + css3` 的方式构建。[Demo](https://imtaotao.github.io/danmuku)
+这是一个弹幕库，使用 `dom + css3` 的方式构建<br>
+[线上预览地址](https://imtaotao.github.io/danmuku)
 
 ## Installation
 `npm install @rustle/danmuku`<br>
@@ -108,7 +109,7 @@ API
   + `position: (barrage: Barrage) => ({x: number, y: number })`：  特殊弹幕的位置信息，必须是一个函数，返回一个带有 `x` 和 `y` 的对象
 
 ## 两种模式
-  + 如果指定了 `rowGap`，`danmuku` 默认会进行碰撞检测。这将导致弹幕的发送不是实时。弹幕会在一个合适的时机进行渲染。这是默认的模式，避免了弹幕重叠和渲染数量过多导致的用户体验变差和内存 cpu 压力过大。但是有时候我们是需要实时响应弹幕
+  + 如果指定了 `rowGap`，`danmuku` 默认会进行碰撞检测（弹幕的外边距和宽度将不计算在内）。这将导致弹幕的发送不是实时。弹幕会在一个合适的时机进行渲染。这是默认的模式，避免了弹幕重叠和渲染数量过多导致的用户体验变差和内存 cpu 压力过大。但是有时候我们是需要实时响应弹幕
   + 将 rowGap 设置为一个小于等于的 0 的数将会取消掉上述的碰撞检测计算。这会让弹幕实时出现。但是你如果设置了 `limit`，还是会受到限制，所有你需要把 `limit` 设置为 `Infinity` 取消限制，这就是实时响应模式
 
 ```js

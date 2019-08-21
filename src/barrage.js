@@ -45,14 +45,10 @@ export default class Barrage {
   }
 
   // 得到当前移动了多少距离
-  getMoveDistance (fix = true) {
+  getMoveDistance () {
     if (!this.moveing) return 0
     const percent = this.getMovePercent()
-    const containerWidth = this.RuntimeManager.containerWidth + (
-      fix
-        ? this.getWidth()
-        : 0
-    )
+    const containerWidth = this.RuntimeManager.containerWidth + this.getWidth()
     return percent * containerWidth
   }
 

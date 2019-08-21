@@ -124,7 +124,7 @@ export default class RuntimeManager {
     return this.getTrajectory(alreadyFound)
   }
 
-  // 计算追尾的时间，由于 css 动画的误差导致追尾的时间计算会有一定的误差，5% 以内
+  // 计算追尾的时间，由于 css 动画的误差导致追尾的时间计算会有一点点的误差
   computingDuration (prevBarrage, currentBarrage) {
     const prevWidth = prevBarrage.getWidth()
     const currentWidth = currentBarrage.getWidth()
@@ -136,7 +136,8 @@ export default class RuntimeManager {
     if (acceleration <= 0) {
       return null
     }
-    const distance = prevBarrage.getMoveDistance(false)
+
+    const distance = prevBarrage.getMoveDistance() - currentWidth - prevWidth
     const meetTime = distance / acceleration
   
     // 如果相遇时间大于于当前弹幕的运动时间，则肯会在容器视图外面追尾，不用管
@@ -145,11 +146,10 @@ export default class RuntimeManager {
     }
   
     // 把此次弹幕运动时间修改为上一个弹幕移除屏幕的时间，这样追尾的情况在刚刚移除视图的时候进行
-    const containerWidth = this.containerWidth + currentWidth + prevWidth
     const remainingTime = (1 - prevBarrage.getMovePercent()) * prevBarrage.duration
+    const currentFixTime = currentWidth * remainingTime / this.containerWidth
 
-    // c1 / t1 = c2 / t2 => t2 = c2 * t1 / c1
-    return containerWidth * remainingTime / this.containerWidth
+    return remainingTime + currentFixTime
   }
 
   // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
