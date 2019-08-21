@@ -192,13 +192,7 @@ export default class BarrageManager {
   // API 清空缓存，立即终止
   clear () {
     this.stop()
-
-    this.each(barrage => {
-      barrage.isSpecial
-        ? barrage.remove(this)
-        : barrage.remove()
-    })
-
+    this.each(barrage => barrage.remove())
     this.showBarrages = []
     this.stashBarrages = []
     this.specialBarrages = []

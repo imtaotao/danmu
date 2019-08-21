@@ -7,7 +7,9 @@
 这是一个弹幕库，使用 `dom + css3` 的方式构建。[Demo](https://imtaotao.github.io/danmuku)
 
 ## Installation
-`$ npm install @rustle/danmuku`<br>
+`npm install @rustle/danmuku`<br>
+
+## CDN
 ```html
 <script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>
 ```

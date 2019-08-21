@@ -922,11 +922,9 @@ function () {
   }, {
     key: "clear",
     value: function clear() {
-      var _this3 = this;
-
       this.stop();
       this.each(function (barrage) {
-        barrage.isSpecial ? barrage.remove(_this3) : barrage.remove();
+        return barrage.remove();
       });
       this.showBarrages = [];
       this.stashBarrages = [];
@@ -985,7 +983,7 @@ function () {
   }, {
     key: "initSingleBarrage",
     value: function initSingleBarrage(data) {
-      var _this4 = this;
+      var _this3 = this;
 
       var barrage = data instanceof Barrage ? data : this.createSingleBarrage(data);
       var newBarrage = barrage && this.sureBarrageInfo(barrage);
@@ -997,8 +995,8 @@ function () {
         this.RuntimeManager.move(newBarrage, this).then(function () {
           newBarrage.destroy();
 
-          if (_this4.length === 0) {
-            callHook(_this4.opts.hooks, 'ended', [_this4]);
+          if (_this3.length === 0) {
+            callHook(_this3.opts.hooks, 'ended', [_this3]);
           }
         });
       } else {

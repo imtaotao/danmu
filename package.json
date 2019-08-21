@@ -1,6 +1,6 @@
 {
   "name": "@rustle/danmuku",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "一个使用 dom + css 构建的弹幕库",
   "main": "dist/danmuku.common.js",
   "module": "dist/danmuku.esm.js",
