@@ -21,6 +21,7 @@ export default class Barrage {
     this.manager = manager
     this.direction = direction
     this.container = container
+    this.isChangeDuration = false
     this.RuntimeManager = RuntimeManager
     this.key = itemData.key || createKey()
     this.position = {

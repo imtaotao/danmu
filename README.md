@@ -58,6 +58,7 @@ API
   + `duration : number`：  弹幕渲染停留时长
   + `key: string`： 唯一标识符
   + `isSpecial: boolean`： 是否是特殊弹幕
+  + `isChangeDuration: boolean`： 这个属性普通弹幕才有，判断当前弹幕是否被修正过渲染时长
   + `data: any`：  send 时传入的数据
 
 API

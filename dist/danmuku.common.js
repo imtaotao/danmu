@@ -159,6 +159,7 @@ function () {
     this.manager = manager;
     this.direction = direction;
     this.container = container;
+    this.isChangeDuration = false;
     this.RuntimeManager = RuntimeManager;
     this.key = itemData.key || createKey();
     this.position = {
@@ -474,6 +475,7 @@ function () {
             if (fixTime !== null) {
               if (isRange(_this.opts.times, fixTime)) {
                 barrage.duration = fixTime;
+                barrage.isChangeDuration = true;
                 barrage.timeInfo.currentDuration = fixTime;
               } else {
                 barrage.reset();

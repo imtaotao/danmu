@@ -182,6 +182,7 @@ export default class RuntimeManager {
           if (fixTime !== null) {
             if (isRange(this.opts.times, fixTime)) {
               barrage.duration = fixTime
+              barrage.isChangeDuration = true
               barrage.timeInfo.currentDuration = fixTime
             } else {
               // 如果不在范围内，就恢复初始状态，并等待下次 render

@@ -344,6 +344,8 @@
 
         // 弹幕开始移动时
         barrageMove (barrage, node) {
+          // 查看当前这个弹幕是否被修正过停留在视图的时长
+          // console.log(barrage.isChangeDuration)
           node.style.opacity = opacity.value / 100
         },
 
