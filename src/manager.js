@@ -44,11 +44,15 @@ export default class BarrageManager {
   }
 
   // API 发送普通弹幕
-  send (data) {
+  send (data, isForward) {
     if (!Array.isArray(data)) data = [data]
     if (this.assertCapacity(data.length)) return false
 
-    this.stashBarrages.push.apply(this.stashBarrages, data)
+    // 是否插入到最前面，这样可以最先出来
+    isForward
+      ? this.stashBarrages.unshift.apply(this.stashBarrages, data)
+      : this.stashBarrages.push.apply(this.stashBarrages, data)
+   
     callHook(this.opts.hooks, 'send', [this, data])
     return true
   }

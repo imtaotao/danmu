@@ -39,7 +39,7 @@
   + `containerHeight: number`： 容器高度
 
 API
-  + `send(barrageData: any | Array<any>) : boolean`
+  + `send(barrageData: any | Array<any>, isForward?: boolean) : boolean`
   + `sendSpecial(specialBarrageData: any | Array<any>) : boolean`
   + `show() : void`
   + `hidden() : void`
