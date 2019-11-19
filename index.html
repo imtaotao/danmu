@@ -392,7 +392,7 @@
     // 模拟从服务器得到的数据，不停的发送
     setInterval(() => m.send(testData, {
       // 弹幕渲染到页面上时
-      barrageAppend (barrage, node) {
+      append (barrage, node) {
         node.onmouseenter = e => {
           barrage.pause()
           node.classList.add('active')
@@ -405,7 +405,10 @@
           barrage.destroy()
         }
       },
-    }), 500)
+      show () {
+        console.log('show')
+      },
+    }), 350)
   </script>
 
   <script>
@@ -499,7 +502,7 @@
 
     // 发送弹幕
     send.onclick = e => {
-      m.send({ content: barrageText.value })
+      m.send({ content: barrageText.value }, {}, true)
       barrageText.value = ''
     }
 

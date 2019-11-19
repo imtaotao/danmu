@@ -44,7 +44,7 @@ export default class BarrageManager {
   }
 
   // API 发送普通弹幕
-  send (data, hooks) {
+  send (data, hooks, isForward) {
     if (Array.isArray(data)) {
       // 如果是一个数组，共用一组 hooks
       data = data.map(item => ({ data: item, hooks }))
@@ -53,7 +53,11 @@ export default class BarrageManager {
     }
     if (this.assertCapacity(data.length)) return false
 
-    this.stashBarrages.push.apply(this.stashBarrages, data)
+    // 是否插入到最前面，这样可以最先出来
+    isForward
+      ? this.stashBarrages.unshift.apply(this.stashBarrages, data)
+      : this.stashBarrages.push.apply(this.stashBarrages, data)
+   
     callHook(this.opts.hooks, 'send', [this, data])
     return true
   }
@@ -99,6 +103,7 @@ export default class BarrageManager {
           barrage.node.style.visibility = 'visible'
           barrage.node.style.pointerEvents = 'auto'
         }
+        callHook(barrage.hooks, 'show', [barrage, barrage.node])
       })
       callHook(this.opts.hooks, 'show', [this])
     }
@@ -113,6 +118,7 @@ export default class BarrageManager {
           barrage.node.style.visibility = 'hidden'
           barrage.node.style.pointerEvents = 'none'
         }
+        callHook(barrage.hooks, 'hidden', [barrage, barrage.node])
       })
       callHook(this.opts.hooks, 'hidden', [this])
     }

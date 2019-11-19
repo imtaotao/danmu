@@ -81,13 +81,25 @@ demo
 普通弹幕
 ```js
   manager.send({ content: 'one' }, {
-    barrageCreate (barrage, node) {
+    create (barrage, node) {
       if (!barrage.isSpecial) {
         console.log(barrage.data) // -> { content: 'one' }
         // 设置弹幕内容和样式
         node.textContent = barrage.data.content
         node.classList.add('barrage-style')
       }
+    },
+    append (barrage, node) {
+      ...
+    },
+    move (barrage, node) {
+      ...
+    },
+    remove (barrage, node) {
+      ...
+    },
+    destroy (barrage, node) {
+      ...
     }
   })
 ```

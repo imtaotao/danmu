@@ -214,7 +214,7 @@ function () {
     key: "create",
     value: function create() {
       this.node = document.createElement('div');
-      callHook(this.hooks, 'barrageCreate', [this, this.node]);
+      callHook(this.hooks, 'create', [this, this.node]);
       callHook(this.globalHooks, 'barrageCreate', [this, this.node]);
     }
   }, {
@@ -224,7 +224,7 @@ function () {
 
       if (this.node) {
         this.container.appendChild(this.node);
-        callHook(this.hooks, 'barrageAppend', [this, this.node]);
+        callHook(this.hooks, 'append', [this, this.node]);
         callHook(this.globalHooks, 'barrageAppend', [this, this.node]);
       }
     }
@@ -237,7 +237,7 @@ function () {
         this.container.removeChild(this.node);
 
         if (!noCallHook) {
-          callHook(this.hooks, 'barrageRemove', [this, this.node]);
+          callHook(this.hooks, 'remove', [this, this.node]);
           callHook(this.globalHooks, 'barrageRemove', [this, this.node]);
         }
       }
@@ -265,7 +265,7 @@ function () {
       this.remove();
       this.moveing = false;
       this.deletedInMemory();
-      callHook(this.hooks, 'barrageDestroy', [this, this.node]);
+      callHook(this.hooks, 'destroy', [this, this.node]);
       callHook(this.globalHooks, 'barrageDestroy', [this, this.node]);
       this.node = null;
     }
@@ -499,7 +499,7 @@ function () {
           node.style["margin".concat(upperCase(barrage.direction))] = "-".concat(width, "px");
           barrage.moveing = true;
           barrage.timeInfo.startTime = Date.now();
-          callHook(barrage.hooks, 'barrageMove', [barrage, node]);
+          callHook(barrage.hooks, 'move', [barrage, node]);
           callHook(barrage.globalHooks, 'barrageMove', [barrage, node]);
           resolve(whenTransitionEnds(node));
         });
@@ -558,8 +558,8 @@ function () {
             resolve(whenTransitionEnds(node));
           }
 
-          callHook(manager.opts.hooks, 'barrageMove', [barrage, node]);
           callHook(barrage.hooks, 'move', [barrage, node]);
+          callHook(manager.opts.hooks, 'barrageMove', [barrage, node]);
         });
       });
     }
@@ -772,7 +772,7 @@ function () {
 
   _createClass(BarrageManager, [{
     key: "send",
-    value: function send(data, hooks) {
+    value: function send(data, hooks, isForward) {
       if (Array.isArray(data)) {
         data = data.map(function (item) {
           return {
@@ -788,7 +788,7 @@ function () {
       }
 
       if (this.assertCapacity(data.length)) return false;
-      this.stashBarrages.push.apply(this.stashBarrages, data);
+      isForward ? this.stashBarrages.unshift.apply(this.stashBarrages, data) : this.stashBarrages.push.apply(this.stashBarrages, data);
       callHook(this.opts.hooks, 'send', [this, data]);
       return true;
     }
@@ -841,6 +841,8 @@ function () {
             barrage.node.style.visibility = 'visible';
             barrage.node.style.pointerEvents = 'auto';
           }
+
+          callHook(barrage.hooks, 'show', [barrage, barrage.node]);
         });
         callHook(this.opts.hooks, 'show', [this]);
       }
@@ -855,6 +857,8 @@ function () {
             barrage.node.style.visibility = 'hidden';
             barrage.node.style.pointerEvents = 'none';
           }
+
+          callHook(barrage.hooks, 'hidden', [barrage, barrage.node]);
         });
         callHook(this.opts.hooks, 'hidden', [this]);
       }
