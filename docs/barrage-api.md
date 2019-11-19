@@ -100,7 +100,13 @@ demo
     },
     destroy (barrage, node) {
       ...
-    }
+    },
+    show (barrage, node) {
+      ...
+    },
+    hidden (barrage, node) {
+      ...
+    },
   })
 ```
 
@@ -129,7 +135,13 @@ demo
       },
       destroy (barrage, node) {
         ...
-      }
+      },
+      show (barrage, node) {
+        ...
+      },
+      hidden (barrage, node) {
+        ...
+      },
     }
   })
 ```
