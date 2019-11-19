@@ -75,9 +75,24 @@ demo
   })
 ```
 
-### 特殊弹幕的 hooks
-特殊弹幕有自己的 hooks，这与 manager 的 hooks 并不冲突，而且特殊弹幕的 hooks 的优先级比 manager 的 hooks 高（优先调用）。
+### 弹幕的 hooks
+弹幕有自己的 hooks，这与 manager 的 hooks 并不冲突，而且弹幕的 hooks 的优先级比 manager 的 hooks 高（优先调用）。
 
+普通弹幕
+```js
+  manager.send({ content: 'one' }, {
+    barrageCreate (barrage, node) {
+      if (!barrage.isSpecial) {
+        console.log(barrage.data) // -> { content: 'one' }
+        // 设置弹幕内容和样式
+        node.textContent = barrage.data.content
+        node.classList.add('barrage-style')
+      }
+    }
+  })
+```
+
+特殊弹幕
 ```js
   const data = {}
 

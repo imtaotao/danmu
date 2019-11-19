@@ -44,8 +44,13 @@ export default class BarrageManager {
   }
 
   // API 发送普通弹幕
-  send (data) {
-    if (!Array.isArray(data)) data = [data]
+  send (data, hooks) {
+    if (Array.isArray(data)) {
+      // 如果是一个数组，共用一组 hooks
+      data = data.map(item => ({ data: item, hooks }))
+    } else {
+      data = [{ data, hooks }]
+    }
     if (this.assertCapacity(data.length)) return false
 
     this.stashBarrages.push.apply(this.stashBarrages, data)
@@ -240,10 +245,8 @@ export default class BarrageManager {
 
       if (length > 0 && this.runing) {
         for (let i = 0; i < length; i++) {
-          const data = this.stashBarrages.shift()
-          if (data) {
-            this.initSingleBarrage(data)
-          }
+          const { data, hooks } = this.stashBarrages.shift()
+          this.initSingleBarrage(data, hooks)
         }
 
         callHook(this.opts.hooks, 'render', [this])
@@ -252,8 +255,10 @@ export default class BarrageManager {
   }
 
   // 初始化一个弹幕
-  initSingleBarrage (data) {
-    const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data)
+  initSingleBarrage (data, hooks) {
+    const barrage = data instanceof Barrage
+      ? data
+      : this.createSingleBarrage(data, hooks)
     const newBarrage = barrage && this.sureBarrageInfo(barrage)
 
     if (newBarrage) {
@@ -276,7 +281,7 @@ export default class BarrageManager {
     }
   }
 
-  createSingleBarrage (data) {
+  createSingleBarrage (data, hooks) {
     const [max, min] = this.opts.times
     const time = Number(
       max === min
@@ -289,6 +294,7 @@ export default class BarrageManager {
     
     return new Barrage(
       data,
+      hooks,
       time,
       this,
       Object.assign({}, this.opts.hooks, {

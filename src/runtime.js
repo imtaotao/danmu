@@ -205,6 +205,7 @@ export default class RuntimeManager {
         barrage.timeInfo.startTime = Date.now()
         
         callHook(barrage.hooks, 'barrageMove', [barrage, node])
+        callHook(barrage.globalHooks, 'barrageMove', [barrage, node])
         resolve(whenTransitionEnds(node))
       })
     })
@@ -261,8 +262,8 @@ export default class RuntimeManager {
           resolve(whenTransitionEnds(node))
         }
 
-        callHook(barrage.hooks, 'move', [barrage, node])
         callHook(manager.opts.hooks, 'barrageMove', [barrage, node])
+        callHook(barrage.hooks, 'move', [barrage, node])
       })
     })
   }

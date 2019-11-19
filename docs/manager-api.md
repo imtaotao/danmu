@@ -53,8 +53,9 @@
 ```
 
 ## API
-### `send(barrageData: any | Array<any>) : boolean`
-`send` 方法将发送一个普通弹幕或者一批普通弹幕，所以如果传入的是一个数组，他将判断是多个弹幕。send 方法将不会去检测传入的参数，所以即使传入的为 `undefined`，他同样将创建一个弹幕。当发送弹幕失败时，他将返回 `false`，同样的，发送成功将返回 `true`。send 方法调用时传入的参数将保持在弹幕实例中，你可以通过 `barrage.data` 拿到他。`send` 方法调用时会同步触发 `send` 钩子
+### `send(barrageData: any | Array<any>, hooks?: Hooks) : boolean`
+`send` 方法将发送一个普通弹幕或者一批普通弹幕，所以如果传入的是一个数组，他将判断是多个弹幕。send 方法将不会去检测传入的参数，所以即使传入的为 `undefined`，他同样将创建一个弹幕。当发送弹幕失败时，他将返回 `false`，同样的，发送成功将返回 `true`。send 方法调用时传入的参数将保持在弹幕实例中，你可以通过 `barrage.data` 拿到他。`send` 方法调用时会同步触发 `send` 钩子。第二个参数为 hooks，为当前弹幕的 hooks，如果是一个数组则是多个弹幕共用一套
+
 ```js
   // 这将发送三个普通弹幕，他会在合适的时机渲染到容器中
   const manager = Danmuku.create({

@@ -327,21 +327,6 @@
           node.style.color = `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})` 
         },
 
-        // 弹幕渲染到页面上时
-        barrageAppend (barrage, node) {
-          node.onmouseenter = e => {
-            barrage.pause()
-            node.classList.add('active')
-          }
-          node.onmouseleave = e => {
-            barrage.resume()
-            node.classList.remove('active')
-          }
-          node.onclick = e => {
-            barrage.destroy()
-          }
-        },
-
         // 弹幕开始移动时
         barrageMove (barrage, node) {
           // 查看当前这个弹幕是否被修正过停留在视图的时长
@@ -405,7 +390,22 @@
     m.start()
 
     // 模拟从服务器得到的数据，不停的发送
-    setInterval(() => m.send(testData), 500)
+    setInterval(() => m.send(testData, {
+      // 弹幕渲染到页面上时
+      barrageAppend (barrage, node) {
+        node.onmouseenter = e => {
+          barrage.pause()
+          node.classList.add('active')
+        }
+        node.onmouseleave = e => {
+          barrage.resume()
+          node.classList.remove('active')
+        }
+        node.onclick = e => {
+          barrage.destroy()
+        }
+      },
+    }), 500)
   </script>
 
   <script>

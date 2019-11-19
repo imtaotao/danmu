@@ -6,7 +6,7 @@ import {
 } from './utils'
 
 export default class Barrage {
-  constructor (itemData, time, manager, hooks) {
+  constructor (itemData, hooks, time, manager, globalHooks) {
     const RuntimeManager = manager.RuntimeManager
     const { direction, container } = manager.opts
     
@@ -22,6 +22,7 @@ export default class Barrage {
     this.direction = direction
     this.container = container
     this.isChangeDuration = false
+    this.globalHooks = globalHooks
     this.RuntimeManager = RuntimeManager
     this.key = itemData.key || createKey()
     this.position = {
@@ -76,6 +77,7 @@ export default class Barrage {
   create () {
     this.node = document.createElement('div')
     callHook(this.hooks, 'barrageCreate', [this, this.node])
+    callHook(this.globalHooks, 'barrageCreate', [this, this.node])
   }
 
   append () {
@@ -83,6 +85,7 @@ export default class Barrage {
     if (this.node) {
       this.container.appendChild(this.node)
       callHook(this.hooks, 'barrageAppend', [this, this.node])
+      callHook(this.globalHooks, 'barrageAppend', [this, this.node])
     }
   }
   
@@ -90,9 +93,9 @@ export default class Barrage {
     warning(this.container, 'Need container element.')
     if (this.node) {
       this.container.removeChild(this.node)
-
       if (!noCallHook) {
         callHook(this.hooks, 'barrageRemove', [this, this.node])
+        callHook(this.globalHooks, 'barrageRemove', [this, this.node])
       }
     }
   }
@@ -120,8 +123,9 @@ export default class Barrage {
     this.remove()
     this.moveing = false
     this.deletedInMemory()
-  
+
     callHook(this.hooks, 'barrageDestroy', [this, this.node])
+    callHook(this.globalHooks, 'barrageDestroy', [this, this.node])
     this.node = null
   }
 

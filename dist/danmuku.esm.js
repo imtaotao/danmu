@@ -139,7 +139,7 @@ function whenTransitionEnds(node) {
 var Barrage =
 /*#__PURE__*/
 function () {
-  function Barrage(itemData, time, manager, hooks) {
+  function Barrage(itemData, hooks, time, manager, globalHooks) {
     _classCallCheck(this, Barrage);
 
     var RuntimeManager = manager.RuntimeManager;
@@ -158,6 +158,7 @@ function () {
     this.direction = direction;
     this.container = container;
     this.isChangeDuration = false;
+    this.globalHooks = globalHooks;
     this.RuntimeManager = RuntimeManager;
     this.key = itemData.key || createKey();
     this.position = {
@@ -212,6 +213,7 @@ function () {
     value: function create() {
       this.node = document.createElement('div');
       callHook(this.hooks, 'barrageCreate', [this, this.node]);
+      callHook(this.globalHooks, 'barrageCreate', [this, this.node]);
     }
   }, {
     key: "append",
@@ -221,6 +223,7 @@ function () {
       if (this.node) {
         this.container.appendChild(this.node);
         callHook(this.hooks, 'barrageAppend', [this, this.node]);
+        callHook(this.globalHooks, 'barrageAppend', [this, this.node]);
       }
     }
   }, {
@@ -233,6 +236,7 @@ function () {
 
         if (!noCallHook) {
           callHook(this.hooks, 'barrageRemove', [this, this.node]);
+          callHook(this.globalHooks, 'barrageRemove', [this, this.node]);
         }
       }
     }
@@ -260,6 +264,7 @@ function () {
       this.moveing = false;
       this.deletedInMemory();
       callHook(this.hooks, 'barrageDestroy', [this, this.node]);
+      callHook(this.globalHooks, 'barrageDestroy', [this, this.node]);
       this.node = null;
     }
   }, {
@@ -493,6 +498,7 @@ function () {
           barrage.moveing = true;
           barrage.timeInfo.startTime = Date.now();
           callHook(barrage.hooks, 'barrageMove', [barrage, node]);
+          callHook(barrage.globalHooks, 'barrageMove', [barrage, node]);
           resolve(whenTransitionEnds(node));
         });
       });
@@ -550,8 +556,8 @@ function () {
             resolve(whenTransitionEnds(node));
           }
 
-          callHook(barrage.hooks, 'move', [barrage, node]);
           callHook(manager.opts.hooks, 'barrageMove', [barrage, node]);
+          callHook(barrage.hooks, 'move', [barrage, node]);
         });
       });
     }
@@ -764,8 +770,21 @@ function () {
 
   _createClass(BarrageManager, [{
     key: "send",
-    value: function send(data) {
-      if (!Array.isArray(data)) data = [data];
+    value: function send(data, hooks) {
+      if (Array.isArray(data)) {
+        data = data.map(function (item) {
+          return {
+            data: item,
+            hooks: hooks
+          };
+        });
+      } else {
+        data = [{
+          data: data,
+          hooks: hooks
+        }];
+      }
+
       if (this.assertCapacity(data.length)) return false;
       this.stashBarrages.push.apply(this.stashBarrages, data);
       callHook(this.opts.hooks, 'send', [this, data]);
@@ -968,11 +987,11 @@ function () {
 
         if (length > 0 && this.runing) {
           for (var i = 0; i < length; i++) {
-            var data = this.stashBarrages.shift();
+            var _this$stashBarrages$s = this.stashBarrages.shift(),
+                data = _this$stashBarrages$s.data,
+                hooks = _this$stashBarrages$s.hooks;
 
-            if (data) {
-              this.initSingleBarrage(data);
-            }
+            this.initSingleBarrage(data, hooks);
           }
 
           callHook(this.opts.hooks, 'render', [this]);
@@ -981,10 +1000,10 @@ function () {
     }
   }, {
     key: "initSingleBarrage",
-    value: function initSingleBarrage(data) {
+    value: function initSingleBarrage(data, hooks) {
       var _this3 = this;
 
-      var barrage = data instanceof Barrage ? data : this.createSingleBarrage(data);
+      var barrage = data instanceof Barrage ? data : this.createSingleBarrage(data, hooks);
       var newBarrage = barrage && this.sureBarrageInfo(barrage);
 
       if (newBarrage) {
@@ -1004,14 +1023,14 @@ function () {
     }
   }, {
     key: "createSingleBarrage",
-    value: function createSingleBarrage(data) {
+    value: function createSingleBarrage(data, hooks) {
       var _this$opts$times = _slicedToArray(this.opts.times, 2),
           max = _this$opts$times[0],
           min = _this$opts$times[1];
 
       var time = Number(max === min ? max : (Math.random() * (max - min) + min).toFixed(0));
       if (time <= 0) return null;
-      return new Barrage(data, time, this, Object.assign({}, this.opts.hooks, {
+      return new Barrage(data, hooks, time, this, Object.assign({}, this.opts.hooks, {
         barrageCreate: this.setBarrageStyle.bind(this)
       }));
     }
