@@ -1,6 +1,6 @@
 import Barrage from './barrage'
-import { callHook } from './utils'
 import RuntimeManager from './runtime'
+import { warning, callHook } from './utils'
 import createSpecialBarrage from './special'
 
 export default class BarrageManager {
@@ -224,7 +224,11 @@ export default class BarrageManager {
 
   // API 添加插件
   use (fn, ...args) {
-    if (typeof fn === 'function' && !this.plugins.includes(fn)) {
+    warning(
+      typeof fn === 'function',
+      'Plugin must be a function.'
+    )
+    if (!this.plugins.includes(fn)) {
       this.plugins.push(fn)
       fn(this, ...args)
     }
