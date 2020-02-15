@@ -6,6 +6,7 @@ import createSpecialBarrage from './special'
 export default class BarrageManager {
   constructor (opts) {
     this.opts = opts
+    this.plugins = [] // 存储所有的插件
     this.loopTimer = null
     this.showBarrages = [] // 渲染在页面上的弹幕数量
     this.stashBarrages = []// 暂存的弹幕数量
@@ -219,6 +220,14 @@ export default class BarrageManager {
       ? Object.assign(this.opts, opts)
       : this.opts
     return new this.constructor(opts)
+  }
+
+  // API 添加插件
+  use (fn, ...args) {
+    if (typeof fn === 'function' && !this.plugins.includes(fn)) {
+      this.plugins.push(fn)
+      fn(this, ...args)
+    }
   }
 
   // 判断是否超过容量
