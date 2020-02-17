@@ -1,3 +1,90 @@
+/*!
+ * Danmuku.js v0.1.0
+ * (c) 2019-2020 Imtaotao
+ * Released under the MIT License.
+ */
+function timeline(manager) {
+  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var _manager$opts = manager.opts,
+      limit = _manager$opts.limit,
+      forceRender = _manager$opts.forceRender;
+
+  if (opts.forceRender) {
+    manager.setOptions({
+      limit: Infinity,
+      forceRender: true
+    });
+  }
+
+  return {
+    timeStore: {},
+    specialTimeStore: {},
+    add: function add(timestamp, cfg, hooks) {
+      if (!this.timeStore[timestamp]) {
+        this.timeStore[timestamp] = [{
+          cfg: cfg,
+          hooks: hooks
+        }];
+      } else {
+        this.timeStore[timestamp].push({
+          cfg: cfg,
+          hooks: hooks
+        });
+      }
+    },
+    addSpecial: function addSpecial(timestamp, cfg) {
+      if (!this.specialTimeStore[timestamp]) {
+        this.specialTimeStore[timestamp] = [cfg];
+      } else {
+        this.specialTimeStore[timestamp].push(cfg);
+      }
+    },
+    emit: function emit(timestamp, clearOld) {
+      var ordinaryData = this.timeStore[timestamp];
+      var specialData = this.specialTimeStore[timestamp];
+
+      if (ordinaryData) {
+        ordinaryData.forEach(function (_ref) {
+          var cfg = _ref.cfg,
+              hooks = _ref.hooks;
+          manager.send(cfg, hooks);
+        });
+      }
+
+      if (specialData) {
+        manager.sendSpecial(specialData);
+      }
+
+      if (clearOld) {
+        var clear = function clear(data) {
+          var keys = Object.keys(data);
+
+          if (keys.length > 0) {
+            for (var i = 0; i < keys.length; i++) {
+              var time = keys[i];
+
+              if (time < timestamp && data[time]) {
+                delete data[time];
+              }
+            }
+          }
+        };
+
+        clear(this.timeStore);
+        clear(this.specialTimeStore);
+      }
+    },
+    destroy: function destroy() {
+      this.timeStore = {};
+      this.specialTimeStore = {};
+      manager.setOptions({
+        limit: limit,
+        forceRender: forceRender
+      });
+    }
+  };
+}
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -330,7 +417,8 @@ function () {
 
     var container = opts.container,
         rowGap = opts.rowGap,
-        height = opts.height;
+        height = opts.height,
+        forceRender = opts.forceRender;
     var styles = getComputedStyle(container);
 
     if (!styles.position || styles.position === 'none' || styles.position === 'static') {
@@ -340,6 +428,7 @@ function () {
     this.opts = opts;
     this.rowGap = rowGap;
     this.singleHeight = height;
+    this.forceRender = forceRender;
     this.containerElement = container;
     this.containerWidth = toNumber(styles.width);
     this.containerHeight = toNumber(styles.height);
@@ -413,7 +502,13 @@ function () {
       var alreadyFound = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
       if (alreadyFound.length === this.container.length) {
-        return null;
+        if (this.forceRender) {
+          var _index = Math.floor(Math.random() * this.rows);
+
+          return this.container[_index];
+        } else {
+          return null;
+        }
       }
 
       var index = this.getRandomIndex(alreadyFound);
@@ -760,6 +855,7 @@ function () {
 
     this.opts = opts;
     this.loopTimer = null;
+    this.plugins = new Map();
     this.showBarrages = [];
     this.stashBarrages = [];
     this.specialBarrages = [];
@@ -932,6 +1028,10 @@ function () {
           this.RuntimeManager.rowGap = opts.rowGap;
         }
 
+        if ('forceRender' in opts) {
+          this.RuntimeManager.forceRender = opts.forceRender;
+        }
+
         callHook(this.opts.hooks, 'setOptions', [this, opts]);
       }
     }
@@ -962,6 +1062,23 @@ function () {
       return new this.constructor(opts);
     }
   }, {
+    key: "use",
+    value: function use(fn) {
+      warning(typeof fn === 'function', 'Plugin must be a function.');
+
+      if (this.plugins.has(fn)) {
+        return this.plugins.get(fn);
+      }
+
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      var result = fn.apply(void 0, [this].concat(args));
+      this.plugins.set(fn, result);
+      return result;
+    }
+  }, {
     key: "assertCapacity",
     value: function assertCapacity(n) {
       var res = n + this.length > this.opts.capacity;
@@ -985,7 +1102,7 @@ function () {
           length = this.RuntimeManager.rows;
         }
 
-        if (length > this.stashBarrages.length) {
+        if (this.opts.forceRender || length > this.stashBarrages.length) {
           length = this.stashBarrages.length;
         }
 
@@ -1112,13 +1229,15 @@ function createBarrageManager() {
     isShow: true,
     capacity: 1024,
     times: [5, 10],
-    interval: 2,
-    direction: 'right'
+    interval: 1,
+    direction: 'right',
+    forceRender: false
   }, opts);
   return new BarrageManager(opts);
 }
 
 var index = {
+  timeline: timeline,
   create: createBarrageManager
 };
 

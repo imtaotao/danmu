@@ -1,6 +1,6 @@
 {
   "name": "@rustle/danmuku",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "一个使用 dom + css 构建的弹幕库",
   "main": "dist/danmuku.common.js",
   "module": "dist/danmuku.esm.js",
@@ -10,7 +10,7 @@
     "publish": "npm version major"
   },
   "author": "imtaotao",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",

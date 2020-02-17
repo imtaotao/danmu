@@ -6,8 +6,8 @@ import createSpecialBarrage from './special'
 export default class BarrageManager {
   constructor (opts) {
     this.opts = opts
-    this.plugins = [] // 存储所有的插件
     this.loopTimer = null
+    this.plugins = new Map() // 存储所有的插件
     this.showBarrages = [] // 渲染在页面上的弹幕数量
     this.stashBarrages = []// 暂存的弹幕数量
     this.specialBarrages = [] // 特殊弹幕，特殊弹幕立即发立即渲染，移动完毕结束
@@ -191,6 +191,10 @@ export default class BarrageManager {
         this.RuntimeManager.rowGap = opts.rowGap
       }
 
+      if ('forceRender' in opts) {
+        this.RuntimeManager.forceRender = opts.forceRender
+      }
+
       callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
   }
@@ -228,10 +232,12 @@ export default class BarrageManager {
       typeof fn === 'function',
       'Plugin must be a function.'
     )
-    if (!this.plugins.includes(fn)) {
-      this.plugins.push(fn)
-      fn(this, ...args)
+    if (this.plugins.has(fn)) {
+      return this.plugins.get(fn)
     }
+    const result = fn(this, ...args)
+    this.plugins.set(fn, result)
+    return result
   }
 
   // 判断是否超过容量
@@ -258,7 +264,8 @@ export default class BarrageManager {
         length = this.RuntimeManager.rows
       }
 
-      if (length > this.stashBarrages.length) {
+      // 如果需要强行渲染的话
+      if (this.opts.forceRender || length > this.stashBarrages.length) {
         length = this.stashBarrages.length
       }
 

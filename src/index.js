@@ -1,3 +1,4 @@
+import timeline from './timeline'
 import BarrageManager from './manager'
 
 function createBarrageManager (opts = {}) {
@@ -9,8 +10,9 @@ function createBarrageManager (opts = {}) {
     isShow: true, // 默认 show
     capacity: 1024, // 内存中能存放的弹幕数量
     times: [5, 10], // 弹幕移动时间取值范围
-    interval: 2, // 渲染频率
+    interval: 1, // 渲染频率，默认 1s 一次
     direction: 'right', // 弹幕左边出来还是右边
+    forceRender: false, // 是否去掉其他限制，强制显示，这个可以配合使用，用于碰撞检测的优化
   }, opts)
 
   return new BarrageManager(opts)
@@ -18,5 +20,6 @@ function createBarrageManager (opts = {}) {
 
 // 以后可能增加新的 api
 export default {
+  timeline,
   create: createBarrageManager,
 }
