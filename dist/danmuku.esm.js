@@ -417,8 +417,7 @@ function () {
 
     var container = opts.container,
         rowGap = opts.rowGap,
-        height = opts.height,
-        forceRender = opts.forceRender;
+        height = opts.height;
     var styles = getComputedStyle(container);
 
     if (!styles.position || styles.position === 'none' || styles.position === 'static') {
@@ -428,7 +427,6 @@ function () {
     this.opts = opts;
     this.rowGap = rowGap;
     this.singleHeight = height;
-    this.forceRender = forceRender;
     this.containerElement = container;
     this.containerWidth = toNumber(styles.width);
     this.containerHeight = toNumber(styles.height);
@@ -502,7 +500,7 @@ function () {
       var alreadyFound = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
       if (alreadyFound.length === this.container.length) {
-        if (this.forceRender) {
+        if (this.opts.forceRender) {
           var _index = Math.floor(Math.random() * this.rows);
 
           return this.container[_index];
@@ -1026,10 +1024,6 @@ function () {
 
         if ('rowGap' in opts) {
           this.RuntimeManager.rowGap = opts.rowGap;
-        }
-
-        if ('forceRender' in opts) {
-          this.RuntimeManager.forceRender = opts.forceRender;
         }
 
         callHook(this.opts.hooks, 'setOptions', [this, opts]);

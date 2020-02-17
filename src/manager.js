@@ -191,10 +191,6 @@ export default class BarrageManager {
         this.RuntimeManager.rowGap = opts.rowGap
       }
 
-      if ('forceRender' in opts) {
-        this.RuntimeManager.forceRender = opts.forceRender
-      }
-
       callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
   }

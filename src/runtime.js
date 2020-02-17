@@ -10,7 +10,7 @@ import {
 
 export default class RuntimeManager {
   constructor (opts) {
-    const { container, rowGap, height, forceRender } = opts
+    const { container, rowGap, height } = opts
     const styles = getComputedStyle(container)
 
     if (
@@ -24,7 +24,6 @@ export default class RuntimeManager {
     this.opts = opts
     this.rowGap = rowGap
     this.singleHeight = height
-    this.forceRender = forceRender // 是否强行渲染，及时会有碰撞也要渲染的情况，比如使用 timeline 时
     this.containerElement = container
     this.containerWidth = toNumber(styles.width)
     this.containerHeight = toNumber(styles.height)
@@ -98,7 +97,7 @@ export default class RuntimeManager {
     // 如果发现全部都找过了，则代表没有合适的弹道可以选择
     if (alreadyFound.length === this.container.length) {
       // 如果需要强行渲染的话（在时间轴上为了实时出现）
-      if (this.forceRender) {
+      if (this.opts.forceRender) {
         const index = Math.floor(Math.random() * this.rows)
         return this.container[index]
       } else {
