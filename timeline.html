@@ -31,16 +31,6 @@
   <script src='./dist/danmuku.min.js'></script>
   <script>
     const random = (min, max) => +(Math.random() * (max - min) + min).toFixed(0)
-    const testData = [
-      '陈涛',
-      'Imtaotao',
-      'Supertaotao',
-      'I can see it',
-      'Do you feel alright?',
-      'Yes, I feel wonderfull tonight',
-      'Tell me someday we\'ll get together'
-    ]
-
     // 测试代码
     const m = Danmuku.create({
       container: document.getElementById('container'),
@@ -106,27 +96,6 @@
       time.innerHTML = i
       i++
     }, 1000)
-
-    // 模拟从服务器得到的数据，不停的发送
-    // setInterval(() => timeline.add(testData, {
-    //   // 弹幕渲染到页面上时
-    //   append (barrage, node) {
-    //     node.onmouseenter = e => {
-    //       barrage.pause()
-    //       node.classList.add('active')
-    //     }
-    //     node.onmouseleave = e => {
-    //       barrage.resume()
-    //       node.classList.remove('active')
-    //     }
-    //     node.onclick = e => {
-    //       barrage.destroy()
-    //     }
-    //   },
-    //   show () {
-    //     console.log('show')
-    //   },
-    // }), 350)
   </script>
 </body>
 </html>

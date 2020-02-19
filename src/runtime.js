@@ -191,7 +191,6 @@ export default class RuntimeManager {
               barrage.isChangeDuration = true
               barrage.timeInfo.currentDuration = fixTime
             } else {
-              // 如果需要强行渲染，就不能等待下次
               // 如果不在范围内，就恢复初始状态，并等待下次 render
               barrage.reset()
               node.style.top = null
