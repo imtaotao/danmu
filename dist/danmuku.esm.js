@@ -3,7 +3,7 @@
  * (c) 2019-2020 Imtaotao
  * Released under the MIT License.
  */
-function timeline(manager) {
+function Timeline(manager) {
   var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var _manager$opts = manager.opts,
       limit = _manager$opts.limit,
@@ -1231,7 +1231,7 @@ function createBarrageManager() {
 }
 
 var index = {
-  timeline: timeline,
+  Timeline: Timeline,
   create: createBarrageManager
 };
 

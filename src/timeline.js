@@ -1,5 +1,5 @@
 // timeline 就是一个小的观察者模式
-export default function timeline (manager, opts = {}) {
+export default function Timeline (manager, opts = {}) {
   const { limit, forceRender } = manager.opts
   if (opts.forceRender) {
     manager.setOptions({

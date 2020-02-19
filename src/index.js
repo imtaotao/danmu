@@ -1,4 +1,4 @@
-import timeline from './timeline'
+import Timeline from './timeline'
 import BarrageManager from './manager'
 
 function createBarrageManager (opts = {}) {
@@ -20,6 +20,6 @@ function createBarrageManager (opts = {}) {
 
 // 以后可能增加新的 api
 export default {
-  timeline,
+  Timeline,
   create: createBarrageManager,
 }
