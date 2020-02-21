@@ -12,7 +12,7 @@
 
 ## CDN
 ```html
-<script src="https://cdn.jsdelivr.net/gh/imtaotao/Danmuku/dist/danmuku.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@rustle/danmuku"></script>
 ```
 
 ## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
@@ -52,6 +52,7 @@ API
   + `resize() : void`
   + `clear() : void`
   + `clone(option?: Options) : barrageManager`
+  + `use(plugin: (...args: any) => any, ...args) : ReturnType<typeof plugin>`
 
 ### Barrage
 属性

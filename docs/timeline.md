@@ -5,6 +5,7 @@ API
   + `add(timestamp: number, barrageData: any | Array<any>, hooks?: Object, isForward?: boolean) : void`
   + `addSpecial(timestamp: number, specialBarrageData: any | Array<any>) : void`
   + `emit(timestamp: number, clearOld?: boolean) : void`
+  + `destroy(): void`
 
 ## demo
 ```js

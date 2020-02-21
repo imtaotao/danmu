@@ -194,7 +194,7 @@
   const newManager = manager.clone()
 ```
 
-### `use(plugin: (...args: any) => any, ...args)` : ReturnType<typeof plugin>
+### `use(plugin: (...args: any) => any, ...args) : ReturnType<typeof plugin>`
 `use` 方法用于添加插件
 ```js
 function plugin(opts) {
