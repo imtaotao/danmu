@@ -12,11 +12,11 @@ export default function Timeline (manager, opts = {}) {
     timeStore: {},
     specialTimeStore: {},
 
-    add (timestamp, cfg, hooks) {
+    add (timestamp, cfg, hooks, isForward) {
       if (!this.timeStore[timestamp]) {
-        this.timeStore[timestamp] = [{ cfg, hooks }]
+        this.timeStore[timestamp] = [{ cfg, hooks, isForward }]
       } else {
-        this.timeStore[timestamp].push({ cfg, hooks })
+        this.timeStore[timestamp].push({ cfg, hooks, isForward })
       }
     },
   
@@ -33,8 +33,8 @@ export default function Timeline (manager, opts = {}) {
       const specialData = this.specialTimeStore[timestamp]
 
       if (ordinaryData) {
-        ordinaryData.forEach(({ cfg, hooks }) => {
-          manager.send(cfg, hooks)
+        ordinaryData.forEach(({ cfg, hooks, isForward }) => {
+          manager.send(cfg, hooks, isForward)
         })
       }
       if (specialData) {

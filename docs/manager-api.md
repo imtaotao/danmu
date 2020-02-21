@@ -194,6 +194,17 @@
   const newManager = manager.clone()
 ```
 
+### `use(plugin: (...args: any) => any, ...args)` : ReturnType<typeof plugin>
+`use` 方法用于添加插件
+```js
+function plugin(opts) {
+  console.log(opts) // { a: 1 }
+  return 'plugin'
+}
+const pm = manager.use(plugin, { a: 1 })
+console.log(pm) // 'plugin'
+```
+
 
 ## Options
 ### `limit: number`

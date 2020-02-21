@@ -19,16 +19,18 @@ function Timeline(manager) {
   return {
     timeStore: {},
     specialTimeStore: {},
-    add: function add(timestamp, cfg, hooks) {
+    add: function add(timestamp, cfg, hooks, isForward) {
       if (!this.timeStore[timestamp]) {
         this.timeStore[timestamp] = [{
           cfg: cfg,
-          hooks: hooks
+          hooks: hooks,
+          isForward: isForward
         }];
       } else {
         this.timeStore[timestamp].push({
           cfg: cfg,
-          hooks: hooks
+          hooks: hooks,
+          isForward: isForward
         });
       }
     },
@@ -46,8 +48,9 @@ function Timeline(manager) {
       if (ordinaryData) {
         ordinaryData.forEach(function (_ref) {
           var cfg = _ref.cfg,
-              hooks = _ref.hooks;
-          manager.send(cfg, hooks);
+              hooks = _ref.hooks,
+              isForward = _ref.isForward;
+          manager.send(cfg, hooks, isForward);
         });
       }
 
