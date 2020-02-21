@@ -19,6 +19,8 @@
 
 ## [Barrage API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/barrage-api.md)
 
+## [Timeline 介绍](https://github.com/imtaotao/danmuku/blob/master/docs/timeline.md)
+
 ## API 预览
 ### 全局 api
   + `create(opts: Options) : barrageManager`
