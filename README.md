@@ -74,6 +74,7 @@ API
 ## 配置项
 ### barrageManager Options 预览
 创建弹幕 manager 的参数 
+  + `container: HTMLElement`: 弹幕容器，为一个 html 元素
   + `limit: number`：  页面上允许渲染的弹幕数量。默认为 `100`
   + `height: number`：  轨道的高。默认为 `50`
   + `rowGap: number`：同一条轨道上两条弹幕的起始间隔，如果小于等于 0，将使弹幕不进行碰撞检测计算。默认为 `50`

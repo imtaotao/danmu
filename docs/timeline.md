@@ -5,6 +5,7 @@ API
   + `add(timestamp: number, barrageData: any | Array<any>, hooks?: Object, isForward?: boolean) : void`
   + `addSpecial(timestamp: number, specialBarrageData: any | Array<any>) : void`
   + `emit(timestamp: number, clearOld?: boolean) : void`
+  + `emitInterval(timestamp: number, clearOld?: boolean): void`
   + `destroy(): void`
 
 ## demo
@@ -37,5 +38,6 @@ API
 ```
 
 ## Tips
++ `emitInterval` 方法与 `emit` 方法的区别是，你触发时，不允许连续触发相同的时间，也就是说你要触发同一个时间点的弹幕，得间隔的去触发
 + `timeline.add` 与 `manager.send` 方法参数一样，唯一的区别是多一个 `timestamp` 参数。同理，`timeline.addSpecial` 和 `manager.sendSpecial` 也是一样的
 + 可以看到时间轴这个插件就是一个简易的 eventbus 系统

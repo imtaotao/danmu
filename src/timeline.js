@@ -9,6 +9,7 @@ export default function Timeline (manager, opts = {}) {
   }
 
   return {
+    preEmiter: null,
     timeStore: {},
     specialTimeStore: {},
 
@@ -60,7 +61,16 @@ export default function Timeline (manager, opts = {}) {
       }
     },
 
+    emitInterval(timestamp, clearOld) {
+      if (timestamp !== preEmiter) {
+        // 保存这一次的
+        this.preEmiter = timestamp
+        this.emit(timestamp, clearOld)
+      }
+    },
+
     destroy() {
+      this.preEmiter = null
       this.timeStore = {}
       this.specialTimeStore = {}
       manager.setOptions({

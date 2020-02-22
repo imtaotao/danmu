@@ -1,5 +1,5 @@
 /*!
- * Danmuku.js v0.1.0
+ * Danmuku.js v0.1.3
  * (c) 2019-2020 Imtaotao
  * Released under the MIT License.
  */
@@ -17,6 +17,7 @@ function Timeline(manager) {
   }
 
   return {
+    preEmiter: null,
     timeStore: {},
     specialTimeStore: {},
     add: function add(timestamp, cfg, hooks, isForward) {
@@ -77,7 +78,14 @@ function Timeline(manager) {
         clear(this.specialTimeStore);
       }
     },
+    emitInterval: function emitInterval(timestamp, clearOld) {
+      if (timestamp !== preEmiter) {
+        this.preEmiter = timestamp;
+        this.emit(timestamp, clearOld);
+      }
+    },
     destroy: function destroy() {
+      this.preEmiter = null;
       this.timeStore = {};
       this.specialTimeStore = {};
       manager.setOptions({
