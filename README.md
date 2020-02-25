@@ -1,8 +1,11 @@
 ## Description
 [![NPM version][npm-image]][npm-url]
+[![](https://data.jsdelivr.com/v1/package/npm/@rustle/danmuku/badge)](https://www.jsdelivr.com/package/npm/@rustle/danmuku)
 
 [npm-image]: https://img.shields.io/npm/v/@rustle/danmuku.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/@rustle/danmuku
+
+
 
 这是一个弹幕库，使用 `dom + css3` 的方式构建<br>
 [线上预览地址](https://imtaotao.github.io/danmuku)
