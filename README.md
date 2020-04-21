@@ -15,7 +15,7 @@
 
 ## CDN
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@rustle/danmuku"></script>
+<script src="https://cdn.jsdelivr.net/npm/@rustle/danmuku/dist/danmuku.min.js"></script>
 ```
 
 ## [BarrageManager API 详细介绍](https://github.com/imtaotao/danmuku/blob/master/docs/manager-api.md)
