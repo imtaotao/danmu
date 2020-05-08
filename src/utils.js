@@ -5,8 +5,9 @@ export function warning (condition, message) {
 
 export function callHook (hooks, name, args = []) {
   if (hooks && typeof hooks[name] === 'function') {
-    hooks[name].apply(null, args)
+    return hooks[name].apply(null, args)
   }
+  return null
 }
 
 export function createKey () {

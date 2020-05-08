@@ -292,8 +292,14 @@ console.log(pm) // 'plugin'
 ### `setOptions(manager: barrageManager, options: Options)`
 `setOptions` 钩子将在 `manager.setOptions` 调用时触发
 
+### `willRender(manager: barrageManager, barrage | barrageData, isSpecial: boolean) : boolean | void`
+`willRender` 钩子将在 `manager` 每次渲染之前（包括特殊弹幕）触发，`return false` 将会阻止当前这条弹幕渲染
+
 ### `render(manager: barrageManager)`
 `render` 钩子将在 `manager` 每次渲染的时候触发（特殊弹幕的渲染将不会触发）
+
+### `capacityWarning(manager: barrageManager)`
+`capacityWarning` 将在弹幕数量超过 `barrageManager.opts.capacity` 时触发
 
 ### `ended(manager: barrageManager)`
 如果发现 `manager.length` 等于 0 的时候，将会调用此钩子。但是不保证 `manager.length` 永远为 0。所以 `ended` 钩子将会有可能被多次调用

@@ -351,6 +351,15 @@
           console.log('end')
         },
 
+        capacityWarning(manager) {
+          console.error('capacityWarning 钩子被调用')
+        },
+
+        willRender (manager, barrage, isSpecial) {
+          if (!isSpecial) return
+          console.log(barrage, isSpecial)
+        },
+
         render () {
           allNumber.textContent = m.length
           showNumber.textContent = m.showLength

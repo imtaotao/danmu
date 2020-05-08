@@ -1,5 +1,5 @@
 /*!
- * Danmuku.js v0.1.3
+ * Danmuku.js v0.1.4
  * (c) 2019-2020 Imtaotao
  * Released under the MIT License.
  */
@@ -174,8 +174,10 @@ function callHook(hooks, name) {
   var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
   if (hooks && typeof hooks[name] === 'function') {
-    hooks[name].apply(null, args);
+    return hooks[name].apply(null, args);
   }
+
+  return null;
 }
 function createKey() {
   return Math.random().toString(36).substr(2, 8);
@@ -906,31 +908,31 @@ function () {
       if (!Array.isArray(data)) data = [data];
       if (this.assertCapacity(data.length)) return false;
 
-      var _loop = function _loop(i) {
-        var barrage = createSpecialBarrage(_this, data[i]);
-
-        if (barrage.opts.duration <= 0 || _this.showLength + 1 > _this.opts.limit) {
-          return "continue";
-        }
-
-        barrage.create();
-        barrage.append();
-
-        _this.specialBarrages.push(barrage);
-
-        _this.RuntimeManager.moveSpecialBarrage(barrage, _this).then(function () {
-          barrage.destroy();
-
-          if (_this.length === 0) {
-            callHook(_this.opts.hooks, 'ended', [_this]);
-          }
-        });
-      };
-
       for (var i = 0; i < data.length; i++) {
-        var _ret = _loop(i);
+        if (callHook(this.opts.hooks, 'willRender', [this, data[i], true]) !== false) {
+          var _ret = function () {
+            var barrage = createSpecialBarrage(_this, data[i]);
 
-        if (_ret === "continue") continue;
+            if (barrage.opts.duration <= 0 || _this.showLength + 1 > _this.opts.limit) {
+              return "continue";
+            }
+
+            barrage.create();
+            barrage.append();
+
+            _this.specialBarrages.push(barrage);
+
+            _this.RuntimeManager.moveSpecialBarrage(barrage, _this).then(function () {
+              barrage.destroy();
+
+              if (_this.length === 0) {
+                callHook(_this.opts.hooks, 'ended', [_this]);
+              }
+            });
+          }();
+
+          if (_ret === "continue") continue;
+        }
       }
 
       callHook(this.opts.hooks, 'sendSpecial', [this, data]);
@@ -970,19 +972,19 @@ function () {
     }
   }, {
     key: "each",
-    value: function each(cb) {
+    value: function each(callback) {
       if (typeof cb === 'function') {
         var i = 0;
 
         for (; i < this.specialBarrages.length; i++) {
-          cb(this.specialBarrages[i], i);
+          callback(this.specialBarrages[i], i);
         }
 
         for (i = 0; i < this.showBarrages.length; i++) {
           var barrage = this.showBarrages[i];
 
           if (barrage.moveing) {
-            cb(barrage, i);
+            callback(barrage, i);
           }
         }
       }
@@ -1091,6 +1093,7 @@ function () {
       var res = n + this.length > this.opts.capacity;
 
       if (res) {
+        callHook(this.opts.hooks, 'capacityWarning', [this]);
         console.warn("The number of barrage is greater than \"".concat(this.opts.capacity, "\"."));
       }
 
@@ -1115,11 +1118,11 @@ function () {
 
         if (length > 0 && this.runing) {
           for (var i = 0; i < length; i++) {
-            var _this$stashBarrages$s = this.stashBarrages.shift(),
-                data = _this$stashBarrages$s.data,
-                hooks = _this$stashBarrages$s.hooks;
+            var currentBarrage = this.stashBarrages.shift();
 
-            this.initSingleBarrage(data, hooks);
+            if (callHook(this.opts.hooks, 'willRender', [this, currentBarrage, false]) !== false) {
+              this.initSingleBarrage(currentBarrage.data, currentBarrage.hooks);
+            }
           }
 
           callHook(this.opts.hooks, 'render', [this]);
