@@ -129,7 +129,7 @@ export default class BarrageManager {
 
   // API 遍历在渲染中的节点
   each (callback) {
-    if (typeof cb === 'function') {
+    if (typeof callback === 'function') {
       let i = 0
       for (; i < this.specialBarrages.length; i++) {
         callback(this.specialBarrages[i], i)

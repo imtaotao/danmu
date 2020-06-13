@@ -107,6 +107,7 @@ API
   + `resize(manager: barrageManager)`
   + `clear(manager: barrageManager)`
   + `setOptions(manager: barrageManager, options: Options)`
+  + `willRender(manager: barrageManager, barrage | barrageData, isSpecial: boolean) : boolean | void`
   + `render(manager: barrageManager)`
   + `ended(manager: barrageManager)`
 

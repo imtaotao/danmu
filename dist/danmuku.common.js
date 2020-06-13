@@ -1,5 +1,5 @@
 /*!
- * Danmuku.js v0.1.4
+ * Danmuku.js v0.1.5
  * (c) 2019-2020 Imtaotao
  * Released under the MIT License.
  */
@@ -973,7 +973,7 @@ function () {
   }, {
     key: "each",
     value: function each(callback) {
-      if (typeof cb === 'function') {
+      if (typeof callback === 'function') {
         var i = 0;
 
         for (; i < this.specialBarrages.length; i++) {
