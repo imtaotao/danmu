@@ -1,7 +1,7 @@
 import Barrage from './barrage'
 import RuntimeManager from './runtime'
-import { warning, callHook } from './utils'
 import createSpecialBarrage from './special'
+import { warning, callHook, timeSlice } from './utils'
 
 export default class BarrageManager {
   constructor (opts) {
@@ -270,13 +270,16 @@ export default class BarrageManager {
       }
 
       if (length > 0 && this.runing) {
-        for (let i = 0; i < length; i++) {
+        timeSlice(length, () => {
           const currentBarrage = this.stashBarrages.shift()
           // 如果 willRender 钩子返回 false 就不需要渲染当前钩子，也可以对数据进行更改
           if (callHook(this.opts.hooks, 'willRender', [this, currentBarrage, false]) !== false) {
-            this.initSingleBarrage(currentBarrage.data, currentBarrage.hooks)
+            const needStop = this.initSingleBarrage(currentBarrage.data, currentBarrage.hooks)
+            if (needStop) {
+              return false
+            }
           }
-        }
+        })
         callHook(this.opts.hooks, 'render', [this])
       }
     }
@@ -306,6 +309,7 @@ export default class BarrageManager {
       // 否则就先存起来，按道理说只会存一个
       // 按照现有的逻辑，最后一个会不停的取出来，然后存起来
       this.stashBarrages.unshift(barrage)
+      return true
     }
   }
 

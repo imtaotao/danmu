@@ -35,6 +35,25 @@ export function upperCase ([first, ...remaing]) {
   return first.toUpperCase() + remaing.join('')
 }
 
+export function timeSlice (len, fn) {
+  let i = -1
+  let start = performance.now()
+  const run = () => {
+    while(++i < len) {
+      if (fn() === false) {
+        break
+      }
+      const cur = performance.now()
+      if (cur - start > 13) {
+        start = cur
+        setTimeout(run)
+        break
+      }
+    }
+  }
+  run()
+}
+
 const raf = window.requestAnimationFrame
       ? window.requestAnimationFrame.bind(window)
       : setTimeout

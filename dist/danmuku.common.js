@@ -202,6 +202,28 @@ function upperCase(_ref3) {
 
   return first.toUpperCase() + remaing.join('');
 }
+function timeSlice(len, fn) {
+  var i = -1;
+  var start = performance.now();
+
+  var run = function run() {
+    while (++i < len) {
+      if (fn() === false) {
+        break;
+      }
+
+      var cur = performance.now();
+
+      if (cur - start > 13) {
+        start = cur;
+        setTimeout(run);
+        break;
+      }
+    }
+  };
+
+  run();
+}
 var raf = window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : setTimeout;
 function nextFrame(fn) {
   raf(function () {
@@ -1102,6 +1124,8 @@ function () {
   }, {
     key: "renderBarrage",
     value: function renderBarrage() {
+      var _this3 = this;
+
       if (this.stashBarrages.length > 0) {
         var _this$RuntimeManager = this.RuntimeManager,
             rows = _this$RuntimeManager.rows,
@@ -1117,14 +1141,17 @@ function () {
         }
 
         if (length > 0 && this.runing) {
-          for (var i = 0; i < length; i++) {
-            var currentBarrage = this.stashBarrages.shift();
+          timeSlice(length, function () {
+            var currentBarrage = _this3.stashBarrages.shift();
 
-            if (callHook(this.opts.hooks, 'willRender', [this, currentBarrage, false]) !== false) {
-              this.initSingleBarrage(currentBarrage.data, currentBarrage.hooks);
+            if (callHook(_this3.opts.hooks, 'willRender', [_this3, currentBarrage, false]) !== false) {
+              var needStop = _this3.initSingleBarrage(currentBarrage.data, currentBarrage.hooks);
+
+              if (needStop) {
+                return false;
+              }
             }
-          }
-
+          });
           callHook(this.opts.hooks, 'render', [this]);
         }
       }
@@ -1132,7 +1159,7 @@ function () {
   }, {
     key: "initSingleBarrage",
     value: function initSingleBarrage(data, hooks) {
-      var _this3 = this;
+      var _this4 = this;
 
       var barrage = data instanceof Barrage ? data : this.createSingleBarrage(data, hooks);
       var newBarrage = barrage && this.sureBarrageInfo(barrage);
@@ -1144,12 +1171,13 @@ function () {
         this.RuntimeManager.move(newBarrage, this).then(function () {
           newBarrage.destroy();
 
-          if (_this3.length === 0) {
-            callHook(_this3.opts.hooks, 'ended', [_this3]);
+          if (_this4.length === 0) {
+            callHook(_this4.opts.hooks, 'ended', [_this4]);
           }
         });
       } else {
         this.stashBarrages.unshift(barrage);
+        return true;
       }
     }
   }, {
