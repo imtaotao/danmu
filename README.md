@@ -13,6 +13,12 @@
 ## Installation
 `npm install @rustle/danmuku`<br>
 
+> 实时查看 fps 和 内存占用
+> 1. 打开 Chrome DevTools
+> 2. ctrl + shift + p 或者 command + shift + p
+> 3. 输入 Show rendering
+> 4. 勾选 FPS meter
+
 ## CDN
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@rustle/danmuku/dist/danmuku.min.js"></script>
