@@ -5,8 +5,9 @@ export function warning (condition, message) {
 
 export function callHook (hooks, name, args = []) {
   if (hooks && typeof hooks[name] === 'function') {
-    hooks[name].apply(null, args)
+    return hooks[name].apply(null, args)
   }
+  return null
 }
 
 export function createKey () {
@@ -23,10 +24,6 @@ export function toNumber (val) {
       : NaN
 }
 
-export function lastElement (arr, lastIndex) {
-  return arr[arr.length - lastIndex]
-}
-
 export function isRange ([a, b], val) {
   if (val === a || val === b) return true
   const min = Math.min(a, b)
@@ -36,6 +33,25 @@ export function isRange ([a, b], val) {
 
 export function upperCase ([first, ...remaing]) {
   return first.toUpperCase() + remaing.join('')
+}
+
+export function timeSlice (len, fn) {
+  let i = -1
+  let start = performance.now()
+  const run = () => {
+    while(++i < len) {
+      if (fn() === false) {
+        break
+      }
+      const cur = performance.now()
+      if (cur - start > 13) {
+        start = cur
+        setTimeout(run)
+        break
+      }
+    }
+  }
+  run()
 }
 
 const raf = window.requestAnimationFrame

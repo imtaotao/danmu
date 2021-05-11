@@ -1,12 +1,13 @@
 import Barrage from './barrage'
-import { callHook } from './utils'
 import RuntimeManager from './runtime'
 import createSpecialBarrage from './special'
+import { warning, callHook, timeSlice } from './utils'
 
 export default class BarrageManager {
   constructor (opts) {
     this.opts = opts
     this.loopTimer = null
+    this.plugins = new Map() // 存储所有的插件
     this.showBarrages = [] // 渲染在页面上的弹幕数量
     this.stashBarrages = []// 暂存的弹幕数量
     this.specialBarrages = [] // 特殊弹幕，特殊弹幕立即发立即渲染，移动完毕结束
@@ -44,11 +45,20 @@ export default class BarrageManager {
   }
 
   // API 发送普通弹幕
-  send (data) {
-    if (!Array.isArray(data)) data = [data]
+  send (data, hooks, isForward) {
+    if (Array.isArray(data)) {
+      // 如果是一个数组，共用一组 hooks
+      data = data.map(item => ({ data: item, hooks }))
+    } else {
+      data = [{ data, hooks }]
+    }
     if (this.assertCapacity(data.length)) return false
 
-    this.stashBarrages.push.apply(this.stashBarrages, data)
+    // 是否插入到最前面，这样可以最先出来
+    isForward
+      ? this.stashBarrages.unshift.apply(this.stashBarrages, data)
+      : this.stashBarrages.push.apply(this.stashBarrages, data)
+   
     callHook(this.opts.hooks, 'send', [this, data])
     return true
   }
@@ -60,21 +70,27 @@ export default class BarrageManager {
     if (this.assertCapacity(data.length)) return false
 
     for (let i = 0; i < data.length; i++) {
-      const barrage =  createSpecialBarrage(data[i])
-      // 如果当前这个特殊弹幕时间小于等于 0，就不需要渲染
-      if (barrage.opts.duration <= 0) continue
+      if (callHook(this.opts.hooks, 'willRender', [this, data[i], true]) !== false) {
+        const barrage =  createSpecialBarrage(this, data[i])
 
-      barrage.create(this)
-      barrage.append(this)
-      this.specialBarrages.push(barrage)
-
-      // 结束后销毁
-      this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
-        barrage.destroy(this)
-        if (this.length === 0) {
-          callHook(this.opts.hooks, 'ended', [this])
+        // 如果当前这个特殊弹幕时间小于等于 0，就不需要渲染
+        // 如果渲染此视图会大于限制的数，也不应该渲染
+        if (barrage.opts.duration <= 0 || this.showLength + 1 > this.opts.limit) {
+          continue
         }
-      })
+
+        barrage.create()
+        barrage.append()
+        this.specialBarrages.push(barrage)
+
+        // 结束后销毁
+        this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
+          barrage.destroy()
+          if (this.length === 0) {
+            callHook(this.opts.hooks, 'ended', [this])
+          }
+        })
+      }
     }
 
     callHook(this.opts.hooks, 'sendSpecial', [this, data])
@@ -90,10 +106,10 @@ export default class BarrageManager {
           barrage.node.style.visibility = 'visible'
           barrage.node.style.pointerEvents = 'auto'
         }
+        callHook(barrage.hooks, 'show', [barrage, barrage.node])
       })
       callHook(this.opts.hooks, 'show', [this])
     }
-    return this
   }
 
   // API 隐藏所有弹幕
@@ -105,28 +121,27 @@ export default class BarrageManager {
           barrage.node.style.visibility = 'hidden'
           barrage.node.style.pointerEvents = 'none'
         }
+        callHook(barrage.hooks, 'hidden', [barrage, barrage.node])
       })
       callHook(this.opts.hooks, 'hidden', [this])
     }
-    return this    
   }
 
   // API 遍历在渲染中的节点
-  each (cb) {
-    if (typeof cb === 'function') {
+  each (callback) {
+    if (typeof callback === 'function') {
       let i = 0
       for (; i < this.specialBarrages.length; i++) {
-        cb(this.specialBarrages[i], i)
+        callback(this.specialBarrages[i], i)
       }
 
       for (i = 0; i < this.showBarrages.length; i++) {
         const barrage = this.showBarrages[i]
         if (barrage.moveing) {
-          cb(barrage, i)
+          callback(barrage, i)
         }
       }
     }
-    return this
   }
 
   // API 停止轮询添加弹幕
@@ -139,7 +154,6 @@ export default class BarrageManager {
         callHook(this.opts.hooks, 'stop', [this])
       }
     }
-    return this
   }
 
   // API 循环检测添加弹幕
@@ -148,7 +162,7 @@ export default class BarrageManager {
       this.loopTimer = setTimeout(() => {
         this.renderBarrage()
         core()
-      }, this.opts.interval)
+      }, this.opts.interval * 1000)
     }
 
     this.stop(true)
@@ -157,14 +171,14 @@ export default class BarrageManager {
     if (!noCallHook) {
       callHook(this.opts.hooks, 'start', [this])
     }
-  
-    return this
   }
 
   // API 重新设置参数
   setOptions (opts) {
     if (opts) {
       // 清除定时器，重新根据新的时间开始
+      this.opts = Object.assign(this.opts, opts)
+
       if ('interval' in opts) {
         this.stop(true)
         this.start(true)
@@ -179,29 +193,20 @@ export default class BarrageManager {
         this.RuntimeManager.rowGap = opts.rowGap
       }
 
-      this.opts = Object.assign(this.opts, opts)
       callHook(this.opts.hooks, 'setOptions', [this, opts])
     }
-    return this
   }
 
   // API 重新计算轨道
   resize () {
     this.RuntimeManager.resize()
     callHook(this.opts.hooks, 'resize', [this])
-    return this
   }
 
   // API 清空缓存，立即终止
   clear () {
     this.stop()
-
-    this.each(barrage => {
-      barrage.isSpecial
-        ? barrage.remove(this)
-        : barrage.remove()
-    })
-
+    this.each(barrage => barrage.remove())
     this.showBarrages = []
     this.stashBarrages = []
     this.specialBarrages = []
@@ -211,10 +216,34 @@ export default class BarrageManager {
     callHook(this.opts.hooks, 'clear', [this])
   }
 
+  // API clone 当前示例
+  clone (opts) {
+    opts = opts
+      ? Object.assign(this.opts, opts)
+      : this.opts
+    // 至于插件，得让外部使用者自己重新安装
+    return new this.constructor(opts)
+  }
+
+  // API 添加插件
+  use (fn, ...args) {
+    warning(
+      typeof fn === 'function',
+      'Plugin must be a function.'
+    )
+    if (this.plugins.has(fn)) {
+      return this.plugins.get(fn)
+    }
+    const result = fn(this, ...args)
+    this.plugins.set(fn, result)
+    return result
+  }
+
   // 判断是否超过容量
   assertCapacity (n) {
     const res = n + this.length > this.opts.capacity
     if (res) {
+      callHook(this.opts.hooks, 'capacityWarning', [this])
       console.warn(`The number of barrage is greater than "${this.opts.capacity}".`)
     }
     return res
@@ -235,26 +264,32 @@ export default class BarrageManager {
         length = this.RuntimeManager.rows
       }
 
-      if (length > this.stashBarrages.length) {
+      // 如果需要强行渲染的话
+      if (this.opts.forceRender || length > this.stashBarrages.length) {
         length = this.stashBarrages.length
       }
 
       if (length > 0 && this.runing) {
-        for (let i = 0; i < length; i++) {
-          const data = this.stashBarrages.shift()
-          if (data) {
-            this.initSingleBarrage(data)
+        timeSlice(length, () => {
+          const currentBarrage = this.stashBarrages.shift()
+          // 如果 willRender 钩子返回 false 就不需要渲染当前钩子，也可以对数据进行更改
+          if (callHook(this.opts.hooks, 'willRender', [this, currentBarrage, false]) !== false) {
+            const needStop = this.initSingleBarrage(currentBarrage.data, currentBarrage.hooks)
+            if (needStop) {
+              return false
+            }
           }
-        }
-
+        })
         callHook(this.opts.hooks, 'render', [this])
       }
     }
   }
 
   // 初始化一个弹幕
-  initSingleBarrage (data) {
-    const barrage = data instanceof Barrage ? data : this.createSingleBarrage(data)
+  initSingleBarrage (data, hooks) {
+    const barrage = data instanceof Barrage
+      ? data
+      : this.createSingleBarrage(data, hooks)
     const newBarrage = barrage && this.sureBarrageInfo(barrage)
 
     if (newBarrage) {
@@ -274,10 +309,11 @@ export default class BarrageManager {
       // 否则就先存起来，按道理说只会存一个
       // 按照现有的逻辑，最后一个会不停的取出来，然后存起来
       this.stashBarrages.unshift(barrage)
+      return true
     }
   }
 
-  createSingleBarrage (data) {
+  createSingleBarrage (data, hooks) {
     const [max, min] = this.opts.times
     const time = Number(
       max === min
@@ -290,6 +326,7 @@ export default class BarrageManager {
     
     return new Barrage(
       data,
+      hooks,
       time,
       this,
       Object.assign({}, this.opts.hooks, {
@@ -312,10 +349,8 @@ export default class BarrageManager {
   }
 
   // 设置弹幕的样式
-  setBarrageStyle (node, barrage) {
+  setBarrageStyle (barrage, node) {
     const { hooks = {}, direction } = this.opts
-
-    callHook(hooks, 'barrageCreate', [node, barrage])
 
     node.style.opacity = 0
     node.style[direction] = 0
@@ -323,5 +358,7 @@ export default class BarrageManager {
     node.style.display = 'inline-block'
     node.style.pointerEvents = this.isShow ? 'auto' : 'none'
     node.style.visibility = this.isShow ? 'visible' : 'hidden'
+
+    callHook(hooks, 'barrageCreate', [barrage, node])
   }
 }

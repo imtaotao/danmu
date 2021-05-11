@@ -7,31 +7,42 @@ const cmd = require('rollup-plugin-commonjs')
 const cleanup = require('rollup-plugin-cleanup')
 const resolve = require('rollup-plugin-node-resolve')
 
+const version = require('./package.json').version
 const entryPath = path.resolve(__dirname, './src/index.js')
 const outputPath = filename => path.resolve(__dirname, './dist', filename)
+
+const banner =
+  '/*!\n' +
+  ` * Danmuku.js v${version}\n` +
+  ` * (c) 2019-${new Date().getFullYear()} Imtaotao\n` +
+  ' * Released under the MIT License.\n' +
+  ' */'
 
 const esm = {
   input: entryPath,
   output: {
-    file: outputPath('danmuku.esm.js'),
+    banner,
     format: 'es',
+    file: outputPath('danmuku.esm.js'),
   }
 }
 
 const umd = {
   input: entryPath,
   output: {
-    file: outputPath('danmuku.min.js'),
+    banner,
     format: 'umd',
     name: 'Danmuku',
+    file: outputPath('danmuku.min.js'),
   }
 }
 
 const cjs = {
   input: entryPath,
   output: {
-    file: outputPath('danmuku.common.js'),
+    banner,
     format: 'cjs',
+    file: outputPath('danmuku.common.js'),
   }
 }
 
@@ -43,10 +54,10 @@ async function build (cfg, sourcemap = false) {
     plugins: [
       cleanup(),
       resolve(),
-      // babel({
-      //   babelrc: true,
-      //   exclude: 'node_modules/**',
-      // }),
+      babel({
+        babelrc: true,
+        exclude: 'node_modules/**',
+      }),
       cmd(),
     ]
   })

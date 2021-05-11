@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间轴</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: rgba(0, 0, 0, 0.65);
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #time {
+      position: fixed;
+      right: 10px;
+      top: 10px;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div id="time">0</div>
+  <div id='container'></div>
+  <script src='./dist/danmuku.min.js'></script>
+  <script>
+    const random = (min, max) => +(Math.random() * (max - min) + min).toFixed(0)
+    // 测试代码
+    const m = Danmuku.create({
+      container: document.getElementById('container'),
+      height: 35, // 轨道高度
+      rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
+      direction: 'right', // 弹幕的方向 left or right
+      times: [4, 6], // 弹幕动画的时间取值范围
+      limit: 150, // 能够渲染的最大数量
+      interval: 1,
+      hooks: {  // 这里的生命周期，特殊弹幕和普通弹幕都会调用
+        // 弹幕创建时
+        barrageCreate (barrage, node) {
+          if (barrage.isSpecial) return
+          node.textContent = barrage.data
+          node.classList.add('barrage')
+          node.style.color = `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})` 
+        },
+
+        // 弹幕开始移动时
+        barrageMove (barrage, node) {
+          // 查看当前这个弹幕是否被修正过停留在视图的时长
+          // console.log(barrage.isChangeDuration)
+        },
+
+        ended () {
+          console.log('end')
+        },
+      }
+    })
+    
+    const count = 30
+    const repeat = 2
+    const timeline = m.use(Danmuku.Timeline, { forceRender: true })
+    for (let i = 0; i < count; i++) {
+      let data
+      if (i < 10) {
+        data = new Array(i * repeat).fill(String(i).repeat(5))
+      } else {
+        data = new Array(String(count - i) *repeat).fill(String(i).repeat(5))
+      }
+      timeline.add(i, data, {
+        // 弹幕渲染到页面上时
+        append (barrage, node) {
+          node.onmouseenter = e => {
+            barrage.pause()
+            node.classList.add('active')
+          }
+          node.onmouseleave = e => {
+            barrage.resume()
+            node.classList.remove('active')
+          }
+          node.onclick = e => {
+            barrage.destroy()
+          }
+        },
+      })
+    }
+    m.start()
+
+    let i = 0
+    setInterval(() => {
+      timeline.emit(i)
+      time.innerHTML = i
+      i++
+    }, 1000)
+  </script>
+</body>
+</html>

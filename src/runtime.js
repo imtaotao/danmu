@@ -4,17 +4,20 @@ import {
   toNumber,
   upperCase,
   nextFrame,
-  lastElement,
   transitionProp,
   whenTransitionEnds,
 } from './utils'
 
 export default class RuntimeManager {
   constructor (opts) {
-    const {container, rowGap, height} = opts
+    const { container, rowGap, height } = opts
     const styles = getComputedStyle(container)
 
-    if (!styles.position || styles.position === 'static') {
+    if (
+        !styles.position ||
+        styles.position === 'none' ||
+        styles.position === 'static'
+    ) {
       container.style.position = 'relative'
     }
 
@@ -71,6 +74,17 @@ export default class RuntimeManager {
     this.container = container
   }
 
+  // 获取最后一个移动的弹幕，但是如果前一个弹幕处于暂停中，就要往前找
+  getLastBarrage (barrages, lastIndex) {
+    for (let i = barrages.length - 1; i >= 0; i--) {
+      const barrage = barrages[i - lastIndex]
+      if (barrage && !barrage.paused) {
+        return barrage
+      }
+    }
+    return null
+  }
+
   // 随机取一个轨道
   getRandomIndex (exclude) {
     const randomIndex = Math.floor(Math.random() * this.rows)
@@ -82,12 +96,18 @@ export default class RuntimeManager {
   getTrajectory (alreadyFound = []) {
     // 如果发现全部都找过了，则代表没有合适的弹道可以选择
     if (alreadyFound.length === this.container.length) {
-      return null
+      // 如果需要强行渲染的话（在时间轴上为了实时出现）
+      if (this.opts.forceRender) {
+        const index = Math.floor(Math.random() * this.rows)
+        return this.container[index]
+      } else {
+        return null
+      }
     }
-
+    
     const index = this.getRandomIndex(alreadyFound)
     const currentTrajectory = this.container[index]
-    const lastBarrage = lastElement(currentTrajectory.values, 1)
+    const lastBarrage = this.getLastBarrage(currentTrajectory.values, 0)
 
     if (this.rowGap <= 0 || !lastBarrage) {
       return currentTrajectory
@@ -110,7 +130,7 @@ export default class RuntimeManager {
     return this.getTrajectory(alreadyFound)
   }
 
-  // 计算追尾的时间，由于 css 动画的误差导致追尾的时间计算会有一定的误差，5% 以内
+  // 计算追尾的时间，由于 css 动画的误差导致追尾的时间计算会有一点点的误差
   computingDuration (prevBarrage, currentBarrage) {
     const prevWidth = prevBarrage.getWidth()
     const currentWidth = currentBarrage.getWidth()
@@ -122,7 +142,8 @@ export default class RuntimeManager {
     if (acceleration <= 0) {
       return null
     }
-    const distance = prevBarrage.getMoveDistance(false)
+
+    const distance = prevBarrage.getMoveDistance() - currentWidth - prevWidth
     const meetTime = distance / acceleration
   
     // 如果相遇时间大于于当前弹幕的运动时间，则肯会在容器视图外面追尾，不用管
@@ -131,18 +152,17 @@ export default class RuntimeManager {
     }
   
     // 把此次弹幕运动时间修改为上一个弹幕移除屏幕的时间，这样追尾的情况在刚刚移除视图的时候进行
-    const containerWidth = this.containerWidth + currentWidth + prevWidth
-    const remainingTime = (1 - prevBarrage.getMovePrecent()) * prevBarrage.duration
+    const remainingTime = (1 - prevBarrage.getMovePercent()) * prevBarrage.duration
+    const currentFixTime = currentWidth * remainingTime / this.containerWidth
 
-    // c1 / t1 = c2 / t2 => t2 = c2 * t1 / c1
-    return containerWidth * remainingTime / this.containerWidth
+    return remainingTime + currentFixTime
   }
 
   // 移动弹幕，move 方法不应该暴露给外部，所有放在 runtime 里面
   move (barrage, manager) {
     // 设置当前弹幕在哪一个弹道
     const node = barrage.node
-    const prevBarrage = lastElement(barrage.trajectory.values, 2)
+    const prevBarrage = this.getLastBarrage(barrage.trajectory.values, 1)
 
     node.style.top = `${barrage.position.y}px`
 
@@ -168,6 +188,7 @@ export default class RuntimeManager {
           if (fixTime !== null) {
             if (isRange(this.opts.times, fixTime)) {
               barrage.duration = fixTime
+              barrage.isChangeDuration = true
               barrage.timeInfo.currentDuration = fixTime
             } else {
               // 如果不在范围内，就恢复初始状态，并等待下次 render
@@ -189,7 +210,8 @@ export default class RuntimeManager {
         barrage.moveing = true
         barrage.timeInfo.startTime = Date.now()
         
-        callHook(barrage.hooks, 'barrageMove', [node, barrage])
+        callHook(barrage.hooks, 'move', [barrage, node])
+        callHook(barrage.globalHooks, 'barrageMove', [barrage, node])
         resolve(whenTransitionEnds(node))
       })
     })
@@ -207,27 +229,47 @@ export default class RuntimeManager {
 
     return new Promise(resolve => {
       const { x = 0, y = 0 } = opts.position(barrage)
-      const xStyle = `translateX(${x})`
-      const yStyle = `translateY(${y})`
+      const setStyle = (a, b) => `translateX(${a}px) translateY(${b}px)`
 
-      node.style.transform = xStyle + yStyle
+      node.style.transform = setStyle(x, y)
 
       // 是否移动
       nextFrame(() => {
+        // 设置弹幕的运动信息
+        barrage.moveing = true
+        barrage.timeInfo.startTime = Date.now()
+        barrage.startPosition = { x, y }
+
         if (opts.direction === 'none') {
-          // 稍微移动一点点，以便触发动画回调
-          node.style.transform = xStyle + yStyle + `translateX(${Number.MIN_VALUE}px)`
+          // 如果不需要移动就使用定时器，到达时间调用 resolve
+          const fn = () => {
+            barrage.moveTimer.clear()
+            barrage.moveTimer = null
+            resolve()
+          }
+
+          let timer = setTimeout(fn, opts.duration * 1000)
+
+          // 保存起来，以便暂停的时候清空
+          barrage.moveTimer = {
+            callback: fn,
+            clear () {
+              clearTimeout(timer)
+              timer = null
+            }
+          }
         } else {
-          const isNegative = opts.direction === 'left' ? 1 : -1
-          node.style.transform = `translateX(${isNegative * (this.containerWidth)}px) ${yStyle}`
+          const endPosition = opts.direction === 'left'
+            ? this.containerWidth
+            : -barrage.getWidth()
+
+          node.style.transform = setStyle(endPosition, y)
+          node.style[transitionProp] = `transform linear ${opts.duration}s`
+          resolve(whenTransitionEnds(node))
         }
 
-        barrage.moveing = true
-        node.style[transitionProp] = `transform linear ${opts.duration}s`
-
-        callHook(barrage.hooks, 'move', [node, barrage])
-        callHook(manager.opts.hooks, 'barrageMove', [node, barrage])
-        resolve(whenTransitionEnds(node))
+        callHook(barrage.hooks, 'move', [barrage, node])
+        callHook(manager.opts.hooks, 'barrageMove', [barrage, node])
       })
     })
   }

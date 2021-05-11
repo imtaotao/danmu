@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dev</title>
+  <title>Danmuku demo</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.65);
     }
 
     #container {
@@ -22,13 +22,12 @@
       justify-content: center;
       align-items: center;
       height: 30px;
-      font-size: 15px;
+      font-size: 18px;
       border-radius: 28px;
       color: #fff;
       padding: 0 20px;
       box-sizing: border-box;
       cursor: pointer;
-      /* background: rgba(255, 255, 255, 0.1); */
     }
 
     .active {
@@ -64,7 +63,7 @@
       z-index: 999;
       border-radius: 0 10px 10px 0;
       box-sizing: border-box;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.2);
     }
 
     .item {
@@ -87,7 +86,7 @@
       left: 20px;
       display: block;
       cursor: pointer;
-      background: url(./static/github.png) no-repeat;
+      background: url(./static/github.svg) no-repeat;
       background-size: cover;
     }
 
@@ -132,13 +131,13 @@
     .small-input {
       width: 40px;
       height: 30px;
-      background: rgba(255, 255, 255, 0.1);
       border: none;
       border-radius: 20px;
       padding: 0 10px;
       outline: none;
       font-size: 16px;
       color: #e14eba;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .margin {
@@ -161,8 +160,11 @@
       height: 30px;
       line-height: 30px;
       color: #fff;
+      cursor: pointer;
+      padding: 0 10px;
       text-align: center;
       border: 2px solid #fff;
+      background: rgba(124, 35, 191, 0.2);
     }
 
     input[type=range] {
@@ -189,7 +191,7 @@
   </div>
 
   <div class='operation-panel'>
-    <a class='icon' alt='github' href='https://github.com/imtaotao/barrage'></a>
+    <a class='icon' alt='github' href='https://github.com/imtaotao/danmuku'></a>
     <div class='item tips'>
       点击弹幕会消失
     </div>
@@ -197,10 +199,6 @@
     <div class='item'>
       <span>透明度: </span>
       <input type='range' class='input-range' min='0' max='100' value='100' id='opacity'>
-    </div>
-    <div class='item'>
-      <span>弹道高度: </span>
-      <input type='text' class='input' placeholder='轨道的高度' id='height'>
     </div>
 
     <div class='item'>
@@ -214,7 +212,12 @@
     </div>
 
     <div class='item'>
-      <span>渲染间隔: </span>
+      <span>弹道高度: </span>
+      <input type='text' class='input' placeholder='轨道的高度' id='height'>
+    </div>
+
+    <div class='item'>
+      <span>渲染频率(s): </span>
       <input type='text' class='input' placeholder='渲染间隔时间' id='renderTime'>
     </div>
 
@@ -265,7 +268,8 @@
     </div>
 
     <div class='item'>
-      
+      <div class='button' id='sendSpecial'>发送</div>
+      <input class='input' type='text' placeholder='发送高级弹幕' id='specialBarrage'>
     </div>
 
     <div class='item'>
@@ -287,32 +291,31 @@
 
   <script src='./dist/danmuku.min.js'></script>
   <script>
+    const random = (min, max) => +(Math.random() * (max - min) + min).toFixed(0)
     const testData = [
       '陈涛',
-      'chentao',
-      'imtaotao',
-      'supertaotao',
-      'i can see it',
-      'show me the sky falling down',
-      'tell me someday we\'ll get together'
+      'Imtaotao',
+      'Supertaotao',
+      'I can see it',
+      'Do you feel alright?',
+      'Yes, I feel wonderfull tonight',
+      'Tell me someday we\'ll get together'
     ]
 
     // 测试代码
-    const b = Danmuku.create({
+    const m = Danmuku.create({
       container: document.getElementById('container'),
-      height: 30, // 轨道高度
+      height: 35, // 轨道高度
       rowGap: 10, // 两个弹幕的横向间隔（速度不一样，后面的可能会追上）
       direction: 'right', // 弹幕的方向 left or right
-      times: [7, 14], // 弹幕动画的时间取值范围
-      limit: 50, // 能够渲染的最大数量
-      interval: 1000,
-      hooks: {
+      times: [4, 8], // 弹幕动画的时间取值范围
+      limit: 150, // 能够渲染的最大数量
+      interval: 1,
+      hooks: {  // 这里的生命周期，特殊弹幕和普通弹幕都会调用
         // 弹幕创建时
-        barrageCreate (node, barrage) {
-          // 如果是我们自己发送的弹幕，给一个特殊标记
-          if (barrage.isSpecial) {
-            return
-          }
+        barrageCreate (barrage, node) {
+          if (barrage.isSpecial) return
+
           if (typeof barrage.data !== 'string') {
             node.style.border = '3px solid #fff'
             node.textContent = barrage.data.content
@@ -321,51 +324,45 @@
           }
 
           node.classList.add('barrage')
-        },
-
-        // 弹幕渲染到页面上时
-        barrageAppend (node, barrage) {
-          if (barrage.isSpecial) {
-            // return
-          }
-          node.onmouseenter = e => {
-            barrage.pause()
-            node.classList.add('active')
-          }
-          node.onmouseleave = e => {
-            barrage.resume()
-            node.classList.remove('active')
-          }
-          node.onclick = e => {
-            barrage.destroy()
-          }
+          node.style.color = `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})` 
         },
 
         // 弹幕开始移动时
-        barrageMove (node, barrage) {
+        barrageMove (barrage, node) {
+          // 查看当前这个弹幕是否被修正过停留在视图的时长
+          // console.log(barrage.isChangeDuration)
           node.style.opacity = opacity.value / 100
         },
 
         // 弹幕节点移除视图时
-        barrageRemove (node) {
+        barrageRemove (barrage, node) {
         },
 
-        barrageDestroy (node) {
-          allNumber.textContent = b.length
-          showNumber.textContent = b.showLength
+        barrageDestroy (barrage, node) {
+          allNumber.textContent = m.length
+          showNumber.textContent = m.showLength
         },
 
         send () {
-          allNumber.textContent = b.length
+          allNumber.textContent = m.length
         },
 
         ended () {
           console.log('end')
         },
 
+        capacityWarning(manager) {
+          console.error('capacityWarning 钩子被调用')
+        },
+
+        willRender (manager, barrage, isSpecial) {
+          if (!isSpecial) return
+          console.log(barrage, isSpecial)
+        },
+
         render () {
-          allNumber.textContent = b.length
-          showNumber.textContent = b.showLength
+          allNumber.textContent = m.length
+          showNumber.textContent = m.showLength
         },
 
         start () {
@@ -379,8 +376,8 @@
         },
 
         clear () {
-          allNumber.textContent = b.length
-          showNumber.textContent = b.showLength
+          allNumber.textContent = m.length
+          showNumber.textContent = m.showLength
         },
 
         setOptions () {
@@ -395,45 +392,42 @@
         hidden () {
           show.classList.remove('select')
           hidden.classList.add('select')
-        }
+        },
       }
     })
     
-    b.start()
+    m.start()
 
     // 模拟从服务器得到的数据，不停的发送
-    // setInterval(() => {
-      b.send(testData)
-    // }, 200)
-    b.sendSpecial({
-      position (barrage) {
-        return {
-          x: b.containerWidth / 2 + 'px',
-          y: '10px',
+    setInterval(() => m.send(testData, {
+      // 弹幕渲染到页面上时
+      append (barrage, node) {
+        node.onmouseenter = e => {
+          barrage.pause()
+          node.classList.add('active')
+        }
+        node.onmouseleave = e => {
+          barrage.resume()
+          node.classList.remove('active')
+        }
+        node.onclick = e => {
+          barrage.destroy()
         }
       },
-      direction: 'none',
-      duration: 3,
-      hooks: {
-        create (node) {
-          node.textContent = '这是一条高级弹幕'
-          node.classList.add('special-barrage')
-        },
-        destroy () {
-          console.log(121);
-        }
-      }
-    })
+      show () {
+        console.log('show')
+      },
+    }), 250)
   </script>
 
   <script>
     // 定义初始值
-    height.value = b.opts.height
-    limit.value = b.opts.limit
-    rowGap.value = b.opts.rowGap
-    renderTime.value = b.opts.interval
-    minTime.value = b.opts.times[0]
-    maxTime.value = b.opts.times[1]
+    height.value = m.opts.height
+    limit.value = m.opts.limit
+    rowGap.value = m.opts.rowGap
+    renderTime.value = m.opts.interval
+    minTime.value = m.opts.times[0]
+    maxTime.value = m.opts.times[1]
 
     const setDirection = direction => {
       if (direction === 'left') {
@@ -444,7 +438,7 @@
         right.classList.add('select')
       }
     }
-    setDirection(b.opts.direction)
+    setDirection(m.opts.direction)
 
     const input = (node, cb) => {
       node.oninput = e => {
@@ -457,77 +451,106 @@
     
     // 轨道高度
     input(height, val => {
-      b.setOptions({ height: val })
+      m.setOptions({ height: val })
     })
 
     // limit
     input(limit, val => {
-      b.setOptions({ limit: val })
+      m.setOptions({ limit: val })
     })
 
     // rowgap
     input(rowGap, val => {
-      b.setOptions({ rowGap: val })
+      m.setOptions({ rowGap: val })
     })
 
     // render time
     input(renderTime, val => {
-      b.setOptions({ interval: val })
+      m.setOptions({ interval: val })
     })
 
     // 隐藏显示
     show.onclick = e => {
-      b.show()
+      m.show()
     }
 
     hidden.onclick = e => {
-      b.hidden()
+      m.hidden()
     }
 
     // direction
     left.onclick = e => {
       setDirection('left')
-      b.setOptions({ direction: 'left' })
+      m.setOptions({ direction: 'left' })
     }
 
     right.onclick = e => {
       setDirection('right')
-      b.setOptions({ direction: 'right' })
+      m.setOptions({ direction: 'right' })
     }
 
     // 启动
     start.onclick = e => {
-      b.start()
+      m.start()
     }
 
     stopBtn.onclick = e => {
-      b.stop()
+      m.stop()
     }
 
     // times
     input(minTime, min => {
-      const max = b.opts.times[1]
-      b.setOptions({ times: [min, max]})
+      const max = m.opts.times[1]
+      m.setOptions({ times: [min, max]})
     })
 
     input(maxTime, max => {
-      const min = b.opts.times[0]
-      b.setOptions({ times: [min, max]})
+      const min = m.opts.times[0]
+      m.setOptions({ times: [min, max]})
     })
 
     // 发送弹幕
     send.onclick = e => {
-      b.send({ content: barrageText.value })
+      m.send({ content: barrageText.value }, {}, true)
+      barrageText.value = ''
     }
 
+    // 发送高级弹幕
+    sendSpecial.onclick = e => {
+      const text = specialBarrage.value
+      const directions = ['right', 'left', 'none']
+      specialBarrage.value = ''
+
+      m.sendSpecial({
+        duration: random(3, 5),
+        direction: directions[random(0, 2)],
+        position (barrage) {
+          return {
+            x: m.containerWidth / 2 ,
+            y: 100,
+          }
+        },
+        hooks: {
+          create (barrage, node) {
+            node.textContent = `高级弹幕--${text}`
+            node.classList.add('special-barrage')
+          },
+          destroy () {
+            console.log('高级弹幕销毁')
+          }
+        }
+      })
+    }
+
+    // 清空弹幕
     clear.onclick = e => {
-      b.clear()
+      m.clear()
     }
 
     // 透明度
     input(opacity, val => {
       val /= 100
-      b.each(barrage => {
+      m.each(barrage => {
         barrage.node.style.opacity = val
       })
     })
@@ -545,31 +568,31 @@
 
     // 全部半部分区域
     allArea.onclick = e => {
-      b.container.style.height = '100vh'
-      b.container.style.transform = 'translateY(0)'
-      b.resize()
+      m.container.style.height = '100vh'
+      m.container.style.transform = 'translateY(0)'
+      m.resize()
       toggle(allArea)
     }
 
     // 上半部分区域
     topArea.onclick = e => {
-      b.container.style.height = '50vh'
-      b.container.style.transform = 'translateY(0)'
-      b.resize()
+      m.container.style.height = '50vh'
+      m.container.style.transform = 'translateY(0)'
+      m.resize()
       toggle(topArea)
     }
 
     // 下半部分区域
     bottomArea.onclick = e => {
-      b.container.style.height = '50vh'
-      b.container.style.transform = 'translateY(100%)'
-      b.resize()
+      m.container.style.height = '50vh'
+      m.container.style.transform = 'translateY(100%)'
+      m.resize()
       toggle(bottomArea)
     }
 
     // 实时响应
     responsive.onclick = e => {
-      b.setOptions({
+      m.setOptions({
         rowGap: -1,
         limit: Infinity,
       })
