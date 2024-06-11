@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "module": "ESNext",
+    "target": "ESNext",
+    "strict": true,
+    "lib": ["es2017", "dom"],
+    "allowJs": true,
+    "sourceMap": false,
+    "declaration": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true
+  },
+  "include": ["src"]
+}
