@@ -1,7 +1,11 @@
-import { Manager, type ManagerOptions } from "./manager";
+import { Manager, type ManagerPlugin, type ManagerOptions } from "./manager";
 
-export function create(options: Partial<ManagerOptions>) {
-  return new Manager({
+export { type ManagerPlugin, type ManagerOptions } from "./manager";
+
+export function create<T extends unknown>(
+  options: Partial<ManagerOptions> & { plugin?: ManagerPlugin<T> },
+) {
+  const manager = new Manager<T>({
     ...options,
     limit: 100,
     height: 50,
@@ -13,4 +17,11 @@ export function create(options: Partial<ManagerOptions>) {
     forceRender: false,
     direction: "right",
   });
+  if (options.plugin) {
+    manager.usePlugin({
+      name: "default_plugin",
+      ...options.plugin,
+    });
+  }
+  return manager;
 }

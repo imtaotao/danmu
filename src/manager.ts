@@ -1,7 +1,10 @@
 import { AsyncHook, PluginSystem } from "hooks-plugin";
 import { createId } from "./utils";
 
-type PluginArgs<T> = ReturnType<Manager<T>["plsys"]["use"]>;
+export type ManagerPlugin<T> = Omit<
+  ReturnType<Manager<T>["plsys"]["use"]>,
+  "name"
+> & { name?: string };
 
 export interface ManagerOptions {
   limit: number;
@@ -28,11 +31,15 @@ export class Manager<T extends unknown> {
 
   public constructor(private options: ManagerOptions) {}
 
-  public usePlugin(plugin: Omit<PluginArgs<T>, "name"> & { name?: string }) {
+  public is(item: unknown) {
+    return item instanceof Manager;
+  }
+
+  public usePlugin(plugin: ManagerPlugin<T>) {
     if (!plugin.name) {
       plugin.name = `runtime_plugin_${createId()}`;
     }
-    this.plsys.use(plugin as PluginArgs<T>);
+    this.plsys.use(plugin as ManagerPlugin<T> & { name: string });
   }
 
   public send(data: T, plugin?: unknown) {
