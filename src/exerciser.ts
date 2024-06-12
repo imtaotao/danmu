@@ -1,11 +1,10 @@
-import type { Manager } from "./manager";
 import type { SimpleBarrage } from "./barrages/simple";
 import {
+  now,
+  assert,
   isRange,
   toNumber,
   nextFrame,
-  toUpperCase,
-  transitionProp,
   whenTransitionEnds,
 } from "./utils";
 
@@ -14,21 +13,26 @@ export interface TrackData {
   gaps: [number, number];
 }
 
-export interface AlgorithmOptions {
-  rowGap: number;
-  height: number;
-  isShow: number;
-  times: [number, number];
-  forceRender: boolean;
-  container: HTMLElement;
+export interface Box {
+  w: number;
+  h: number;
+  el: HTMLElement;
 }
 
-export class MoveAlgorithm {
-  private rows = 0;
-  private layouts = [] as Array<TrackData>;
-  private box: { w: number; h: number; el: HTMLElement };
+export interface ExerciserOptions {
+  rowGap: number;
+  height: number;
+  forceRender: boolean;
+  container: HTMLElement;
+  times: [number, number];
+}
 
-  public constructor(private options: AlgorithmOptions) {
+export class Exerciser {
+  public rows = 0;
+  public box: Box;
+  private layouts = [] as Array<TrackData>;
+
+  public constructor(private options: ExerciserOptions) {
     this.box = this.initLayouts();
   }
 
@@ -61,48 +65,33 @@ export class MoveAlgorithm {
     return distance > spacing ? trackData : this.getTrackData(founds);
   }
 
-  public emit(cur: SimpleBarrage, context: Manager<unknown>) {
-    return new Promise((resolve) => {
-      const { isShow } = this.options;
-      const node = cur.node;
+  public emit(cur: SimpleBarrage) {
+    return new Promise<boolean>((resolve) => {
+      assert(cur.trackData, "x");
       const prv = this.last(cur.trackData.bs, 1);
       cur.setStyle("top", `${cur.position.y}px`);
 
       nextFrame(() => {
-        const w = cur.getWidth();
-        const cw = this.box.w + w;
-        const isNegative = cur.direction === "left" ? 1 : -1;
-
         if (prv && prv.moving && !prv.paused && this.options.rowGap > 0) {
-          const ft = this.collisionPrediction(prv, cur);
-          if (ft !== null) {
-            if (isRange(this.options.times, ft)) {
-              cur.duration = ft;
-              cur.recorder.cd = ft;
+          const t = this.collisionPrediction(prv, cur);
+          if (t !== null) {
+            if (isRange(this.options.times, t)) {
+              cur.duration = t;
+              cur.recorder.duration = t;
               cur.isChangeDuration = true;
             } else {
               cur.reset();
-              cur.setStyle("top", null);
-              context.bs.s.unshift(cur);
+              cur.setStyle("top", "");
+              resolve(false);
               return;
             }
           }
         }
-        cur.setStyle("opacity", "1");
-        cur.setStyle("pointerEvents", isShow ? "auto" : "none");
-        cur.setStyle("visibility", isShow ? "visible" : "hidden");
-        cur.setStyle("transform", `translateX(${isNegative * cw}px)`);
-        cur.setStyle(
-          transitionProp as "transition",
-          `transform linear ${cur.duration}s`,
-        );
-        cur.setStyle(
-          `margin${toUpperCase(cur.direction)}` as "marginLeft" | "marginRight",
-          `-${w}px`,
-        );
+        assert(cur.node, "x");
+        cur.initStyles();
         cur.moving = true;
-        cur.recorder.st = Date.now();
-        resolve(whenTransitionEnds(node));
+        cur.recorder.startTime = now();
+        whenTransitionEnds(cur.node).then(() => resolve(true));
       });
     });
   }
@@ -160,8 +149,8 @@ export class MoveAlgorithm {
 
   private collisionPrediction(prv: SimpleBarrage, cur: SimpleBarrage) {
     const pw = prv.getWidth();
-    const ps = prv.getSpeed();
     const cw = cur.getWidth();
+    const ps = prv.getSpeed();
     const cs = cur.getSpeed();
 
     const acceleration = cs - ps;

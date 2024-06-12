@@ -29,15 +29,6 @@ export const toUpperCase = ([val, ...args]: string) =>
 export const hasOwn = (obj: unknown, key: string) =>
   Object.hasOwnProperty.call(obj, key);
 
-export const assert = (
-  condition: unknown,
-  error?: string,
-): asserts condition => {
-  if (!condition) {
-    throw new Error(error);
-  }
-};
-
 export const toNumber = (val: number | string) => {
   return typeof val === "number"
     ? val
@@ -53,13 +44,16 @@ export const isRange = ([a, b]: Array<number>, val: number) => {
   return min < val && val < max;
 };
 
+export const now =
+  typeof performance.now === "function" ? () => performance.now() : Date.now;
+
 export function timeSlice(l: number, fn: () => void | boolean) {
   let i = -1;
-  let start = performance.now();
+  let start = now();
   const run = () => {
     while (++i < l) {
       if (fn() === false) break;
-      const cur = performance.now();
+      const cur = now();
       if (cur - start > 13) {
         start = cur;
         setTimeout(run);
@@ -82,4 +76,11 @@ export function whenTransitionEnds(node: HTMLElement) {
     };
     node.addEventListener(transitionEndEvent, onEnd);
   });
+}
+
+// TypeScript cannot use arrowFunctions for assertions.
+export function assert(condition: unknown, error?: string): asserts condition {
+  if (!condition) {
+    throw new Error(error);
+  }
 }
