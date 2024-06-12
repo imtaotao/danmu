@@ -1,9 +1,10 @@
 let id = 1;
 export const createId = () => id++;
 
-const raf = window.requestAnimationFrame
-  ? window.requestAnimationFrame.bind(window)
-  : setTimeout;
+const raf =
+  typeof window.requestAnimationFrame === "function"
+    ? window.requestAnimationFrame.bind(window)
+    : setTimeout;
 
 export let transitionProp = "transition";
 export let transitionEndEvent = "transitionend";
@@ -18,10 +19,15 @@ if (
   transitionDuration = "webkitTransitionDuration";
 }
 
+export const NO_EMIT = Symbol();
+
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 
-export const upperCase = ([val, ...args]: Array<string>) =>
+export const toUpperCase = ([val, ...args]: string) =>
   val.toUpperCase() + args.join("");
+
+export const hasOwn = (obj: unknown, key: string) =>
+  Object.hasOwnProperty.call(obj, key);
 
 export const assert = (
   condition: unknown,
