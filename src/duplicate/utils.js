@@ -4,7 +4,7 @@ export function warning(condition, message) {
 }
 
 export function callHook(hooks, name, args = []) {
-  if (hooks && typeof hooks[name] === "function") {
+  if (hooks && typeof hooks[name] === 'function') {
     return hooks[name].apply(null, args);
   }
   return null;
@@ -15,10 +15,10 @@ export function createKey() {
 }
 
 export function toNumber(val) {
-  return typeof val === "number"
+  return typeof val === 'number'
     ? val
-    : typeof val === "string"
-      ? Number(val.replace("px", ""))
+    : typeof val === 'string'
+      ? Number(val.replace('px', ''))
       : NaN;
 }
 
@@ -30,7 +30,7 @@ export function isRange([a, b], val) {
 }
 
 export function upperCase([first, ...args]) {
-  return first.toUpperCase() + args.join("");
+  return first.toUpperCase() + args.join('');
 }
 
 export function timeSlice(len, fn) {
@@ -62,16 +62,16 @@ export function nextFrame(fn) {
   });
 }
 
-export let transitionProp = "transition";
-export let transitionEndEvent = "transitionend";
-export let transitionDuration = "transitionDuration";
+export let transitionProp = 'transition';
+export let transitionEndEvent = 'transitionend';
+export let transitionDuration = 'transitionDuration';
 if (
   window.ontransitionend === undefined &&
   window.onwebkittransitionend !== undefined
 ) {
-  transitionProp = "WebkitTransition";
-  transitionEndEvent = "webkitTransitionEnd";
-  transitionDuration = "webkitTransitionDuration";
+  transitionProp = 'WebkitTransition';
+  transitionEndEvent = 'webkitTransitionEnd';
+  transitionDuration = 'webkitTransitionDuration';
 }
 
 export function whenTransitionEnds(node) {

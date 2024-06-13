@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danmu</title>
+</head>
+<body>
+  <div id="container" style="width: 90vw; height: 90vh;; border: 1px solid #000;"></div>
+  <script src='./dist/danmu.umd.js'></script>
+  <script>
+    const manager = Danmu.create({
+      container: document.getElementById('container'),
+      plugin: {
+        onceHooks: {
+          render() {
+            console.log('render');
+            throw 1212
+          },
+          willRender(data) {
+            console.log(data);
+          },
+          // barrageCreateNode(b) {
+          //   console.log(b.data);
+          // }
+        },
+      },
+    })
+    manager.startPlaying();
+    manager.push(1)
+    manager.push(2)
+  </script>
+</body>
+</html>

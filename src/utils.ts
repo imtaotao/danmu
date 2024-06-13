@@ -1,38 +1,41 @@
 let id = 1;
 export const createId = () => id++;
 
+export const NO_EMIT = Symbol();
+
 const raf =
-  typeof window.requestAnimationFrame === "function"
+  typeof window.requestAnimationFrame === 'function'
     ? window.requestAnimationFrame.bind(window)
     : setTimeout;
 
-export let transitionProp = "transition";
-export let transitionEndEvent = "transitionend";
-export let transitionDuration = "transitionDuration";
+export let transitionProp = 'transition';
+export let transitionEndEvent = 'transitionend';
+export let transitionDuration = 'transitionDuration';
 if (
   window.ontransitionend === undefined &&
   window.onwebkittransitionend !== undefined
 ) {
-  transitionProp = "WebkitTransition";
-  transitionEndEvent = "webkitTransitionEnd";
-  transitionDuration = "webkitTransitionDuration";
+  transitionProp = 'WebkitTransition';
+  transitionEndEvent = 'webkitTransitionEnd';
+  transitionDuration = 'webkitTransitionDuration';
 }
-
-export const NO_EMIT = Symbol();
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 
 export const toUpperCase = ([val, ...args]: string) =>
-  val.toUpperCase() + args.join("");
+  val.toUpperCase() + args.join('');
+
+export const toLowerCase = ([val, ...args]: string) =>
+  val.toLowerCase() + args.join('');
 
 export const hasOwn = (obj: unknown, key: string) =>
   Object.hasOwnProperty.call(obj, key);
 
 export const toNumber = (val: number | string) => {
-  return typeof val === "number"
+  return typeof val === 'number'
     ? val
-    : typeof val === "string"
-      ? Number(val.replace("px", ""))
+    : typeof val === 'string'
+      ? Number(val.replace('px', ''))
       : NaN;
 };
 
@@ -44,7 +47,7 @@ export const isRange = ([a, b]: Array<number>, val: number) => {
 };
 
 export const now =
-  typeof performance.now === "function" ? () => performance.now() : Date.now;
+  typeof performance.now === 'function' ? () => performance.now() : Date.now;
 
 export function loopSlice(l: number, fn: (i: number) => void | boolean) {
   return new Promise<void>((resolve) => {
@@ -89,6 +92,6 @@ export function whenTransitionEnds(node: HTMLElement) {
 // TypeScript cannot use arrowFunctions for assertions.
 export function assert(condition: unknown, error?: string): asserts condition {
   if (!condition) {
-    throw new Error(error || "Unexpected error");
+    throw new Error(error || 'Unexpected error');
   }
 }

@@ -7,5 +7,5 @@ export class ComplicatedBarrage<T> {
 
   public hide() {}
 
-  public removeFromContainer() {}
+  public removeNode() {}
 }

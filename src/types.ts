@@ -1,10 +1,10 @@
-import type { Manager } from "./manager";
-import type { SimpleBarrage } from "./barrages/simple";
-import type { ComplicatedBarrage } from "./barrages/complicated";
+import type { Manager } from './manager';
+import type { SimpleBarrage } from './barrages/simple';
+import type { ComplicatedBarrage } from './barrages/complicated';
 
-export type ViewStatus = "hide" | "show";
+export type ViewStatus = 'hide' | 'show';
 
-export type Direction = "left" | "right";
+export type Direction = 'left' | 'right';
 
 export type FilterCallback<T> = EachCallback<T>;
 
@@ -19,7 +19,7 @@ export interface TrackData<T> {
 
 export interface BarrageData<T> {
   data: T;
-  plugin?: BarragePlugin;
+  plugin?: SimpleBarragePlugin<T>;
 }
 
 export interface Box {
@@ -28,9 +28,19 @@ export interface Box {
   el: HTMLElement;
 }
 
+export interface InfoRecord {
+  duration: number;
+  pauseTime: number;
+  startTime: number;
+  prevPauseTime: number;
+}
+
 export type ManagerPlugin<T> = Omit<
-  ReturnType<Manager<T>["plSys"]["use"]>,
-  "name"
+  ReturnType<Manager<T>['_plSys']['use']>,
+  'name'
 > & { name?: string };
 
-export type BarragePlugin = unknown;
+export type SimpleBarragePlugin<T> = Omit<
+  ReturnType<SimpleBarrage<T>['_plSys']['use']>,
+  'name'
+> & { name?: string };

@@ -1,4 +1,4 @@
-import { warning, callHook, createKey, transitionDuration } from "./utils";
+import { warning, callHook, createKey, transitionDuration } from './utils';
 
 export class SpecialBarrage {
   constructor(manager, opts) {
@@ -38,9 +38,9 @@ export class SpecialBarrage {
   }
 
   create() {
-    this.node = document.createElement("div");
-    callHook(this.hooks, "create", [this, this.node]);
-    callHook(this.manager.opts.hooks, "barrageCreate", [this, this.node]);
+    this.node = document.createElement('div');
+    callHook(this.hooks, 'create', [this, this.node]);
+    callHook(this.manager.opts.hooks, 'barrageCreate', [this, this.node]);
   }
 
   getMovePercent() {
@@ -55,11 +55,11 @@ export class SpecialBarrage {
     if (!this.moveing) return 0;
     const percent = this.getMovePercent();
 
-    if (direction === "none") {
+    if (direction === 'none') {
       return startPosition;
     }
 
-    if (direction === "left") {
+    if (direction === 'left') {
       const realMoveDistance =
         (this.RuntimeManager.containerWidth - startPosition) * percent;
       return startPosition + realMoveDistance;
@@ -75,7 +75,7 @@ export class SpecialBarrage {
     this.timeInfo.prevPauseTime = Date.now();
     const direction = this.opts.direction;
 
-    if (direction === "none") {
+    if (direction === 'none') {
       // 删除定时器
       if (this.moveTimer) {
         this.moveTimer.clear();
@@ -84,7 +84,7 @@ export class SpecialBarrage {
       const { x, y } = this.startPosition;
       const moveDistance = this.getMoveDistance(direction, x);
 
-      this.node.style[transitionDuration] = "0s";
+      this.node.style[transitionDuration] = '0s';
       this.node.style.transform = `translateX(${moveDistance}px) translateY(${y}px)`;
     }
   }
@@ -99,7 +99,7 @@ export class SpecialBarrage {
     const direction = this.opts.direction;
     const remainingTime = (1 - this.getMovePercent()) * this.opts.duration;
 
-    if (direction === "none") {
+    if (direction === 'none') {
       // 重新设置定时器
       const fn = this.moveTimer.callback || (() => {});
       let timer = setTimeout(fn, remainingTime * 1000);
@@ -112,7 +112,7 @@ export class SpecialBarrage {
       // 重新设置 style
       const { x, y } = this.startPosition;
       const endPosition =
-        this.opts.direction === "left"
+        this.opts.direction === 'left'
           ? this.RuntimeManager.containerWidth
           : -this.getWidth();
 
@@ -122,22 +122,22 @@ export class SpecialBarrage {
   }
 
   append() {
-    warning(this.container, "Need container element.");
+    warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.appendChild(this.node);
 
-      callHook(this.hooks, "append", [this, this.node]);
-      callHook(this.manager.opts.hooks, "barrageAppend", [this, this.node]);
+      callHook(this.hooks, 'append', [this, this.node]);
+      callHook(this.manager.opts.hooks, 'barrageAppend', [this, this.node]);
     }
   }
 
   remove() {
-    warning(this.container, "Need container element.");
+    warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.removeChild(this.node);
 
-      callHook(this.hooks, "remove", [this, this.node]);
-      callHook(this.manager.opts.hooks, "barrageRemove", [this, this.node]);
+      callHook(this.hooks, 'remove', [this, this.node]);
+      callHook(this.manager.opts.hooks, 'barrageRemove', [this, this.node]);
     }
   }
 
@@ -157,8 +157,8 @@ export class SpecialBarrage {
       this.moveTimer = null;
     }
 
-    callHook(this.hooks, "destroy", [this, this.node]);
-    callHook(this.manager.opts.hooks, "barrageDestroy", [this, this.node]);
+    callHook(this.hooks, 'destroy', [this, this.node]);
+    callHook(this.manager.opts.hooks, 'barrageDestroy', [this, this.node]);
     this.node = null;
   }
 }
@@ -168,7 +168,7 @@ export default function createSpecialBarrage(manager, opts = {}) {
     {
       hooks: {},
       duration: 0, // 默认不显示
-      direction: "none", // left or right or none
+      direction: 'none', // left or right or none
       position: () => ({ x: 0, y: 0 }), // 默认起始位置,
     },
     opts,

@@ -17,7 +17,11 @@ export default function Timeline(manager, opts = {}) {
       if (!this.timeStore[timestamp]) {
         this.timeStore[timestamp] = [{ cfg, hooks, isForward }];
       } else {
-        this.timeStore[timestamp].push({ cfg, hooks, isForward });
+        this.timeStore[timestamp].push({
+          cfg,
+          hooks,
+          isForward,
+        });
       }
     },
 

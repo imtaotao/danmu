@@ -1,7 +1,7 @@
-import Barrage from "./barrage";
-import RuntimeManager from "./runtime";
-import createSpecialBarrage from "./special";
-import { warning, callHook, timeSlice } from "./utils";
+import Barrage from './barrage';
+import RuntimeManager from './runtime';
+import createSpecialBarrage from './special';
+import { warning, callHook, timeSlice } from './utils';
 
 export default class BarrageManager {
   constructor(opts) {
@@ -63,7 +63,7 @@ export default class BarrageManager {
       ? this.stashBarrages.unshift.apply(this.stashBarrages, data)
       : this.stashBarrages.push.apply(this.stashBarrages, data);
 
-    callHook(this.opts.hooks, "send", [this, data]);
+    callHook(this.opts.hooks, 'send', [this, data]);
     return true;
   }
 
@@ -75,7 +75,7 @@ export default class BarrageManager {
 
     for (let i = 0; i < data.length; i++) {
       if (
-        callHook(this.opts.hooks, "willRender", [this, data[i], true]) !== false
+        callHook(this.opts.hooks, 'willRender', [this, data[i], true]) !== false
       ) {
         const barrage = createSpecialBarrage(this, data[i]);
 
@@ -96,13 +96,13 @@ export default class BarrageManager {
         this.RuntimeManager.moveSpecialBarrage(barrage, this).then(() => {
           barrage.destroy();
           if (this.length === 0) {
-            callHook(this.opts.hooks, "ended", [this]);
+            callHook(this.opts.hooks, 'ended', [this]);
           }
         });
       }
     }
 
-    callHook(this.opts.hooks, "sendSpecial", [this, data]);
+    callHook(this.opts.hooks, 'sendSpecial', [this, data]);
     return true;
   }
 
@@ -112,12 +112,12 @@ export default class BarrageManager {
       this.isShow = true;
       this.each((barrage) => {
         if (barrage.node) {
-          barrage.node.style.visibility = "visible";
-          barrage.node.style.pointerEvents = "auto";
+          barrage.node.style.visibility = 'visible';
+          barrage.node.style.pointerEvents = 'auto';
         }
-        callHook(barrage.hooks, "show", [barrage, barrage.node]);
+        callHook(barrage.hooks, 'show', [barrage, barrage.node]);
       });
-      callHook(this.opts.hooks, "show", [this]);
+      callHook(this.opts.hooks, 'show', [this]);
     }
   }
 
@@ -127,18 +127,18 @@ export default class BarrageManager {
       this.isShow = false;
       this.each((barrage) => {
         if (barrage.node) {
-          barrage.node.style.visibility = "hidden";
-          barrage.node.style.pointerEvents = "none";
+          barrage.node.style.visibility = 'hidden';
+          barrage.node.style.pointerEvents = 'none';
         }
-        callHook(barrage.hooks, "hidden", [barrage, barrage.node]);
+        callHook(barrage.hooks, 'hidden', [barrage, barrage.node]);
       });
-      callHook(this.opts.hooks, "hidden", [this]);
+      callHook(this.opts.hooks, 'hidden', [this]);
     }
   }
 
   // API 遍历在渲染中的节点
   each(callback) {
-    if (typeof callback === "function") {
+    if (typeof callback === 'function') {
       let i = 0;
       for (; i < this.specialBarrages.length; i++) {
         callback(this.specialBarrages[i], i);
@@ -160,7 +160,7 @@ export default class BarrageManager {
       this.loopTimer = null;
 
       if (!noCallHook) {
-        callHook(this.opts.hooks, "stop", [this]);
+        callHook(this.opts.hooks, 'stop', [this]);
       }
     }
   }
@@ -178,7 +178,7 @@ export default class BarrageManager {
     core();
 
     if (!noCallHook) {
-      callHook(this.opts.hooks, "start", [this]);
+      callHook(this.opts.hooks, 'start', [this]);
     }
   }
 
@@ -188,28 +188,28 @@ export default class BarrageManager {
       // 清除定时器，重新根据新的时间开始
       this.opts = Object.assign(this.opts, opts);
 
-      if ("interval" in opts) {
+      if ('interval' in opts) {
         this.stop(true);
         this.start(true);
       }
       // 如果有高度，要重新计算轨道
-      if ("height" in opts) {
+      if ('height' in opts) {
         this.RuntimeManager.singleHeight = opts.height;
         this.RuntimeManager.resize();
       }
       // 设置 rowGap
-      if ("rowGap" in opts) {
+      if ('rowGap' in opts) {
         this.RuntimeManager.rowGap = opts.rowGap;
       }
 
-      callHook(this.opts.hooks, "setOptions", [this, opts]);
+      callHook(this.opts.hooks, 'setOptions', [this, opts]);
     }
   }
 
   // API 重新计算轨道
   resize() {
     this.RuntimeManager.resize();
-    callHook(this.opts.hooks, "resize", [this]);
+    callHook(this.opts.hooks, 'resize', [this]);
   }
 
   // API 清空缓存，立即终止
@@ -222,7 +222,7 @@ export default class BarrageManager {
     this.RuntimeManager.container = [];
     this.RuntimeManager.resize();
 
-    callHook(this.opts.hooks, "clear", [this]);
+    callHook(this.opts.hooks, 'clear', [this]);
   }
 
   // API clone 当前示例
@@ -234,7 +234,7 @@ export default class BarrageManager {
 
   // API 添加插件
   use(fn, ...args) {
-    warning(typeof fn === "function", "Plugin must be a function.");
+    warning(typeof fn === 'function', 'Plugin must be a function.');
     if (this.plugins.has(fn)) {
       return this.plugins.get(fn);
     }
@@ -247,7 +247,7 @@ export default class BarrageManager {
   assertCapacity(n) {
     const res = n + this.length > this.opts.capacity;
     if (res) {
-      callHook(this.opts.hooks, "capacityWarning", [this]);
+      callHook(this.opts.hooks, 'capacityWarning', [this]);
       console.warn(
         `The number of barrage is greater than "${this.opts.capacity}".`,
       );
@@ -280,7 +280,7 @@ export default class BarrageManager {
           const currentBarrage = this.stashBarrages.shift();
           // 如果 willRender 钩子返回 false 就不需要渲染当前钩子，也可以对数据进行更改
           if (
-            callHook(this.opts.hooks, "willRender", [
+            callHook(this.opts.hooks, 'willRender', [
               this,
               currentBarrage,
               false,
@@ -295,7 +295,7 @@ export default class BarrageManager {
             }
           }
         });
-        callHook(this.opts.hooks, "render", [this]);
+        callHook(this.opts.hooks, 'render', [this]);
       }
     }
   }
@@ -316,7 +316,7 @@ export default class BarrageManager {
       this.RuntimeManager.move(newBarrage, this).then(() => {
         newBarrage.destroy();
         if (this.length === 0) {
-          callHook(this.opts.hooks, "ended", [this]);
+          callHook(this.opts.hooks, 'ended', [this]);
         }
       });
     } else {
@@ -366,11 +366,11 @@ export default class BarrageManager {
 
     node.style.opacity = 0;
     node.style[direction] = 0;
-    node.style.position = "absolute";
-    node.style.display = "inline-block";
-    node.style.pointerEvents = this.isShow ? "auto" : "none";
-    node.style.visibility = this.isShow ? "visible" : "hidden";
+    node.style.position = 'absolute';
+    node.style.display = 'inline-block';
+    node.style.pointerEvents = this.isShow ? 'auto' : 'none';
+    node.style.visibility = this.isShow ? 'visible' : 'hidden';
 
-    callHook(hooks, "barrageCreate", [barrage, node]);
+    callHook(hooks, 'barrageCreate', [barrage, node]);
   }
 }

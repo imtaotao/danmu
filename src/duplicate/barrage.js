@@ -1,4 +1,4 @@
-import { warning, callHook, createKey, transitionDuration } from "./utils";
+import { warning, callHook, createKey, transitionDuration } from './utils';
 
 export default class Barrage {
   constructor(itemData, hooks, time, manager, globalHooks) {
@@ -70,27 +70,27 @@ export default class Barrage {
   }
 
   create() {
-    this.node = document.createElement("div");
-    callHook(this.hooks, "create", [this, this.node]);
-    callHook(this.globalHooks, "barrageCreate", [this, this.node]);
+    this.node = document.createElement('div');
+    callHook(this.hooks, 'create', [this, this.node]);
+    callHook(this.globalHooks, 'barrageCreate', [this, this.node]);
   }
 
   append() {
-    warning(this.container, "Need container element.");
+    warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.appendChild(this.node);
-      callHook(this.hooks, "append", [this, this.node]);
-      callHook(this.globalHooks, "barrageAppend", [this, this.node]);
+      callHook(this.hooks, 'append', [this, this.node]);
+      callHook(this.globalHooks, 'barrageAppend', [this, this.node]);
     }
   }
 
   remove(noCallHook) {
-    warning(this.container, "Need container element.");
+    warning(this.container, 'Need container element.');
     if (this.node) {
       this.container.removeChild(this.node);
       if (!noCallHook) {
-        callHook(this.hooks, "remove", [this, this.node]);
-        callHook(this.globalHooks, "barrageRemove", [this, this.node]);
+        callHook(this.hooks, 'remove', [this, this.node]);
+        callHook(this.globalHooks, 'barrageRemove', [this, this.node]);
       }
     }
   }
@@ -119,8 +119,8 @@ export default class Barrage {
     this.moveing = false;
     this.deletedInMemory();
 
-    callHook(this.hooks, "destroy", [this, this.node]);
-    callHook(this.globalHooks, "barrageDestroy", [this, this.node]);
+    callHook(this.hooks, 'destroy', [this, this.node]);
+    callHook(this.globalHooks, 'barrageDestroy', [this, this.node]);
     this.node = null;
   }
 
@@ -133,11 +133,11 @@ export default class Barrage {
       this.paused = true;
       this.timeInfo.prevPauseTime = Date.now();
 
-      if (this.direction === "right") {
+      if (this.direction === 'right') {
         moveDistance *= -1;
       }
 
-      this.node.style[transitionDuration] = "0s";
+      this.node.style[transitionDuration] = '0s';
       this.node.style.transform = `translateX(${moveDistance}px)`;
     }
   }
@@ -152,7 +152,7 @@ export default class Barrage {
     this.timeInfo.pauseTime += Date.now() - this.timeInfo.prevPauseTime;
     this.timeInfo.prevPauseTime = null;
 
-    const isNegative = this.direction === "left" ? 1 : -1;
+    const isNegative = this.direction === 'left' ? 1 : -1;
     const containerWidth = this.RuntimeManager.containerWidth + this.getWidth();
     const remainingTime = (1 - this.getMovePercent()) * this.duration;
 

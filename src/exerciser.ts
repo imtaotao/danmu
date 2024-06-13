@@ -1,5 +1,5 @@
-import type { Box, TrackData } from "./types";
-import type { SimpleBarrage } from "./barrages/simple";
+import type { Box, TrackData } from './types';
+import type { SimpleBarrage } from './barrages/simple';
 import {
   now,
   assert,
@@ -8,7 +8,7 @@ import {
   toNumber,
   nextFrame,
   whenTransitionEnds,
-} from "./utils";
+} from './utils';
 
 export interface ExerciserOptions {
   rowGap: number;
@@ -21,27 +21,27 @@ export interface ExerciserOptions {
 export class Exerciser<T> {
   public rows = 0;
   public box?: Box;
-  private layouts = [] as Array<TrackData<T>>;
+  private _layouts = [] as Array<TrackData<T>>;
   public constructor(private options: ExerciserOptions) {}
 
   public updateOptions(newOptions: Partial<ExerciserOptions>) {
     this.options = Object.assign(this.options, newOptions);
-    if (hasOwn(newOptions, "height") || hasOwn(newOptions, "container")) {
+    if (hasOwn(newOptions, 'height') || hasOwn(newOptions, 'container')) {
       this.format();
     }
   }
 
   public getTrackData(founds: Array<number> = []): TrackData<T> | null {
     const { rowGap } = this.options;
-    if (founds.length === this.layouts.length) {
+    if (founds.length === this._layouts.length) {
       if (this.options.forceRender) {
         const i = Math.floor(Math.random() * this.rows);
-        return this.layouts[i];
+        return this._layouts[i];
       }
       return null;
     }
     const i = this.selectTrackIdx(founds);
-    const trackData = this.layouts[i];
+    const trackData = this._layouts[i];
     const last = this.last(trackData.bs, 0);
     founds.push(i);
 
@@ -60,7 +60,7 @@ export class Exerciser<T> {
     return new Promise<boolean>((resolve) => {
       assert(cur.trackData);
       const prv = this.last(cur.trackData.bs, 1);
-      cur.setStyle("top", `${cur.position.y}px`);
+      cur.setStyle('top', `${cur.position.y}px`);
 
       nextFrame(() => {
         if (prv && prv.moving && !prv.paused && this.options.rowGap > 0) {
@@ -72,7 +72,7 @@ export class Exerciser<T> {
               cur.isChangeDuration = true;
             } else {
               cur.reset();
-              cur.setStyle("top", "");
+              cur.setStyle('top', '');
               resolve(false);
               return;
             }
@@ -91,7 +91,7 @@ export class Exerciser<T> {
     const { height, container } = this.options;
     const styles = getComputedStyle(container);
     if (this.needFixPosition(styles)) {
-      container.style.position = "relative";
+      container.style.position = 'relative';
     }
 
     this.box = {
@@ -107,10 +107,10 @@ export class Exerciser<T> {
         height * (i + 1) - 1, // end
       ] as [number, number];
 
-      if (this.layouts[i]) {
-        this.layouts[i].gaps = gaps;
+      if (this._layouts[i]) {
+        this._layouts[i].gaps = gaps;
       } else {
-        this.layouts.push({
+        this._layouts.push({
           bs: [],
           gaps: gaps,
         });
@@ -121,8 +121,8 @@ export class Exerciser<T> {
   private needFixPosition(styles: CSSStyleDeclaration) {
     return (
       !styles.position ||
-      styles.position === "none" ||
-      styles.position === "static"
+      styles.position === 'none' ||
+      styles.position === 'static'
     );
   }
 
@@ -152,7 +152,7 @@ export class Exerciser<T> {
     const meetTime = distance / acceleration;
     if (meetTime >= cur.duration) return null;
 
-    assert(this.box, "Container not formatted");
+    assert(this.box, 'Container not formatted');
     const remainingTime = (1 - prv.getMovePercent()) * prv.duration;
     const currentFixTime = (cw * remainingTime) / this.box.w;
     return remainingTime + currentFixTime;

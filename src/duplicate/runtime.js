@@ -6,7 +6,7 @@ import {
   nextFrame,
   transitionProp,
   whenTransitionEnds,
-} from "./utils";
+} from './utils';
 
 export default class RuntimeManager {
   constructor(opts) {
@@ -15,10 +15,10 @@ export default class RuntimeManager {
 
     if (
       !styles.position ||
-      styles.position === "none" ||
-      styles.position === "static"
+      styles.position === 'none' ||
+      styles.position === 'static'
     ) {
-      container.style.position = "relative";
+      container.style.position = 'relative';
     }
 
     this.opts = opts;
@@ -169,7 +169,7 @@ export default class RuntimeManager {
     return new Promise((resolve) => {
       nextFrame(() => {
         const width = barrage.getWidth();
-        const isNegative = barrage.direction === "left" ? 1 : -1;
+        const isNegative = barrage.direction === 'left' ? 1 : -1;
         const containerWidth = this.containerWidth + width;
 
         // 计算追尾的情况
@@ -201,8 +201,8 @@ export default class RuntimeManager {
         }
 
         node.style.opacity = 1;
-        node.style.pointerEvents = manager.isShow ? "auto" : "none";
-        node.style.visibility = manager.isShow ? "visible" : "hidden";
+        node.style.pointerEvents = manager.isShow ? 'auto' : 'none';
+        node.style.visibility = manager.isShow ? 'visible' : 'hidden';
         node.style.transform = `translateX(${isNegative * containerWidth}px)`;
         node.style[transitionProp] = `transform linear ${barrage.duration}s`;
         node.style[`margin${upperCase(barrage.direction)}`] = `-${width}px`;
@@ -210,8 +210,8 @@ export default class RuntimeManager {
         barrage.moveing = true;
         barrage.timeInfo.startTime = Date.now();
 
-        callHook(barrage.hooks, "move", [barrage, node]);
-        callHook(barrage.globalHooks, "barrageMove", [barrage, node]);
+        callHook(barrage.hooks, 'move', [barrage, node]);
+        callHook(barrage.globalHooks, 'barrageMove', [barrage, node]);
         resolve(whenTransitionEnds(node));
       });
     });
@@ -222,10 +222,10 @@ export default class RuntimeManager {
     const { node, opts } = barrage;
 
     // 先定义样式，后面的计算才会准确
-    node.style.position = "absolute";
-    node.style.display = "inline-block";
-    node.style.pointerEvents = manager.isShow ? "auto" : "none";
-    node.style.visibility = manager.isShow ? "visible" : "hidden";
+    node.style.position = 'absolute';
+    node.style.display = 'inline-block';
+    node.style.pointerEvents = manager.isShow ? 'auto' : 'none';
+    node.style.visibility = manager.isShow ? 'visible' : 'hidden';
 
     return new Promise((resolve) => {
       const { x = 0, y = 0 } = opts.position(barrage);
@@ -240,7 +240,7 @@ export default class RuntimeManager {
         barrage.timeInfo.startTime = Date.now();
         barrage.startPosition = { x, y };
 
-        if (opts.direction === "none") {
+        if (opts.direction === 'none') {
           // 如果不需要移动就使用定时器，到达时间调用 resolve
           const fn = () => {
             barrage.moveTimer.clear();
@@ -260,7 +260,7 @@ export default class RuntimeManager {
           };
         } else {
           const endPosition =
-            opts.direction === "left"
+            opts.direction === 'left'
               ? this.containerWidth
               : -barrage.getWidth();
 
@@ -269,8 +269,8 @@ export default class RuntimeManager {
           resolve(whenTransitionEnds(node));
         }
 
-        callHook(barrage.hooks, "move", [barrage, node]);
-        callHook(manager.opts.hooks, "barrageMove", [barrage, node]);
+        callHook(barrage.hooks, 'move', [barrage, node]);
+        callHook(manager.opts.hooks, 'barrageMove', [barrage, node]);
       });
     });
   }
