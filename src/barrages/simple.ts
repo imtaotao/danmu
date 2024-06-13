@@ -1,22 +1,31 @@
-import type { Box, TrackData } from "../exerciser";
 import { now, toUpperCase, transitionProp, transitionDuration } from "../utils";
+import type {
+  Box,
+  TrackData,
+  ViewStatus,
+  Direction,
+  BarragePlugin,
+} from "../types";
 
-export interface SimpleBarrageOptions {
+export interface SimpleBarrageOptions<T> {
   box: Box;
-  direction: "left" | "right";
-  defaultStatus: "hide" | "show";
-  delInTrack?: (b: SimpleBarrage) => void;
+  data: T;
+  direction: Direction;
+  defaultStatus: ViewStatus;
+  plugin?: BarragePlugin;
+  delInTrack?: (b: SimpleBarrage<T>) => void;
 }
 
-export class SimpleBarrage {
+export class SimpleBarrage<T> {
+  public data: T;
   public paused = true;
   public moving = false;
   public duration = 0;
   public position = { y: 0 };
   public isChangeDuration = false;
   public node: HTMLElement | null = null;
-  public trackData: TrackData | null = null;
-  public status: "hide" | "show" | null = null;
+  public status: ViewStatus | null = null;
+  public trackData: TrackData<T> | null = null;
   public recorder = {
     pauseTime: 0,
     startTime: 0,
@@ -24,7 +33,8 @@ export class SimpleBarrage {
     duration: this.duration,
   };
 
-  public constructor(private options: SimpleBarrageOptions) {
+  public constructor(private options: SimpleBarrageOptions<T>) {
+    this.data = options.data;
     this.status = options.defaultStatus;
     this.trackData = { bs: [], gaps: [0, 0] };
   }

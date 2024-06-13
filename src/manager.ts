@@ -1,25 +1,18 @@
-import {
-  SyncHook,
-  AsyncHook,
-  SyncWaterfallHook,
-  PluginSystem,
-} from "hooks-plugin";
+import { Exerciser } from "./exerciser";
+import { createManagerLifeCycle } from "./lifeCycle";
 import { SimpleBarrage } from "./barrages/simple";
-import { CustomBarrage } from "./barrages/customized";
-import { Exerciser, type TrackData } from "./exerciser";
-import { NO_EMIT, hasOwn, createId, timeSlice } from "./utils";
-
-export type ManagerPlugin<T> = Omit<
-  ReturnType<Manager<T>["plSys"]["use"]>,
-  "name"
-> & { name?: string };
-
-type BarragePlugin = unknown;
-
-export interface BarrageData<T> {
-  data: T;
-  plugin?: BarragePlugin;
-}
+import { ComplicatedBarrage } from "./barrages/complicated";
+import { NO_EMIT, hasOwn, createId, loopSlice, assert } from "./utils";
+import type {
+  TrackData,
+  Direction,
+  ViewStatus,
+  BarrageData,
+  EachCallback,
+  FilterCallback,
+  ManagerPlugin,
+  BarragePlugin,
+} from "./types";
 
 export interface ManagerOptions {
   limit: number;
@@ -29,36 +22,21 @@ export interface ManagerOptions {
   interval: number;
   times: [number, number];
   forceRender: boolean;
+  direction: Direction;
   container: HTMLElement;
-  direction: "right" | "left";
 }
 
 export class Manager<T extends unknown> {
   public version = __VERSION__;
-  private exerciser: Exerciser;
+  private exerciser: Exerciser<T>;
+  private viewStatus: ViewStatus = "show";
   private renderTimer: number | null = null;
-  private viewStatus: "hide" | "show" = "show";
+  private plSys = createManagerLifeCycle<T>(this);
   private bs = {
-    c: new Set(), // custom
-    d: new Set<SimpleBarrage>(), // display
-    s: [] as Array<BarrageData<T> | SimpleBarrage>, // stash
+    show: new Set<SimpleBarrage<T>>(),
+    complex: new Set<ComplicatedBarrage<unknown>>(),
+    stash: [] as Array<BarrageData<T> | SimpleBarrage<T>>,
   };
-  private plSys = new PluginSystem({
-    stop: new SyncHook<[], Manager<T>>(this),
-    start: new SyncHook<[], Manager<T>>(this),
-    send: new AsyncHook<[T], Manager<T>>(this),
-    clear: new SyncHook<[], Manager<T>>(this),
-    resize: new SyncHook<[], Manager<T>>(this),
-    create: new AsyncHook<[], Manager<T>>(this),
-    render: new AsyncHook<[], Manager<T>>(this),
-    finished: new SyncHook<[], Manager<T>>(this),
-    capacityWarning: new SyncHook<[], Manager<T>>(this),
-    updateOptions: new SyncHook<[ManagerOptions], Manager<T>>(this),
-    willRender: new SyncWaterfallHook<
-      { prevent: boolean; value: SimpleBarrage | BarrageData<T> },
-      Manager<T>
-    >(this),
-  });
 
   public constructor(private options: ManagerOptions) {
     this.exerciser = new Exerciser({
@@ -75,12 +53,12 @@ export class Manager<T extends unknown> {
   }
 
   public n() {
-    const { c, s, d } = this.bs;
+    const { stash, show, complex } = this.bs;
     return {
-      custom: c.size,
-      stash: s.length,
-      display: d.size + c.size,
-      all: d.size + c.size + s.length,
+      stash: stash.length,
+      complex: complex.size,
+      display: show.size + complex.size,
+      all: show.size + complex.size + stash.length,
     };
   }
 
@@ -88,32 +66,43 @@ export class Manager<T extends unknown> {
     return this.exerciser.box;
   }
 
-  public resize() {
-    this.exerciser.resize();
+  public format() {
+    this.exerciser.format();
     this.plSys.lifecycle.resize.emit();
   }
 
   public clear() {
     this.stopPlaying();
-    this.bs.c.clear();
-    this.bs.d.clear();
-    this.bs.s.length = 0;
     this.each((b) => b.removeFromContainer());
-    this.resize();
+    this.bs.show.clear();
+    this.bs.complex.clear();
+    this.bs.stash.length = 0;
+    this.format();
     this.plSys.lifecycle.clear.emit();
   }
 
-  // 增加异步方法
-  public each(fn: (b: SimpleBarrage) => boolean | void) {
-    let i = 0;
-    for (const item of this.bs.c) {
-      if (fn(item as SimpleBarrage) === false) return;
+  public each(fn: EachCallback<T>) {
+    for (const item of this.bs.complex) {
+      if (fn(item) === false) return;
     }
-    for (const item of this.bs.d) {
-      if (item.moving) {
-        if (fn(item) === false) return;
+    for (const item of this.bs.show) {
+      if (fn(item) === false) return;
+    }
+  }
+
+  public asyncEach(fn: EachCallback<T>) {
+    let stop = false;
+    const arr = Array.from(this.bs.complex);
+    return loopSlice(arr.length, (i) => {
+      if (fn(arr[i]) === false) {
+        stop = true;
+        return false;
       }
-    }
+    }).then(() => {
+      if (stop) return;
+      const arr = Array.from(this.bs.show);
+      return loopSlice(arr.length, (i) => fn(arr[i]));
+    });
   }
 
   public usePlugin(plugin: ManagerPlugin<T>) {
@@ -122,31 +111,45 @@ export class Manager<T extends unknown> {
   }
 
   public updateOptions(newOptions: Partial<ManagerOptions>) {
+    this.exerciser.updateOptions(newOptions);
     this.options = Object.assign(this.options, newOptions);
+
     if (hasOwn(newOptions, "interval")) {
       this.stopPlaying(NO_EMIT);
       this.startPlaying(NO_EMIT);
     }
+    this.plSys.lifecycle.updateOptions.emit(this.options);
   }
 
-  public send(data: T, plugin?: unknown) {
+  public show(filter?: FilterCallback<T>) {
+    return this.changeViewStatus("show", filter);
+  }
+
+  public hide(filter?: FilterCallback<T>) {
+    return this.changeViewStatus("hide", filter);
+  }
+
+  public send(data: T, plugin?: BarragePlugin) {
     if (!this.canSend()) return false;
-    this.bs.s.push({ data, plugin });
+    this.bs.stash.push({ data, plugin });
     this.plSys.lifecycle.send.emit(data);
     return true;
   }
 
-  public sendForward(data: T, plugin?: unknown) {
+  public sendForward(data: T, plugin?: BarragePlugin) {
     if (!this.canSend()) return false;
-    this.bs.s.unshift({ data, plugin });
+    this.bs.stash.unshift({ data, plugin });
     this.plSys.lifecycle.send.emit(data);
     return true;
   }
 
-  public startPlaying(flag?: Symbol) {
+  public startPlaying(_flag?: Symbol) {
     if (this.playing()) return;
+    if (!this.exerciser.box) {
+      this.exerciser.format();
+    }
     this.plSys.lock();
-    if (flag !== NO_EMIT) {
+    if (_flag !== NO_EMIT) {
       this.plSys.lifecycle.start.emit();
     }
     const cb = () => {
@@ -156,23 +159,23 @@ export class Manager<T extends unknown> {
     cb();
   }
 
-  public stopPlaying(flag?: Symbol) {
+  public stopPlaying(_flag?: Symbol) {
     if (!this.playing()) return;
     if (this.renderTimer) {
       clearTimeout(this.renderTimer);
     }
     this.renderTimer = null;
-    if (flag !== NO_EMIT) {
+    if (_flag !== NO_EMIT) {
       this.plSys.lifecycle.stop.emit();
     }
     this.plSys.unlock();
   }
 
   public render() {
-    if (this.bs.s.length === 0 || !this.playing()) return;
-    const { rowGap, limit, forceRender } = this.options;
+    if (this.bs.stash.length === 0 || !this.playing()) return;
     const { rows } = this.exerciser;
     const { stash, display } = this.n();
+    const { rowGap, limit, forceRender } = this.options;
     let l = limit - display;
 
     if (rowGap > 0 && l > rows) {
@@ -184,13 +187,13 @@ export class Manager<T extends unknown> {
     if (l === 0) return;
     this.plSys.lifecycle.render.emit();
 
-    timeSlice(l, () => {
-      const b = this.bs.s.shift();
+    loopSlice(l, () => {
+      const b = this.bs.stash.shift();
       if (!b) return;
       const trackData = this.exerciser.getTrackData();
       if (!trackData) {
-        this.bs.s.unshift(b);
-        return false; // stop
+        this.bs.stash.unshift(b);
+        return false;
       }
       const { prevent } = this.plSys.lifecycle.willRender.emit({
         value: b,
@@ -212,7 +215,26 @@ export class Manager<T extends unknown> {
     return res;
   }
 
-  private create(data: BarrageData<T>) {
+  private changeViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
+    return new Promise<void>((resolve) => {
+      if (this.viewStatus === status) {
+        resolve();
+        return;
+      }
+      this.viewStatus = status;
+      this.asyncEach((b) => {
+        if (this.viewStatus === status) {
+          if (!filter || filter(b) !== true) {
+            b[status]();
+          }
+        } else {
+          return false;
+        }
+      }).then(resolve);
+    });
+  }
+
+  private create({ data, plugin }: BarrageData<T>) {
     const {
       direction,
       times: [max, min],
@@ -221,25 +243,32 @@ export class Manager<T extends unknown> {
       max === min ? max : (Math.random() * (max - min) + min).toFixed(0),
     );
     if (t <= 0) return null;
+    assert(this.exerciser.box, "Container not formatted");
     return new SimpleBarrage({
+      data,
+      plugin,
       direction,
       box: this.exerciser.box,
       defaultStatus: this.viewStatus,
-      delInTrack: (b) => this.bs.d.delete(b),
+      delInTrack: (b) => this.bs.show.delete(b),
     });
   }
 
-  private fire(data: BarrageData<T> | SimpleBarrage, trackData: TrackData) {
+  private fire(
+    data: BarrageData<T> | SimpleBarrage<T>,
+    trackData: TrackData<T>,
+  ) {
     const b = data instanceof SimpleBarrage ? data : this.create(data);
     if (!b) return;
     b.createNode();
     b.appendToContainer(this.options.container);
     b.trackData = trackData;
     b.position.y = trackData.gaps[0];
-    this.bs.d.add(b);
+    this.bs.show.add(b);
     this.exerciser.emit(b).then((isStash) => {
       if (isStash) {
-        this.bs.s.unshift(b);
+        this.bs.show.delete(b);
+        this.bs.stash.unshift(b);
       } else {
         b.destroy();
         if (this.n().all === 0) {

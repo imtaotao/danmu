@@ -9,7 +9,6 @@ const raf =
 export let transitionProp = "transition";
 export let transitionEndEvent = "transitionend";
 export let transitionDuration = "transitionDuration";
-
 if (
   window.ontransitionend === undefined &&
   window.onwebkittransitionend !== undefined
@@ -47,21 +46,30 @@ export const isRange = ([a, b]: Array<number>, val: number) => {
 export const now =
   typeof performance.now === "function" ? () => performance.now() : Date.now;
 
-export function timeSlice(l: number, fn: () => void | boolean) {
-  let i = -1;
-  let start = now();
-  const run = () => {
-    while (++i < l) {
-      if (fn() === false) break;
-      const cur = now();
-      if (cur - start > 13) {
-        start = cur;
-        setTimeout(run);
-        break;
+export function loopSlice(l: number, fn: (i: number) => void | boolean) {
+  return new Promise<void>((resolve) => {
+    let i = -1;
+    let start = now();
+    const run = () => {
+      while (++i < l) {
+        if (fn(i) === false) {
+          resolve();
+          break;
+        }
+        if (i === l) {
+          resolve();
+        } else {
+          const cur = now();
+          if (cur - start > 13) {
+            start = cur;
+            setTimeout(run);
+            break;
+          }
+        }
       }
-    }
-  };
-  run();
+    };
+    run();
+  });
 }
 
 export function whenTransitionEnds(node: HTMLElement) {
@@ -81,6 +89,6 @@ export function whenTransitionEnds(node: HTMLElement) {
 // TypeScript cannot use arrowFunctions for assertions.
 export function assert(condition: unknown, error?: string): asserts condition {
   if (!condition) {
-    throw new Error(error);
+    throw new Error(error || "Unexpected error");
   }
 }

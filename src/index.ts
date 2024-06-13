@@ -1,27 +1,32 @@
-import { Manager, type ManagerPlugin, type ManagerOptions } from "./manager";
-
-export { type ManagerPlugin, type ManagerOptions } from "./manager";
+import { type ManagerPlugin } from "./types";
+import { Manager, type ManagerOptions } from "./manager";
 
 export function create<T extends unknown>(
-  options: Partial<ManagerOptions> & { plugin?: ManagerPlugin<T> },
+  options: Partial<ManagerOptions> & {
+    container: HTMLElement;
+    plugins?: ManagerPlugin<T> | Array<ManagerPlugin<T>>;
+  },
 ) {
   const manager = new Manager<T>({
     ...options,
-    limit: 100,
-    height: 50,
-    rowGap: 50,
-    interval: 0.5,
-    capacity: 1024,
+    height: 30,
+    rowGap: 20,
+    limit: 1024, // 改名
+    interval: 500,
+    capacity: 1024, // 内存改名
     times: [5, 10],
-    isShow: true,
     forceRender: false,
     direction: "right",
   });
-  if (options.plugin) {
-    manager.usePlugin({
-      name: "default_plugin",
-      ...options.plugin,
-    });
+  const { plugins } = options;
+  if (plugins) {
+    if (Array.isArray(plugins)) {
+      for (const p of plugins) {
+        manager.usePlugin(p);
+      }
+    } else {
+      manager.usePlugin(plugins);
+    }
   }
   return manager;
 }
