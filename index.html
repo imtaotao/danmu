@@ -12,17 +12,17 @@
     const manager = Danmu.create({
       container: document.getElementById('container'),
       plugin: {
-        onceHooks: {
+        hooks: {
           render() {
             console.log('render');
-            throw 1212
           },
           willRender(data) {
             console.log(data);
+            return data;
           },
-          // barrageCreateNode(b) {
-          //   console.log(b.data);
-          // }
+          barrageCreateNode(b) {
+            console.log(b.data);
+          }
         },
       },
     })

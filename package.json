@@ -58,6 +58,6 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "hooks-plugin": "^1.0.3"
+    "hooks-plugin": "^1.0.4"
   }
 }
