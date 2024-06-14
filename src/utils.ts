@@ -8,17 +8,9 @@ const raf =
     ? window.requestAnimationFrame.bind(window)
     : setTimeout;
 
-export let transitionProp = 'transition';
-export let transitionEndEvent = 'transitionend';
-export let transitionDuration = 'transitionDuration';
-if (
-  window.ontransitionend === undefined &&
-  window.onwebkittransitionend !== undefined
-) {
-  transitionProp = 'WebkitTransition';
-  transitionEndEvent = 'webkitTransitionEnd';
-  transitionDuration = 'webkitTransitionDuration';
-}
+export const transitionProp = 'transition' as const;
+export const transitionEndEvent = 'transitionend' as const;
+export const transitionDuration = 'transitionDuration' as const;
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 

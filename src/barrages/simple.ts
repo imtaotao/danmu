@@ -113,8 +113,8 @@ export class SimpleBarrage<T> {
     if (this.direction === 'right') {
       d *= -1;
     }
-    this.setStyle(transitionDuration as 'transitionDuration', '0s');
-    this.setStyle('transform' as 'transitionDuration', `translateX(${d}px)`);
+    this.setStyle(transitionDuration, '0s');
+    this.setStyle('transform', `translateX(${d}px)`);
     this._plSys.lifecycle.pause.emit(this);
   }
 
@@ -128,11 +128,7 @@ export class SimpleBarrage<T> {
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
     this.recorder.prevPauseTime = 0;
     this.recorder.duration = remainingTime;
-
-    this.setStyle(
-      transitionDuration as 'transitionDuration',
-      `${remainingTime}ms`,
-    );
+    this.setStyle(transitionDuration, `${remainingTime}ms`);
     this.setStyle('transform', `translateX(${cw * isNegative}px)`);
     this._plSys.lifecycle.resume.emit(this);
   }
@@ -164,10 +160,7 @@ export class SimpleBarrage<T> {
       this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
       this.setStyle('opacity', '1');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
-      this.setStyle(
-        transitionProp as 'transition',
-        `transform linear ${this.duration}ms`,
-      );
+      this.setStyle(transitionProp, `transform linear ${this.duration}ms`);
       this.setStyle(
         `margin${toUpperCase(this.direction)}` as 'marginLeft' | 'marginRight',
         `-${w}px`,
