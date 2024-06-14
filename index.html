@@ -10,11 +10,12 @@
       height: 50vh;
       margin: 50px auto;
       overflow:  hidden;
+      border: 1px solid #000;
     }
 
     .barrage {
       height: 25px;
-      width: 100px;
+      width: 50px;
       color: bisque;
       cursor: pointer;
       text-align: center;
@@ -36,8 +37,8 @@
           barrageCreateNode(b) {
             b.node.textContent = b.data;
             b.node.classList.add('barrage');
-            // b.node.onmouseleave= () => b.resume();
-            // b.node.onmouseenter = () =>  b.pause();
+            b.node.onmouseleave= () => b.resume();
+            b.node.onmouseenter = () =>  b.pause();
           }
         },
       },

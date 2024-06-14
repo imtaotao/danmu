@@ -63,7 +63,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "small-queue": "^1.0.0",
+    "small-queue": "^1.0.1",
     "hooks-plugin": "^1.0.4"
   }
 }

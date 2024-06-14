@@ -1,13 +1,9 @@
 import { Engine } from './engine';
-import { FacileBarrage } from './barrages/facile';
-import { FlexibleBarrage } from './barrages/flexible';
-import { NO_EMIT, hasOwn, createId, loopSlice, assert } from './utils';
+import { NO_EMIT, hasOwn, createId } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
-  TrackData,
   Direction,
   ViewStatus,
-  BarrageData,
   EachCallback,
   FilterCallback,
   FacilePlugin,
@@ -31,31 +27,26 @@ export class Manager<T extends unknown> {
   private _engine: Engine<T>;
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
-  private _rendering: Promise<void> | null = null;
   private _plSys = createManagerLifeCycle<T>();
 
   public constructor(public options: ManagerOptions) {
-    this._engine = new Engine({
-      times: options.times,
-      rowGap: options.rowGap,
-      height: options.height,
-      container: options.container,
-      forceRender: options.forceRender,
-    });
+    this._engine = new Engine(options);
+  }
+
+  public n() {
+    return this._engine.n();
   }
 
   public playing() {
     return this._renderTimer !== null;
   }
 
-  public n() {
-    const { stash, show, complex } = this._sets;
-    return {
-      stash: stash.length,
-      complex: complex.size,
-      display: show.size + complex.size,
-      all: show.size + complex.size + stash.length,
-    };
+  public each(fn: EachCallback<T>) {
+    return this._engine.each(fn);
+  }
+
+  public asyncEach(fn: EachCallback<T>) {
+    return this._engine.asyncEach(fn);
   }
 
   public getContainer() {
@@ -70,35 +61,8 @@ export class Manager<T extends unknown> {
   public clear() {
     this.stopPlaying();
     this.each((b) => b.removeNode());
-    this._sets.show.clear();
-    this._sets.complex.clear();
-    this._sets.stash.length = 0;
-    this.format();
+    this._engine.clear();
     this._plSys.lifecycle.clear.emit();
-  }
-
-  public each(fn: EachCallback<T>) {
-    for (const item of this._sets.complex) {
-      if (fn(item) === false) return;
-    }
-    for (const item of this._sets.show) {
-      if (fn(item) === false) return;
-    }
-  }
-
-  public asyncEach(fn: EachCallback<T>) {
-    let stop = false;
-    const arr = Array.from(this._sets.complex);
-    return loopSlice(arr.length, (i) => {
-      if (fn(arr[i]) === false) {
-        stop = true;
-        return false;
-      }
-    }).then(() => {
-      if (stop) return;
-      const arr = Array.from(this._sets.show);
-      return loopSlice(arr.length, (i) => fn(arr[i]));
-    });
   }
 
   public usePlugin(plugin: ManagerPlugin<T>) {
@@ -127,14 +91,14 @@ export class Manager<T extends unknown> {
 
   public push(data: T, plugin?: FacilePlugin<T>) {
     if (!this._canSend()) return false;
-    this._sets.stash.push({ data, plugin });
+    this._engine.add(data, plugin, true);
     this._plSys.lifecycle.push.emit(data, true);
     return true;
   }
 
   public unshift(data: T, plugin?: FacilePlugin<T>) {
     if (!this._canSend()) return false;
-    this._sets.stash.unshift({ data, plugin });
+    this._engine.add(data, plugin, false);
     this._plSys.lifecycle.push.emit(data, false);
     return true;
   }
@@ -168,47 +132,31 @@ export class Manager<T extends unknown> {
   }
 
   public render() {
-    if (this._sets.stash.length === 0 || !this.playing()) return;
-    const { rows } = this._engine;
-    const { stash, display } = this.n();
-    const { rowGap, viewLimit, forceRender } = this.options;
-    let l = viewLimit - display;
-
-    if (rowGap > 0 && l > rows) {
-      l = rows;
-    }
-    if (forceRender || l > stash) {
-      l = stash;
-    }
-    if (l === 0) return;
-    this._plSys.lifecycle.render.emit();
-
-    this._rendering = loopSlice(l, () => {
-      const b = this._sets.stash.shift();
-      if (!b) return;
-      const trackData = this._engine.getTrackData();
-      if (!trackData) {
-        this._sets.stash.unshift(b);
-        return false;
-      }
-      const { prevent } = this._plSys.lifecycle.willRender.emit({
-        value: b.data,
-        prevent: false,
-      });
-      if (prevent === true) return;
-      this._engine.fire(b, trackData);
+    if (!this.playing()) return;
+    this._engine.render({
+      viewStatus: this._viewStatus,
+      bridgePlugin: createBridgePlugin(this._plSys),
+      hooks: {
+        render: () => this._plSys.lifecycle.render.emit(),
+        finished: () => this._plSys.lifecycle.finished.emit(),
+        willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
+      },
     });
-    this._rendering.finally(() => (this._rendering = null));
   }
 
   private _canSend() {
-    const res = this.n().all >= this.options.memoryLimit;
+    const { memoryLimit } = this.options;
+    const res = this.n().all >= memoryLimit;
     if (res) {
-      console.warn(
-        'The number of danmu in memory exceeds the limit.' +
-          `(${this.options.memoryLimit})`,
-      );
-      this._plSys.lifecycle.capacityWarning.emit();
+      const hook = this._plSys.lifecycle.memoryWarning;
+      if (hook.isEmpty()) {
+        console.warn(
+          'The number of danmu in memory exceeds the limit.' +
+            `(${memoryLimit})`,
+        );
+      } else {
+        hook.emit(memoryLimit);
+      }
     }
     return !res;
   }
@@ -220,15 +168,17 @@ export class Manager<T extends unknown> {
         return;
       }
       this._viewStatus = status;
-      this.asyncEach((b) => {
-        if (this._viewStatus === status) {
-          if (!filter || filter(b) !== true) {
-            b[status]();
+      this._engine
+        .asyncEach((b) => {
+          if (this._viewStatus === status) {
+            if (!filter || filter(b) !== true) {
+              b[status]();
+            }
+          } else {
+            return false;
           }
-        } else {
-          return false;
-        }
-      }).then(resolve);
+        })
+        .then(resolve);
     });
   }
 }

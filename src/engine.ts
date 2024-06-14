@@ -1,19 +1,31 @@
+import { Queue } from 'small-queue';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
+import {
+  assert,
+  hasOwn,
+  isRange,
+  toNumber,
+  nextFrame,
+  loopSlice,
+} from './utils';
 import type {
   Box,
+  Layer,
   TrackData,
   BarrageData,
-  RunOptions,
   Direction,
   ViewStatus,
+  EachCallback,
   FacilePlugin,
+  RunOptions,
+  RenderOptions,
 } from './types';
-import { assert, hasOwn, isRange, toNumber, nextFrame } from './utils';
 
 export interface EngineOptions {
   rowGap: number;
   height: number;
+  viewLimit: number;
   direction: Direction;
   forceRender: boolean;
   container: HTMLElement;
@@ -23,6 +35,7 @@ export interface EngineOptions {
 export class Engine<T> {
   public rows = 0;
   public box?: Box;
+  private _fx = new Queue();
   private _layouts = [] as Array<TrackData<T>>;
   private _sets = {
     show: new Set<FacileBarrage<T>>(),
@@ -42,11 +55,46 @@ export class Engine<T> {
     };
   }
 
+  public add(data: T, plugin?: FacilePlugin<T>, isPush?: boolean) {
+    this._sets.stash[isPush ? 'push' : 'unshift']({ data, plugin });
+  }
+
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this.options = Object.assign(this.options, newOptions);
     if (hasOwn(newOptions, 'height') || hasOwn(newOptions, 'container')) {
       this.format();
     }
+  }
+
+  public clear() {
+    this._sets.show.clear();
+    this._sets.complex.clear();
+    this._sets.stash.length = 0;
+    this.format();
+  }
+
+  public each(fn: EachCallback<T>) {
+    for (const item of this._sets.complex) {
+      if (fn(item) === false) return;
+    }
+    for (const item of this._sets.show) {
+      if (fn(item) === false) return;
+    }
+  }
+
+  public asyncEach(fn: EachCallback<T>) {
+    let stop = false;
+    const arr = Array.from(this._sets.complex);
+    return loopSlice(arr.length, (i) => {
+      if (fn(arr[i]) === false) {
+        stop = true;
+        return false;
+      }
+    }).then(() => {
+      if (stop) return;
+      const arr = Array.from(this._sets.show);
+      return loopSlice(arr.length, (i) => fn(arr[i]));
+    });
   }
 
   public format() {
@@ -80,7 +128,7 @@ export class Engine<T> {
     }
   }
 
-  public getTrackData(founds: Array<number> = []): TrackData<T> | null {
+  private _getTrackData(founds: Array<number> = []): TrackData<T> | null {
     const { rowGap } = this.options;
     if (founds.length === this._layouts.length) {
       if (this.options.forceRender) {
@@ -98,28 +146,72 @@ export class Engine<T> {
       return trackData;
     }
     if (!last.moving) {
-      return this.getTrackData(founds);
+      return this._getTrackData(founds);
     }
     const distance = last.getMoveDistance();
     const spacing = rowGap > 0 ? rowGap + last.getWidth() : rowGap;
-    return distance > spacing ? trackData : this.getTrackData(founds);
+    return distance > spacing ? trackData : this._getTrackData(founds);
   }
 
-  public run(args: RunOptions<T>) {
+  public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
+    if (this._sets.stash.length === 0) return;
+    const { rows } = this;
+    const { stash, display } = this.n();
+    const { rowGap, viewLimit, forceRender } = this.options;
+    let l = viewLimit - display;
+
+    if (rowGap > 0 && l > rows) {
+      l = rows;
+    }
+    if (forceRender || l > stash) {
+      l = stash;
+    }
+    if (l === 0) return;
+
+    this._fx.add((next) => {
+      hooks.render();
+      const p = loopSlice(l, () => {
+        const b = this._sets.stash.shift();
+        if (!b) return;
+        const trackData = this._getTrackData();
+        if (!trackData) {
+          this._sets.stash.unshift(b);
+          return false;
+        }
+        const { prevent } = hooks.willRender({
+          value: b.data,
+          prevent: false as boolean,
+        });
+        if (prevent === true) return;
+        this._run({
+          hooks,
+          layer: b,
+          trackData,
+          viewStatus,
+          bridgePlugin,
+        });
+      });
+      p.then(next);
+    });
+  }
+
+  public _run({
+    layer,
+    hooks,
+    trackData,
+    viewStatus,
+    bridgePlugin,
+  }: RunOptions<T>) {
     const b =
-      args.layer instanceof FacileBarrage
-        ? args.layer
-        : this._create({
-            layer: args.layer,
-            viewStatus: args.viewStatus,
-            bridgePlugin: args.bridgePlugin,
-          });
+      layer instanceof FacileBarrage
+        ? layer
+        : this._create(layer, viewStatus, bridgePlugin);
     if (!b) return;
 
     b.createNode();
     b.appendNode(this.options.container);
-    b.updateTrackData(args.trackData);
-    b.position.y = args.trackData.gaps[0];
+    b.updateTrackData(trackData);
+    b.position.y = trackData.gaps[0];
     b.setStyle('top', `${b.position.y}px`);
     this._sets.show.add(b);
 
@@ -132,7 +224,7 @@ export class Engine<T> {
       } else {
         b.destroy();
         if (this.n().all === 0) {
-          a.finished();
+          hooks.finished();
         }
       }
     });
@@ -160,7 +252,9 @@ export class Engine<T> {
   }
 
   private _create(
-    a: Pick<RunOptions<T>, 'layer' | 'viewStatus' | 'bridgePlugin'>,
+    layer: Layer<T>,
+    viewStatus: ViewStatus,
+    bridgePlugin: FacilePlugin<T>,
   ) {
     const {
       direction,
@@ -176,14 +270,14 @@ export class Engine<T> {
       direction,
       duration: t,
       box: this.box,
-      data: a.layer.data,
-      defaultStatus: a.viewStatus,
+      data: layer.data,
+      defaultStatus: viewStatus,
       delInTrack: (b) => this._sets.show.delete(b),
     });
-    if ((a.layer as BarrageData<T>).plugin) {
-      b.use((a.layer as BarrageData<T>).plugin!);
+    if ((layer as BarrageData<T>).plugin) {
+      b.use((layer as BarrageData<T>).plugin!);
     }
-    b.use(a.bridgePlugin);
+    b.use(bridgePlugin);
     return b;
   }
 

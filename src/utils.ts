@@ -53,13 +53,13 @@ export function loopSlice(l: number, fn: (i: number) => void | boolean) {
           resolve();
           break;
         }
-        if (i === l) {
+        if (i === l - 1) {
           resolve();
         } else {
           const t = now();
           if (t - start > 13) {
             start = t;
-            raf(run);
+            setTimeout(run);
             break;
           }
         }

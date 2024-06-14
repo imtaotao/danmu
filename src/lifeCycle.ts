@@ -45,7 +45,7 @@ export function createManagerLifeCycle<T>() {
     render: new AsyncHook<[], null>(),
     finished: new SyncHook<[], null>(),
     push: new AsyncHook<[T, boolean], null>(),
-    capacityWarning: new SyncHook<[], null>(),
+    memoryWarning: new SyncHook<[number], null>(),
     updateOptions: new SyncHook<[ManagerOptions]>(),
     willRender: new SyncWaterfallHook<{
       value: T;

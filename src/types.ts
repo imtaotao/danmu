@@ -8,6 +8,8 @@ export type Direction = 'left' | 'right';
 
 export type FilterCallback<T> = EachCallback<T>;
 
+export type Layer<T> = BarrageData<T> | FacileBarrage<T>;
+
 export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<unknown>;
 
 export type EachCallback<T> = (
@@ -37,12 +39,24 @@ export interface InfoRecord {
   prevPauseTime: number;
 }
 
-export interface RunOptions<T> {
-  finished: () => void;
+type WillRenderEmit<T> =
+  Manager<T>['_plSys']['lifecycle']['willRender']['emit'];
+
+export interface RenderOptions<T> {
   viewStatus: ViewStatus;
-  trackData: TrackData<T>;
   bridgePlugin: FacilePlugin<T>;
-  layer: BarrageData<T> | FacileBarrage<T>;
+  hooks: {
+    render: () => void;
+    finished: () => void;
+    willRender: <K extends Parameters<WillRenderEmit<T>>[0]>(
+      data: K,
+    ) => ReturnType<WillRenderEmit<T>>;
+  };
+}
+
+export interface RunOptions<T> extends RenderOptions<T> {
+  layer: Layer<T>;
+  trackData: TrackData<T>;
 }
 
 export type ManagerPlugin<T> = Omit<
