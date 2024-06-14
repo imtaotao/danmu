@@ -8,7 +8,6 @@ export function create<T extends unknown>(
   },
 ) {
   const manager = new Manager<T>({
-    ...options,
     height: 30,
     rowGap: 20,
     interval: 500,
@@ -17,6 +16,7 @@ export function create<T extends unknown>(
     forceRender: false,
     times: [3000, 6000],
     direction: 'right',
+    ...options,
   });
   if (options.plugin) {
     manager.usePlugin(options.plugin);

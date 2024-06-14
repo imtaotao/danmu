@@ -1,14 +1,6 @@
 import type { Box, TrackData } from './types';
 import type { SimpleBarrage } from './barrages/simple';
-import {
-  now,
-  assert,
-  hasOwn,
-  isRange,
-  toNumber,
-  nextFrame,
-  whenTransitionEnds,
-} from './utils';
+import { assert, hasOwn, isRange, toNumber, nextFrame } from './utils';
 
 export interface ExerciserOptions {
   rowGap: number;
@@ -40,9 +32,9 @@ export class Exerciser<T> {
       }
       return null;
     }
-    const i = this.selectTrackIdx(founds);
+    const i = this._selectTrackIdx(founds);
     const trackData = this._layouts[i];
-    const last = this.last(trackData.bs, 0);
+    const last = this._last(trackData.bs, 0);
     founds.push(i);
 
     if (rowGap <= 0 || !last) {
@@ -56,10 +48,10 @@ export class Exerciser<T> {
     return distance > spacing ? trackData : this.getTrackData(founds);
   }
 
-  public emit(cur: SimpleBarrage<T>) {
-    return new Promise<boolean>((resolve) => {
+  public run(cur: SimpleBarrage<T>) {
+    return new Promise<boolean | void>((resolve) => {
       assert(cur.trackData);
-      const prv = this.last(cur.trackData.bs, 1);
+      const prv = this._last(cur.trackData.bs, 1);
       cur.setStyle('top', `${cur.position.y}px`);
 
       nextFrame(() => {
@@ -73,16 +65,13 @@ export class Exerciser<T> {
             } else {
               cur.reset();
               cur.setStyle('top', '');
-              resolve(false);
+              resolve(true);
               return;
             }
           }
         }
         assert(cur.node);
-        cur.initStyles();
-        cur.moving = true;
-        cur.recorder.startTime = now();
-        whenTransitionEnds(cur.node).then(() => resolve(true));
+        cur.setEndStyles().then(resolve);
       });
     });
   }
@@ -90,7 +79,7 @@ export class Exerciser<T> {
   public format() {
     const { height, container } = this.options;
     const styles = getComputedStyle(container);
-    if (this.needFixPosition(styles)) {
+    if (this._needFixPosition(styles)) {
       container.style.position = 'relative';
     }
 
@@ -118,7 +107,7 @@ export class Exerciser<T> {
     }
   }
 
-  private needFixPosition(styles: CSSStyleDeclaration) {
+  private _needFixPosition(styles: CSSStyleDeclaration) {
     return (
       !styles.position ||
       styles.position === 'none' ||
@@ -126,7 +115,7 @@ export class Exerciser<T> {
     );
   }
 
-  private last(ls: Array<SimpleBarrage<T>>, li: number) {
+  private _last(ls: Array<SimpleBarrage<T>>, li: number) {
     for (let i = ls.length - 1; i >= 0; i--) {
       const b = ls[i - li];
       if (b && !b.paused) return b;
@@ -134,9 +123,9 @@ export class Exerciser<T> {
     return null;
   }
 
-  private selectTrackIdx(founds: Array<number>): number {
+  private _selectTrackIdx(founds: Array<number>): number {
     const idx = Math.floor(Math.random() * this.rows);
-    return founds.includes(idx) ? this.selectTrackIdx(founds) : idx;
+    return founds.includes(idx) ? this._selectTrackIdx(founds) : idx;
   }
 
   private collisionPrediction(prv: SimpleBarrage<T>, cur: SimpleBarrage<T>) {

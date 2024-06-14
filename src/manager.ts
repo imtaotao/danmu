@@ -122,22 +122,22 @@ export class Manager<T extends unknown> {
   }
 
   public show(filter?: FilterCallback<T>) {
-    return this.changeViewStatus('show', filter);
+    return this._changeViewStatus('show', filter);
   }
 
   public hide(filter?: FilterCallback<T>) {
-    return this.changeViewStatus('hide', filter);
+    return this._changeViewStatus('hide', filter);
   }
 
   public push(data: T, plugin?: SimpleBarragePlugin<T>) {
-    if (!this.canSend()) return false;
+    if (!this._canSend()) return false;
     this._bs.stash.push({ data, plugin });
     this._plSys.lifecycle.push.emit(data, true);
     return true;
   }
 
   public unshift(data: T, plugin?: SimpleBarragePlugin<T>) {
-    if (!this.canSend()) return false;
+    if (!this._canSend()) return false;
     this._bs.stash.unshift({ data, plugin });
     this._plSys.lifecycle.push.emit(data, false);
     return true;
@@ -200,11 +200,11 @@ export class Manager<T extends unknown> {
         prevent: false,
       });
       if (prevent === true) return;
-      this.fire(b, trackData);
+      this._fire(b, trackData);
     });
   }
 
-  private canSend() {
+  private _canSend() {
     const res = this.n().all >= this.options.memoryLimit;
     if (res) {
       console.warn(
@@ -216,7 +216,7 @@ export class Manager<T extends unknown> {
     return !res;
   }
 
-  private changeViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
+  private _changeViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
     return new Promise<void>((resolve) => {
       if (this._viewStatus === status) {
         resolve();
@@ -235,10 +235,10 @@ export class Manager<T extends unknown> {
     });
   }
 
-  private create({ data, plugin }: BarrageData<T>) {
+  private _create({ data, plugin }: BarrageData<T>) {
     const {
       direction,
-      times: [max, min],
+      times: [min, max],
     } = this.options;
     const t = Number(
       max === min ? max : (Math.random() * (max - min) + min).toFixed(0),
@@ -258,18 +258,18 @@ export class Manager<T extends unknown> {
     return b;
   }
 
-  private fire(
+  private _fire(
     data: BarrageData<T> | SimpleBarrage<T>,
     trackData: TrackData<T>,
   ) {
-    const b = data instanceof SimpleBarrage ? data : this.create(data);
+    const b = data instanceof SimpleBarrage ? data : this._create(data);
     if (!b) return;
     b.createNode();
     b.appendNode(this.options.container);
     b.updateTrackData(trackData);
     b.position.y = trackData.gaps[0];
     this._bs.show.add(b);
-    this._exerciser.emit(b).then((isStash) => {
+    this._exerciser.run(b).then((isStash) => {
       if (isStash) {
         this._bs.show.delete(b);
         this._bs.stash.unshift(b);

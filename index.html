@@ -4,31 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Danmu</title>
+  <style>
+    #container {
+      width: 50vw;
+      height: 50vh;
+      margin: 50px auto;
+      overflow:  hidden;
+    }
+
+    .barrage {
+      height: 25px;
+      width: 100px;
+      color: bisque;
+      cursor: pointer;
+      text-align: center;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+  </style>
 </head>
 <body>
-  <div id="container" style="width: 90vw; height: 90vh;; border: 1px solid #000;"></div>
+  <div id="container"></div>
   <script src='./dist/danmu.umd.js'></script>
   <script>
     const manager = Danmu.create({
+      interval: 200,
+      times: [3000, 6000],
       container: document.getElementById('container'),
       plugin: {
         hooks: {
-          render() {
-            console.log('render');
-          },
-          willRender(data) {
-            console.log(data);
-            return data;
-          },
           barrageCreateNode(b) {
-            console.log(b.data);
+            b.node.textContent = b.data;
+            b.node.classList.add('barrage');
+            // b.node.onmouseleave= () => b.resume();
+            // b.node.onmouseenter = () =>  b.pause();
           }
         },
       },
     })
+
     manager.startPlaying();
-    manager.push(1)
-    manager.push(2)
+
+    setInterval(() => {
+      for (let i = 0; i < 10; i++) {
+        manager.push(i);
+      }
+    }, 1000)
   </script>
 </body>
 </html>

@@ -1,10 +1,12 @@
 import { createBarrageLifeCycle } from '../lifeCycle';
 import {
   now,
+  NO_EMIT,
   createId,
   toUpperCase,
   transitionProp,
   transitionDuration,
+  whenTransitionEnds,
 } from '../utils';
 import type {
   Box,
@@ -128,36 +130,49 @@ export class SimpleBarrage<T> {
     this._plSys.lifecycle.resume.emit(this);
   }
 
-  public hide() {
+  public hide(_flag?: Symbol) {
     this._status = 'hide';
     this.setStyle('visibility', 'hidden');
     this.setStyle('pointerEvents', 'none');
-    this._plSys.lifecycle.hide.emit(this);
+    if (_flag !== NO_EMIT) {
+      this._plSys.lifecycle.hide.emit(this);
+    }
   }
 
-  public show() {
+  public show(_flag?: Symbol) {
     this._status = 'show';
     this.setStyle('visibility', 'visible');
     this.setStyle('pointerEvents', 'auto');
-    this._plSys.lifecycle.show.emit(this);
+    if (_flag !== NO_EMIT) {
+      this._plSys.lifecycle.show.emit(this);
+    }
   }
 
-  public initStyles() {
-    const w = this.getWidth();
-    const cw = this.options.box.w + w;
-    const isNegative = this.direction === 'left' ? 1 : -1;
+  public setEndStyles() {
+    return new Promise<void>((resolve) => {
+      const w = this.getWidth();
+      const cw = this.options.box.w + w;
+      const isNegative = this.direction === 'left' ? 1 : -1;
 
-    this._status === 'hide' ? this.hide() : this.show();
-    this.setStyle('opacity', '1');
-    this.setStyle('transform', `translateX(${isNegative * cw}px)`);
-    this.setStyle(
-      transitionProp as 'transition',
-      `transform linear ${this.duration}ms`,
-    );
-    this.setStyle(
-      `margin${toUpperCase(this.direction)}` as 'marginLeft' | 'marginRight',
-      `-${w}px`,
-    );
+      this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+      this.setStyle('opacity', '1');
+      this.setStyle('transform', `translateX(${isNegative * cw}px)`);
+      this.setStyle(
+        transitionProp as 'transition',
+        `transform linear ${this.duration}ms`,
+      );
+      this.setStyle(
+        `margin${toUpperCase(this.direction)}` as 'marginLeft' | 'marginRight',
+        `-${w}px`,
+      );
+      this.moving = true;
+      this.recorder.startTime = now();
+      if (this.node) {
+        whenTransitionEnds(this.node).then(resolve);
+      } else {
+        resolve();
+      }
+    });
   }
 
   public removeNode() {
@@ -170,7 +185,7 @@ export class SimpleBarrage<T> {
 
   public destroy() {
     this.moving = false;
-    this.delInTrack();
+    this._delInTrack();
     this.removeNode();
     this._plSys.lifecycle.destroy.emit(this);
     this.node = null;
@@ -192,8 +207,9 @@ export class SimpleBarrage<T> {
   }
 
   public createNode() {
-    this._plSys.lock();
     this.node = document.createElement('div');
+    this._plSys.lock();
+    this._initStyles();
     this._plSys.lifecycle.createNode.emit(this);
   }
 
@@ -210,7 +226,15 @@ export class SimpleBarrage<T> {
     this.node.style[key] = val;
   }
 
-  private delInTrack() {
+  private _initStyles() {
+    this.setStyle('opacity', '0');
+    this.setStyle(this.direction, '0');
+    this.setStyle('position', 'absolute');
+    this.setStyle('display', 'inline-block');
+    this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+  }
+
+  private _delInTrack() {
     if (!this.trackData) return;
     const { bs } = this.trackData;
     if (bs.length > 0) {
