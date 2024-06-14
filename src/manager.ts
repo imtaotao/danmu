@@ -1,4 +1,4 @@
-import { Exerciser } from './exerciser';
+import { Engine } from './engine';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import { NO_EMIT, hasOwn, createId, loopSlice, assert } from './utils';
@@ -28,19 +28,14 @@ export interface ManagerOptions {
 
 export class Manager<T extends unknown> {
   public version = __VERSION__;
-  private _exerciser: Exerciser<T>;
+  private _engine: Engine<T>;
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
   private _rendering: Promise<void> | null = null;
   private _plSys = createManagerLifeCycle<T>();
-  private _sets = {
-    show: new Set<FacileBarrage<T>>(),
-    complex: new Set<FlexibleBarrage<unknown>>(),
-    stash: [] as Array<BarrageData<T> | FacileBarrage<T>>,
-  };
 
   public constructor(public options: ManagerOptions) {
-    this._exerciser = new Exerciser({
+    this._engine = new Engine({
       times: options.times,
       rowGap: options.rowGap,
       height: options.height,
@@ -64,11 +59,11 @@ export class Manager<T extends unknown> {
   }
 
   public getContainer() {
-    return this._exerciser.box;
+    return this._engine.box;
   }
 
   public format() {
-    this._exerciser.format();
+    this._engine.format();
     this._plSys.lifecycle.resize.emit();
   }
 
@@ -112,7 +107,7 @@ export class Manager<T extends unknown> {
   }
 
   public updateOptions(newOptions: Partial<ManagerOptions>) {
-    this._exerciser.updateOptions(newOptions);
+    this._engine.updateOptions(newOptions);
     this.options = Object.assign(this.options, newOptions);
 
     if (hasOwn(newOptions, 'interval')) {
@@ -146,8 +141,8 @@ export class Manager<T extends unknown> {
 
   public startPlaying(_flag?: Symbol) {
     if (this.playing()) return;
-    if (!this._exerciser.box) {
-      this._exerciser.format();
+    if (!this._engine.box) {
+      this._engine.format();
     }
     this._plSys.lock();
     if (_flag !== NO_EMIT) {
@@ -174,7 +169,7 @@ export class Manager<T extends unknown> {
 
   public render() {
     if (this._sets.stash.length === 0 || !this.playing()) return;
-    const { rows } = this._exerciser;
+    const { rows } = this._engine;
     const { stash, display } = this.n();
     const { rowGap, viewLimit, forceRender } = this.options;
     let l = viewLimit - display;
@@ -191,7 +186,7 @@ export class Manager<T extends unknown> {
     this._rendering = loopSlice(l, () => {
       const b = this._sets.stash.shift();
       if (!b) return;
-      const trackData = this._exerciser.getTrackData();
+      const trackData = this._engine.getTrackData();
       if (!trackData) {
         this._sets.stash.unshift(b);
         return false;
@@ -201,7 +196,7 @@ export class Manager<T extends unknown> {
         prevent: false,
       });
       if (prevent === true) return;
-      this._fire(b, trackData);
+      this._engine.fire(b, trackData);
     });
     this._rendering.finally(() => (this._rendering = null));
   }
@@ -234,58 +229,6 @@ export class Manager<T extends unknown> {
           return false;
         }
       }).then(resolve);
-    });
-  }
-
-  private _create({ data, plugin }: BarrageData<T>) {
-    const {
-      direction,
-      times: [min, max],
-    } = this.options;
-    const t = Number(
-      max === min ? max : (Math.random() * (max - min) + min).toFixed(0),
-    );
-    if (t <= 0) return null;
-    assert(this._exerciser.box, 'Container not formatted');
-    const b = new FacileBarrage({
-      data,
-      direction,
-      duration: t,
-      box: this._exerciser.box,
-      defaultStatus: this._viewStatus,
-      delInTrack: (b) => this._sets.show.delete(b),
-    });
-    if (plugin) b.use(plugin);
-    b.use(createBridgePlugin<T>(this._plSys));
-    return b;
-  }
-
-  private _fire(
-    data: BarrageData<T> | FacileBarrage<T>,
-    trackData: TrackData<T>,
-  ) {
-    const b = data instanceof FacileBarrage ? data : this._create(data);
-    if (!b) return;
-
-    b.createNode();
-    b.appendNode(this.options.container);
-    b.updateTrackData(trackData);
-    b.position.y = trackData.gaps[0];
-    b.setStyle('top', `${b.position.y}px`);
-    this._sets.show.add(b);
-
-    this._exerciser.run(b).then((isStash) => {
-      if (isStash) {
-        b.reset();
-        b.setStyle('top', '');
-        this._sets.show.delete(b);
-        this._sets.stash.unshift(b);
-      } else {
-        b.destroy();
-        if (this.n().all === 0) {
-          this._plSys.lifecycle.finished.emit();
-        }
-      }
     });
   }
 }

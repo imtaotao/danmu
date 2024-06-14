@@ -8,6 +8,8 @@ export type Direction = 'left' | 'right';
 
 export type FilterCallback<T> = EachCallback<T>;
 
+export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<unknown>;
+
 export type EachCallback<T> = (
   b: FacileBarrage<T> | FlexibleBarrage<unknown>,
 ) => boolean | void;
@@ -23,8 +25,8 @@ export interface BarrageData<T> {
 }
 
 export interface Box {
-  w: number;
-  h: number;
+  width: number;
+  height: number;
   el: HTMLElement;
 }
 
@@ -33,6 +35,14 @@ export interface InfoRecord {
   pauseTime: number;
   startTime: number;
   prevPauseTime: number;
+}
+
+export interface RunOptions<T> {
+  finished: () => void;
+  viewStatus: ViewStatus;
+  trackData: TrackData<T>;
+  bridgePlugin: FacilePlugin<T>;
+  layer: BarrageData<T> | FacileBarrage<T>;
 }
 
 export type ManagerPlugin<T> = Omit<

@@ -95,11 +95,11 @@ export class FacileBarrage<T> {
   public getMoveDistance() {
     if (!this.moving) return 0;
     const percent = this.getMovePercent();
-    return percent * this.options.box.w + this.getWidth();
+    return percent * this.options.box.width + this.getWidth();
   }
 
   public getSpeed() {
-    const cw = this.options.box.w + this.getWidth();
+    const cw = this.options.box.width + this.getWidth();
     if (this.recorder.duration == null || cw == null) {
       return 0;
     }
@@ -122,7 +122,7 @@ export class FacileBarrage<T> {
 
   public resume() {
     if (!this.moving || !this.paused) return;
-    const cw = this.options.box.w + this.getWidth();
+    const cw = this.options.box.width + this.getWidth();
     const isNegative = this.direction === 'left' ? 1 : -1;
     const remainingTime = (1 - this.getMovePercent()) * this.duration;
 
@@ -156,7 +156,7 @@ export class FacileBarrage<T> {
   public setEndStyles() {
     return new Promise<void>((resolve) => {
       const w = this.getWidth();
-      const cw = this.options.box.w + w;
+      const cw = this.options.box.width + w;
       const isNegative = this.direction === 'left' ? 1 : -1;
 
       this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);

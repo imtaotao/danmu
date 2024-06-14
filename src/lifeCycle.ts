@@ -5,12 +5,8 @@ import {
   PluginSystem,
 } from 'hooks-plugin';
 import { createId, toLowerCase } from './utils';
-import type { FacilePlugin } from './types';
+import type { Barrage, FacilePlugin } from './types';
 import type { Manager, ManagerOptions } from './manager';
-import type { FacileBarrage } from './barrages/facile';
-import type { FlexibleBarrage } from './barrages/flexible';
-
-type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<unknown>;
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
   return new PluginSystem({
