@@ -1,5 +1,5 @@
 import type { Box, TrackData } from './types';
-import type { SimpleBarrage } from './barrages/simple';
+import type { FacileBarrage } from './barrages/facile';
 import { assert, hasOwn, isRange, toNumber, nextFrame } from './utils';
 
 export interface ExerciserOptions {
@@ -14,7 +14,7 @@ export class Exerciser<T> {
   public rows = 0;
   public box?: Box;
   private _layouts = [] as Array<TrackData<T>>;
-  public constructor(private options: ExerciserOptions) {}
+  public constructor(public options: ExerciserOptions) {}
 
   public updateOptions(newOptions: Partial<ExerciserOptions>) {
     this.options = Object.assign(this.options, newOptions);
@@ -48,7 +48,7 @@ export class Exerciser<T> {
     return distance > spacing ? trackData : this.getTrackData(founds);
   }
 
-  public run(cur: SimpleBarrage<T>) {
+  public run(cur: FacileBarrage<T>) {
     return new Promise<boolean | void>((resolve) => {
       nextFrame(() => {
         assert(cur.trackData);
@@ -109,7 +109,7 @@ export class Exerciser<T> {
     );
   }
 
-  private _last(ls: Array<SimpleBarrage<T>>, li: number) {
+  private _last(ls: Array<FacileBarrage<T>>, li: number) {
     for (let i = ls.length - 1; i >= 0; i--) {
       const b = ls[i - li];
       if (b && !b.paused) return b;
@@ -122,7 +122,7 @@ export class Exerciser<T> {
     return founds.includes(idx) ? this._selectTrackIdx(founds) : idx;
   }
 
-  private _collisionPrediction(prv: SimpleBarrage<T>, cur: SimpleBarrage<T>) {
+  private _collisionPrediction(prv: FacileBarrage<T>, cur: FacileBarrage<T>) {
     const pw = prv.getWidth();
     const cw = cur.getWidth();
     const ps = prv.getSpeed();

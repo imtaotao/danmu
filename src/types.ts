@@ -1,6 +1,6 @@
 import type { Manager } from './manager';
-import type { SimpleBarrage } from './barrages/simple';
-import type { ComplicatedBarrage } from './barrages/complicated';
+import type { FacileBarrage } from './barrages/facile';
+import type { FlexibleBarrage } from './barrages/flexible';
 
 export type ViewStatus = 'hide' | 'show';
 
@@ -9,17 +9,17 @@ export type Direction = 'left' | 'right';
 export type FilterCallback<T> = EachCallback<T>;
 
 export type EachCallback<T> = (
-  b: SimpleBarrage<T> | ComplicatedBarrage<unknown>,
+  b: FacileBarrage<T> | FlexibleBarrage<unknown>,
 ) => boolean | void;
 
 export interface TrackData<T> {
   gaps: [number, number];
-  list: Array<SimpleBarrage<T>>;
+  list: Array<FacileBarrage<T>>;
 }
 
 export interface BarrageData<T> {
   data: T;
-  plugin?: SimpleBarragePlugin<T>;
+  plugin?: FacilePlugin<T>;
 }
 
 export interface Box {
@@ -40,7 +40,7 @@ export type ManagerPlugin<T> = Omit<
   'name'
 > & { name?: string };
 
-export type SimpleBarragePlugin<T> = Omit<
-  ReturnType<SimpleBarrage<T>['_plSys']['use']>,
+export type FacilePlugin<T> = Omit<
+  ReturnType<FacileBarrage<T>['_plSys']['use']>,
   'name'
 > & { name?: string };

@@ -1,8 +1,8 @@
 import { Exerciser } from './exerciser';
-import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
-import { SimpleBarrage } from './barrages/simple';
-import { ComplicatedBarrage } from './barrages/complicated';
+import { FacileBarrage } from './barrages/facile';
+import { FlexibleBarrage } from './barrages/flexible';
 import { NO_EMIT, hasOwn, createId, loopSlice, assert } from './utils';
+import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   TrackData,
   Direction,
@@ -10,8 +10,8 @@ import type {
   BarrageData,
   EachCallback,
   FilterCallback,
+  FacilePlugin,
   ManagerPlugin,
-  SimpleBarragePlugin,
 } from './types';
 
 export interface ManagerOptions {
@@ -33,13 +33,13 @@ export class Manager<T extends unknown> {
   private _renderTimer: number | null = null;
   private _rendering: Promise<void> | null = null;
   private _plSys = createManagerLifeCycle<T>();
-  private _bs = {
-    show: new Set<SimpleBarrage<T>>(),
-    complex: new Set<ComplicatedBarrage<unknown>>(),
-    stash: [] as Array<BarrageData<T> | SimpleBarrage<T>>,
+  private _sets = {
+    show: new Set<FacileBarrage<T>>(),
+    complex: new Set<FlexibleBarrage<unknown>>(),
+    stash: [] as Array<BarrageData<T> | FacileBarrage<T>>,
   };
 
-  public constructor(private options: ManagerOptions) {
+  public constructor(public options: ManagerOptions) {
     this._exerciser = new Exerciser({
       times: options.times,
       rowGap: options.rowGap,
@@ -54,7 +54,7 @@ export class Manager<T extends unknown> {
   }
 
   public n() {
-    const { stash, show, complex } = this._bs;
+    const { stash, show, complex } = this._sets;
     return {
       stash: stash.length,
       complex: complex.size,
@@ -75,25 +75,25 @@ export class Manager<T extends unknown> {
   public clear() {
     this.stopPlaying();
     this.each((b) => b.removeNode());
-    this._bs.show.clear();
-    this._bs.complex.clear();
-    this._bs.stash.length = 0;
+    this._sets.show.clear();
+    this._sets.complex.clear();
+    this._sets.stash.length = 0;
     this.format();
     this._plSys.lifecycle.clear.emit();
   }
 
   public each(fn: EachCallback<T>) {
-    for (const item of this._bs.complex) {
+    for (const item of this._sets.complex) {
       if (fn(item) === false) return;
     }
-    for (const item of this._bs.show) {
+    for (const item of this._sets.show) {
       if (fn(item) === false) return;
     }
   }
 
   public asyncEach(fn: EachCallback<T>) {
     let stop = false;
-    const arr = Array.from(this._bs.complex);
+    const arr = Array.from(this._sets.complex);
     return loopSlice(arr.length, (i) => {
       if (fn(arr[i]) === false) {
         stop = true;
@@ -101,7 +101,7 @@ export class Manager<T extends unknown> {
       }
     }).then(() => {
       if (stop) return;
-      const arr = Array.from(this._bs.show);
+      const arr = Array.from(this._sets.show);
       return loopSlice(arr.length, (i) => fn(arr[i]));
     });
   }
@@ -130,16 +130,16 @@ export class Manager<T extends unknown> {
     return this._changeViewStatus('hide', filter);
   }
 
-  public push(data: T, plugin?: SimpleBarragePlugin<T>) {
+  public push(data: T, plugin?: FacilePlugin<T>) {
     if (!this._canSend()) return false;
-    this._bs.stash.push({ data, plugin });
+    this._sets.stash.push({ data, plugin });
     this._plSys.lifecycle.push.emit(data, true);
     return true;
   }
 
-  public unshift(data: T, plugin?: SimpleBarragePlugin<T>) {
+  public unshift(data: T, plugin?: FacilePlugin<T>) {
     if (!this._canSend()) return false;
-    this._bs.stash.unshift({ data, plugin });
+    this._sets.stash.unshift({ data, plugin });
     this._plSys.lifecycle.push.emit(data, false);
     return true;
   }
@@ -173,7 +173,7 @@ export class Manager<T extends unknown> {
   }
 
   public render() {
-    if (this._bs.stash.length === 0 || !this.playing()) return;
+    if (this._sets.stash.length === 0 || !this.playing()) return;
     const { rows } = this._exerciser;
     const { stash, display } = this.n();
     const { rowGap, viewLimit, forceRender } = this.options;
@@ -189,11 +189,11 @@ export class Manager<T extends unknown> {
     this._plSys.lifecycle.render.emit();
 
     this._rendering = loopSlice(l, () => {
-      const b = this._bs.stash.shift();
+      const b = this._sets.stash.shift();
       if (!b) return;
       const trackData = this._exerciser.getTrackData();
       if (!trackData) {
-        this._bs.stash.unshift(b);
+        this._sets.stash.unshift(b);
         return false;
       }
       const { prevent } = this._plSys.lifecycle.willRender.emit({
@@ -247,13 +247,13 @@ export class Manager<T extends unknown> {
     );
     if (t <= 0) return null;
     assert(this._exerciser.box, 'Container not formatted');
-    const b = new SimpleBarrage({
+    const b = new FacileBarrage({
       data,
       direction,
       duration: t,
       box: this._exerciser.box,
       defaultStatus: this._viewStatus,
-      delInTrack: (b) => this._bs.show.delete(b),
+      delInTrack: (b) => this._sets.show.delete(b),
     });
     if (plugin) b.use(plugin);
     b.use(createBridgePlugin<T>(this._plSys));
@@ -261,10 +261,10 @@ export class Manager<T extends unknown> {
   }
 
   private _fire(
-    data: BarrageData<T> | SimpleBarrage<T>,
+    data: BarrageData<T> | FacileBarrage<T>,
     trackData: TrackData<T>,
   ) {
-    const b = data instanceof SimpleBarrage ? data : this._create(data);
+    const b = data instanceof FacileBarrage ? data : this._create(data);
     if (!b) return;
 
     b.createNode();
@@ -272,14 +272,14 @@ export class Manager<T extends unknown> {
     b.updateTrackData(trackData);
     b.position.y = trackData.gaps[0];
     b.setStyle('top', `${b.position.y}px`);
-    this._bs.show.add(b);
+    this._sets.show.add(b);
 
     this._exerciser.run(b).then((isStash) => {
       if (isStash) {
         b.reset();
         b.setStyle('top', '');
-        this._bs.show.delete(b);
-        this._bs.stash.unshift(b);
+        this._sets.show.delete(b);
+        this._sets.stash.unshift(b);
       } else {
         b.destroy();
         if (this.n().all === 0) {

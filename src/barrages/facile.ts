@@ -14,25 +14,27 @@ import type {
   ViewStatus,
   Direction,
   InfoRecord,
-  SimpleBarragePlugin,
+  FacilePlugin,
 } from '../types';
 
-export interface SimpleBarrageOptions<T> {
+// The declaration must be displayed,
+// otherwise a circular reference error will be reported.
+export type PlSys<T> = ReturnType<
+  typeof createBarrageLifeCycle<FacileBarrage<T>>
+>;
+
+export interface FacileOptions<T> {
   box: Box;
   data: T;
   duration: number;
   direction: Direction;
   defaultStatus: ViewStatus;
-  delInTrack?: (b: SimpleBarrage<T>) => void;
+  delInTrack?: (b: FacileBarrage<T>) => void;
 }
 
-// The declaration must be displayed,
-// otherwise a circular reference error will be reported.
-type PlSys<T> = ReturnType<typeof createBarrageLifeCycle<SimpleBarrage<T>>>;
-
-export class SimpleBarrage<T> {
+export class FacileBarrage<T> {
   public data: T;
-  public type = 'simple';
+  public type = 'facile';
   public duration: number;
   public paused = false;
   public moving = false;
@@ -42,9 +44,9 @@ export class SimpleBarrage<T> {
   public node: HTMLElement | null = null;
   public trackData: TrackData<T> | null = null;
   private _status: ViewStatus | null = null;
-  private _plSys: PlSys<T> = createBarrageLifeCycle<SimpleBarrage<T>>();
+  private _plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
 
-  public constructor(private options: SimpleBarrageOptions<T>) {
+  public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
     this.duration = options.duration;
     this._status = options.defaultStatus;
@@ -60,9 +62,9 @@ export class SimpleBarrage<T> {
     return this.options.direction;
   }
 
-  public use(plugin: SimpleBarragePlugin<T>) {
-    plugin.name = plugin.name || `__simple_barrage_plugin_${createId()}__`;
-    this._plSys.use(plugin as SimpleBarragePlugin<T> & { name: string });
+  public use(plugin: FacilePlugin<T>) {
+    plugin.name = plugin.name || `__facile_barrage_plugin_${createId()}__`;
+    this._plSys.use(plugin as FacilePlugin<T> & { name: string });
   }
 
   public fixDuration(t: number) {

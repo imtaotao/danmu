@@ -1,1 +1,1 @@
-console.log('init');
+export function initContainer(container: HTMLElement) {}

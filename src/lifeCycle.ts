@@ -5,12 +5,12 @@ import {
   PluginSystem,
 } from 'hooks-plugin';
 import { createId, toLowerCase } from './utils';
-import type { SimpleBarragePlugin } from './types';
+import type { FacilePlugin } from './types';
 import type { Manager, ManagerOptions } from './manager';
-import type { SimpleBarrage } from './barrages/simple';
-import type { ComplicatedBarrage } from './barrages/complicated';
+import type { FacileBarrage } from './barrages/facile';
+import type { FlexibleBarrage } from './barrages/flexible';
 
-type Barrage<T> = SimpleBarrage<T> | ComplicatedBarrage<unknown>;
+type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<unknown>;
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
   return new PluginSystem({
@@ -38,7 +38,7 @@ export function createManagerLifeCycle<T>() {
     barrageCreateNode: child.lifecycle.createNode,
     barrageAppendNode: child.lifecycle.appendNode,
     barrageRemoveNode: child.lifecycle.removeNode,
-    // globl hooks
+    // global hooks
     stop: new SyncHook<[], null>(),
     start: new SyncHook<[], null>(),
     show: new SyncHook<[], null>(),
@@ -58,16 +58,16 @@ export function createManagerLifeCycle<T>() {
   });
 }
 
-const SCOPE = 'barrage';
-const CACHE = [] as Array<[string, string]>;
+const scope = 'barrage';
+const cache = [] as Array<[string, string]>;
 
 export function createBridgePlugin<T>(
   plSys: Manager<T>['_plSys'],
-): SimpleBarragePlugin<T> {
+): FacilePlugin<T> {
   const hooks = {} as Record<string, unknown>;
 
-  if (CACHE.length) {
-    for (const [k, nk] of CACHE) {
+  if (cache.length) {
+    for (const [k, nk] of cache) {
       hooks[nk] = (...args: Array<unknown>) => {
         return (plSys.lifecycle as any)[k].emit(...args);
       };
@@ -75,9 +75,9 @@ export function createBridgePlugin<T>(
   } else {
     const keys = Object.keys(plSys.lifecycle);
     for (const k of keys) {
-      if (k.startsWith(SCOPE)) {
-        const nk = toLowerCase(k.replace(SCOPE, ''));
-        CACHE.push([k, nk]);
+      if (k.startsWith(scope)) {
+        const nk = toLowerCase(k.replace(scope, ''));
+        cache.push([k, nk]);
         hooks[nk] = (...args: Array<unknown>) => {
           return (plSys.lifecycle as any)[k].emit(...args);
         };
