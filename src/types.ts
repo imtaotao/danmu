@@ -14,7 +14,7 @@ export type EachCallback<T> = (
 
 export interface TrackData<T> {
   gaps: [number, number];
-  bs: Array<SimpleBarrage<T>>;
+  list: Array<SimpleBarrage<T>>;
 }
 
 export interface BarrageData<T> {

@@ -34,7 +34,7 @@ export class SimpleBarrage<T> {
   public data: T;
   public type = 'simple';
   public duration: number;
-  public paused = true;
+  public paused = false;
   public moving = false;
   public position = { y: 0 };
   public recorder: InfoRecord;
@@ -65,7 +65,14 @@ export class SimpleBarrage<T> {
     this._plSys.use(plugin as SimpleBarragePlugin<T> & { name: string });
   }
 
+  public fixDuration(t: number) {
+    this.duration = t;
+    this.recorder.duration = t;
+    this.isChangeDuration = true;
+  }
+
   public updateTrackData(data: TrackData<T> | null) {
+    if (data) data.list.push(this);
     this.trackData = data;
   }
 
@@ -193,11 +200,12 @@ export class SimpleBarrage<T> {
 
   public reset() {
     this.removeNode();
+    this._delInTrack();
+    this.updateTrackData(null);
     this.node = null;
     this.paused = false;
     this.moving = false;
     this.position = { y: 0 };
-    this.updateTrackData(null);
     this.recorder = {
       pauseTime: 0,
       startTime: 0,
@@ -236,10 +244,10 @@ export class SimpleBarrage<T> {
 
   private _delInTrack() {
     if (!this.trackData) return;
-    const { bs } = this.trackData;
-    if (bs.length > 0) {
-      const i = bs.indexOf(this);
-      if (~i) bs.splice(i, 1);
+    const { list } = this.trackData;
+    if (list.length > 0) {
+      const i = list.indexOf(this);
+      if (~i) list.splice(i, 1);
     }
     if (this.options.delInTrack) {
       this.options.delInTrack(this);

@@ -22,6 +22,9 @@ if (
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 
+export const now =
+  typeof performance.now === 'function' ? () => performance.now() : Date.now;
+
 export const toUpperCase = ([val, ...args]: string) =>
   val.toUpperCase() + args.join('');
 
@@ -46,9 +49,8 @@ export const isRange = ([a, b]: Array<number>, val: number) => {
   return min < val && val < max;
 };
 
-export const now =
-  typeof performance.now === 'function' ? () => performance.now() : Date.now;
-
+// Give the current task one frame of time (13ms).
+// If it exceeds one frame, the remaining tasks will be put into the next frame.
 export function loopSlice(l: number, fn: (i: number) => void | boolean) {
   return new Promise<void>((resolve) => {
     let i = -1;
@@ -62,10 +64,10 @@ export function loopSlice(l: number, fn: (i: number) => void | boolean) {
         if (i === l) {
           resolve();
         } else {
-          const cur = now();
-          if (cur - start > 13) {
-            start = cur;
-            setTimeout(run);
+          const t = now();
+          if (t - start > 13) {
+            start = t;
+            raf(run);
             break;
           }
         }

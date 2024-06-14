@@ -34,7 +34,7 @@ export class Exerciser<T> {
     }
     const i = this._selectTrackIdx(founds);
     const trackData = this._layouts[i];
-    const last = this._last(trackData.bs, 0);
+    const last = this._last(trackData.list, 0);
     founds.push(i);
 
     if (rowGap <= 0 || !last) {
@@ -50,21 +50,15 @@ export class Exerciser<T> {
 
   public run(cur: SimpleBarrage<T>) {
     return new Promise<boolean | void>((resolve) => {
-      assert(cur.trackData);
-      const prv = this._last(cur.trackData.bs, 1);
-      cur.setStyle('top', `${cur.position.y}px`);
-
       nextFrame(() => {
+        assert(cur.trackData);
+        const prv = this._last(cur.trackData.list, 1);
         if (prv && prv.moving && !prv.paused && this.options.rowGap > 0) {
-          const t = this.collisionPrediction(prv, cur);
+          const t = this._collisionPrediction(prv, cur);
           if (t !== null) {
             if (isRange(this.options.times, t)) {
-              cur.duration = t;
-              cur.recorder.duration = t;
-              cur.isChangeDuration = true;
+              cur.fixDuration(t);
             } else {
-              cur.reset();
-              cur.setStyle('top', '');
               resolve(true);
               return;
             }
@@ -100,7 +94,7 @@ export class Exerciser<T> {
         this._layouts[i].gaps = gaps;
       } else {
         this._layouts.push({
-          bs: [],
+          list: [],
           gaps: gaps,
         });
       }
@@ -128,7 +122,7 @@ export class Exerciser<T> {
     return founds.includes(idx) ? this._selectTrackIdx(founds) : idx;
   }
 
-  private collisionPrediction(prv: SimpleBarrage<T>, cur: SimpleBarrage<T>) {
+  private _collisionPrediction(prv: SimpleBarrage<T>, cur: SimpleBarrage<T>) {
     const pw = prv.getWidth();
     const cw = cur.getWidth();
     const ps = prv.getSpeed();
@@ -138,8 +132,8 @@ export class Exerciser<T> {
     if (acceleration <= 0) return null;
 
     const distance = prv.getMoveDistance() - cw - pw;
-    const meetTime = distance / acceleration;
-    if (meetTime >= cur.duration) return null;
+    const collisionTime = distance / acceleration;
+    if (collisionTime >= cur.duration) return null;
 
     assert(this.box, 'Container not formatted');
     const remainingTime = (1 - prv.getMovePercent()) * prv.duration;

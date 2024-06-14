@@ -31,6 +31,7 @@ export class Manager<T extends unknown> {
   private _exerciser: Exerciser<T>;
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
+  private _rendering: Promise<void> | null = null;
   private _plSys = createManagerLifeCycle<T>();
   private _bs = {
     show: new Set<SimpleBarrage<T>>(),
@@ -152,11 +153,11 @@ export class Manager<T extends unknown> {
     if (_flag !== NO_EMIT) {
       this._plSys.lifecycle.start.emit();
     }
-    const cb = () => {
-      this._renderTimer = setTimeout(cb, this.options.interval);
+    const cycle = () => {
+      this._renderTimer = setTimeout(cycle, this.options.interval);
       this.render();
     };
-    cb();
+    cycle();
   }
 
   public stopPlaying(_flag?: Symbol) {
@@ -187,7 +188,7 @@ export class Manager<T extends unknown> {
     if (l === 0) return;
     this._plSys.lifecycle.render.emit();
 
-    loopSlice(l, () => {
+    this._rendering = loopSlice(l, () => {
       const b = this._bs.stash.shift();
       if (!b) return;
       const trackData = this._exerciser.getTrackData();
@@ -202,6 +203,7 @@ export class Manager<T extends unknown> {
       if (prevent === true) return;
       this._fire(b, trackData);
     });
+    this._rendering.finally(() => (this._rendering = null));
   }
 
   private _canSend() {
@@ -264,13 +266,18 @@ export class Manager<T extends unknown> {
   ) {
     const b = data instanceof SimpleBarrage ? data : this._create(data);
     if (!b) return;
+
     b.createNode();
     b.appendNode(this.options.container);
     b.updateTrackData(trackData);
     b.position.y = trackData.gaps[0];
+    b.setStyle('top', `${b.position.y}px`);
     this._bs.show.add(b);
+
     this._exerciser.run(b).then((isStash) => {
       if (isStash) {
+        b.reset();
+        b.setStyle('top', '');
         this._bs.show.delete(b);
         this._bs.stash.unshift(b);
       } else {
