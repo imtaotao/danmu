@@ -1,7 +1,6 @@
 {
   "name": "danmu",
   "version": "0.0.3",
-  "packageManager": "pnpm@9.1.3",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "files": ["dist"],
   "exports": {
@@ -40,6 +39,10 @@
   },
   "bugs": {
     "url": "https://github.com/imtaotao/danmuku/issues"
+  },
+  "packageManager": "pnpm@9.1.3",
+  "engines": {
+    "node": "^20"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.7",
