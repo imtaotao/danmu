@@ -11,8 +11,8 @@ export const toNumber = (val: number | string) => {
   return typeof val === 'number'
     ? val
     : typeof val === 'string'
-      ? Number(val.replace('px', ''))
-      : NaN;
+    ? Number(val.replace('px', ''))
+    : NaN;
 };
 
 export function whenTransitionEnds(node: HTMLElement) {

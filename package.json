@@ -18,7 +18,7 @@
     "dev": "http-server -c-1 -p 8000 ./ -o index.html",
     "build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "build:watch": "rollup --config --watch",
-    "format": "prettier --write --parser typescript \"src/**/*.(js|ts?(x))\""
+    "format": "prettier --write --parser typescript \"(src|dist)/**/*.(js|ts?(x))\""
   },
   "lint-staged": {
     "*.js": [
@@ -57,7 +57,7 @@
     "husky": "^9.0.11",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.5",
-    "prettier": "^3.3.2",
+    "prettier": "^2.5.1",
     "rimraf": "^5.0.7",
     "rollup": "^4.18.0",
     "rollup-plugin-cleanup": "^3.2.1",
