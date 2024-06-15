@@ -1,14 +1,8 @@
 import { Queue } from 'small-queue';
+import { assert, hasOwn, loopSlice, isInBounds } from 'aidly';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
-import {
-  assert,
-  hasOwn,
-  isRange,
-  toNumber,
-  nextFrame,
-  loopSlice,
-} from './utils';
+import { toNumber, nextFrame } from './utils';
 import type {
   Box,
   Layer,
@@ -39,19 +33,19 @@ export class Engine<T> {
   private _layouts = [] as Array<TrackData<T>>;
   private _sets = {
     show: new Set<FacileBarrage<T>>(),
-    complex: new Set<FlexibleBarrage<unknown>>(),
+    flexible: new Set<FlexibleBarrage<unknown>>(),
     stash: [] as Array<BarrageData<T> | FacileBarrage<T>>,
   };
 
   public constructor(public options: EngineOptions) {}
 
   public n() {
-    const { stash, show, complex } = this._sets;
+    const { stash, show, flexible } = this._sets;
     return {
       stash: stash.length,
-      complex: complex.size,
-      display: show.size + complex.size,
-      all: show.size + complex.size + stash.length,
+      flexible: flexible.size,
+      display: show.size + flexible.size,
+      all: show.size + flexible.size + stash.length,
     };
   }
 
@@ -68,13 +62,13 @@ export class Engine<T> {
 
   public clear() {
     this._sets.show.clear();
-    this._sets.complex.clear();
+    this._sets.flexible.clear();
     this._sets.stash.length = 0;
     this.format();
   }
 
   public each(fn: EachCallback<T>) {
-    for (const item of this._sets.complex) {
+    for (const item of this._sets.flexible) {
       if (fn(item) === false) return;
     }
     for (const item of this._sets.show) {
@@ -84,7 +78,7 @@ export class Engine<T> {
 
   public asyncEach(fn: EachCallback<T>) {
     let stop = false;
-    const arr = Array.from(this._sets.complex);
+    const arr = Array.from(this._sets.flexible);
     return loopSlice(arr.length, (i) => {
       if (fn(arr[i]) === false) {
         stop = true;
@@ -100,15 +94,13 @@ export class Engine<T> {
   public format() {
     const { height, container } = this.options;
     const styles = getComputedStyle(container);
-    if (this._needFixPosition(styles)) {
-      container.style.position = 'relative';
-    }
 
     this.box = {
       el: container,
       width: toNumber(styles.width),
       height: toNumber(styles.height),
     };
+    this._fixPosition(styles);
     this.rows = +(this.box.height / height).toFixed(0);
 
     for (let i = 0; i < this.rows; i++) {
@@ -128,31 +120,6 @@ export class Engine<T> {
     }
   }
 
-  private _getTrackData(founds: Array<number> = []): TrackData<T> | null {
-    const { rowGap } = this.options;
-    if (founds.length === this._layouts.length) {
-      if (this.options.forceRender) {
-        const i = Math.floor(Math.random() * this.rows);
-        return this._layouts[i];
-      }
-      return null;
-    }
-    const i = this._selectTrackIdx(founds);
-    const trackData = this._layouts[i];
-    const last = this._last(trackData.list, 0);
-    founds.push(i);
-
-    if (rowGap <= 0 || !last) {
-      return trackData;
-    }
-    if (!last.moving) {
-      return this._getTrackData(founds);
-    }
-    const distance = last.getMoveDistance();
-    const spacing = rowGap > 0 ? rowGap + last.getWidth() : rowGap;
-    return distance > spacing ? trackData : this._getTrackData(founds);
-  }
-
   public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
     if (this._sets.stash.length === 0) return;
     const { rows } = this;
@@ -169,7 +136,7 @@ export class Engine<T> {
     if (l === 0) return;
 
     this._fx.add((next) => {
-      hooks.render();
+      hooks.render.call(null);
       const p = loopSlice(l, () => {
         const b = this._sets.stash.shift();
         if (!b) return;
@@ -178,7 +145,7 @@ export class Engine<T> {
           this._sets.stash.unshift(b);
           return false;
         }
-        const { prevent } = hooks.willRender({
+        const { prevent } = hooks.willRender.call(null, {
           value: b.data,
           prevent: false as boolean,
         });
@@ -208,47 +175,27 @@ export class Engine<T> {
         : this._create(layer, viewStatus, bridgePlugin);
     if (!b) return;
 
-    b.createNode();
-    b.appendNode(this.options.container);
-    b.updateTrackData(trackData);
-    b.position.y = trackData.gaps[0];
-    b.setStyle('top', `${b.position.y}px`);
-    this._sets.show.add(b);
-
-    this._setAction(b).then((isStash) => {
-      if (isStash) {
-        b.reset();
-        b.setStyle('top', '');
-        this._sets.show.delete(b);
-        this._sets.stash.unshift(b);
-      } else {
+    const reset = () => {
+      b.reset();
+      b.setStyle('top', '');
+      this._sets.show.delete(b);
+      this._sets.stash.unshift(b);
+    };
+    const set = () => {
+      b.createNode();
+      b.appendNode(this.options.container);
+      b.updateTrackData(trackData);
+      b.position.y = trackData.gaps[0];
+      b.setStyle('top', `${b.position.y}px`);
+      this._sets.show.add(b);
+      this._setAction(b, reset).then(() => {
         b.destroy();
         if (this.n().all === 0) {
-          hooks.finished();
+          hooks.finished.call(null);
         }
-      }
-    });
-  }
-
-  private _needFixPosition(styles: CSSStyleDeclaration) {
-    return (
-      !styles.position ||
-      styles.position === 'none' ||
-      styles.position === 'static'
-    );
-  }
-
-  private _last(ls: Array<FacileBarrage<T>>, li: number) {
-    for (let i = ls.length - 1; i >= 0; i--) {
-      const b = ls[i - li];
-      if (b && !b.paused) return b;
-    }
-    return null;
-  }
-
-  private _selectTrackIdx(founds: Array<number>): number {
-    const idx = Math.floor(Math.random() * this.rows);
-    return founds.includes(idx) ? this._selectTrackIdx(founds) : idx;
+      });
+    };
+    set();
   }
 
   private _create(
@@ -281,23 +228,72 @@ export class Engine<T> {
     return b;
   }
 
-  private _setAction(cur: FacileBarrage<T>) {
-    return new Promise<boolean | void>((resolve) => {
+  private _getTrackData(founds: Array<number> = []): TrackData<T> | null {
+    const { rowGap } = this.options;
+    if (founds.length === this._layouts.length) {
+      if (this.options.forceRender) {
+        const i = Math.floor(Math.random() * this.rows);
+        return this._layouts[i];
+      }
+      return null;
+    }
+    const i = this._selectTrackIdx(founds);
+    const trackData = this._layouts[i];
+    const last = this._last(trackData.list, 0);
+    founds.push(i);
+
+    if (rowGap <= 0 || !last) {
+      return trackData;
+    }
+    if (!last.moving) {
+      return this._getTrackData(founds);
+    }
+    const distance = last.getMoveDistance();
+    const spacing = rowGap > 0 ? rowGap + last.getWidth() : rowGap;
+    return distance > spacing ? trackData : this._getTrackData(founds);
+  }
+
+  private _fixPosition(styles: CSSStyleDeclaration) {
+    if (
+      !styles.position ||
+      styles.position === 'none' ||
+      styles.position === 'static'
+    ) {
+      this.options.container.style.position = 'relative';
+    }
+  }
+
+  private _last(ls: Array<FacileBarrage<T>>, li: number) {
+    for (let i = ls.length - 1; i >= 0; i--) {
+      const b = ls[i - li];
+      if (b && !b.paused) return b;
+    }
+    return null;
+  }
+
+  private _selectTrackIdx(founds: Array<number>): number {
+    const idx = Math.floor(Math.random() * this.rows);
+    return founds.includes(idx) ? this._selectTrackIdx(founds) : idx;
+  }
+
+  private _setAction(cur: FacileBarrage<T>, stash: () => void) {
+    return new Promise<void>((resolve) => {
       nextFrame(() => {
         assert(cur.trackData);
         const prv = this._last(cur.trackData.list, 1);
         if (prv && prv.moving && !prv.paused && this.options.rowGap > 0) {
           const t = this._collisionPrediction(prv, cur);
           if (t !== null) {
-            if (isRange(this.options.times, t)) {
+            if (isInBounds(this.options.times, t)) {
               cur.fixDuration(t);
             } else {
-              resolve(true);
+              // Must be synchronous behavior
+              stash();
+              resolve();
               return;
             }
           }
         }
-        assert(cur.node);
         cur.setEndStyles().then(resolve);
       });
     });

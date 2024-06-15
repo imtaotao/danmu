@@ -1,13 +1,6 @@
+import { now, toUpperCase } from 'aidly';
 import { createBarrageLifeCycle } from '../lifeCycle';
-import {
-  now,
-  NO_EMIT,
-  createId,
-  toUpperCase,
-  transitionProp,
-  transitionDuration,
-  whenTransitionEnds,
-} from '../utils';
+import { NO_EMIT, whenTransitionEnds } from '../utils';
 import type {
   Box,
   TrackData,
@@ -35,12 +28,12 @@ export interface FacileOptions<T> {
 export class FacileBarrage<T> {
   public data: T;
   public type = 'facile';
-  public duration: number;
   public paused = false;
   public moving = false;
+  public isFixed = false;
   public position = { y: 0 };
+  public duration: number;
   public recorder: InfoRecord;
-  public isChangeDuration = false;
   public node: HTMLElement | null = null;
   public trackData: TrackData<T> | null = null;
   private _status: ViewStatus | null = null;
@@ -63,14 +56,14 @@ export class FacileBarrage<T> {
   }
 
   public use(plugin: FacilePlugin<T>) {
-    plugin.name = plugin.name || `__facile_barrage_plugin_${createId()}__`;
+    plugin.name = plugin.name || `__facile_barrage_plugin__`;
     this._plSys.use(plugin as FacilePlugin<T> & { name: string });
   }
 
   public fixDuration(t: number) {
     this.duration = t;
     this.recorder.duration = t;
-    this.isChangeDuration = true;
+    this.isFixed = true;
   }
 
   public updateTrackData(data: TrackData<T> | null) {
@@ -115,8 +108,8 @@ export class FacileBarrage<T> {
     if (this.direction === 'right') {
       d *= -1;
     }
-    this.setStyle(transitionDuration, '0s');
     this.setStyle('transform', `translateX(${d}px)`);
+    this.setStyle('transitionDuration', '0s');
     this._plSys.lifecycle.pause.emit(this);
   }
 
@@ -130,8 +123,8 @@ export class FacileBarrage<T> {
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
     this.recorder.prevPauseTime = 0;
     this.recorder.duration = remainingTime;
-    this.setStyle(transitionDuration, `${remainingTime}ms`);
     this.setStyle('transform', `translateX(${cw * isNegative}px)`);
+    this.setStyle('transitionDuration', `${remainingTime}ms`);
     this._plSys.lifecycle.resume.emit(this);
   }
 
@@ -162,15 +155,20 @@ export class FacileBarrage<T> {
       this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
       this.setStyle('opacity', '1');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
-      this.setStyle(transitionProp, `transform linear ${this.duration}ms`);
+      this.setStyle('transition', `transform linear ${this.duration}ms`);
       this.setStyle(
         `margin${toUpperCase(this.direction)}` as 'marginLeft' | 'marginRight',
         `-${w}px`,
       );
       this.moving = true;
       this.recorder.startTime = now();
+
       if (this.node) {
-        whenTransitionEnds(this.node).then(resolve);
+        this._plSys.lifecycle.movementStart.emit(this);
+        whenTransitionEnds(this.node).then(() => {
+          this._plSys.lifecycle.movementEnd.emit(this);
+          resolve();
+        });
       } else {
         resolve();
       }

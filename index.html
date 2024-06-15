@@ -32,23 +32,27 @@
       interval: 200,
       times: [3000, 6000],
       container: document.getElementById('container'),
-      plugin: {
-        hooks: {
-          barrageCreateNode(b) {
-            b.node.textContent = b.data;
-            b.node.classList.add('barrage');
-            b.node.onmouseleave= () => b.resume();
-            b.node.onmouseenter = () =>  b.pause();
-          }
-        },
-      },
     })
 
     manager.startPlaying();
 
     setInterval(() => {
-      for (let i = 0; i < 10; i++) {
-        manager.push(i);
+      for (let i = 0; i < 15; i++) {
+        manager.push(i, {
+          hooks: {
+            createNode(b) {
+              b.node.textContent = b.data;
+              b.node.classList.add('barrage');
+              b.node.onmouseleave= () => b.resume();
+              b.node.onmouseenter = () =>  b.pause();
+            },
+            movementStart(b) {
+              if (b.isFixed) {
+                b.node.style.background = '#24bb83';
+              }
+            }
+          }
+        });
       }
     }, 500)
   </script>

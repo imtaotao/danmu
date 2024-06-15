@@ -39,18 +39,18 @@ export interface InfoRecord {
   prevPauseTime: number;
 }
 
-type WillRenderEmit<T> =
-  Manager<T>['_plSys']['lifecycle']['willRender']['emit'];
+export type ManagerHook<
+  T,
+  K extends keyof Manager<T>['_plSys']['lifecycle'],
+> = Parameters<Manager<T>['_plSys']['lifecycle'][K]['on']>[1];
 
 export interface RenderOptions<T> {
   viewStatus: ViewStatus;
   bridgePlugin: FacilePlugin<T>;
   hooks: {
-    render: () => void;
-    finished: () => void;
-    willRender: <K extends Parameters<WillRenderEmit<T>>[0]>(
-      data: K,
-    ) => ReturnType<WillRenderEmit<T>>;
+    render: ManagerHook<T, 'render'>;
+    finished: ManagerHook<T, 'finished'>;
+    willRender: ManagerHook<T, 'willRender'>;
   };
 }
 

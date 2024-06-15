@@ -1,10 +1,6 @@
-import {
-  SyncHook,
-  AsyncHook,
-  SyncWaterfallHook,
-  PluginSystem,
-} from 'hooks-plugin';
-import { createId, toLowerCase } from './utils';
+import { toLowerCase } from 'aidly';
+import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
+import { createId } from './utils';
 import type { Barrage, FacilePlugin } from './types';
 import type { Manager, ManagerOptions } from './manager';
 
@@ -18,6 +14,8 @@ export function createBarrageLifeCycle<T extends Barrage<any>>() {
     createNode: new SyncHook<[T]>(),
     appendNode: new SyncHook<[T]>(),
     removeNode: new SyncHook<[T]>(),
+    movementEnd: new SyncHook<[T]>(),
+    movementStart: new SyncHook<[T]>(),
   });
 }
 
@@ -34,18 +32,20 @@ export function createManagerLifeCycle<T>() {
     barrageCreateNode: child.lifecycle.createNode,
     barrageAppendNode: child.lifecycle.appendNode,
     barrageRemoveNode: child.lifecycle.removeNode,
+    barrageMovementEnd: child.lifecycle.movementEnd,
+    barrageMovementStart: child.lifecycle.movementStart,
     // global hooks
-    stop: new SyncHook<[], null>(),
-    start: new SyncHook<[], null>(),
-    show: new SyncHook<[], null>(),
-    hide: new SyncHook<[], null>(),
-    clear: new SyncHook<[], null>(),
-    resize: new SyncHook<[], null>(),
-    create: new AsyncHook<[], null>(),
-    render: new AsyncHook<[], null>(),
-    finished: new SyncHook<[], null>(),
-    push: new AsyncHook<[T, boolean], null>(),
-    memoryWarning: new SyncHook<[number], null>(),
+    stop: new SyncHook<[]>(),
+    start: new SyncHook<[]>(),
+    show: new SyncHook<[]>(),
+    hide: new SyncHook<[]>(),
+    clear: new SyncHook<[]>(),
+    resize: new SyncHook<[]>(),
+    create: new SyncHook<[]>(),
+    render: new SyncHook<[]>(),
+    finished: new SyncHook<[]>(),
+    push: new SyncHook<[T, boolean]>(),
+    memoryWarning: new SyncHook<[number]>(),
     updateOptions: new SyncHook<[ManagerOptions]>(),
     willRender: new SyncWaterfallHook<{
       value: T;

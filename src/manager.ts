@@ -1,5 +1,6 @@
+import { hasOwn } from 'aidly';
 import { Engine } from './engine';
-import { NO_EMIT, hasOwn, createId } from './utils';
+import { NO_EMIT, createId } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   Direction,
