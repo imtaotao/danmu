@@ -1,9 +1,13 @@
 import { assert } from 'aidly';
 import { type StreamPlugin } from './types';
-import { StreamManager, type StreamOptions } from './stream';
+import { StreamManager, type ManagerOptions } from './manager';
+
+export function isManager<T = unknown>(val: unknown): val is StreamManager<T> {
+  return val instanceof StreamManager;
+}
 
 export function create<T extends unknown>(
-  options: Partial<StreamOptions> & {
+  options: Partial<ManagerOptions> & {
     container: HTMLElement;
     plugin?: StreamPlugin<T>;
   },
@@ -21,9 +25,9 @@ export function create<T extends unknown>(
     options,
   );
   assert(newOptions.gap >= 0, 'The "gap" must be >= 0');
-  const stream = new StreamManager<T>(newOptions);
+  const sm = new StreamManager<T>(newOptions);
   if (newOptions.plugin) {
-    stream.usePlugin(newOptions.plugin);
+    sm.usePlugin(newOptions.plugin);
   }
-  return stream;
+  return sm;
 }

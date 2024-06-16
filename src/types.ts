@@ -1,10 +1,10 @@
-import type { StreamManager } from './stream';
+import type { StreamManager } from './manager';
 import type { FacileBarrage } from './barrages/facile';
-import type { FlexibleBarrage } from './barrages/flexible';
+import type { FlexibleOptions, FlexibleBarrage } from './barrages/flexible';
 
 export type ViewStatus = 'hide' | 'show';
 
-export type Direction = 'left' | 'right';
+export type Direction = 'left' | 'right' | 'none';
 
 export type Mode = 'none' | 'strict' | 'adaptive';
 
@@ -12,11 +12,23 @@ export type FilterCallback<T> = EachCallback<T>;
 
 export type Layer<T> = BarrageData<T> | FacileBarrage<T>;
 
-export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<unknown>;
+export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<T>;
 
 export type EachCallback<T> = (
-  b: FacileBarrage<T> | FlexibleBarrage<unknown>,
+  b: FacileBarrage<T> | FlexibleBarrage<T>,
 ) => boolean | void;
+
+export type PushFlexOptions<T> = Omit<
+  FlexibleOptions<T>,
+  'box' | 'data' | 'defaultStatus' | 'delInTrack'
+> & {
+  plugin?: BarragePlugin<T>;
+};
+
+export interface Position {
+  x: number;
+  y: number;
+}
 
 export interface TrackData<T> {
   location: [number, number];
@@ -25,7 +37,7 @@ export interface TrackData<T> {
 
 export interface BarrageData<T> {
   data: T;
-  plugin?: FacilePlugin<T>;
+  plugin?: BarragePlugin<T>;
 }
 
 export interface Box {
@@ -48,7 +60,7 @@ export type StreamHook<
 
 export interface RenderOptions<T> {
   viewStatus: ViewStatus;
-  bridgePlugin: FacilePlugin<T>;
+  bridgePlugin: BarragePlugin<T>;
   hooks: {
     render: StreamHook<T, 'render'>;
     finished: StreamHook<T, 'finished'>;
@@ -66,7 +78,7 @@ export type StreamPlugin<T> = Omit<
   'name'
 > & { name?: string };
 
-export type FacilePlugin<T> = Omit<
+export type BarragePlugin<T> = Omit<
   ReturnType<FacileBarrage<T>['_plSys']['use']>,
   'name'
 > & { name?: string };

@@ -1,13 +1,14 @@
-import { now } from 'aidly';
+import { now, remove } from 'aidly';
 import { createBarrageLifeCycle } from '../lifeCycle';
 import { NO_EMIT, whenTransitionEnds } from '../utils';
 import type {
   Box,
+  Position,
   TrackData,
   ViewStatus,
   Direction,
   InfoRecord,
-  FacilePlugin,
+  BarragePlugin,
 } from '../types';
 
 // The declaration must be displayed,
@@ -32,10 +33,11 @@ export class FacileBarrage<T> {
   public moving = false;
   public isEnded = false;
   public isFixed = false;
-  public position = { y: 0 };
   public duration: number;
   public recorder: InfoRecord;
+  public moveTimer: number | null = null;
   public node: HTMLElement | null = null;
+  public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
   private _status: ViewStatus | null = null;
   private _plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
@@ -56,9 +58,9 @@ export class FacileBarrage<T> {
     return this.options.direction;
   }
 
-  public use(plugin: FacilePlugin<T>) {
+  public use(plugin: BarragePlugin<T>) {
     plugin.name = plugin.name || `__facile_barrage_plugin__`;
-    this._plSys.use(plugin as FacilePlugin<T> & { name: string });
+    this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
   public fixDuration(t: number) {
@@ -157,7 +159,9 @@ export class FacileBarrage<T> {
       this.setStyle('opacity', '1');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
       this.setStyle('transition', `transform linear ${this.duration}ms`);
-      this.setStyle(this.direction, `-${w}px`);
+      if (this.direction !== 'none') {
+        this.setStyle(this.direction, `-${w}px`);
+      }
       this.moving = true;
       this.recorder.startTime = now();
 
@@ -195,9 +199,10 @@ export class FacileBarrage<T> {
     this._delInTrack();
     this.updateTrackData(null);
     this.node = null;
+    this.moveTimer = null;
     this.paused = false;
     this.moving = false;
-    this.position = { y: 0 };
+    this.position = { x: 0, y: 0 };
     this.recorder = {
       pauseTime: 0,
       startTime: 0,
@@ -231,24 +236,22 @@ export class FacileBarrage<T> {
     return this.options.box.width + this.getWidth();
   }
 
-  private _initStyles() {
-    this.setStyle('zIndex', '0');
-    this.setStyle('opacity', '0');
-    this.setStyle(this.direction, '0');
-    this.setStyle('position', 'absolute');
-    this.setStyle('display', 'inline-block');
-    this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
-  }
-
   private _delInTrack() {
     if (!this.trackData) return;
-    const { list } = this.trackData;
-    if (list.length > 0) {
-      const i = list.indexOf(this);
-      if (~i) list.splice(i, 1);
-    }
+    remove(this.trackData.list, this);
     if (this.options.delInTrack) {
       this.options.delInTrack(this);
     }
+  }
+
+  protected _initStyles() {
+    this.setStyle('zIndex', '0');
+    this.setStyle('opacity', '0');
+    this.setStyle('position', 'absolute');
+    this.setStyle('display', 'inline-block');
+    if (this.direction !== 'none') {
+      this.setStyle(this.direction, '0');
+    }
+    this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
   }
 }

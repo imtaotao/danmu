@@ -1,5 +1,5 @@
 import { Queue } from 'small-queue';
-import { assert, hasOwn, loopSlice, isInBounds } from 'aidly';
+import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, nextFrame } from './utils';
@@ -12,18 +12,19 @@ import type {
   Direction,
   ViewStatus,
   EachCallback,
-  FacilePlugin,
-  RunOptions,
+  BarragePlugin,
   RenderOptions,
+  RunOptions,
+  PushFlexOptions,
 } from './types';
 
 export interface EngineOptions {
   mode: Mode;
   gap: number;
   height: number;
-  direction: Direction;
   container: HTMLElement;
   times: [number, number];
+  direction: Omit<Direction, 'none'>;
 }
 
 export class Engine<T> {
@@ -33,7 +34,7 @@ export class Engine<T> {
   private _tracks = [] as Array<TrackData<T>>;
   private _sets = {
     view: new Set<FacileBarrage<T>>(),
-    flexible: new Set<FlexibleBarrage<unknown>>(),
+    flexible: new Set<FlexibleBarrage<T>>(),
     stash: [] as Array<BarrageData<T> | FacileBarrage<T>>,
   };
 
@@ -49,9 +50,11 @@ export class Engine<T> {
     };
   }
 
-  public add(data: T, plugin?: FacilePlugin<T>, isPush?: boolean) {
+  public add(data: T, plugin?: BarragePlugin<T>, isPush?: boolean) {
     this._sets.stash[isPush ? 'push' : 'unshift']({ data, plugin });
   }
+
+  public renderFlexBarrage(data: T, options: PushFlexOptions<T>) {}
 
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this.options = Object.assign(this.options, newOptions);
@@ -166,7 +169,7 @@ export class Engine<T> {
     }
   }
 
-  public _run({
+  private _run({
     layer,
     hooks,
     trackData,
@@ -201,10 +204,12 @@ export class Engine<T> {
     set();
   }
 
+  private _runFlexible() {}
+
   private _create(
     layer: Layer<T>,
     viewStatus: ViewStatus,
-    bridgePlugin: FacilePlugin<T>,
+    bridgePlugin: BarragePlugin<T>,
   ) {
     const {
       direction,
@@ -218,11 +223,11 @@ export class Engine<T> {
 
     const b = new FacileBarrage<T>({
       duration,
-      direction,
       box: this.box,
       data: layer.data,
       defaultStatus: viewStatus,
-      delInTrack: (b) => this._sets.view.delete(b),
+      direction: direction as Direction,
+      delInTrack: (b) => remove(this._sets.view, b),
     });
     if ((layer as BarrageData<T>).plugin) {
       b.use((layer as BarrageData<T>).plugin!);

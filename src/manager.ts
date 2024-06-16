@@ -6,11 +6,12 @@ import type {
   ViewStatus,
   EachCallback,
   FilterCallback,
-  FacilePlugin,
   StreamPlugin,
+  BarragePlugin,
+  PushFlexOptions,
 } from './types';
 
-export interface StreamOptions extends EngineOptions {
+export interface ManagerOptions extends EngineOptions {
   interval: number;
   stashLimit: number;
 }
@@ -22,7 +23,7 @@ export class StreamManager<T extends unknown> {
   private _renderTimer: number | null = null;
   private _plSys = createManagerLifeCycle<T>();
 
-  public constructor(public options: StreamOptions) {
+  public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
   }
 
@@ -52,7 +53,6 @@ export class StreamManager<T extends unknown> {
   }
 
   public clear() {
-    this.stopPlaying();
     this.each((b) => b.removeNode());
     this._engine.clear();
     this._plSys.lifecycle.clear.emit();
@@ -63,7 +63,7 @@ export class StreamManager<T extends unknown> {
     this._plSys.use(plugin as StreamPlugin<T> & { name: string });
   }
 
-  public updateOptions(newOptions: Partial<StreamOptions>) {
+  public updateOptions(newOptions: Partial<ManagerOptions>) {
     this._engine.updateOptions(newOptions);
     this.options = Object.assign(this.options, newOptions);
 
@@ -82,16 +82,23 @@ export class StreamManager<T extends unknown> {
     return this._changeViewStatus('hide', filter);
   }
 
-  public push(data: T, plugin?: FacilePlugin<T>) {
+  public push(data: T, plugin?: BarragePlugin<T>) {
     if (!this._canSend()) return false;
     this._engine.add(data, plugin, true);
     this._plSys.lifecycle.push.emit(data, true);
     return true;
   }
 
-  public unshift(data: T, plugin?: FacilePlugin<T>) {
+  public unshift(data: T, plugin?: BarragePlugin<T>) {
     if (!this._canSend()) return false;
     this._engine.add(data, plugin, false);
+    this._plSys.lifecycle.push.emit(data, false);
+    return true;
+  }
+
+  public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
+    if (!this._canSend()) return false;
+    this._engine.renderFlexBarrage(data, options);
     this._plSys.lifecycle.push.emit(data, false);
     return true;
   }
