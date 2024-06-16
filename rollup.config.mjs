@@ -71,6 +71,7 @@ function createConfig(format, output) {
       replace({
         __TEST__: `false`,
         __VERSION__: `'${pkg.version}'`,
+        preventAssignment: true,
       }),
       ...nodePlugins,
     ],

@@ -1,10 +1,12 @@
-import type { Manager } from './manager';
+import type { StreamManager } from './stream';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
 
 export type ViewStatus = 'hide' | 'show';
 
 export type Direction = 'left' | 'right';
+
+export type Mode = 'none' | 'strict' | 'adaptive';
 
 export type FilterCallback<T> = EachCallback<T>;
 
@@ -17,7 +19,7 @@ export type EachCallback<T> = (
 ) => boolean | void;
 
 export interface TrackData<T> {
-  gaps: [number, number];
+  location: [number, number];
   list: Array<FacileBarrage<T>>;
 }
 
@@ -39,18 +41,18 @@ export interface InfoRecord {
   prevPauseTime: number;
 }
 
-export type ManagerHook<
+export type StreamHook<
   T,
-  K extends keyof Manager<T>['_plSys']['lifecycle'],
-> = Parameters<Manager<T>['_plSys']['lifecycle'][K]['on']>[1];
+  K extends keyof StreamManager<T>['_plSys']['lifecycle'],
+> = Parameters<StreamManager<T>['_plSys']['lifecycle'][K]['on']>[1];
 
 export interface RenderOptions<T> {
   viewStatus: ViewStatus;
   bridgePlugin: FacilePlugin<T>;
   hooks: {
-    render: ManagerHook<T, 'render'>;
-    finished: ManagerHook<T, 'finished'>;
-    willRender: ManagerHook<T, 'willRender'>;
+    render: StreamHook<T, 'render'>;
+    finished: StreamHook<T, 'finished'>;
+    willRender: StreamHook<T, 'willRender'>;
   };
 }
 
@@ -59,8 +61,8 @@ export interface RunOptions<T> extends RenderOptions<T> {
   trackData: TrackData<T>;
 }
 
-export type ManagerPlugin<T> = Omit<
-  ReturnType<Manager<T>['_plSys']['use']>,
+export type StreamPlugin<T> = Omit<
+  ReturnType<StreamManager<T>['_plSys']['use']>,
   'name'
 > & { name?: string };
 

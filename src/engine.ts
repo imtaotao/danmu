@@ -5,6 +5,7 @@ import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, nextFrame } from './utils';
 import type {
   Box,
+  Mode,
   Layer,
   TrackData,
   BarrageData,
@@ -17,11 +18,10 @@ import type {
 } from './types';
 
 export interface EngineOptions {
-  rowGap: number;
+  mode: Mode;
+  gap: number;
   height: number;
-  viewLimit: number;
   direction: Direction;
-  forceRender: boolean;
   container: HTMLElement;
   times: [number, number];
 }
@@ -30,9 +30,9 @@ export class Engine<T> {
   public rows = 0;
   public box?: Box;
   private _fx = new Queue();
-  private _layouts = [] as Array<TrackData<T>>;
+  private _tracks = [] as Array<TrackData<T>>;
   private _sets = {
-    show: new Set<FacileBarrage<T>>(),
+    view: new Set<FacileBarrage<T>>(),
     flexible: new Set<FlexibleBarrage<unknown>>(),
     stash: [] as Array<BarrageData<T> | FacileBarrage<T>>,
   };
@@ -40,12 +40,12 @@ export class Engine<T> {
   public constructor(public options: EngineOptions) {}
 
   public n() {
-    const { stash, show, flexible } = this._sets;
+    const { stash, view, flexible } = this._sets;
     return {
       stash: stash.length,
       flexible: flexible.size,
-      display: show.size + flexible.size,
-      all: show.size + flexible.size + stash.length,
+      view: view.size + flexible.size,
+      all: view.size + flexible.size + stash.length,
     };
   }
 
@@ -61,7 +61,7 @@ export class Engine<T> {
   }
 
   public clear() {
-    this._sets.show.clear();
+    this._sets.view.clear();
     this._sets.flexible.clear();
     this._sets.stash.length = 0;
     this.format();
@@ -71,7 +71,7 @@ export class Engine<T> {
     for (const item of this._sets.flexible) {
       if (fn(item) === false) return;
     }
-    for (const item of this._sets.show) {
+    for (const item of this._sets.view) {
       if (fn(item) === false) return;
     }
   }
@@ -79,15 +79,19 @@ export class Engine<T> {
   public asyncEach(fn: EachCallback<T>) {
     let stop = false;
     const arr = Array.from(this._sets.flexible);
-    return loopSlice(arr.length, (i) => {
-      if (fn(arr[i]) === false) {
-        stop = true;
-        return false;
-      }
-    }).then(() => {
+    return loopSlice(
+      arr.length,
+      (i) => {
+        if (fn(arr[i]) === false) {
+          stop = true;
+          return false;
+        }
+      },
+      17,
+    ).then(() => {
       if (stop) return;
-      const arr = Array.from(this._sets.show);
-      return loopSlice(arr.length, (i) => fn(arr[i]));
+      const arr = Array.from(this._sets.view);
+      return loopSlice(arr.length, (i) => fn(arr[i]), 17);
     });
   }
 
@@ -104,40 +108,32 @@ export class Engine<T> {
     this.rows = +(this.box.height / height).toFixed(0);
 
     for (let i = 0; i < this.rows; i++) {
-      const gaps = [
+      const location = [
         height * i, // start
         height * (i + 1) - 1, // end
       ] as [number, number];
 
-      if (this._layouts[i]) {
-        this._layouts[i].gaps = gaps;
+      if (this._tracks[i]) {
+        this._tracks[i].location = location;
       } else {
-        this._layouts.push({
+        this._tracks.push({
+          location,
           list: [],
-          gaps: gaps,
         });
       }
     }
   }
 
   public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
-    if (this._sets.stash.length === 0) return;
-    const { rows } = this;
-    const { stash, display } = this.n();
-    const { rowGap, viewLimit, forceRender } = this.options;
-    let l = viewLimit - display;
+    const { mode } = this.options;
 
-    if (rowGap > 0 && l > rows) {
-      l = rows;
-    }
-    if (forceRender || l > stash) {
-      l = stash;
-    }
-    if (l === 0) return;
-
-    this._fx.add((next) => {
+    const go = () => {
+      let l = this.n().stash;
+      if (mode === 'strict' && l > this.rows) l = this.rows;
+      if (l <= 0) return;
       hooks.render.call(null);
-      const p = loopSlice(l, () => {
+
+      return loopSlice(l, () => {
         const b = this._sets.stash.shift();
         if (!b) return;
         const trackData = this._getTrackData();
@@ -147,7 +143,7 @@ export class Engine<T> {
         }
         const { prevent } = hooks.willRender.call(null, {
           value: b.data,
-          prevent: false as boolean,
+          prevent: false,
         });
         if (prevent === true) return;
         this._run({
@@ -158,8 +154,16 @@ export class Engine<T> {
           bridgePlugin,
         });
       });
-      p.then(next);
-    });
+    };
+
+    if (mode === 'strict') {
+      this._fx.add((next) => {
+        const p = go();
+        p ? p.then(next) : next();
+      });
+    } else {
+      go();
+    }
   }
 
   public _run({
@@ -173,21 +177,20 @@ export class Engine<T> {
       layer instanceof FacileBarrage
         ? layer
         : this._create(layer, viewStatus, bridgePlugin);
-    if (!b) return;
 
     const reset = () => {
       b.reset();
       b.setStyle('top', '');
-      this._sets.show.delete(b);
+      this._sets.view.delete(b);
       this._sets.stash.unshift(b);
     };
     const set = () => {
       b.createNode();
       b.appendNode(this.options.container);
       b.updateTrackData(trackData);
-      b.position.y = trackData.gaps[0];
+      b.position.y = trackData.location[0];
       b.setStyle('top', `${b.position.y}px`);
-      this._sets.show.add(b);
+      this._sets.view.add(b);
       this._setAction(b, reset).then(() => {
         b.destroy();
         if (this.n().all === 0) {
@@ -207,50 +210,25 @@ export class Engine<T> {
       direction,
       times: [min, max],
     } = this.options;
-    const t = Number(
+    const duration = Number(
       max === min ? max : (Math.random() * (max - min) + min).toFixed(0),
     );
-    if (t <= 0) return null;
+    assert(duration > 0, `Invalid move time "${duration}"`);
     assert(this.box, 'Container not formatted');
 
     const b = new FacileBarrage<T>({
+      duration,
       direction,
-      duration: t,
       box: this.box,
       data: layer.data,
       defaultStatus: viewStatus,
-      delInTrack: (b) => this._sets.show.delete(b),
+      delInTrack: (b) => this._sets.view.delete(b),
     });
     if ((layer as BarrageData<T>).plugin) {
       b.use((layer as BarrageData<T>).plugin!);
     }
     b.use(bridgePlugin);
     return b;
-  }
-
-  private _getTrackData(founds: Array<number> = []): TrackData<T> | null {
-    const { rowGap } = this.options;
-    if (founds.length === this._layouts.length) {
-      if (this.options.forceRender) {
-        const i = Math.floor(Math.random() * this.rows);
-        return this._layouts[i];
-      }
-      return null;
-    }
-    const i = this._selectTrackIdx(founds);
-    const trackData = this._layouts[i];
-    const last = this._last(trackData.list, 0);
-    founds.push(i);
-
-    if (rowGap <= 0 || !last) {
-      return trackData;
-    }
-    if (!last.moving) {
-      return this._getTrackData(founds);
-    }
-    const distance = last.getMoveDistance();
-    const spacing = rowGap > 0 ? rowGap + last.getWidth() : rowGap;
-    return distance > spacing ? trackData : this._getTrackData(founds);
   }
 
   private _fixPosition(styles: CSSStyleDeclaration) {
@@ -271,26 +249,47 @@ export class Engine<T> {
     return null;
   }
 
-  private _selectTrackIdx(founds: Array<number>): number {
+  private _selectTrackIdx(founds: Set<number>): number {
     const idx = Math.floor(Math.random() * this.rows);
-    return founds.includes(idx) ? this._selectTrackIdx(founds) : idx;
+    return founds.has(idx) ? this._selectTrackIdx(founds) : idx;
+  }
+
+  private _getTrackData(
+    founds = new Set<number>(),
+    prev?: TrackData<T>,
+  ): TrackData<T> | null | undefined {
+    const { gap, mode } = this.options;
+    if (founds.size === this._tracks.length) {
+      return mode === 'adaptive' ? prev : null;
+    }
+    const i = this._selectTrackIdx(founds);
+    const trackData = this._tracks[i];
+    if (mode === 'none') return trackData;
+    const last = this._last(trackData.list, 0);
+    if (!last || last.getMoveDistance() >= gap + last.getWidth()) {
+      return trackData;
+    }
+    founds.add(i);
+    return this._getTrackData(founds, trackData);
   }
 
   private _setAction(cur: FacileBarrage<T>, stash: () => void) {
     return new Promise<void>((resolve) => {
       nextFrame(() => {
-        assert(cur.trackData);
-        const prv = this._last(cur.trackData.list, 1);
-        if (prv && prv.moving && !prv.paused && this.options.rowGap > 0) {
-          const t = this._collisionPrediction(prv, cur);
-          if (t !== null) {
-            if (isInBounds(this.options.times, t)) {
-              cur.fixDuration(t);
-            } else {
-              // Must be synchronous behavior
-              stash();
-              resolve();
-              return;
+        const { mode, times } = this.options;
+        if (mode !== 'none') {
+          assert(cur.trackData);
+          const prev = this._last(cur.trackData.list, 1);
+          if (prev) {
+            const fixTime = this._collisionPrediction(prev, cur);
+            if (fixTime !== null) {
+              if (isInBounds(times, fixTime)) {
+                cur.fixDuration(fixTime);
+              } else if (mode === 'strict') {
+                stash(); // Must be synchronous behavior
+                resolve();
+                return;
+              }
             }
           }
         }
@@ -300,21 +299,21 @@ export class Engine<T> {
   }
 
   private _collisionPrediction(prv: FacileBarrage<T>, cur: FacileBarrage<T>) {
-    const pw = prv.getWidth();
-    const cw = cur.getWidth();
-    const ps = prv.getSpeed();
     const cs = cur.getSpeed();
-
+    const ps = prv.getSpeed();
     const acceleration = cs - ps;
     if (acceleration <= 0) return null;
 
-    const distance = prv.getMoveDistance() - cw - pw;
+    const cw = cur.getWidth();
+    const pw = prv.getWidth();
+    const { gap } = this.options;
+    const distance = prv.getMoveDistance() - cw - pw - gap;
     const collisionTime = distance / acceleration;
     if (collisionTime >= cur.duration) return null;
 
     assert(this.box, 'Container not formatted');
     const remainingTime = (1 - prv.getMovePercent()) * prv.duration;
-    const currentFixTime = (cw * remainingTime) / this.box.width;
+    const currentFixTime = ((cw + gap) * remainingTime) / this.box.width;
     return remainingTime + currentFixTime;
   }
 }

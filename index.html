@@ -6,18 +6,19 @@
   <title>Danmu</title>
   <style>
     #container {
-      width: 50vw;
-      height: 50vh;
+      width: 80vw;
+      height: 80vh;
       margin: 50px auto;
-      overflow:  hidden;
-      border: 1px solid #000;
+      overflow: hidden;
     }
 
     .barrage {
+      width: 70px;
       height: 25px;
-      width: 50px;
+      line-height: 25px;
       color: bisque;
       cursor: pointer;
+      font-size: 12px;
       text-align: center;
       border-radius: 10px;
       background: rgba(0, 0, 0, 0.5);
@@ -29,6 +30,8 @@
   <script src='./dist/danmu.umd.js'></script>
   <script>
     const manager = Danmu.create({
+      gap: 20,
+      height: 30,
       interval: 200,
       times: [3000, 6000],
       container: document.getElementById('container'),
@@ -36,25 +39,45 @@
 
     manager.startPlaying();
 
+    let a = 0
+    let r = {};
+    const repectCheck = (b) => {
+      if (r[b.data]) {
+        r[b.data]++
+      } else {
+        r[b.data] = 1
+      }
+      if (r[b.data] > 1) {
+        console.log('repeat', b.data);
+      }
+    }
+
     setInterval(() => {
-      for (let i = 0; i < 15; i++) {
-        manager.push(i, {
+      for (let i = 0; i < 20; i++) {
+        manager.push(a++, {
           hooks: {
             createNode(b) {
               b.node.textContent = b.data;
               b.node.classList.add('barrage');
               b.node.onmouseleave= () => b.resume();
               b.node.onmouseenter = () =>  b.pause();
+              b.node.onclick = () => b.destroy()
             },
+
             movementStart(b) {
+              repectCheck(b);
               if (b.isFixed) {
                 b.node.style.background = '#24bb83';
+              }
+              if (b.prevData) {
+                b.node.style.color = '#8ae3df';
+                b.node.textContent = `${b.data}_${b.prevData}`;
               }
             }
           }
         });
       }
-    }, 500)
+    }, 200)
   </script>
 </body>
 </html>

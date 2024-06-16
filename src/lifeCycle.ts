@@ -2,7 +2,7 @@ import { toLowerCase } from 'aidly';
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
 import { createId } from './utils';
 import type { Barrage, FacilePlugin } from './types';
-import type { Manager, ManagerOptions } from './manager';
+import type { StreamManager, StreamOptions } from './stream';
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
   return new PluginSystem({
@@ -45,8 +45,8 @@ export function createManagerLifeCycle<T>() {
     render: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
     push: new SyncHook<[T, boolean]>(),
-    memoryWarning: new SyncHook<[number]>(),
-    updateOptions: new SyncHook<[ManagerOptions]>(),
+    stashWarning: new SyncHook<[number]>(),
+    updateOptions: new SyncHook<[StreamOptions]>(),
     willRender: new SyncWaterfallHook<{
       value: T;
       prevent: boolean;
@@ -58,7 +58,7 @@ const scope = 'barrage';
 const cache = [] as Array<[string, string]>;
 
 export function createBridgePlugin<T>(
-  plSys: Manager<T>['_plSys'],
+  plSys: StreamManager<T>['_plSys'],
 ): FacilePlugin<T> {
   const hooks = {} as Record<string, unknown>;
 

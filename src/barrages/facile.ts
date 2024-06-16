@@ -1,4 +1,4 @@
-import { now, toUpperCase } from 'aidly';
+import { now } from 'aidly';
 import { createBarrageLifeCycle } from '../lifeCycle';
 import { NO_EMIT, whenTransitionEnds } from '../utils';
 import type {
@@ -30,6 +30,7 @@ export class FacileBarrage<T> {
   public type = 'facile';
   public paused = false;
   public moving = false;
+  public isEnded = false;
   public isFixed = false;
   public position = { y: 0 };
   public duration: number;
@@ -87,15 +88,12 @@ export class FacileBarrage<T> {
 
   public getMoveDistance() {
     if (!this.moving) return 0;
-    const percent = this.getMovePercent();
-    return percent * this.options.box.width + this.getWidth();
+    return this.getMovePercent() * this._summaryWidth();
   }
 
   public getSpeed() {
-    const cw = this.options.box.width + this.getWidth();
-    if (this.recorder.duration == null || cw == null) {
-      return 0;
-    }
+    const cw = this._summaryWidth();
+    if (cw == null) return 0;
     return cw / this.recorder.duration;
   }
 
@@ -103,13 +101,15 @@ export class FacileBarrage<T> {
     if (!this.moving || this.paused) return;
     let d = this.getMoveDistance();
     if (Number.isNaN(d)) return;
+
     this.paused = true;
     this.recorder.prevPauseTime = now();
     if (this.direction === 'right') {
       d *= -1;
     }
+    this.setStyle('zIndex', '1');
     this.setStyle('transform', `translateX(${d}px)`);
-    this.setStyle('transitionDuration', '0s');
+    this.setStyle('transitionDuration', '0ms');
     this._plSys.lifecycle.pause.emit(this);
   }
 
@@ -123,6 +123,7 @@ export class FacileBarrage<T> {
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
     this.recorder.prevPauseTime = 0;
     this.recorder.duration = remainingTime;
+    this.setStyle('zIndex', '0');
     this.setStyle('transform', `translateX(${cw * isNegative}px)`);
     this.setStyle('transitionDuration', `${remainingTime}ms`);
     this._plSys.lifecycle.resume.emit(this);
@@ -156,16 +157,14 @@ export class FacileBarrage<T> {
       this.setStyle('opacity', '1');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
       this.setStyle('transition', `transform linear ${this.duration}ms`);
-      this.setStyle(
-        `margin${toUpperCase(this.direction)}` as 'marginLeft' | 'marginRight',
-        `-${w}px`,
-      );
+      this.setStyle(this.direction, `-${w}px`);
       this.moving = true;
       this.recorder.startTime = now();
 
       if (this.node) {
         this._plSys.lifecycle.movementStart.emit(this);
         whenTransitionEnds(this.node).then(() => {
+          this.isEnded = true;
           this._plSys.lifecycle.movementEnd.emit(this);
           resolve();
         });
@@ -208,6 +207,7 @@ export class FacileBarrage<T> {
   }
 
   public createNode() {
+    if (this.node) return;
     this.node = document.createElement('div');
     this._plSys.lock();
     this._initStyles();
@@ -227,7 +227,12 @@ export class FacileBarrage<T> {
     this.node.style[key] = val;
   }
 
+  private _summaryWidth() {
+    return this.options.box.width + this.getWidth();
+  }
+
   private _initStyles() {
+    this.setStyle('zIndex', '0');
     this.setStyle('opacity', '0');
     this.setStyle(this.direction, '0');
     this.setStyle('position', 'absolute');

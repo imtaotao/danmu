@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.3
+        version: 1.0.3
       hooks-plugin:
         specifier: ^1.0.5
         version: 1.0.5
@@ -520,8 +520,8 @@ packages:
   '@types/yargs@17.0.32':
     resolution: {integrity: sha512-xQ67Yc/laOG5uMfX/093MRlGGCIBzZMarVa+gfNKJxWAIgykYpVGkBdbqEzGDDfCrVUj6Hiff4mTZ5BA6TmAog==}
 
-  aidly@1.0.1:
-    resolution: {integrity: sha512-onoh1YIe9HnxP1wwNZxsc/2Xze+GrSaMtIsiHvisxMp7E4+FsOMxGh3+7WLyTPJq9fjaB4g5BI+LilNV23OESQ==}
+  aidly@1.0.3:
+    resolution: {integrity: sha512-2SmV+KKi8b/0GoyYB77AyD7X+m+SY0387GwUhib98Sfp0wjZGe0DDPQgmAxl4igE/eAuaU6fikAUewNmf+4F2A==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -2247,7 +2247,7 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  aidly@1.0.1: {}
+  aidly@1.0.3: {}
 
   ansi-escapes@4.3.2:
     dependencies:
@@ -2613,7 +2613,7 @@ snapshots:
 
   hooks-plugin@1.0.5:
     dependencies:
-      aidly: 1.0.1
+      aidly: 1.0.3
 
   html-escaper@2.0.2: {}
 

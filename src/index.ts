@@ -1,25 +1,29 @@
-import { type ManagerPlugin } from './types';
-import { Manager, type ManagerOptions } from './manager';
+import { assert } from 'aidly';
+import { type StreamPlugin } from './types';
+import { StreamManager, type StreamOptions } from './stream';
 
 export function create<T extends unknown>(
-  options: Partial<ManagerOptions> & {
+  options: Partial<StreamOptions> & {
     container: HTMLElement;
-    plugin?: ManagerPlugin<T>;
+    plugin?: StreamPlugin<T>;
   },
 ) {
-  const manager = new Manager<T>({
-    height: 30,
-    rowGap: 20,
-    interval: 500,
-    viewLimit: 100,
-    memoryLimit: 1024,
-    forceRender: false,
-    times: [3000, 6000],
-    direction: 'right',
-    ...options,
-  });
-  if (options.plugin) {
-    manager.usePlugin(options.plugin);
+  const newOptions = Object.assign(
+    {
+      gap: 0,
+      height: 25,
+      mode: 'strict',
+      interval: 500,
+      stashLimit: 1024,
+      times: [3500, 4500],
+      direction: 'right',
+    },
+    options,
+  );
+  assert(newOptions.gap >= 0, 'The "gap" must be >= 0');
+  const stream = new StreamManager<T>(newOptions);
+  if (newOptions.plugin) {
+    stream.usePlugin(newOptions.plugin);
   }
-  return manager;
+  return stream;
 }

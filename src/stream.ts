@@ -1,36 +1,28 @@
 import { hasOwn } from 'aidly';
-import { Engine } from './engine';
+import { Engine, type EngineOptions } from './engine';
 import { NO_EMIT, createId } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
-  Direction,
   ViewStatus,
   EachCallback,
   FilterCallback,
   FacilePlugin,
-  ManagerPlugin,
+  StreamPlugin,
 } from './types';
 
-export interface ManagerOptions {
-  height: number;
-  rowGap: number;
-  viewLimit: number;
-  memoryLimit: number;
+export interface StreamOptions extends EngineOptions {
   interval: number;
-  times: [number, number];
-  forceRender: boolean;
-  direction: Direction;
-  container: HTMLElement;
+  stashLimit: number;
 }
 
-export class Manager<T extends unknown> {
+export class StreamManager<T extends unknown> {
   public version = __VERSION__;
   private _engine: Engine<T>;
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
   private _plSys = createManagerLifeCycle<T>();
 
-  public constructor(public options: ManagerOptions) {
+  public constructor(public options: StreamOptions) {
     this._engine = new Engine(options);
   }
 
@@ -66,12 +58,12 @@ export class Manager<T extends unknown> {
     this._plSys.lifecycle.clear.emit();
   }
 
-  public usePlugin(plugin: ManagerPlugin<T>) {
+  public usePlugin(plugin: StreamPlugin<T>) {
     plugin.name = plugin.name || `__runtime_plugin_${createId()}__`;
-    this._plSys.use(plugin as ManagerPlugin<T> & { name: string });
+    this._plSys.use(plugin as StreamPlugin<T> & { name: string });
   }
 
-  public updateOptions(newOptions: Partial<ManagerOptions>) {
+  public updateOptions(newOptions: Partial<StreamOptions>) {
     this._engine.updateOptions(newOptions);
     this.options = Object.assign(this.options, newOptions);
 
@@ -146,17 +138,17 @@ export class Manager<T extends unknown> {
   }
 
   private _canSend() {
-    const { memoryLimit } = this.options;
-    const res = this.n().all >= memoryLimit;
+    const { stashLimit } = this.options;
+    const res = this._engine.n().stash >= stashLimit;
     if (res) {
-      const hook = this._plSys.lifecycle.memoryWarning;
+      const hook = this._plSys.lifecycle.stashWarning;
       if (hook.isEmpty()) {
         console.warn(
-          'The number of danmu in memory exceeds the limit.' +
-            `(${memoryLimit})`,
+          'The number of danmu in temporary storage exceeds the limit.' +
+            `(${stashLimit})`,
         );
       } else {
-        hook.emit(memoryLimit);
+        hook.emit(stashLimit);
       }
     }
     return !res;
