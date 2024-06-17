@@ -30,6 +30,11 @@ export interface Position {
   y: number;
 }
 
+export interface MoveTimer {
+  cb: () => void;
+  clear: () => void;
+}
+
 export interface TrackData<T> {
   location: [number, number];
   list: Array<FacileBarrage<T>>;

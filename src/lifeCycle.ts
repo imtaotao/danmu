@@ -11,11 +11,11 @@ export function createBarrageLifeCycle<T extends Barrage<any>>() {
     pause: new SyncHook<[T]>(),
     resume: new SyncHook<[T]>(),
     destroy: new SyncHook<[T]>(),
+    moveEnd: new SyncHook<[T]>(),
+    moveStart: new SyncHook<[T]>(),
     createNode: new SyncHook<[T]>(),
     appendNode: new SyncHook<[T]>(),
     removeNode: new SyncHook<[T]>(),
-    movementEnd: new SyncHook<[T]>(),
-    movementStart: new SyncHook<[T]>(),
   });
 }
 
@@ -29,11 +29,11 @@ export function createManagerLifeCycle<T>() {
     barragePause: child.lifecycle.pause,
     barrageResume: child.lifecycle.resume,
     barrageDestroy: child.lifecycle.destroy,
+    barrageMoveEnd: child.lifecycle.moveEnd,
+    barrageMoveStart: child.lifecycle.moveStart,
     barrageCreateNode: child.lifecycle.createNode,
     barrageAppendNode: child.lifecycle.appendNode,
     barrageRemoveNode: child.lifecycle.removeNode,
-    barrageMovementEnd: child.lifecycle.movementEnd,
-    barrageMovementStart: child.lifecycle.movementStart,
     // global hooks
     stop: new SyncHook<[]>(),
     start: new SyncHook<[]>(),

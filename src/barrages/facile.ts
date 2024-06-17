@@ -4,6 +4,7 @@ import { NO_EMIT, whenTransitionEnds } from '../utils';
 import type {
   Box,
   Position,
+  MoveTimer,
   TrackData,
   ViewStatus,
   Direction,
@@ -35,12 +36,12 @@ export class FacileBarrage<T> {
   public isFixed = false;
   public duration: number;
   public recorder: InfoRecord;
-  public moveTimer: number | null = null;
   public node: HTMLElement | null = null;
+  public moveTimer: MoveTimer | null = null;
   public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
-  private _status: ViewStatus | null = null;
-  private _plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
+  protected _status: ViewStatus | null = null;
+  protected _plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
 
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
@@ -67,6 +68,11 @@ export class FacileBarrage<T> {
     this.duration = t;
     this.recorder.duration = t;
     this.isFixed = true;
+  }
+
+  public updatePosition(p: Partial<Position>) {
+    if (typeof p.x === 'number') this.position.x = p.x;
+    if (typeof p.y === 'number') this.position.y = p.y;
   }
 
   public updateTrackData(data: TrackData<T> | null) {
@@ -149,35 +155,6 @@ export class FacileBarrage<T> {
     }
   }
 
-  public setEndStyles() {
-    return new Promise<void>((resolve) => {
-      const w = this.getWidth();
-      const cw = this.options.box.width + w;
-      const isNegative = this.direction === 'left' ? 1 : -1;
-
-      this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
-      this.setStyle('opacity', '1');
-      this.setStyle('transform', `translateX(${isNegative * cw}px)`);
-      this.setStyle('transition', `transform linear ${this.duration}ms`);
-      if (this.direction !== 'none') {
-        this.setStyle(this.direction, `-${w}px`);
-      }
-      this.moving = true;
-      this.recorder.startTime = now();
-
-      if (this.node) {
-        this._plSys.lifecycle.movementStart.emit(this);
-        whenTransitionEnds(this.node).then(() => {
-          this.isEnded = true;
-          this._plSys.lifecycle.movementEnd.emit(this);
-          resolve();
-        });
-      } else {
-        resolve();
-      }
-    });
-  }
-
   public removeNode() {
     if (!this.node) return;
     const parentNode = this.node.parentNode;
@@ -190,6 +167,10 @@ export class FacileBarrage<T> {
     this.moving = false;
     this._delInTrack();
     this.removeNode();
+    if (this.moveTimer) {
+      this.moveTimer.clear();
+      this.moveTimer = null;
+    }
     this._plSys.lifecycle.destroy.emit(this);
     this.node = null;
   }
@@ -198,11 +179,15 @@ export class FacileBarrage<T> {
     this.removeNode();
     this._delInTrack();
     this.updateTrackData(null);
+    this.setStyle('top', '');
     this.node = null;
-    this.moveTimer = null;
     this.paused = false;
     this.moving = false;
     this.position = { x: 0, y: 0 };
+    if (this.moveTimer) {
+      this.moveTimer.clear();
+      this.moveTimer = null;
+    }
     this.recorder = {
       pauseTime: 0,
       startTime: 0,
@@ -232,26 +217,56 @@ export class FacileBarrage<T> {
     this.node.style[key] = val;
   }
 
-  private _summaryWidth() {
-    return this.options.box.width + this.getWidth();
-  }
+  public setEndStyles() {
+    return new Promise<void>((resolve) => {
+      const w = this.getWidth();
+      const cw = this.options.box.width + w;
+      const isNegative = this.direction === 'left' ? 1 : -1;
 
-  private _delInTrack() {
-    if (!this.trackData) return;
-    remove(this.trackData.list, this);
-    if (this.options.delInTrack) {
-      this.options.delInTrack(this);
-    }
+      this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+      this.setStyle('opacity', '1');
+      this.setStyle('transform', `translateX(${isNegative * cw}px)`);
+      this.setStyle('transition', `transform linear ${this.duration}ms`);
+      if (this.direction !== 'none') {
+        this.setStyle(this.direction, `-${w}px`);
+      }
+      this.moving = true;
+      this.recorder.startTime = now();
+
+      if (this.node) {
+        this._plSys.lifecycle.moveStart.emit(this);
+        whenTransitionEnds(this.node).then(() => {
+          this.isEnded = true;
+          this._plSys.lifecycle.moveEnd.emit(this);
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   protected _initStyles() {
     this.setStyle('zIndex', '0');
     this.setStyle('opacity', '0');
     this.setStyle('position', 'absolute');
+    this.setStyle('top', `${this.position.y}px`);
     this.setStyle('display', 'inline-block');
     if (this.direction !== 'none') {
       this.setStyle(this.direction, '0');
     }
     this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+  }
+
+  private _summaryWidth() {
+    return this.options.box.width + this.getWidth();
+  }
+
+  protected _delInTrack() {
+    if (!this.trackData) return;
+    remove(this.trackData.list, this);
+    if (this.options.delInTrack) {
+      this.options.delInTrack(this);
+    }
   }
 }

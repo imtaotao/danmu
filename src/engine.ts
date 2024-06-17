@@ -8,6 +8,7 @@ import type {
   Mode,
   Layer,
   TrackData,
+  Barrage,
   BarrageData,
   Direction,
   ViewStatus,
@@ -179,20 +180,19 @@ export class Engine<T> {
     const b =
       layer instanceof FacileBarrage
         ? layer
-        : this._create(layer, viewStatus, bridgePlugin);
+        : this._newFacileBarrage(layer, viewStatus, bridgePlugin);
 
     const reset = () => {
       b.reset();
-      b.setStyle('top', '');
       this._sets.view.delete(b);
       this._sets.stash.unshift(b);
     };
     const set = () => {
+      b.updatePosition({ y: trackData.location[0] });
       b.createNode();
       b.appendNode(this.options.container);
       b.updateTrackData(trackData);
-      b.position.y = trackData.location[0];
-      b.setStyle('top', `${b.position.y}px`);
+
       this._sets.view.add(b);
       this._setAction(b, reset).then(() => {
         b.destroy();
@@ -204,9 +204,7 @@ export class Engine<T> {
     set();
   }
 
-  private _runFlexible() {}
-
-  private _create(
+  private _newFacileBarrage(
     layer: Layer<T>,
     viewStatus: ViewStatus,
     bridgePlugin: BarragePlugin<T>,
@@ -249,7 +247,9 @@ export class Engine<T> {
   private _last(ls: Array<FacileBarrage<T>>, li: number) {
     for (let i = ls.length - 1; i >= 0; i--) {
       const b = ls[i - li];
-      if (b && !b.paused) return b;
+      if (b && !b.paused && b.type === 'facile') {
+        return b;
+      }
     }
     return null;
   }
@@ -278,11 +278,11 @@ export class Engine<T> {
     return this._getTrackData(founds, trackData);
   }
 
-  private _setAction(cur: FacileBarrage<T>, stash: () => void) {
+  private _setAction(cur: Barrage<T>, stash?: () => void) {
     return new Promise<void>((resolve) => {
       nextFrame(() => {
         const { mode, times } = this.options;
-        if (mode !== 'none') {
+        if (mode !== 'none' && cur.type === 'facile') {
           assert(cur.trackData);
           const prev = this._last(cur.trackData.list, 1);
           if (prev) {
@@ -291,7 +291,7 @@ export class Engine<T> {
               if (isInBounds(times, fixTime)) {
                 cur.fixDuration(fixTime);
               } else if (mode === 'strict') {
-                stash(); // Must be synchronous behavior
+                stash && stash(); // Must be synchronous behavior
                 resolve();
                 return;
               }
