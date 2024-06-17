@@ -2,28 +2,30 @@ import type { StreamManager } from './manager';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleOptions, FlexibleBarrage } from './barrages/flexible';
 
+export type BarrageType = 'facile' | 'flexible';
+
 export type ViewStatus = 'hide' | 'show';
 
 export type Direction = 'left' | 'right' | 'none';
 
 export type Mode = 'none' | 'strict' | 'adaptive';
 
+export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<T>;
+
 export type FilterCallback<T> = EachCallback<T>;
 
-export type Layer<T> = BarrageData<T> | FacileBarrage<T>;
-
-export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<T>;
+export type Layer<T> = StashData<T> | FacileBarrage<T>;
 
 export type EachCallback<T> = (
   b: FacileBarrage<T> | FlexibleBarrage<T>,
 ) => boolean | void;
 
-export type PushFlexOptions<T> = Omit<
-  FlexibleOptions<T>,
-  'box' | 'data' | 'defaultStatus' | 'delInTrack'
-> & {
+export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
-};
+  duration?: number;
+  direction: Direction;
+  position: Position | ((box: Box) => Position);
+}
 
 export interface Position {
   x: number;
@@ -40,7 +42,7 @@ export interface TrackData<T> {
   list: Array<FacileBarrage<T>>;
 }
 
-export interface BarrageData<T> {
+export interface StashData<T> {
   data: T;
   plugin?: BarragePlugin<T>;
 }

@@ -35,7 +35,26 @@
       interval: 500,
       times: [3000, 6000],
       container: document.getElementById('container'),
+      plugin: {
+        hooks: {
+          $createNode(b) {
+            b.node.textContent = b.data;
+            b.node.classList.add('barrage');
+            b.node.onmouseleave= () => b.resume();
+            b.node.onmouseenter = () =>  b.pause();
+            b.node.onclick = () => b.destroy()
+          },
+        }
+      }
     })
+
+    function pushFlexBarrage(v = 'chentao') {
+      manager.pushFlexBarrage(v, {
+        duration: 10000,
+        direction: 'left',
+        position: { x: 0, y: 0 }
+      })
+    }
 
     manager.startPlaying();
 
@@ -56,15 +75,9 @@
       for (let i = 0; i < 20; i++) {
         manager.push(a++, {
           hooks: {
-            createNode(b) {
-              b.node.textContent = b.data;
-              b.node.classList.add('barrage');
-              b.node.onmouseleave= () => b.resume();
-              b.node.onmouseenter = () =>  b.pause();
-              b.node.onclick = () => b.destroy()
-            },
+           
 
-            movementStart(b) {
+            moveStart(b) {
               repectCheck(b);
               if (b.isFixed) {
                 b.node.style.background = '#24bb83';

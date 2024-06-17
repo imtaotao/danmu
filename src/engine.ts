@@ -1,21 +1,21 @@
 import { Queue } from 'small-queue';
 import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
+import { toNumber, nextFrame } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
-import { toNumber, nextFrame } from './utils';
 import type {
   Box,
   Mode,
-  Layer,
   TrackData,
-  Barrage,
-  BarrageData,
+  StashData,
   Direction,
   ViewStatus,
   EachCallback,
+  Barrage,
+  BarrageType,
   BarragePlugin,
-  RenderOptions,
   RunOptions,
+  RenderOptions,
   PushFlexOptions,
 } from './types';
 
@@ -36,7 +36,7 @@ export class Engine<T> {
   private _sets = {
     view: new Set<FacileBarrage<T>>(),
     flexible: new Set<FlexibleBarrage<T>>(),
-    stash: [] as Array<BarrageData<T> | FacileBarrage<T>>,
+    stash: [] as Array<StashData<T> | FacileBarrage<T>>,
   };
 
   public constructor(public options: EngineOptions) {}
@@ -54,8 +54,6 @@ export class Engine<T> {
   public add(data: T, plugin?: BarragePlugin<T>, isPush?: boolean) {
     this._sets.stash[isPush ? 'push' : 'unshift']({ data, plugin });
   }
-
-  public renderFlexBarrage(data: T, options: PushFlexOptions<T>) {}
 
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this.options = Object.assign(this.options, newOptions);
@@ -128,6 +126,45 @@ export class Engine<T> {
     }
   }
 
+  public renderFlexBarrage(
+    data: T,
+    {
+      hooks,
+      position,
+      duration,
+      direction,
+      viewStatus,
+      plugin,
+      bridgePlugin,
+    }: RenderOptions<T> & PushFlexOptions<T>,
+  ) {
+    hooks.render.call(null, 'flexible');
+    const { prevent } = hooks.willRender.call(null, {
+      value: data,
+      prevent: false,
+      type: 'flexible',
+    });
+    if (prevent === true) return;
+    assert(this.box, 'Container not formatted');
+    const b = this._create('flexible', data, viewStatus, {
+      position,
+      duration,
+      direction,
+    });
+
+    if (plugin) b.use(plugin);
+    b.use(bridgePlugin);
+    b.createNode();
+    b.appendNode(this.options.container);
+    this._sets.view.add(b);
+    this._setAction(b).then(() => {
+      b.destroy();
+      if (this.n().all === 0) {
+        hooks.finished.call(null);
+      }
+    });
+  }
+
   public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
     const { mode } = this.options;
 
@@ -135,7 +172,7 @@ export class Engine<T> {
       let l = this.n().stash;
       if (mode === 'strict' && l > this.rows) l = this.rows;
       if (l <= 0) return;
-      hooks.render.call(null);
+      hooks.render.call(null, 'facile');
 
       return loopSlice(l, () => {
         const b = this._sets.stash.shift();
@@ -148,6 +185,7 @@ export class Engine<T> {
         const { prevent } = hooks.willRender.call(null, {
           value: b.data,
           prevent: false,
+          type: 'facile',
         });
         if (prevent === true) return;
         this._run({
@@ -177,11 +215,6 @@ export class Engine<T> {
     viewStatus,
     bridgePlugin,
   }: RunOptions<T>) {
-    const b =
-      layer instanceof FacileBarrage
-        ? layer
-        : this._newFacileBarrage(layer, viewStatus, bridgePlugin);
-
     const reset = () => {
       b.reset();
       this._sets.view.delete(b);
@@ -189,9 +222,9 @@ export class Engine<T> {
     };
     const set = () => {
       b.updatePosition({ y: trackData.location[0] });
+      b.updateTrackData(trackData);
       b.createNode();
       b.appendNode(this.options.container);
-      b.updateTrackData(trackData);
 
       this._sets.view.add(b);
       this._setAction(b, reset).then(() => {
@@ -201,37 +234,72 @@ export class Engine<T> {
         }
       });
     };
+    const b =
+      layer instanceof FacileBarrage
+        ? layer
+        : this._create('facile', layer.data, viewStatus);
+
+    if ((layer as StashData<T>).plugin) {
+      b.use((layer as StashData<T>).plugin!);
+    }
+    b.use(bridgePlugin);
     set();
   }
 
-  private _newFacileBarrage(
-    layer: Layer<T>,
+  private _create(
+    type: BarrageType,
+    data: T,
     viewStatus: ViewStatus,
-    bridgePlugin: BarragePlugin<T>,
+    options?: Omit<PushFlexOptions<T>, 'plugin'>,
   ) {
+    assert(this.box, 'Container not formatted');
+    let b: Barrage<T>;
+    const config = {
+      data,
+      duration: 0,
+      box: this.box,
+      defaultStatus: viewStatus,
+      direction: this.options.direction as Direction,
+      delInTrack: (b: Barrage<T>) => {
+        remove(this._sets.view, b);
+        type === 'facile'
+          ? remove(this._sets.stash, b)
+          : remove(this._sets.flexible, b);
+      },
+    };
+
+    if (type === 'facile') {
+      config.duration = this._randomDuration();
+      b = new FacileBarrage(config);
+    } else {
+      assert(options);
+      const duration =
+        typeof options.duration === 'number'
+          ? options.duration
+          : this._randomDuration();
+      const position =
+        typeof options.position === 'function'
+          ? options.position(this.box)
+          : options.position;
+      b = new FlexibleBarrage({
+        ...config,
+        position,
+        duration,
+        direction: options.direction,
+      });
+    }
+    return b;
+  }
+
+  private _randomDuration() {
     const {
-      direction,
       times: [min, max],
     } = this.options;
-    const duration = Number(
+    const d = Number(
       max === min ? max : (Math.random() * (max - min) + min).toFixed(0),
     );
-    assert(duration > 0, `Invalid move time "${duration}"`);
-    assert(this.box, 'Container not formatted');
-
-    const b = new FacileBarrage<T>({
-      duration,
-      box: this.box,
-      data: layer.data,
-      defaultStatus: viewStatus,
-      direction: direction as Direction,
-      delInTrack: (b) => remove(this._sets.view, b),
-    });
-    if ((layer as BarrageData<T>).plugin) {
-      b.use((layer as BarrageData<T>).plugin!);
-    }
-    b.use(bridgePlugin);
-    return b;
+    assert(d > 0, `Invalid move time "${d}"`);
+    return d;
   }
 
   private _fixPosition(styles: CSSStyleDeclaration) {

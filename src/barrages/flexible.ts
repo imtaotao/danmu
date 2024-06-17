@@ -1,19 +1,24 @@
 import { now } from 'aidly';
-import type { Position } from '../types';
 import { FacileBarrage, FacileOptions } from './facile';
 import { NO_EMIT, whenTransitionEnds } from '../utils';
+import type { Position, BarrageType, BarragePlugin } from '../types';
 
 export interface FlexibleOptions<T> extends FacileOptions<T> {
   position: Position;
 }
 
 export class FlexibleBarrage<T> extends FacileBarrage<T> {
-  public type = 'flexible';
+  public type: BarrageType = 'flexible';
   public position: Position;
 
   public constructor(public options: FlexibleOptions<T>) {
     super(options);
     this.position = options.position;
+  }
+
+  public use(plugin: BarragePlugin<T>) {
+    plugin.name = plugin.name || `__flexible_barrage_plugin__`;
+    this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
   public getMoveDistance() {
@@ -34,7 +39,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     if (this.direction === 'none') {
       if (this.moveTimer) this.moveTimer.clear();
     } else {
-      this.setStyle('zIndex', '1');
+      this.setStyle('zIndex', '2');
       this.setStyle('transitionDuration', '0ms');
       this.setStyle(
         'transform',
@@ -86,6 +91,8 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
             this.moveTimer.clear();
             this.moveTimer = null;
           }
+          this.moving = false;
+          this.isEnded = true;
           resolve();
         };
         let timer: number | null = setTimeout(cb, this.duration);
@@ -99,6 +106,8 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
         return;
       }
       if (!this.node) {
+        this.moving = false;
+        this.isEnded = true;
         resolve();
         return;
       }
@@ -111,6 +120,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
         `translateX(${ex}px) translateY(${this.position.y}px)`,
       );
       whenTransitionEnds(this.node).then(() => {
+        this.moving = false;
         this.isEnded = true;
         this._plSys.lifecycle.moveEnd.emit(this);
         resolve();
@@ -120,7 +130,6 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
 
   protected _initStyles() {
     this.setStyle('zIndex', '0');
-    this.setStyle('opacity', '0');
     this.setStyle('position', 'absolute');
     this.setStyle('display', 'inline-block');
     this.setStyle(

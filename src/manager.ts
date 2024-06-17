@@ -74,35 +74,6 @@ export class StreamManager<T extends unknown> {
     this._plSys.lifecycle.updateOptions.emit(this.options);
   }
 
-  public show(filter?: FilterCallback<T>) {
-    return this._changeViewStatus('show', filter);
-  }
-
-  public hide(filter?: FilterCallback<T>) {
-    return this._changeViewStatus('hide', filter);
-  }
-
-  public push(data: T, plugin?: BarragePlugin<T>) {
-    if (!this._canSend()) return false;
-    this._engine.add(data, plugin, true);
-    this._plSys.lifecycle.push.emit(data, true);
-    return true;
-  }
-
-  public unshift(data: T, plugin?: BarragePlugin<T>) {
-    if (!this._canSend()) return false;
-    this._engine.add(data, plugin, false);
-    this._plSys.lifecycle.push.emit(data, false);
-    return true;
-  }
-
-  public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
-    if (!this._canSend()) return false;
-    this._engine.renderFlexBarrage(data, options);
-    this._plSys.lifecycle.push.emit(data, false);
-    return true;
-  }
-
   public startPlaying(_flag?: Symbol) {
     if (this.playing()) return;
     if (!this._engine.box) {
@@ -131,14 +102,52 @@ export class StreamManager<T extends unknown> {
     this._plSys.unlock();
   }
 
+  public show(filter?: FilterCallback<T>) {
+    return this._changeViewStatus('show', filter);
+  }
+
+  public hide(filter?: FilterCallback<T>) {
+    return this._changeViewStatus('hide', filter);
+  }
+
+  public push(data: T, plugin?: BarragePlugin<T>) {
+    if (!this._canSend()) return false;
+    this._engine.add(data, plugin, true);
+    this._plSys.lifecycle.push.emit(data, true);
+    return true;
+  }
+
+  public unshift(data: T, plugin?: BarragePlugin<T>) {
+    if (!this._canSend()) return false;
+    this._engine.add(data, plugin, false);
+    this._plSys.lifecycle.push.emit(data, false);
+    return true;
+  }
+
+  public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
+    if (!this._canSend() || !this.playing()) return false;
+    this._engine.renderFlexBarrage(data, {
+      ...options,
+      viewStatus: this._viewStatus,
+      bridgePlugin: createBridgePlugin(this._plSys),
+      hooks: {
+        finished: () => this._plSys.lifecycle.finished.emit(),
+        render: (val) => this._plSys.lifecycle.render.emit(val),
+        willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
+      },
+    });
+    this._plSys.lifecycle.push.emit(data, false);
+    return true;
+  }
+
   public render() {
     if (!this.playing()) return;
     this._engine.render({
       viewStatus: this._viewStatus,
       bridgePlugin: createBridgePlugin(this._plSys),
       hooks: {
-        render: () => this._plSys.lifecycle.render.emit(),
         finished: () => this._plSys.lifecycle.finished.emit(),
+        render: (val) => this._plSys.lifecycle.render.emit(val),
         willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
       },
     });

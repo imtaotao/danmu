@@ -1,8 +1,8 @@
 import { toLowerCase } from 'aidly';
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
-import { createId } from './utils';
-import type { Barrage, BarragePlugin } from './types';
 import type { StreamManager, ManagerOptions } from './manager';
+import type { Barrage, BarrageType, BarragePlugin } from './types';
+import { createId } from './utils';
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
   return new PluginSystem({
@@ -24,16 +24,16 @@ export function createManagerLifeCycle<T>() {
 
   return new PluginSystem({
     // barrage hooks
-    barrageShow: child.lifecycle.show,
-    barrageHide: child.lifecycle.hide,
-    barragePause: child.lifecycle.pause,
-    barrageResume: child.lifecycle.resume,
-    barrageDestroy: child.lifecycle.destroy,
-    barrageMoveEnd: child.lifecycle.moveEnd,
-    barrageMoveStart: child.lifecycle.moveStart,
-    barrageCreateNode: child.lifecycle.createNode,
-    barrageAppendNode: child.lifecycle.appendNode,
-    barrageRemoveNode: child.lifecycle.removeNode,
+    $show: child.lifecycle.show,
+    $hide: child.lifecycle.hide,
+    $pause: child.lifecycle.pause,
+    $resume: child.lifecycle.resume,
+    $destroy: child.lifecycle.destroy,
+    $moveEnd: child.lifecycle.moveEnd,
+    $moveStart: child.lifecycle.moveStart,
+    $createNode: child.lifecycle.createNode,
+    $appendNode: child.lifecycle.appendNode,
+    $removeNode: child.lifecycle.removeNode,
     // global hooks
     stop: new SyncHook<[]>(),
     start: new SyncHook<[]>(),
@@ -42,19 +42,20 @@ export function createManagerLifeCycle<T>() {
     clear: new SyncHook<[]>(),
     resize: new SyncHook<[]>(),
     create: new SyncHook<[]>(),
-    render: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
     push: new SyncHook<[T, boolean]>(),
     stashWarning: new SyncHook<[number]>(),
+    render: new SyncHook<[BarrageType]>(),
     updateOptions: new SyncHook<[ManagerOptions]>(),
     willRender: new SyncWaterfallHook<{
       value: T;
       prevent: boolean;
+      type: BarrageType;
     }>(),
   });
 }
 
-const scope = 'barrage';
+const scope = '$';
 const cache = [] as Array<[string, string]>;
 
 export function createBridgePlugin<T>(
@@ -72,7 +73,7 @@ export function createBridgePlugin<T>(
     const keys = Object.keys(plSys.lifecycle);
     for (const k of keys) {
       if (k.startsWith(scope)) {
-        const nk = toLowerCase(k.replace(scope, ''));
+        const nk = k.replace(scope, '');
         cache.push([k, nk]);
         hooks[nk] = (...args: Array<unknown>) => {
           return (plSys.lifecycle as any)[k].emit(...args);
