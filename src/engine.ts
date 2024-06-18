@@ -20,13 +20,16 @@ import type {
 } from './types';
 
 export interface EngineOptions {
-  viewLimit?: number;
   mode: Mode;
   gap: number;
   height: number;
   container: HTMLElement;
   times: [number, number];
   direction: Omit<Direction, 'none'>;
+  limits: {
+    stash: number;
+    view?: number;
+  };
 }
 
 export class Engine<T> {
@@ -167,11 +170,18 @@ export class Engine<T> {
   }
 
   public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
-    const { mode } = this.options;
+    const { mode, limits } = this.options;
 
     const go = () => {
-      let l = this.n().stash;
-      if (mode === 'strict' && l > this.rows) l = this.rows;
+      const n = this.n();
+      let l = n.stash;
+      if (typeof limits.view === 'number') {
+        const max = limits.view - n.view;
+        if (l > max) l = max;
+      }
+      if (mode === 'strict' && l > this.rows) {
+        l = this.rows;
+      }
       if (l <= 0) return;
       hooks.render.call(null, 'facile');
 

@@ -11,12 +11,8 @@ import type {
   PushFlexOptions,
 } from './types';
 
-export interface ManagerOptions extends Omit<EngineOptions, 'viewLimit'> {
+export interface ManagerOptions extends EngineOptions {
   interval: number;
-  limits: {
-    stash: number;
-    view?: number;
-  };
 }
 
 export class StreamManager<T extends unknown> {
@@ -116,19 +112,22 @@ export class StreamManager<T extends unknown> {
   public push(data: T, plugin?: BarragePlugin<T>) {
     if (!this._canSend()) return false;
     this._engine.add(data, plugin, true);
-    this._plSys.lifecycle.push.emit(data, true);
+    this._plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
   public unshift(data: T, plugin?: BarragePlugin<T>) {
     if (!this._canSend()) return false;
     this._engine.add(data, plugin, false);
-    this._plSys.lifecycle.push.emit(data, false);
+    this._plSys.lifecycle.push.emit(data, 'facile', false);
     return true;
   }
 
   public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
     if (!this._canSend() || !this.playing()) return false;
+    if (typeof options.duration === 'number' && options.duration < 0) {
+      return false;
+    }
     this._engine.renderFlexBarrage(data, {
       ...options,
       viewStatus: this._viewStatus,
@@ -139,7 +138,7 @@ export class StreamManager<T extends unknown> {
         willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
       },
     });
-    this._plSys.lifecycle.push.emit(data, false);
+    this._plSys.lifecycle.push.emit(data, 'flexible', true);
     return true;
   }
 
