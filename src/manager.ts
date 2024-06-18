@@ -157,6 +157,8 @@ export class StreamManager<T extends unknown> {
     });
   }
 
+  public setArea(x?: number, y?: number) {}
+
   public exportSnapshot() {}
 
   private _canSend(type: BarrageType) {

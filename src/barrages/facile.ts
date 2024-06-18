@@ -212,6 +212,8 @@ export class FacileBarrage<T> {
     this._plSys.lifecycle.appendNode.emit(this);
   }
 
+  public exportSnapshot() {}
+
   public setStyle<
     T extends keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>,
   >(key: T, val: CSSStyleDeclaration[T]) {

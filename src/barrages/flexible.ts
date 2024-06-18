@@ -80,6 +80,8 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     );
   }
 
+  public exportSnapshot() {}
+
   public setEndStyles() {
     return new Promise<void>((resolve) => {
       this.moving = true;
