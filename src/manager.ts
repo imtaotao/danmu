@@ -6,6 +6,7 @@ import type {
   ViewStatus,
   EachCallback,
   FilterCallback,
+  BarrageType,
   StreamPlugin,
   BarragePlugin,
   PushFlexOptions,
@@ -110,21 +111,21 @@ export class StreamManager<T extends unknown> {
   }
 
   public push(data: T, plugin?: BarragePlugin<T>) {
-    if (!this._canSend()) return false;
+    if (!this._canSend('facile')) return false;
     this._engine.add(data, plugin, true);
     this._plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
   public unshift(data: T, plugin?: BarragePlugin<T>) {
-    if (!this._canSend()) return false;
+    if (!this._canSend('facile')) return false;
     this._engine.add(data, plugin, false);
     this._plSys.lifecycle.push.emit(data, 'facile', false);
     return true;
   }
 
   public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
-    if (!this._canSend() || !this.playing()) return false;
+    if (!this._canSend('flexible') || !this.playing()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
     }
@@ -155,21 +156,29 @@ export class StreamManager<T extends unknown> {
     });
   }
 
-  private _canSend() {
+  private _canSend(type: BarrageType) {
+    let res = true;
+    const isFacile = type === 'facile';
     const { limits } = this.options;
-    const res = this._engine.n().stash >= limits.stash;
-    if (res) {
-      const hook = this._plSys.lifecycle.stashWarning;
+    const { stash, view } = this._engine.n();
+
+    if (isFacile) {
+      res = stash < limits.stash;
+    } else if (typeof limits.view === 'number') {
+      res = view < limits.view;
+    }
+    if (!res && isFacile) {
+      const hook = this._plSys.lifecycle.limitWarning;
       if (hook.isEmpty()) {
         console.warn(
           'The number of danmu in temporary storage exceeds the limit.' +
             `(${limits.stash})`,
         );
       } else {
-        hook.emit(limits.stash);
+        hook.emit(type, isFacile ? limits.stash : null);
       }
     }
-    return !res;
+    return res;
   }
 
   private _changeViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {

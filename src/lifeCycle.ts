@@ -43,10 +43,10 @@ export function createManagerLifeCycle<T>() {
     resize: new SyncHook<[]>(),
     create: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
-    stashWarning: new SyncHook<[number]>(),
     render: new SyncHook<[BarrageType]>(),
-    updateOptions: new SyncHook<[ManagerOptions]>(),
     push: new SyncHook<[T, BarrageType, boolean]>(),
+    updateOptions: new SyncHook<[ManagerOptions]>(),
+    limitWarning: new SyncHook<[BarrageType, number | null]>(),
     willRender: new SyncWaterfallHook<{
       value: T;
       prevent: boolean;
