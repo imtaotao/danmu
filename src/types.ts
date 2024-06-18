@@ -25,6 +25,16 @@ export type CreateOption<T> = Partial<ManagerOptions> & {
   plugin?: StreamPlugin<T>;
 };
 
+export type StreamPlugin<T> = Omit<
+  ReturnType<StreamManager<T>['_plSys']['use']>,
+  'name'
+> & { name?: string };
+
+export type BarragePlugin<T> = Omit<
+  ReturnType<FacileBarrage<T>['_plSys']['use']>,
+  'name'
+> & { name?: string };
+
 export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
   duration?: number;
@@ -85,12 +95,4 @@ export interface RunOptions<T> extends RenderOptions<T> {
   trackData: TrackData<T>;
 }
 
-export type StreamPlugin<T> = Omit<
-  ReturnType<StreamManager<T>['_plSys']['use']>,
-  'name'
-> & { name?: string };
-
-export type BarragePlugin<T> = Omit<
-  ReturnType<FacileBarrage<T>['_plSys']['use']>,
-  'name'
-> & { name?: string };
+export interface SnapshotData {}

@@ -6,6 +6,7 @@ import type {
   ViewStatus,
   EachCallback,
   FilterCallback,
+  SnapshotData,
   BarrageType,
   StreamPlugin,
   BarragePlugin,
@@ -69,12 +70,12 @@ export class StreamManager<T extends unknown> {
 
     if (hasOwn(newOptions, 'interval')) {
       this.stopPlaying(NO_EMIT);
-      this.startPlaying(NO_EMIT);
+      this.startPlaying(null, NO_EMIT);
     }
     this._plSys.lifecycle.updateOptions.emit(this.options);
   }
 
-  public startPlaying(_flag?: Symbol) {
+  public startPlaying(snapshot?: SnapshotData | null, _flag?: Symbol) {
     if (this.playing()) return;
     if (!this._engine.box) {
       this._engine.format();
@@ -155,6 +156,8 @@ export class StreamManager<T extends unknown> {
       },
     });
   }
+
+  public exportSnapshot() {}
 
   private _canSend(type: BarrageType) {
     let res = true;
