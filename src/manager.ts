@@ -11,9 +11,12 @@ import type {
   PushFlexOptions,
 } from './types';
 
-export interface ManagerOptions extends EngineOptions {
+export interface ManagerOptions extends Omit<EngineOptions, 'viewLimit'> {
   interval: number;
-  stashLimit: number;
+  limits: {
+    stash: number;
+    view?: number;
+  };
 }
 
 export class StreamManager<T extends unknown> {
@@ -154,17 +157,17 @@ export class StreamManager<T extends unknown> {
   }
 
   private _canSend() {
-    const { stashLimit } = this.options;
-    const res = this._engine.n().stash >= stashLimit;
+    const { limits } = this.options;
+    const res = this._engine.n().stash >= limits.stash;
     if (res) {
       const hook = this._plSys.lifecycle.stashWarning;
       if (hook.isEmpty()) {
         console.warn(
           'The number of danmu in temporary storage exceeds the limit.' +
-            `(${stashLimit})`,
+            `(${limits.stash})`,
         );
       } else {
-        hook.emit(stashLimit);
+        hook.emit(limits.stash);
       }
     }
     return !res;
@@ -177,6 +180,7 @@ export class StreamManager<T extends unknown> {
         return;
       }
       this._viewStatus = status;
+      this._plSys.lifecycle[status].emit();
       this._engine
         .asyncEach((b) => {
           if (this._viewStatus === status) {

@@ -20,6 +20,7 @@ import type {
 } from './types';
 
 export interface EngineOptions {
+  viewLimit?: number;
   mode: Mode;
   gap: number;
   height: number;

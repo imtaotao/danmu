@@ -1,6 +1,6 @@
-import type { StreamManager } from './manager';
 import type { FacileBarrage } from './barrages/facile';
-import type { FlexibleOptions, FlexibleBarrage } from './barrages/flexible';
+import type { FlexibleBarrage } from './barrages/flexible';
+import type { StreamManager, ManagerOptions } from './manager';
 
 export type BarrageType = 'facile' | 'flexible';
 
@@ -19,6 +19,11 @@ export type Layer<T> = StashData<T> | FacileBarrage<T>;
 export type EachCallback<T> = (
   b: FacileBarrage<T> | FlexibleBarrage<T>,
 ) => boolean | void;
+
+export type CreateOption<T> = Partial<ManagerOptions> & {
+  container: HTMLElement;
+  plugin?: StreamPlugin<T>;
+};
 
 export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;

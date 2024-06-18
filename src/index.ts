@@ -1,33 +1,34 @@
 import { assert } from 'aidly';
-import { type StreamPlugin } from './types';
-import { StreamManager, type ManagerOptions } from './manager';
+import { StreamManager } from './manager';
+import type { CreateOption } from './types';
 
-export function isManager<T = unknown>(val: unknown): val is StreamManager<T> {
-  return val instanceof StreamManager;
-}
-
-export function create<T extends unknown>(
-  options: Partial<ManagerOptions> & {
-    container: HTMLElement;
-    plugin?: StreamPlugin<T>;
-  },
-) {
+const formatOptions = <T>(options: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
       gap: 0,
       height: 25,
-      mode: 'strict',
       interval: 500,
-      stashLimit: 1024,
       times: [3500, 4500],
+      limits: { stash: 1024 },
+      mode: 'strict',
       direction: 'right',
     },
     options,
   );
   assert(newOptions.gap >= 0, 'The "gap" must be >= 0');
-  const sm = new StreamManager<T>(newOptions);
-  if (newOptions.plugin) {
-    sm.usePlugin(newOptions.plugin);
+  if (typeof newOptions.limits.stash !== 'number') {
+    newOptions.limits.stash = 1024;
   }
+  return newOptions;
+};
+
+export function isManager<T = unknown>(val: unknown): val is StreamManager<T> {
+  return val instanceof StreamManager;
+}
+
+export function create<T extends unknown>(options: CreateOption<T>) {
+  const nop = formatOptions<T>(options);
+  const sm = new StreamManager<T>(nop);
+  if (nop.plugin) sm.usePlugin(nop.plugin);
   return sm;
 }
