@@ -10,6 +10,7 @@
       height: 80vh;
       margin: 50px auto;
       overflow: hidden;
+      border: 1px solid #ddd;
     }
 
     .barrage {
@@ -18,7 +19,7 @@
       line-height: 25px;
       color: bisque;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 14px;
       text-align: center;
       border-radius: 10px;
       background: rgba(0, 0, 0, 0.5);
@@ -34,7 +35,6 @@
       height: 30,
       interval: 500,
       times: [3000, 6000],
-      limits: { view: 100 },
       plugin: {
         hooks: {
           $createNode(b) {
@@ -43,51 +43,58 @@
             b.node.onmouseleave= () => b.resume();
             b.node.onmouseenter = () =>  b.pause();
             b.node.onclick = () => b.destroy()
+            b.loop();
           },
         }
       }
     })
-    manager.mount('#container').startPlaying();
+      .mount('#container')
+      .startPlaying();
 
-    function pushFlexBarrage(v = 'chentao') {
+    function pf(v = 'chentao') {
       manager.pushFlexBarrage(v, {
-        duration: 10000,
         direction: 'left',
-        position: { x: 0, y: 0 }
+        position: (box) => {
+          return { x: 300, y: 300 }
+        }
       })
     }
 
-    let a = 0
-    let r = {};
-    const repectCheck = (b) => {
-      if (r[b.data]) {
-        r[b.data]++
-      } else {
-        r[b.data] = 1
+    function start() {
+      let a = 0
+      let r = {};
+      const repectCheck = (b) => {
+        if (r[b.data]) {
+          r[b.data]++
+        } else {
+          r[b.data] = 1
+        }
+        if (r[b.data] > 1) {
+          console.log('repeat', b.data);
+        }
       }
-      if (r[b.data] > 1) {
-        console.log('repeat', b.data);
-      }
-    }
 
-    setInterval(() => {
-      for (let i = 0; i < 20; i++) {
-        manager.push(a++, {
-          hooks: {
-            moveStart(b) {
-              repectCheck(b);
-              if (b.isFixed) {
-                b.node.style.background = '#24bb83';
-              }
-              if (b.prevData) {
-                b.node.style.color = '#8ae3df';
-                b.node.textContent = `${b.data}_${b.prevData}`;
+      setInterval(() => {
+        for (let i = 0; i < 20; i++) {
+          manager.push(a++, {
+            hooks: {
+              moveStart(b) {
+                if (b.isFixed) {
+                  b.node.style.background = '#24bb83';
+                }
+                if (b.isLoop) {
+                  b.node.style.color = '#fff';
+                } else {
+                  repectCheck(b);
+                }
               }
             }
-          }
-        });
-      }
-    }, 500)
+          });
+        }
+      }, 500)
+    }
+
+    start();
   </script>
 </body>
 </html>

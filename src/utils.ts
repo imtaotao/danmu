@@ -1,9 +1,12 @@
 import { raf } from 'aidly';
 
-let id = 1;
-export const createId = () => id++;
-
 export const NO_EMIT = Symbol();
+
+export const ids = {
+  r: 1,
+  f: 1,
+  b: 1,
+};
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 

@@ -91,7 +91,6 @@ export interface RenderOptions<T> {
 
 export interface RunOptions<T> extends RenderOptions<T> {
   layer: Layer<T>;
-  trackData: TrackData<T>;
 }
 
 export interface SnapshotData {}

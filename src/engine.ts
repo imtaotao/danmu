@@ -1,7 +1,7 @@
 import { Queue } from 'small-queue';
 import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
 import { Box } from './box';
-import { toNumber, nextFrame } from './utils';
+import { nextFrame } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import type {
@@ -147,18 +147,26 @@ export class Engine<T> {
       duration,
       direction,
     });
-
     if (plugin) b.use(plugin);
     b.use(bridgePlugin);
-    b.createNode();
-    b.appendNode(this.box.el);
-    this._sets.view.add(b);
-    this._setAction(b).then(() => {
-      b.destroy();
-      if (this.n().all === 0) {
-        hooks.finished.call(null);
-      }
-    });
+
+    const setup = () => {
+      b.createNode();
+      b.appendNode(this.box.el);
+      this._sets.view.add(b);
+      this._setAction(b).then(() => {
+        if (b.isLoop) {
+          b.setStartStatus();
+          setup();
+        } else {
+          b.destroy();
+          if (this.n().all === 0) {
+            hooks.finished.call(null);
+          }
+        }
+      });
+    };
+    setup();
   }
 
   public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
@@ -181,27 +189,20 @@ export class Engine<T> {
       return loopSlice(l, () => {
         const b = this._sets.stash.shift();
         if (!b) return;
-        const trackData = this._getTrackData();
-        if (!trackData) {
-          this._sets.stash.unshift(b);
-          return false;
-        }
         const { prevent } = hooks.willRender.call(null, {
           value: b.data,
           prevent: false,
           type: 'facile',
         });
         if (prevent === true) return;
-        this._run({
+        return this._run({
           hooks,
           layer: b,
-          trackData,
           viewStatus,
           bridgePlugin,
         });
       });
     };
-
     if (mode === 'strict') {
       this._fx.add((next) => {
         const p = go();
@@ -212,42 +213,49 @@ export class Engine<T> {
     }
   }
 
-  private _run({
-    layer,
-    hooks,
-    trackData,
-    viewStatus,
-    bridgePlugin,
-  }: RunOptions<T>) {
-    const reset = () => {
-      b.reset();
-      this._sets.view.delete(b);
-      this._sets.stash.unshift(b);
-    };
-    const set = () => {
-      b.updatePosition({ y: trackData.location[0] });
-      b.updateTrackData(trackData);
-      b.createNode();
-      b.appendNode(this.box.el);
-
-      this._sets.view.add(b);
-      this._setAction(b, reset).then(() => {
-        b.destroy();
-        if (this.n().all === 0) {
-          hooks.finished.call(null);
-        }
-      });
-    };
+  private _run({ layer, hooks, viewStatus, bridgePlugin }: RunOptions<T>) {
+    const trackData = this._getTrackData();
+    if (!trackData) {
+      this._sets.stash.unshift(layer);
+      return false;
+    }
     const b =
       layer instanceof FacileBarrage
         ? layer
         : this._create('facile', layer.data, viewStatus);
 
+    const onReset = () => {
+      b.reset();
+      this._sets.view.delete(b);
+      this._sets.stash.unshift(b);
+    };
+    const onEnd = () => {
+      if (b.isLoop) {
+        b.setStartStatus();
+        remove(trackData.list, b);
+        setup();
+      } else {
+        b.destroy();
+        if (this.n().all === 0) {
+          hooks.finished.call(null);
+        }
+      }
+    };
+    const setup = () => {
+      b.updatePosition({ y: trackData.location[0] });
+      b.updateTrackData(trackData);
+      b.createNode();
+      b.appendNode(this.box.el);
+      this._sets.view.add(b);
+      this._setAction(b, onReset).then(onEnd);
+    };
+
     if ((layer as StashData<T>).plugin) {
       b.use((layer as StashData<T>).plugin!);
     }
     b.use(bridgePlugin);
-    set();
+    setup();
+    return true;
   }
 
   private _create(
@@ -360,7 +368,7 @@ export class Engine<T> {
             }
           }
         }
-        cur.setEndStyles().then(resolve);
+        cur.setOff().then(resolve);
       });
     });
   }

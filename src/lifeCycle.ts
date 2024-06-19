@@ -1,8 +1,7 @@
-import { toLowerCase } from 'aidly';
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
+import { ids } from './utils';
 import type { StreamManager, ManagerOptions } from './manager';
 import type { Barrage, BarrageType, BarragePlugin } from './types';
-import { createId } from './utils';
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
   return new PluginSystem({
@@ -41,7 +40,6 @@ export function createManagerLifeCycle<T>() {
     hide: new SyncHook<[]>(),
     clear: new SyncHook<[]>(),
     format: new SyncHook<[]>(),
-    create: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
     render: new SyncHook<[BarrageType]>(),
     push: new SyncHook<[T, BarrageType, boolean]>(),
@@ -83,6 +81,6 @@ export function createBridgePlugin<T>(
   }
   return {
     hooks,
-    name: `__global_bridge_${createId()}__`,
+    name: `__bridge_plugin_${ids.b++}__`,
   };
 }

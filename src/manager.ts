@@ -1,6 +1,6 @@
 import { assert, hasOwn } from 'aidly';
 import { Engine, type EngineOptions } from './engine';
-import { NO_EMIT, createId } from './utils';
+import { ids, NO_EMIT } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   ViewStatus,
@@ -77,7 +77,7 @@ export class StreamManager<T extends unknown> {
   }
 
   public usePlugin(plugin: StreamPlugin<T>) {
-    plugin.name = plugin.name || `__runtime_plugin_${createId()}__`;
+    plugin.name = plugin.name || `__runtime_plugin_${ids.r++}__`;
     this._plSys.use(plugin as StreamPlugin<T> & { name: string });
     return this;
   }

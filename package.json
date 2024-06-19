@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "aidly": "^1.0.3",
-    "hooks-plugin": "^1.0.5",
+    "hooks-plugin": "^1.0.6",
     "small-queue": "^1.0.1"
   }
 }

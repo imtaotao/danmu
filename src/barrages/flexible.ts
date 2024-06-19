@@ -1,6 +1,6 @@
 import { now } from 'aidly';
 import { FacileBarrage, FacileOptions } from './facile';
-import { NO_EMIT, whenTransitionEnds } from '../utils';
+import { ids, NO_EMIT, whenTransitionEnds } from '../utils';
 import type { Position, BarrageType, BarragePlugin } from '../types';
 
 export interface FlexibleOptions<T> extends FacileOptions<T> {
@@ -17,7 +17,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
   }
 
   public use(plugin: BarragePlugin<T>) {
-    plugin.name = plugin.name || `__flexible_barrage_plugin__`;
+    plugin.name = plugin.name || `__flexible_barrage_plugin_${ids.f++}__`;
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
@@ -82,58 +82,57 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
 
   public exportSnapshot() {}
 
-  public setEndStyles() {
+  public setOff() {
     return new Promise<void>((resolve) => {
-      this.moving = true;
-      this.recorder.startTime = now();
-
-      if (this.direction === 'none') {
-        const cb = () => {
-          if (this.moveTimer) {
-            this.moveTimer.clear();
-            this.moveTimer = null;
-          }
-          this.moving = false;
-          this.isEnded = true;
-          resolve();
-        };
-        let timer: number | null = setTimeout(cb, this.duration);
-        this.moveTimer = {
-          cb,
-          clear() {
-            clearTimeout(timer as number);
-            timer = null;
-          },
-        };
-        return;
-      }
       if (!this.node) {
         this.moving = false;
         this.isEnded = true;
         resolve();
         return;
       }
-      this._plSys.lifecycle.moveStart.emit(this);
-      const ex =
-        this.direction === 'left' ? this.options.box.width : -this.getWidth();
-      this.setStyle('transition', `transform linear ${this.duration}ms`);
-      this.setStyle(
-        'transform',
-        `translateX(${ex}px) translateY(${this.position.y}px)`,
-      );
-      whenTransitionEnds(this.node).then(() => {
+      const onEnd = () => {
         this.moving = false;
         this.isEnded = true;
-        this._plSys.lifecycle.moveEnd.emit(this);
+        if (this.moveTimer) {
+          this.moveTimer.clear();
+          this.moveTimer = null;
+        }
+        if (!this.isLoop) {
+          this._plSys.lifecycle.moveEnd.emit(this);
+        }
         resolve();
-      });
+      };
+      this.moving = true;
+      this.recorder.startTime = now();
+      this._plSys.lifecycle.moveStart.emit(this);
+
+      if (this.direction === 'none') {
+        let timer: number | null = setTimeout(onEnd, this.duration);
+        this.moveTimer = {
+          cb: onEnd,
+          clear() {
+            clearTimeout(timer as number);
+            timer = null;
+          },
+        };
+      } else {
+        const ex =
+          this.direction === 'left' ? this.options.box.width : -this.getWidth();
+        this.setStyle('transition', `transform linear ${this.duration}ms`);
+        this.setStyle(
+          'transform',
+          `translateX(${ex}px) translateY(${this.position.y}px)`,
+        );
+        whenTransitionEnds(this.node).then(onEnd);
+      }
     });
   }
 
-  protected _initStyles() {
+  public setStartStatus() {
     this.setStyle('zIndex', '0');
+    this.setStyle('transform', '');
+    this.setStyle('transition', '');
     this.setStyle('position', 'absolute');
-    this.setStyle('display', 'inline-block');
     this.setStyle(
       'transform',
       `translateX(${this.position.x}px) translateY(${this.position.y}px)`,

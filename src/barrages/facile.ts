@@ -1,6 +1,6 @@
 import { now, remove } from 'aidly';
 import { createBarrageLifeCycle } from '../lifeCycle';
-import { NO_EMIT, whenTransitionEnds } from '../utils';
+import { ids, NO_EMIT, whenTransitionEnds } from '../utils';
 import type {
   Box,
   Position,
@@ -31,6 +31,7 @@ export interface FacileOptions<T> {
 
 export class FacileBarrage<T> {
   public data: T;
+  public isLoop = false;
   public paused = false;
   public moving = false;
   public isEnded = false;
@@ -62,7 +63,7 @@ export class FacileBarrage<T> {
   }
 
   public use(plugin: BarragePlugin<T>) {
-    plugin.name = plugin.name || `__facile_barrage_plugin__`;
+    plugin.name = plugin.name || `__facile_barrage_plugin_${ids.f++}__`;
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
@@ -70,6 +71,14 @@ export class FacileBarrage<T> {
     this.duration = t;
     this.recorder.duration = t;
     this.isFixed = true;
+  }
+
+  public loop() {
+    this.isLoop = true;
+  }
+
+  public unloop() {
+    this.isLoop = false;
   }
 
   public updatePosition(p: Partial<Position>) {
@@ -177,12 +186,13 @@ export class FacileBarrage<T> {
     this.node = null;
   }
 
+  // Clear state and cache, keep node
   public reset() {
     this.removeNode();
     this._delInTrack();
     this.updateTrackData(null);
+    this.setStartStatus();
     this.setStyle('top', '');
-    this.node = null;
     this.paused = false;
     this.moving = false;
     this.position = { x: 0, y: 0 };
@@ -202,12 +212,12 @@ export class FacileBarrage<T> {
     if (this.node) return;
     this.node = document.createElement('div');
     this._plSys.lock();
-    this._initStyles();
+    this.setStartStatus();
     this._plSys.lifecycle.createNode.emit(this);
   }
 
   public appendNode(container: HTMLElement) {
-    if (!this.node) return;
+    if (!this.node || this.node.parentNode === container) return;
     container.appendChild(this.node);
     this._plSys.lifecycle.appendNode.emit(this);
   }
@@ -221,8 +231,14 @@ export class FacileBarrage<T> {
     this.node.style[key] = val;
   }
 
-  public setEndStyles() {
+  public setOff() {
     return new Promise<void>((resolve) => {
+      if (!this.node) {
+        this.moving = false;
+        this.isEnded = true;
+        resolve();
+        return;
+      }
       const w = this.getWidth();
       const cw = this.options.box.width + w;
       const isNegative = this.direction === 'left' ? 1 : -1;
@@ -236,30 +252,26 @@ export class FacileBarrage<T> {
       }
       this.moving = true;
       this.recorder.startTime = now();
-
-      if (this.node) {
-        this._plSys.lifecycle.moveStart.emit(this);
-        whenTransitionEnds(this.node).then(() => {
-          this.moving = false;
-          this.isEnded = true;
-          this._plSys.lifecycle.moveEnd.emit(this);
-          resolve();
-        });
-      } else {
+      this._plSys.lifecycle.moveStart.emit(this);
+      whenTransitionEnds(this.node).then(() => {
         this.moving = false;
         this.isEnded = true;
+        if (!this.isLoop) {
+          this._plSys.lifecycle.moveEnd.emit(this);
+        }
         resolve();
-      }
+      });
     });
   }
 
-  protected _initStyles() {
+  public setStartStatus() {
     this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
     this.setStyle('zIndex', '1');
     this.setStyle('opacity', '0');
+    this.setStyle('transform', '');
+    this.setStyle('transition', '');
     this.setStyle('position', 'absolute');
     this.setStyle('top', `${this.position.y}px`);
-    this.setStyle('display', 'inline-block');
     if (this.direction !== 'none') {
       this.setStyle(this.direction, '0');
     }
