@@ -50,7 +50,7 @@ export class StreamManager<T extends unknown> {
 
   public format() {
     this._engine.format();
-    this._plSys.lifecycle.resize.emit();
+    this._plSys.lifecycle.format.emit();
   }
 
   public clear() {

@@ -40,7 +40,7 @@ export function createManagerLifeCycle<T>() {
     show: new SyncHook<[]>(),
     hide: new SyncHook<[]>(),
     clear: new SyncHook<[]>(),
-    resize: new SyncHook<[]>(),
+    format: new SyncHook<[]>(),
     create: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
     render: new SyncHook<[BarrageType]>(),
