@@ -1,4 +1,4 @@
-import { hasOwn } from 'aidly';
+import { assert, hasOwn } from 'aidly';
 import { Engine, type EngineOptions } from './engine';
 import { NO_EMIT, createId } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
@@ -22,6 +22,7 @@ export class StreamManager<T extends unknown> {
   private _engine: Engine<T>;
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
+  private _container: HTMLElement | null = null;
   private _plSys = createManagerLifeCycle<T>();
 
   public constructor(public options: ManagerOptions) {
@@ -32,36 +33,53 @@ export class StreamManager<T extends unknown> {
     return this._engine.n();
   }
 
+  public box() {
+    return this._engine.box;
+  }
+
   public playing() {
     return this._renderTimer !== null;
   }
 
   public each(fn: EachCallback<T>) {
-    return this._engine.each(fn);
+    this._engine.each(fn);
+    return this;
   }
 
   public asyncEach(fn: EachCallback<T>) {
-    return this._engine.asyncEach(fn);
-  }
-
-  public getContainer() {
-    return this._engine.box;
+    return this._engine.asyncEach(fn).then(() => this);
   }
 
   public format() {
     this._engine.format();
     this._plSys.lifecycle.format.emit();
+    return this;
+  }
+
+  public mount(container?: HTMLElement | string | null) {
+    if (container) {
+      this._container =
+        typeof container === 'string'
+          ? document.querySelector(container)
+          : container;
+    }
+    assert(this._container, `Invalid "${container}"`);
+    this._engine.box.mount(this._container);
+    this._engine.format();
+    return this;
   }
 
   public clear() {
     this.each((b) => b.removeNode());
     this._engine.clear();
     this._plSys.lifecycle.clear.emit();
+    return this;
   }
 
   public usePlugin(plugin: StreamPlugin<T>) {
     plugin.name = plugin.name || `__runtime_plugin_${createId()}__`;
     this._plSys.use(plugin as StreamPlugin<T> & { name: string });
+    return this;
   }
 
   public updateOptions(newOptions: Partial<ManagerOptions>) {
@@ -73,13 +91,11 @@ export class StreamManager<T extends unknown> {
       this.startPlaying(null, NO_EMIT);
     }
     this._plSys.lifecycle.updateOptions.emit(this.options);
+    return this;
   }
 
   public startPlaying(snapshot?: SnapshotData | null, _flag?: Symbol) {
-    if (this.playing()) return;
-    if (!this._engine.box) {
-      this._engine.format();
-    }
+    if (this.playing()) return this;
     this._plSys.lock();
     if (_flag !== NO_EMIT) {
       this._plSys.lifecycle.start.emit();
@@ -89,10 +105,11 @@ export class StreamManager<T extends unknown> {
       this.render();
     };
     cycle();
+    return this;
   }
 
   public stopPlaying(_flag?: Symbol) {
-    if (!this.playing()) return;
+    if (!this.playing()) return this;
     if (this._renderTimer) {
       clearTimeout(this._renderTimer);
     }
@@ -101,14 +118,15 @@ export class StreamManager<T extends unknown> {
       this._plSys.lifecycle.stop.emit();
     }
     this._plSys.unlock();
+    return this;
   }
 
   public show(filter?: FilterCallback<T>) {
-    return this._changeViewStatus('show', filter);
+    return this._changeViewStatus('show', filter).then(() => this);
   }
 
   public hide(filter?: FilterCallback<T>) {
-    return this._changeViewStatus('hide', filter);
+    return this._changeViewStatus('hide', filter).then(() => this);
   }
 
   public push(data: T, plugin?: BarragePlugin<T>) {
@@ -145,7 +163,7 @@ export class StreamManager<T extends unknown> {
   }
 
   public render() {
-    if (!this.playing()) return;
+    if (!this.playing()) return this;
     this._engine.render({
       viewStatus: this._viewStatus,
       bridgePlugin: createBridgePlugin(this._plSys),
@@ -155,9 +173,12 @@ export class StreamManager<T extends unknown> {
         willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
       },
     });
+    return this;
   }
 
-  public setArea(x?: number, y?: number) {}
+  public setArea(x?: number, y?: number) {
+    return this;
+  }
 
   public exportSnapshot() {}
 

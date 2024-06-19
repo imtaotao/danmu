@@ -21,7 +21,6 @@ export type EachCallback<T> = (
 ) => boolean | void;
 
 export type CreateOption<T> = Partial<ManagerOptions> & {
-  container: HTMLElement;
   plugin?: StreamPlugin<T>;
 };
 

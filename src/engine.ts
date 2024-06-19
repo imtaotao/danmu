@@ -1,10 +1,10 @@
 import { Queue } from 'small-queue';
 import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
+import { Box } from './box';
 import { toNumber, nextFrame } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import type {
-  Box,
   Mode,
   TrackData,
   StashData,
@@ -23,7 +23,6 @@ export interface EngineOptions {
   mode: Mode;
   gap: number;
   height: number;
-  container: HTMLElement;
   times: [number, number];
   direction: Omit<Direction, 'none'>;
   limits: {
@@ -34,7 +33,7 @@ export interface EngineOptions {
 
 export class Engine<T> {
   public rows = 0;
-  public box?: Box;
+  public box = new Box();
   private _fx = new Queue();
   private _tracks = [] as Array<TrackData<T>>;
   private _sets = {
@@ -102,15 +101,8 @@ export class Engine<T> {
   }
 
   public format() {
-    const { height, container } = this.options;
-    const styles = getComputedStyle(container);
-
-    this.box = {
-      el: container,
-      width: toNumber(styles.width),
-      height: toNumber(styles.height),
-    };
-    this._fixPosition(styles);
+    const { height } = this.options;
+    this.box.format();
     this.rows = +(this.box.height / height).toFixed(0);
 
     for (let i = 0; i < this.rows; i++) {
@@ -159,7 +151,7 @@ export class Engine<T> {
     if (plugin) b.use(plugin);
     b.use(bridgePlugin);
     b.createNode();
-    b.appendNode(this.options.container);
+    b.appendNode(this.box.el);
     this._sets.view.add(b);
     this._setAction(b).then(() => {
       b.destroy();
@@ -183,6 +175,7 @@ export class Engine<T> {
         l = this.rows;
       }
       if (l <= 0) return;
+
       hooks.render.call(null, 'facile');
 
       return loopSlice(l, () => {
@@ -235,7 +228,7 @@ export class Engine<T> {
       b.updatePosition({ y: trackData.location[0] });
       b.updateTrackData(trackData);
       b.createNode();
-      b.appendNode(this.options.container);
+      b.appendNode(this.box.el);
 
       this._sets.view.add(b);
       this._setAction(b, reset).then(() => {
@@ -311,16 +304,6 @@ export class Engine<T> {
     );
     assert(d > 0, `Invalid move time "${d}"`);
     return d;
-  }
-
-  private _fixPosition(styles: CSSStyleDeclaration) {
-    if (
-      !styles.position ||
-      styles.position === 'none' ||
-      styles.position === 'static'
-    ) {
-      this.options.container.style.position = 'relative';
-    }
   }
 
   private _last(ls: Array<FacileBarrage<T>>, li: number) {

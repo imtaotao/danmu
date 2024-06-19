@@ -1,11 +1,25 @@
-export interface BoxOptions {}
+import { toNumber } from './utils';
+
+const createEl = () => {
+  const el = document.createElement('div');
+  el.style.width = '100%';
+  el.style.height = '100%';
+  el.style.position = 'relative';
+  return el;
+};
 
 export class Box {
-  public el = document.createElement('div');
+  public width = 0;
+  public height = 0;
+  public el = createEl();
 
-  public constructor(public options: BoxOptions) {}
+  public mount(container: HTMLElement) {
+    container.append(this.el);
+  }
 
-  public mount(container: HTMLElement) {}
-
-  private _format() {}
+  public format() {
+    const styles = getComputedStyle(this.el);
+    this.width = toNumber(styles.width);
+    this.height = toNumber(styles.height);
+  }
 }

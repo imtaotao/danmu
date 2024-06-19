@@ -5,13 +5,13 @@ import type { CreateOption } from './types';
 const formatOptions = <T>(options: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
+      mode: 'strict',
+      direction: 'right',
       gap: 0,
       height: 25,
       interval: 500,
       times: [3500, 4500],
       limits: { stash: 1024 },
-      mode: 'strict',
-      direction: 'right',
     },
     options,
   );

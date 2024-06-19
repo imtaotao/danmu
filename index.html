@@ -34,7 +34,7 @@
       height: 30,
       interval: 500,
       times: [3000, 6000],
-      container: document.getElementById('container'),
+      limits: { view: 100 },
       plugin: {
         hooks: {
           $createNode(b) {
@@ -47,6 +47,7 @@
         }
       }
     })
+    manager.mount('#container').startPlaying();
 
     function pushFlexBarrage(v = 'chentao') {
       manager.pushFlexBarrage(v, {
@@ -55,8 +56,6 @@
         position: { x: 0, y: 0 }
       })
     }
-
-    manager.startPlaying();
 
     let a = 0
     let r = {};
@@ -75,8 +74,6 @@
       for (let i = 0; i < 20; i++) {
         manager.push(a++, {
           hooks: {
-           
-
             moveStart(b) {
               repectCheck(b);
               if (b.isFixed) {
