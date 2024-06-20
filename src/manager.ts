@@ -1,9 +1,9 @@
 import { assert, hasOwn } from 'aidly';
-import { Engine, type EngineOptions } from './engine';
 import { ids, NO_EMIT } from './utils';
-import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
+import { Engine, type EngineOptions } from './engine';
+import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   Barrage,
   BarrageType,
