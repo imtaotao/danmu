@@ -97,9 +97,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
           this.moveTimer.clear();
           this.moveTimer = null;
         }
-        if (!this.isLoop) {
-          this._plSys.lifecycle.moveEnd.emit(this);
-        }
+        this._plSys.lifecycle.moveEnd.emit(this);
         resolve();
       };
       this.moving = true;

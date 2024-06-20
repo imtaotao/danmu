@@ -2,14 +2,17 @@ import { assert, hasOwn } from 'aidly';
 import { Engine, type EngineOptions } from './engine';
 import { ids, NO_EMIT } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
+import { FacileBarrage } from './barrages/facile';
+import { FlexibleBarrage } from './barrages/flexible';
 import type {
-  ViewStatus,
+  Barrage,
+  BarrageType,
+  BarragePlugin,
   EachCallback,
   FilterCallback,
-  SnapshotData,
-  BarrageType,
+  ViewStatus,
   StreamPlugin,
-  BarragePlugin,
+  SnapshotData,
   PushFlexOptions,
 } from './types';
 
@@ -41,6 +44,10 @@ export class StreamManager<T extends unknown> {
     return this._renderTimer !== null;
   }
 
+  public isBarrage(b: unknown): b is Barrage<T> {
+    return b instanceof FacileBarrage || b instanceof FlexibleBarrage;
+  }
+
   public each(fn: EachCallback<T>) {
     this._engine.each(fn);
     return this;
@@ -70,6 +77,7 @@ export class StreamManager<T extends unknown> {
   }
 
   public clear() {
+    // No need to use `destroy` to save loop times
     this.each((b) => b.removeNode());
     this._engine.clear();
     this._plSys.lifecycle.clear.emit();
@@ -129,15 +137,27 @@ export class StreamManager<T extends unknown> {
     return this._changeViewStatus('hide', filter).then(() => this);
   }
 
-  public push(data: T, plugin?: BarragePlugin<T>) {
+  public push(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
     if (!this._canSend('facile')) return false;
+    if (this.isBarrage(data) && plugin) {
+      console.warn(
+        'When you add a barrage, the second parameter is invalid. ' +
+          'You should use `barrage.use({})`.',
+      );
+    }
     this._engine.add(data, plugin, true);
     this._plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
-  public unshift(data: T, plugin?: BarragePlugin<T>) {
+  public unshift(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
     if (!this._canSend('facile')) return false;
+    if (this.isBarrage(data) && plugin) {
+      console.warn(
+        'When you add a barrage, the second parameter is invalid. ' +
+          'You should use `barrage.use({})`.',
+      );
+    }
     this._engine.add(data, plugin, false);
     this._plSys.lifecycle.push.emit(data, 'facile', false);
     return true;

@@ -34,7 +34,8 @@
       gap: 20,
       height: 30,
       interval: 500,
-      times: [3000, 6000],
+      times: [5000, 8000],
+      limits: { view: 1000 },
       plugin: {
         hooks: {
           $createNode(b) {
@@ -43,7 +44,9 @@
             b.node.onmouseleave= () => b.resume();
             b.node.onmouseenter = () =>  b.pause();
             b.node.onclick = () => b.destroy()
-            b.loop();
+            if (b.data === 10) {
+              b.setloop();
+            }
           },
         }
       }
@@ -83,11 +86,17 @@
                   b.node.style.background = '#24bb83';
                 }
                 if (b.loops > 0) {
-                  b.node.style.color = '#fff';
+                  b.node.style.color = '#000';
+                  b.node.style.zIndex = 1000
                 } else {
                   repeatCheck(b);
                 }
-              }
+              },
+              moveEnd(b) {
+                if (b.isLoop) {
+                  console.log(b.data);
+                }
+              },
             }
           });
         }
@@ -95,6 +104,18 @@
     }
 
     start();
+
+    function setLoop(val) {
+      manager.push(val, {
+        hooks: {
+          moveEnd(b) {
+            b.reset();
+            manager.unshift(b);
+          },
+        },
+      })
+    }
+    setLoop('chentao')
   </script>
 </body>
 </html>

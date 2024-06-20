@@ -74,7 +74,7 @@ export class FacileBarrage<T> {
     this.isFixed = true;
   }
 
-  public loop() {
+  public setloop() {
     this.isLoop = true;
   }
 
@@ -189,14 +189,14 @@ export class FacileBarrage<T> {
 
   // Clear state and cache, keep node
   public reset() {
-    this.removeNode();
-    this._delInTrack();
-    this.updateTrackData(null);
-    this.setStartStatus();
-    this.setStyle('top', '');
     this.paused = false;
     this.moving = false;
     this.position = { x: 0, y: 0 };
+    this.removeNode();
+    this._delInTrack();
+    this.setStartStatus();
+    this.setStyle('top', '');
+    this.updateTrackData(null);
     if (this.moveTimer) {
       this.moveTimer.clear();
       this.moveTimer = null;
@@ -257,9 +257,7 @@ export class FacileBarrage<T> {
       whenTransitionEnds(this.node).then(() => {
         this.moving = false;
         this.isEnded = true;
-        if (!this.isLoop) {
-          this._plSys.lifecycle.moveEnd.emit(this);
-        }
+        this._plSys.lifecycle.moveEnd.emit(this);
         resolve();
       });
     });

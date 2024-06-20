@@ -53,8 +53,13 @@ export class Engine<T> {
     };
   }
 
-  public add(data: T, plugin?: BarragePlugin<T>, isPush?: boolean) {
-    this._sets.stash[isPush ? 'push' : 'unshift']({ data, plugin });
+  public add(
+    data: T | FacileBarrage<T>,
+    plugin?: BarragePlugin<T>,
+    isPush?: boolean,
+  ) {
+    const val = data instanceof FacileBarrage ? data : { data, plugin };
+    this._sets.stash[isPush ? 'push' : 'unshift'](val);
   }
 
   public updateOptions(newOptions: Partial<EngineOptions>) {
@@ -159,11 +164,11 @@ export class Engine<T> {
           b.loops++;
           b.setStartStatus();
           setup();
-        } else {
-          b.destroy();
-          if (this.n().all === 0) {
-            hooks.finished.call(null);
-          }
+          return;
+        }
+        b.destroy();
+        if (this.n().all === 0) {
+          hooks.finished.call(null);
         }
       });
     };
@@ -173,7 +178,7 @@ export class Engine<T> {
   public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
     const { mode, limits } = this.options;
 
-    const go = () => {
+    const launch = () => {
       const n = this.n();
       let l = n.stash;
       if (typeof limits.view === 'number') {
@@ -184,78 +189,101 @@ export class Engine<T> {
         l = this.rows;
       }
       if (l <= 0) return;
-
       hooks.render.call(null, 'facile');
-
-      return loopSlice(l, () => {
-        const layer = this._sets.stash.shift();
-        if (!layer) return;
-        const trackData = this._getTrackData();
-        if (!trackData) {
-          this._sets.stash.unshift(layer);
-          return false;
-        }
-        let b: FacileBarrage<T>;
-        if (layer instanceof FacileBarrage) {
-          b = layer;
-        } else {
-          b = this._create('facile', layer.data, viewStatus);
-          if (layer.plugin) b.use(layer.plugin);
-          b.use(bridgePlugin);
-        }
-        const { prevent } = hooks.willRender.call(null, {
-          barrage: b,
-          prevent: false,
-          type: 'facile',
-        });
-        if (prevent === true) return;
-        return this._run(b, trackData, hooks);
-      });
+      return loopSlice(l, () => this._run(viewStatus, bridgePlugin, hooks));
     };
+
     if (mode === 'strict') {
       this._fx.add((next) => {
-        const p = go();
+        const p = launch();
         p ? p.then(next) : next();
       });
     } else {
-      go();
+      launch();
     }
   }
 
   private _run(
-    b: FacileBarrage<T>,
-    trackData: TrackData<T>,
+    viewStatus: ViewStatus,
+    bridgePlugin: BarragePlugin<T>,
     hooks: RenderOptions<T>['hooks'],
   ) {
-    const onReset = () => {
-      b.reset();
-      this._sets.view.delete(b);
-      this._sets.stash.unshift(b);
-    };
+    let b: FacileBarrage<T>;
+    const layer = this._sets.stash.shift();
+    if (!layer) return;
+    const trackData = this._getTrackData();
+    if (!trackData) {
+      this._sets.stash.unshift(layer);
+      return false;
+    }
 
-    const setup = () => {
-      b.updatePosition({ y: trackData.location[0] });
+    if (layer instanceof FacileBarrage) {
+      b = layer;
+    } else {
+      b = this._create('facile', layer.data, viewStatus);
+      if (layer.plugin) b.use(layer.plugin);
+      b.use(bridgePlugin);
+    }
+    const { prevent } = hooks.willRender.call(null, {
+      barrage: b,
+      prevent: false,
+      type: 'facile',
+    });
+
+    if (prevent !== true) {
       b.updateTrackData(trackData);
+      b.updatePosition({ y: trackData.location[0] });
       b.createNode();
       b.appendNode(this.box.el);
       this._sets.view.add(b);
-      this._setAction(b, onReset).then(() => {
-        if (b.isLoop) {
-          b.loops++;
-          b.setStartStatus();
-          remove(trackData.list, b);
-          setup();
-        } else {
+
+      const setup = () => {
+        this._setAction(b).then((isStash) => {
+          if (isStash) {
+            b.reset();
+            this._sets.view.delete(b);
+            this._sets.stash.unshift(b);
+            return;
+          }
+          if (b.isLoop) {
+            b.loops++;
+            b.setStartStatus();
+            setup();
+            return;
+          }
           b.destroy();
           if (this.n().all === 0) {
             hooks.finished.call(null);
           }
-        }
-      });
-    };
+        });
+      };
+      setup();
+    }
+  }
 
-    setup();
-    return true;
+  private _setAction(cur: Barrage<T>) {
+    return new Promise<boolean>((resolve) => {
+      nextFrame(() => {
+        assert(cur.trackData);
+        const { mode, times } = this.options;
+
+        if (mode !== 'none' && cur.type === 'facile') {
+          const prev = this._last(cur.trackData.list, 1);
+          if (prev && cur.loops === 0) {
+            const fixTime = this._collisionPrediction(prev, cur);
+            if (fixTime !== null) {
+              if (isInBounds(times, fixTime)) {
+                cur.fixDuration(fixTime);
+              } else if (mode === 'strict') {
+                resolve(true);
+                return;
+              }
+            }
+          }
+        }
+        cur.setOff().then(() => resolve(false));
+      });
+    });
   }
 
   private _create(
@@ -332,10 +360,10 @@ export class Engine<T> {
   private _getTrackData(
     founds = new Set<number>(),
     prev?: TrackData<T>,
-  ): TrackData<T> | null | undefined {
+  ): TrackData<T> | null {
     const { gap, mode } = this.options;
     if (founds.size === this._tracks.length) {
-      return mode === 'adaptive' ? prev : null;
+      return mode === 'adaptive' ? prev! : null;
     }
     const i = this._selectTrackIdx(founds);
     const trackData = this._tracks[i];
@@ -346,31 +374,6 @@ export class Engine<T> {
     }
     founds.add(i);
     return this._getTrackData(founds, trackData);
-  }
-
-  private _setAction(cur: Barrage<T>, stash?: () => void) {
-    return new Promise<void>((resolve) => {
-      nextFrame(() => {
-        const { mode, times } = this.options;
-        if (mode !== 'none' && cur.type === 'facile') {
-          assert(cur.trackData);
-          const prev = this._last(cur.trackData.list, 1);
-          if (prev) {
-            const fixTime = this._collisionPrediction(prev, cur);
-            if (fixTime !== null) {
-              if (isInBounds(times, fixTime)) {
-                cur.fixDuration(fixTime);
-              } else if (mode === 'strict') {
-                stash && stash(); // Must be synchronous behavior
-                resolve();
-                return;
-              }
-            }
-          }
-        }
-        cur.setOff().then(resolve);
-      });
-    });
   }
 
   private _collisionPrediction(prv: FacileBarrage<T>, cur: FacileBarrage<T>) {
