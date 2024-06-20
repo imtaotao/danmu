@@ -31,6 +31,7 @@ export interface FacileOptions<T> {
 
 export class FacileBarrage<T> {
   public data: T;
+  public loops = 0;
   public isLoop = false;
   public paused = false;
   public moving = false;

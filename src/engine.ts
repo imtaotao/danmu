@@ -14,7 +14,6 @@ import type {
   Barrage,
   BarrageType,
   BarragePlugin,
-  RunOptions,
   RenderOptions,
   PushFlexOptions,
 } from './types';
@@ -134,14 +133,8 @@ export class Engine<T> {
       bridgePlugin,
     }: RenderOptions<T> & PushFlexOptions<T>,
   ) {
-    hooks.render.call(null, 'flexible');
-    const { prevent } = hooks.willRender.call(null, {
-      value: data,
-      prevent: false,
-      type: 'flexible',
-    });
-    if (prevent === true) return;
     assert(this.box, 'Container not formatted');
+    hooks.render.call(null, 'flexible');
     const b = this._create('flexible', data, viewStatus, {
       position,
       duration,
@@ -150,12 +143,20 @@ export class Engine<T> {
     if (plugin) b.use(plugin);
     b.use(bridgePlugin);
 
+    const { prevent } = hooks.willRender.call(null, {
+      barrage: b,
+      prevent: false,
+      type: 'flexible',
+    });
+    if (prevent === true) return;
+
     const setup = () => {
       b.createNode();
       b.appendNode(this.box.el);
       this._sets.view.add(b);
       this._setAction(b).then(() => {
         if (b.isLoop) {
+          b.loops++;
           b.setStartStatus();
           setup();
         } else {
@@ -187,20 +188,28 @@ export class Engine<T> {
       hooks.render.call(null, 'facile');
 
       return loopSlice(l, () => {
-        const b = this._sets.stash.shift();
-        if (!b) return;
+        const layer = this._sets.stash.shift();
+        if (!layer) return;
+        const trackData = this._getTrackData();
+        if (!trackData) {
+          this._sets.stash.unshift(layer);
+          return false;
+        }
+        let b: FacileBarrage<T>;
+        if (layer instanceof FacileBarrage) {
+          b = layer;
+        } else {
+          b = this._create('facile', layer.data, viewStatus);
+          if (layer.plugin) b.use(layer.plugin);
+          b.use(bridgePlugin);
+        }
         const { prevent } = hooks.willRender.call(null, {
-          value: b.data,
+          barrage: b,
           prevent: false,
           type: 'facile',
         });
         if (prevent === true) return;
-        return this._run({
-          hooks,
-          layer: b,
-          viewStatus,
-          bridgePlugin,
-        });
+        return this._run(b, trackData, hooks);
       });
     };
     if (mode === 'strict') {
@@ -213,47 +222,38 @@ export class Engine<T> {
     }
   }
 
-  private _run({ layer, hooks, viewStatus, bridgePlugin }: RunOptions<T>) {
-    const trackData = this._getTrackData();
-    if (!trackData) {
-      this._sets.stash.unshift(layer);
-      return false;
-    }
-    const b =
-      layer instanceof FacileBarrage
-        ? layer
-        : this._create('facile', layer.data, viewStatus);
-
+  private _run(
+    b: FacileBarrage<T>,
+    trackData: TrackData<T>,
+    hooks: RenderOptions<T>['hooks'],
+  ) {
     const onReset = () => {
       b.reset();
       this._sets.view.delete(b);
       this._sets.stash.unshift(b);
     };
-    const onEnd = () => {
-      if (b.isLoop) {
-        b.setStartStatus();
-        remove(trackData.list, b);
-        setup();
-      } else {
-        b.destroy();
-        if (this.n().all === 0) {
-          hooks.finished.call(null);
-        }
-      }
-    };
+
     const setup = () => {
       b.updatePosition({ y: trackData.location[0] });
       b.updateTrackData(trackData);
       b.createNode();
       b.appendNode(this.box.el);
       this._sets.view.add(b);
-      this._setAction(b, onReset).then(onEnd);
+      this._setAction(b, onReset).then(() => {
+        if (b.isLoop) {
+          b.loops++;
+          b.setStartStatus();
+          remove(trackData.list, b);
+          setup();
+        } else {
+          b.destroy();
+          if (this.n().all === 0) {
+            hooks.finished.call(null);
+          }
+        }
+      });
     };
 
-    if ((layer as StashData<T>).plugin) {
-      b.use((layer as StashData<T>).plugin!);
-    }
-    b.use(bridgePlugin);
     setup();
     return true;
   }

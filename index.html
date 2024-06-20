@@ -63,7 +63,7 @@
     function start() {
       let a = 0
       let r = {};
-      const repectCheck = (b) => {
+      const repeatCheck = (b) => {
         if (r[b.data]) {
           r[b.data]++
         } else {
@@ -82,10 +82,10 @@
                 if (b.isFixed) {
                   b.node.style.background = '#24bb83';
                 }
-                if (b.isLoop) {
+                if (b.loops > 0) {
                   b.node.style.color = '#fff';
                 } else {
-                  repectCheck(b);
+                  repeatCheck(b);
                 }
               }
             }
