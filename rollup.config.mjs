@@ -12,7 +12,7 @@ const { dirname: __dirname } = import.meta;
 
 const banner =
   "/*!\n" +
-  ` * danmu.js v${pkg.version}\n` +
+  ` * ${pkg.name} v${pkg.version}\n` +
   ` * (c) 2019-${new Date().getFullYear()} Imtaotao\n` +
   " * Released under the MIT License.\n" +
   " */";
