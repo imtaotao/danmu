@@ -43,7 +43,7 @@ export class Engine<T> {
 
   public constructor(public options: EngineOptions) {}
 
-  public n() {
+  public len() {
     const { stash, view, flexible } = this._sets;
     return {
       stash: stash.length,
@@ -167,7 +167,7 @@ export class Engine<T> {
           return;
         }
         b.destroy();
-        if (this.n().all === 0) {
+        if (this.len().all === 0) {
           hooks.finished.call(null);
         }
       });
@@ -179,10 +179,10 @@ export class Engine<T> {
     const { mode, limits } = this.options;
 
     const launch = () => {
-      const n = this.n();
-      let l = n.stash;
+      const num = this.len();
+      let l = num.stash;
       if (typeof limits.view === 'number') {
-        const max = limits.view - n.view;
+        const max = limits.view - num.view;
         if (l > max) l = max;
       }
       if (mode === 'strict' && l > this.rows) {
@@ -252,7 +252,7 @@ export class Engine<T> {
             return;
           }
           b.destroy();
-          if (this.n().all === 0) {
+          if (this.len().all === 0) {
             hooks.finished.call(null);
           }
         });

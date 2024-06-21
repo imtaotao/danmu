@@ -32,8 +32,8 @@ export class StreamManager<T extends unknown> {
     this._engine = new Engine(options);
   }
 
-  public n() {
-    return this._engine.n();
+  public len() {
+    return this._engine.len();
   }
 
   public box() {
@@ -206,7 +206,7 @@ export class StreamManager<T extends unknown> {
     let res = true;
     const isFacile = type === 'facile';
     const { limits } = this.options;
-    const { stash, view } = this._engine.n();
+    const { stash, view } = this._engine.len();
 
     if (isFacile) {
       res = stash < limits.stash;
