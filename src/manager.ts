@@ -1,5 +1,5 @@
 import { assert, hasOwn } from 'aidly';
-import { ids, NO_EMIT } from './utils';
+import { ids, NO_EMIT, toNumber } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import { Engine, type EngineOptions } from './engine';
@@ -15,6 +15,7 @@ import type {
   SnapshotData,
   PushFlexOptions,
 } from './types';
+import { Box } from './box';
 
 export interface ManagerOptions extends EngineOptions {
   interval: number;
@@ -71,16 +72,19 @@ export class StreamManager<T extends unknown> {
           : container;
     }
     assert(this._container, `Invalid "${container}"`);
-    this._engine.box.mount(this._container);
+    if (this.playing()) this.clear(NO_EMIT);
+    this._container.appendChild(this._engine.box.el);
     this._engine.format();
     return this;
   }
 
-  public clear() {
+  public clear(_flag?: Symbol) {
     // No need to use `destroy` to save loop times
     this.each((b) => b.removeNode());
     this._engine.clear();
-    this._plSys.lifecycle.clear.emit();
+    if (_flag !== NO_EMIT) {
+      this._plSys.lifecycle.clear.emit();
+    }
     return this;
   }
 
@@ -168,7 +172,7 @@ export class StreamManager<T extends unknown> {
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
     }
-    this._engine.renderFlexBarrage(data, {
+    const res = this._engine.renderFlexibleBarrage(data, {
       ...options,
       viewStatus: this._viewStatus,
       bridgePlugin: createBridgePlugin(this._plSys),
@@ -178,13 +182,16 @@ export class StreamManager<T extends unknown> {
         willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
       },
     });
-    this._plSys.lifecycle.push.emit(data, 'flexible', true);
-    return true;
+    if (res) {
+      this._plSys.lifecycle.push.emit(data, 'flexible', true);
+      return true;
+    }
+    return false;
   }
 
   public render() {
     if (!this.playing()) return this;
-    this._engine.render({
+    this._engine.renderFacileBarrage({
       viewStatus: this._viewStatus,
       bridgePlugin: createBridgePlugin(this._plSys),
       hooks: {
@@ -196,7 +203,14 @@ export class StreamManager<T extends unknown> {
     return this;
   }
 
-  public setArea(x?: number, y?: number) {
+  public setArea({ width, height }: { width?: string; height?: string }) {
+    const size = Object.create(null) as Box['size'];
+    if (width) size.x = toNumber(width) / 100;
+    if (height) size.y = toNumber(height) / 100;
+    if (Object.keys(size).length > 0) {
+      this._engine.box.updateSize(size);
+      this._engine.format();
+    }
     return this;
   }
 

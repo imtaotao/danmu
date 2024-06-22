@@ -9,7 +9,6 @@
       width: 80vw;
       height: 80vh;
       margin: 50px auto;
-      overflow: hidden;
       border: 1px solid #ddd;
     }
 
@@ -33,7 +32,7 @@
     const manager = Danmu.create({
       gap: 20,
       interval: 500,
-      trackHeight: '361px',
+      trackHeight: '10%',
       times: [5000, 8000],
       plugin: {
         hooks: {
@@ -53,14 +52,17 @@
       .mount('#container')
       .startPlaying();
 
-    function pf(v = 'chentao') {
+    function pf(y = 300, v = 'chentao') {
       manager.pushFlexBarrage(v, {
-        direction: 'left',
+        direction: 'none',
+        duration: 100000,
         position: (box) => {
-          return { x: 300, y: 300 }
+          return { x: 300, y }
         }
       })
     }
+    pf(300);
+    pf(400)
 
     function start() {
       let a = 0

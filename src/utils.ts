@@ -10,6 +10,11 @@ export const ids = {
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 
+export const randomIdx = (founds: Set<number>, rows: number): number => {
+  const idx = Math.floor(Math.random() * rows);
+  return founds.has(idx) ? randomIdx(founds, rows) : idx;
+};
+
 export const toNumber = (val: number | string) => {
   if (typeof val === 'number') return val;
   if (typeof val === 'string') {

@@ -1,16 +1,9 @@
 import { Queue } from 'small-queue';
-import {
-  assert,
-  hasOwn,
-  remove,
-  toUpperCase,
-  loopSlice,
-  isInBounds,
-} from 'aidly';
+import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
 import { Box } from './box';
-import { toNumber, nextFrame } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
+import { toNumber, randomIdx, nextFrame } from './utils';
 import type {
   Mode,
   TrackData,
@@ -48,8 +41,20 @@ export class Engine<T> {
     stash: [] as Array<StashData<T> | FacileBarrage<T>>,
   };
 
-  public constructor(public options: EngineOptions) {
-    this.options.gap = this._n('width', this.options.gap);
+  public constructor(public options: EngineOptions) {}
+
+  public n(attr: 'height' | 'width', val: number | string) {
+    let n =
+      typeof val === 'number'
+        ? val
+        : typeof val === 'string'
+        ? val.endsWith('%')
+          ? this.box[attr] * (toNumber(val) / 100)
+          : toNumber(val)
+        : NaN;
+    if (n > this.box[attr]) n = this.box[attr];
+    assert(n && !Number.isNaN(n), `Invalid "${n}(${val})"`);
+    return n;
   }
 
   public len() {
@@ -74,7 +79,7 @@ export class Engine<T> {
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this.options = Object.assign(this.options, newOptions);
     if (hasOwn(newOptions, 'gap')) {
-      this.options.gap = this._n('width', this.options.gap);
+      this.options.gap = this.n('width', this.options.gap);
     }
     if (hasOwn(newOptions, 'trackHeight') || hasOwn(newOptions, 'container')) {
       this.format();
@@ -85,9 +90,10 @@ export class Engine<T> {
     this._sets.view.clear();
     this._sets.flexible.clear();
     this._sets.stash.length = 0;
-    this.format();
   }
 
+  // `flexible` and `view` are both xx,
+  // so deleting some of them in the loop will not affect
   public each(fn: EachCallback<T>) {
     for (const item of this._sets.flexible) {
       if (fn(item) === false) return;
@@ -97,6 +103,8 @@ export class Engine<T> {
     }
   }
 
+  // Because there are copies brought by `Array.from`,
+  // deleting it in all loops will not affect
   public asyncEach(fn: EachCallback<T>) {
     let stop = false;
     const arr = Array.from(this._sets.flexible);
@@ -119,21 +127,27 @@ export class Engine<T> {
   public format() {
     // Need to format the container first
     this.box.format();
-    const h = this._n('height', this.options.trackHeight);
+    this.options.gap = this.n('width', this.options.gap);
+    const h = this.n('height', this.options.trackHeight);
     const rows = (this.rows = +(this.box.height / h).toFixed(0));
 
     for (let i = 0; i < rows; i++) {
-      const s = h * i;
-      const e = h * (i + 1) - 1;
-      const m = (e - s) / 2 + s;
-      const location = [s, m, e] as [number, number, number];
+      const start = h * i;
+      const end = h * (i + 1) - 1;
+      const mid = (end - start) / 2 + start;
+      const location = [start, mid, end] as [number, number, number];
 
-      if (location[1] > this.box.height) {
+      if (end > this.box.height) {
         this.rows--;
         if (this._tracks[i]) {
           this._tracks.splice(i, 1);
         }
       } else if (this._tracks[i]) {
+        // If the reused track is larger than the container height,
+        // the overflow needs to be deleted.
+        if (this._tracks[i].location[2] > this.box.height) {
+          this._clearTarck(i);
+        }
         this._tracks[i].location = location;
       } else {
         this._tracks.push({
@@ -142,9 +156,22 @@ export class Engine<T> {
         });
       }
     }
+    // Delete the extra tracks and the barrages inside
+    if (this._tracks.length > this.rows) {
+      for (let i = this.rows; i < this._tracks.length; i++) {
+        this._clearTarck(i);
+      }
+      this._tracks.splice(this.rows, this._tracks.length - this.rows);
+    }
+    // If `flexible` barrage is also outside the view, it also needs to be deleted
+    for (const b of this._sets.flexible) {
+      if (b.position.y > this.box.height) {
+        b.destroy();
+      }
+    }
   }
 
-  public renderFlexBarrage(
+  public renderFlexibleBarrage(
     data: T,
     {
       hooks,
@@ -163,6 +190,8 @@ export class Engine<T> {
       duration,
       direction,
     });
+    if (b.position.x > this.box.width) return false;
+    if (b.position.y > this.box.height) return false;
     if (plugin) b.use(plugin);
     b.use(bridgePlugin);
 
@@ -171,11 +200,13 @@ export class Engine<T> {
       prevent: false,
       type: 'flexible',
     });
-    if (prevent === true) return;
+    if (prevent === true) {
+      return false;
+    }
 
     const setup = () => {
       b.createNode();
-      this._sets.view.add(b);
+      this._sets.flexible.add(b as FlexibleBarrage<T>);
       this._setAction(b).then(() => {
         if (b.isLoop) {
           b.loops++;
@@ -190,9 +221,14 @@ export class Engine<T> {
       });
     };
     setup();
+    return true;
   }
 
-  public render({ hooks, viewStatus, bridgePlugin }: RenderOptions<T>) {
+  public renderFacileBarrage({
+    hooks,
+    viewStatus,
+    bridgePlugin,
+  }: RenderOptions<T>) {
     const { mode, limits } = this.options;
 
     const launch = () => {
@@ -282,10 +318,9 @@ export class Engine<T> {
   private _setAction(cur: Barrage<T>) {
     return new Promise<boolean>((resolve) => {
       nextFrame(() => {
-        assert(cur.trackData);
         const { mode, times } = this.options;
-
         if (mode !== 'none' && cur.type === 'facile') {
+          assert(cur.trackData, 'Barrage missing "tracData"');
           const prev = this._last(cur.trackData.list, 1);
           if (prev && cur.loops === 0) {
             const fixTime = this._collisionPrediction(prev, cur);
@@ -331,7 +366,7 @@ export class Engine<T> {
       config.duration = this._randomDuration();
       b = new FacileBarrage(config);
     } else {
-      assert(options);
+      assert(options, 'Miss "options"');
       const duration =
         typeof options.duration === 'number'
           ? options.duration
@@ -348,25 +383,6 @@ export class Engine<T> {
       });
     }
     return b;
-  }
-
-  private _n(type: 'height' | 'width', val: number | string) {
-    let n = NaN;
-    if (typeof val === 'number') {
-      n = val;
-    } else if (typeof val === 'string') {
-      n = val.endsWith('%')
-        ? this.box[type] * (toNumber(val) / 100)
-        : toNumber(val);
-    }
-    assert(n && !Number.isNaN(n), `Invalid "${val}"`);
-    assert(
-      n <= this.box.height,
-      `"${n} > container${toUpperCase(type)}:${
-        this.box.height
-      }px" is not allowed`,
-    );
-    return n;
   }
 
   private _randomDuration() {
@@ -390,20 +406,23 @@ export class Engine<T> {
     return null;
   }
 
-  private _selectTrackIdx(founds: Set<number>): number {
-    const idx = Math.floor(Math.random() * this.rows);
-    return founds.has(idx) ? this._selectTrackIdx(founds) : idx;
+  private _clearTarck(i: number) {
+    // We have to make a copy.
+    // During the loop, there are too many factors that change barrages,
+    // which makes it impossible to guarantee the stability of the list.
+    for (const b of Array.from(this._tracks[i].list)) b.destroy();
   }
 
   private _getTrackData(
     founds = new Set<number>(),
     prev?: TrackData<T>,
   ): TrackData<T> | null {
+    if (this.rows === 0) return null;
     const { gap, mode } = this.options;
     if (founds.size === this._tracks.length) {
       return mode === 'adaptive' ? prev! : null;
     }
-    const i = this._selectTrackIdx(founds);
+    const i = randomIdx(founds, this.rows);
     const trackData = this._tracks[i];
     if (mode === 'none') return trackData;
     const last = this._last(trackData.list, 0);
