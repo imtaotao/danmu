@@ -141,7 +141,7 @@ export class StreamManager<T extends unknown> {
     return this._changeViewStatus('hide', filter).then(() => this);
   }
 
-  private canPush(type: BarrageType) {
+  public canPush(type: BarrageType) {
     let res = true;
     const isFacile = type === 'facile';
     const { limits } = this.options;
@@ -175,10 +175,7 @@ export class StreamManager<T extends unknown> {
       return false;
     }
     if (this.isBarrage(data) && plugin) {
-      console.warn(
-        'When you add a barrage, the second parameter is invalid. ' +
-          'You should use `barrage.use({})`',
-      );
+      console.warn('When you add a barrage, the second parameter is invalid.');
     }
     this._engine.add(data, plugin, !_unshift);
     this._plSys.lifecycle.push.emit(data, 'facile', true);
