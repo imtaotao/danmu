@@ -14,6 +14,13 @@ export class Box {
     this.el.style.left = '0';
   }
 
+  public mount(c: HTMLElement) {
+    if (this.el.parentNode) {
+      this.el.parentNode.removeChild(this.el);
+    }
+    c.appendChild(this.el);
+  }
+
   public updateSize({ x, y }: Partial<Box['size']>) {
     if (typeof x === 'number') this.size.x = x;
     if (typeof y === 'number') this.size.y = y;

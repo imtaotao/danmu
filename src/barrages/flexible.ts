@@ -98,8 +98,6 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     );
   }
 
-  public exportSnapshot() {}
-
   public setOff() {
     return new Promise<void>((resolve) => {
       if (!this.node) {

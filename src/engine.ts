@@ -81,7 +81,7 @@ export class Engine<T> {
     if (hasOwn(newOptions, 'gap')) {
       this.options.gap = this.n('width', this.options.gap);
     }
-    if (hasOwn(newOptions, 'trackHeight') || hasOwn(newOptions, 'container')) {
+    if (hasOwn(newOptions, 'trackHeight')) {
       this.format();
     }
   }

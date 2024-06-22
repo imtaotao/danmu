@@ -64,16 +64,16 @@ export class StreamManager<T extends unknown> {
     return this;
   }
 
-  public mount(container?: HTMLElement | string | null) {
-    if (container) {
-      this._container =
-        typeof container === 'string'
-          ? document.querySelector(container)
-          : container;
+  public mount(container?: HTMLElement | string) {
+    if (!container) return;
+    if (typeof container === 'string') {
+      this._container = document.querySelector(container);
+    } else {
+      this._container = container;
     }
     assert(this._container, `Invalid "${container}"`);
     if (this.playing()) this.clear(NO_EMIT);
-    this._container.appendChild(this._engine.box.el);
+    this._engine.box.mount(this._container);
     this._engine.format();
     return this;
   }
@@ -100,13 +100,13 @@ export class StreamManager<T extends unknown> {
 
     if (hasOwn(newOptions, 'interval')) {
       this.stopPlaying(NO_EMIT);
-      this.startPlaying(null, NO_EMIT);
+      this.startPlaying(NO_EMIT);
     }
     this._plSys.lifecycle.updateOptions.emit(newOptions);
     return this;
   }
 
-  public startPlaying(snapshot?: SnapshotData | null, _flag?: Symbol) {
+  public startPlaying(_flag?: Symbol) {
     if (this.playing()) return this;
     this._plSys.lock();
     if (_flag !== NO_EMIT) {
@@ -213,8 +213,6 @@ export class StreamManager<T extends unknown> {
     }
     return this;
   }
-
-  public exportSnapshot() {}
 
   private _canSend(type: BarrageType) {
     let res = true;
