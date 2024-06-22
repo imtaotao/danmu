@@ -63,6 +63,14 @@ export class FacileBarrage<T> {
     return this.options.direction;
   }
 
+  public setloop() {
+    this.isLoop = true;
+  }
+
+  public unloop() {
+    this.isLoop = false;
+  }
+
   public use(plugin: BarragePlugin<T>) {
     plugin.name = plugin.name || `__facile_barrage_plugin_${ids.f++}__`;
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
@@ -72,14 +80,6 @@ export class FacileBarrage<T> {
     this.duration = t;
     this.recorder.duration = t;
     this.isFixed = true;
-  }
-
-  public setloop() {
-    this.isLoop = true;
-  }
-
-  public unloop() {
-    this.isLoop = false;
   }
 
   public updatePosition(p: Partial<Position>) {

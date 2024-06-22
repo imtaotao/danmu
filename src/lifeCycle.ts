@@ -42,8 +42,8 @@ export function createManagerLifeCycle<T>() {
     format: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
     render: new SyncHook<[BarrageType]>(),
+    limitWarning: new SyncHook<[BarrageType, number]>(),
     updateOptions: new SyncHook<[Partial<ManagerOptions>]>(),
-    limitWarning: new SyncHook<[BarrageType, number | null]>(),
     push: new SyncHook<[T | Barrage<T>, BarrageType, boolean]>(),
     willRender: new SyncWaterfallHook<{
       prevent: boolean;

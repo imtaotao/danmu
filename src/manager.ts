@@ -141,35 +141,63 @@ export class StreamManager<T extends unknown> {
     return this._changeViewStatus('hide', filter).then(() => this);
   }
 
-  public push(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
-    if (!this._canSend('facile')) return false;
+  private canPush(type: BarrageType) {
+    let res = true;
+    const isFacile = type === 'facile';
+    const { limits } = this.options;
+    const { stash, view } = this._engine.len();
+
+    if (isFacile) {
+      res = stash < limits.stash;
+    } else if (typeof limits.view === 'number') {
+      res = view < limits.view;
+    }
+    return res;
+  }
+
+  public unshift(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
+    return this.push(data, plugin, true);
+  }
+
+  public push(
+    data: T | FacileBarrage<T>,
+    plugin?: BarragePlugin<T>,
+    _unshift?: boolean,
+  ) {
+    if (!this.canPush('facile')) {
+      const { stash } = this.options.limits;
+      const hook = this._plSys.lifecycle.limitWarning;
+      !hook.isEmpty()
+        ? hook.emit('facile', stash)
+        : console.warn(
+            `The number of danmu in temporary storage exceeds the limit (${stash})`,
+          );
+      return false;
+    }
     if (this.isBarrage(data) && plugin) {
       console.warn(
         'When you add a barrage, the second parameter is invalid. ' +
-          'You should use `barrage.use({})`.',
+          'You should use `barrage.use({})`',
       );
     }
-    this._engine.add(data, plugin, true);
+    this._engine.add(data, plugin, !_unshift);
     this._plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
-  public unshift(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
-    if (!this._canSend('facile')) return false;
-    if (this.isBarrage(data) && plugin) {
-      console.warn(
-        'When you add a barrage, the second parameter is invalid. ' +
-          'You should use `barrage.use({})`.',
-      );
-    }
-    this._engine.add(data, plugin, false);
-    this._plSys.lifecycle.push.emit(data, 'facile', false);
-    return true;
-  }
-
   public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
-    if (!this._canSend('flexible') || !this.playing()) return false;
+    if (!this.playing()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
+      return false;
+    }
+    if (!this.canPush('flexible')) {
+      const { view } = this.options.limits;
+      const hook = this._plSys.lifecycle.limitWarning;
+      !hook.isEmpty()
+        ? hook.emit('flexible', view || 0)
+        : console.warn(
+            `The number of views barrage exceeds the limit (${view})`,
+          );
       return false;
     }
     const res = this._engine.renderFlexibleBarrage(data, {
@@ -212,31 +240,6 @@ export class StreamManager<T extends unknown> {
       this._engine.format();
     }
     return this;
-  }
-
-  private _canSend(type: BarrageType) {
-    let res = true;
-    const isFacile = type === 'facile';
-    const { limits } = this.options;
-    const { stash, view } = this._engine.len();
-
-    if (isFacile) {
-      res = stash < limits.stash;
-    } else if (typeof limits.view === 'number') {
-      res = view < limits.view;
-    }
-    if (!res && isFacile) {
-      const hook = this._plSys.lifecycle.limitWarning;
-      if (hook.isEmpty()) {
-        console.warn(
-          'The number of danmu in temporary storage exceeds the limit.' +
-            `(${limits.stash})`,
-        );
-      } else {
-        hook.emit(type, isFacile ? limits.stash : null);
-      }
-    }
-    return res;
   }
 
   private _changeViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
