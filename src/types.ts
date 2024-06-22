@@ -52,8 +52,8 @@ export interface MoveTimer {
 }
 
 export interface TrackData<T> {
-  location: [number, number];
   list: Array<FacileBarrage<T>>;
+  location: [number, number, number];
 }
 
 export interface StashData<T> {

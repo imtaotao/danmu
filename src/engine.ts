@@ -1,7 +1,7 @@
 import { Queue } from 'small-queue';
 import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
 import { Box } from './box';
-import { nextFrame } from './utils';
+import { toNumber, nextFrame } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import type {
@@ -21,8 +21,8 @@ import type {
 export interface EngineOptions {
   mode: Mode;
   gap: number;
-  height: number;
   times: [number, number];
+  trackHeight: number | string;
   direction: Omit<Direction, 'none'>;
   limits: {
     stash: number;
@@ -105,17 +105,23 @@ export class Engine<T> {
   }
 
   public format() {
-    const { height } = this.options;
+    // Need to format the container first
     this.box.format();
-    this.rows = +(this.box.height / height).toFixed(0);
+    const h = this._trackHeight(this.options.trackHeight);
+    const rows = (this.rows = +(this.box.height / h).toFixed(0));
 
-    for (let i = 0; i < this.rows; i++) {
-      const location = [
-        height * i, // start
-        height * (i + 1) - 1, // end
-      ] as [number, number];
+    for (let i = 0; i < rows; i++) {
+      const s = h * i;
+      const e = h * (i + 1) - 1;
+      const m = (e - s) / 2 + s;
+      const location = [s, m, e] as [number, number, number];
 
-      if (this._tracks[i]) {
+      if (location[1] > this.box.height) {
+        this.rows--;
+        if (this._tracks[i]) {
+          this._tracks.splice(i, 1);
+        }
+      } else if (this._tracks[i]) {
         this._tracks[i].location = location;
       } else {
         this._tracks.push({
@@ -157,7 +163,6 @@ export class Engine<T> {
 
     const setup = () => {
       b.createNode();
-      b.appendNode(this.box.el);
       this._sets.view.add(b);
       this._setAction(b).then(() => {
         if (b.isLoop) {
@@ -190,7 +195,7 @@ export class Engine<T> {
       }
       if (l <= 0) return;
       hooks.render.call(null, 'facile');
-      return loopSlice(l, () => this._run(viewStatus, bridgePlugin, hooks));
+      return loopSlice(l, () => this._consume(viewStatus, bridgePlugin, hooks));
     };
 
     if (mode === 'strict') {
@@ -203,7 +208,7 @@ export class Engine<T> {
     }
   }
 
-  private _run(
+  private _consume(
     viewStatus: ViewStatus,
     bridgePlugin: BarragePlugin<T>,
     hooks: RenderOptions<T>['hooks'],
@@ -231,10 +236,11 @@ export class Engine<T> {
     });
 
     if (prevent !== true) {
-      b.updateTrackData(trackData);
-      b.updatePosition({ y: trackData.location[0] });
+      // First createNode, users may add styles
       b.createNode();
       b.appendNode(this.box.el);
+      b.updateTrackData(trackData);
+      b.updatePosition({ y: trackData.location[1] - b.getHeight() / 2 });
       this._sets.view.add(b);
 
       const setup = () => {
@@ -281,6 +287,7 @@ export class Engine<T> {
             }
           }
         }
+        cur.appendNode(this.box.el);
         cur.setOff().then(() => resolve(false));
       });
     });
@@ -329,6 +336,25 @@ export class Engine<T> {
       });
     }
     return b;
+  }
+
+  private _trackHeight(height: number | string) {
+    let h = NaN;
+    if (typeof height === 'number') {
+      h = height;
+    } else if (typeof height === 'string') {
+      if (height.endsWith('%')) {
+        h = this.box.height * (toNumber(height) / 100);
+      } else {
+        h = toNumber(height);
+      }
+    }
+    assert(h && !Number.isNaN(h), `Invalid "trackHeight: ${height}"`);
+    assert(
+      h <= this.box.height,
+      `"trackHeight:${height} > containerHeight:${this.box.height}px" is not allowed`,
+    );
+    return h;
   }
 
   private _randomDuration() {

@@ -84,7 +84,10 @@ export class FacileBarrage<T> {
 
   public updatePosition(p: Partial<Position>) {
     if (typeof p.x === 'number') this.position.x = p.x;
-    if (typeof p.y === 'number') this.position.y = p.y;
+    if (typeof p.y === 'number') {
+      this.position.y = p.y;
+      this.setStyle('top', `${p.y}px`);
+    }
   }
 
   public updateTrackData(data: TrackData<T> | null) {

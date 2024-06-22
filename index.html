@@ -10,6 +10,7 @@
       height: 80vh;
       margin: 50px auto;
       overflow: hidden;
+      border: 1px solid #ddd;
     }
 
     .barrage {
@@ -31,10 +32,9 @@
   <script>
     const manager = Danmu.create({
       gap: 20,
-      height: 30,
       interval: 500,
+      trackHeight: '361px',
       times: [5000, 8000],
-      limits: { view: 100 },
       plugin: {
         hooks: {
           $createNode(b) {

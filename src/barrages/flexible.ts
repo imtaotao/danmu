@@ -21,6 +21,24 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
+  public updatePosition(p: Partial<Position>) {
+    let needUpdateStyle = false;
+    if (typeof p.x === 'number') {
+      this.position.x = p.x;
+      needUpdateStyle = true;
+    }
+    if (typeof p.y === 'number') {
+      this.position.y = p.y;
+      needUpdateStyle = true;
+    }
+    if (needUpdateStyle) {
+      this.setStyle(
+        'transform',
+        `translateX(${this.position.x}px) translateY(${this.position.y}px)`,
+      );
+    }
+  }
+
   public getMoveDistance() {
     if (!this.moving) return 0;
     const { x } = this.position;

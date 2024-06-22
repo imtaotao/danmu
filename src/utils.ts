@@ -11,11 +11,11 @@ export const ids = {
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 
 export const toNumber = (val: number | string) => {
-  return typeof val === 'number'
-    ? val
-    : typeof val === 'string'
-    ? Number(val.replace('px', ''))
-    : NaN;
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') {
+    return Number(val.replace(/^(\d+(\.\d+)?)(px|%)$/, (_, $1) => $1));
+  }
+  return NaN;
 };
 
 export function whenTransitionEnds(node: HTMLElement) {
