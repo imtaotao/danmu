@@ -1,5 +1,12 @@
 import { Queue } from 'small-queue';
-import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
+import {
+  assert,
+  hasOwn,
+  remove,
+  toUpperCase,
+  loopSlice,
+  isInBounds,
+} from 'aidly';
 import { Box } from './box';
 import { toNumber, nextFrame } from './utils';
 import { FacileBarrage } from './barrages/facile';
@@ -20,9 +27,9 @@ import type {
 
 export interface EngineOptions {
   mode: Mode;
-  gap: number;
-  times: [number, number];
+  gap: number | string;
   trackHeight: number | string;
+  times: [number, number];
   direction: Omit<Direction, 'none'>;
   limits: {
     stash: number;
@@ -41,7 +48,9 @@ export class Engine<T> {
     stash: [] as Array<StashData<T> | FacileBarrage<T>>,
   };
 
-  public constructor(public options: EngineOptions) {}
+  public constructor(public options: EngineOptions) {
+    this.options.gap = this._n('width', this.options.gap);
+  }
 
   public len() {
     const { stash, view, flexible } = this._sets;
@@ -64,7 +73,10 @@ export class Engine<T> {
 
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this.options = Object.assign(this.options, newOptions);
-    if (hasOwn(newOptions, 'height') || hasOwn(newOptions, 'container')) {
+    if (hasOwn(newOptions, 'gap')) {
+      this.options.gap = this._n('width', this.options.gap);
+    }
+    if (hasOwn(newOptions, 'trackHeight') || hasOwn(newOptions, 'container')) {
       this.format();
     }
   }
@@ -107,7 +119,7 @@ export class Engine<T> {
   public format() {
     // Need to format the container first
     this.box.format();
-    const h = this._trackHeight(this.options.trackHeight);
+    const h = this._n('height', this.options.trackHeight);
     const rows = (this.rows = +(this.box.height / h).toFixed(0));
 
     for (let i = 0; i < rows; i++) {
@@ -338,23 +350,23 @@ export class Engine<T> {
     return b;
   }
 
-  private _trackHeight(height: number | string) {
-    let h = NaN;
-    if (typeof height === 'number') {
-      h = height;
-    } else if (typeof height === 'string') {
-      if (height.endsWith('%')) {
-        h = this.box.height * (toNumber(height) / 100);
-      } else {
-        h = toNumber(height);
-      }
+  private _n(type: 'height' | 'width', val: number | string) {
+    let n = NaN;
+    if (typeof val === 'number') {
+      n = val;
+    } else if (typeof val === 'string') {
+      n = val.endsWith('%')
+        ? this.box[type] * (toNumber(val) / 100)
+        : toNumber(val);
     }
-    assert(h && !Number.isNaN(h), `Invalid "trackHeight: ${height}"`);
+    assert(n && !Number.isNaN(n), `Invalid "${val}"`);
     assert(
-      h <= this.box.height,
-      `"trackHeight:${height} > containerHeight:${this.box.height}px" is not allowed`,
+      n <= this.box.height,
+      `"${n} > container${toUpperCase(type)}:${
+        this.box.height
+      }px" is not allowed`,
     );
-    return h;
+    return n;
   }
 
   private _randomDuration() {
@@ -371,7 +383,7 @@ export class Engine<T> {
   private _last(ls: Array<FacileBarrage<T>>, li: number) {
     for (let i = ls.length - 1; i >= 0; i--) {
       const b = ls[i - li];
-      if (b && !b.paused && b.type === 'facile') {
+      if (b && !b.paused && b.loops === 0 && b.type === 'facile') {
         return b;
       }
     }
@@ -395,7 +407,7 @@ export class Engine<T> {
     const trackData = this._tracks[i];
     if (mode === 'none') return trackData;
     const last = this._last(trackData.list, 0);
-    if (!last || last.getMoveDistance() >= gap + last.getWidth()) {
+    if (!last || last.getMoveDistance() >= (gap as number) + last.getWidth()) {
       return trackData;
     }
     founds.add(i);
@@ -411,13 +423,14 @@ export class Engine<T> {
     const cw = cur.getWidth();
     const pw = prv.getWidth();
     const { gap } = this.options;
-    const distance = prv.getMoveDistance() - cw - pw - gap;
+    const distance = prv.getMoveDistance() - cw - pw - (gap as number);
     const collisionTime = distance / acceleration;
     if (collisionTime >= cur.duration) return null;
 
     assert(this.box, 'Container not formatted');
     const remainingTime = (1 - prv.getMovePercent()) * prv.duration;
-    const currentFixTime = ((cw + gap) * remainingTime) / this.box.width;
+    const currentFixTime =
+      ((cw + (gap as number)) * remainingTime) / this.box.width;
     return remainingTime + currentFixTime;
   }
 }

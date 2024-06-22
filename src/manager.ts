@@ -98,7 +98,7 @@ export class StreamManager<T extends unknown> {
       this.stopPlaying(NO_EMIT);
       this.startPlaying(null, NO_EMIT);
     }
-    this._plSys.lifecycle.updateOptions.emit(this.options);
+    this._plSys.lifecycle.updateOptions.emit(newOptions);
     return this;
   }
 
