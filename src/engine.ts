@@ -367,14 +367,20 @@ export class Engine<T> {
       config.duration = this._randomDuration();
       return new FacileBarrage(config);
     }
-    let { duration, position } = options!;
-    if (typeof position === 'function') position = position(this.box);
-    if (typeof duration !== 'number') duration = this._randomDuration();
+    const { duration, position, direction } = options!;
     return new FlexibleBarrage({
       ...config,
-      duration,
-      position: position as Position,
-      direction: options!.direction,
+      direction,
+      // prettier-ignore
+      duration:
+        typeof duration === 'number'
+          ? duration 
+          : this._randomDuration(),
+      // prettier-ignore
+      position:
+        typeof position === 'function'
+          ? position(this.box)
+          : position,
     });
   }
 
@@ -399,11 +405,13 @@ export class Engine<T> {
     return null;
   }
 
+  // We have to make a copy.
+  // During the loop, there are too many factors that change barrages,
+  // which makes it impossible to guarantee the stability of the list.
   private _clearTarck(i: number) {
-    // We have to make a copy.
-    // During the loop, there are too many factors that change barrages,
-    // which makes it impossible to guarantee the stability of the list.
-    for (const b of Array.from(this._tracks[i].list)) b.destroy();
+    for (const b of Array.from(this._tracks[i].list)) {
+      b.destroy();
+    }
   }
 
   private _getTrackData(
