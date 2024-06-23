@@ -19,21 +19,20 @@ export function createBarrageLifeCycle<T extends Barrage<any>>() {
 }
 
 export function createManagerLifeCycle<T>() {
-  const child = createBarrageLifeCycle<Barrage<T>>();
-
+  const { lifecycle } = createBarrageLifeCycle<Barrage<T>>();
   return new PluginSystem({
-    // barrage hooks
-    $show: child.lifecycle.show,
-    $hide: child.lifecycle.hide,
-    $pause: child.lifecycle.pause,
-    $resume: child.lifecycle.resume,
-    $destroy: child.lifecycle.destroy,
-    $moveEnd: child.lifecycle.moveEnd,
-    $moveStart: child.lifecycle.moveStart,
-    $createNode: child.lifecycle.createNode,
-    $appendNode: child.lifecycle.appendNode,
-    $removeNode: child.lifecycle.removeNode,
-    // global hooks
+    // Barrage hooks
+    $show: lifecycle.show,
+    $hide: lifecycle.hide,
+    $pause: lifecycle.pause,
+    $resume: lifecycle.resume,
+    $destroy: lifecycle.destroy,
+    $moveEnd: lifecycle.moveEnd,
+    $moveStart: lifecycle.moveStart,
+    $createNode: lifecycle.createNode,
+    $appendNode: lifecycle.appendNode,
+    $removeNode: lifecycle.removeNode,
+    // Global hooks
     stop: new SyncHook<[]>(),
     start: new SyncHook<[]>(),
     show: new SyncHook<[]>(),
