@@ -6,6 +6,7 @@ import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, randomIdx, nextFrame } from './utils';
 import type {
   Mode,
+  Position,
   TrackData,
   StashData,
   Direction,
@@ -347,9 +348,8 @@ export class Engine<T> {
     data: T,
     viewStatus: ViewStatus,
     options?: Omit<PushFlexOptions<T>, 'plugin'>,
-  ) {
+  ): Barrage<T> {
     assert(this.box, 'Container not formatted');
-    let b: Barrage<T>;
     const config = {
       data,
       duration: 0,
@@ -363,28 +363,19 @@ export class Engine<T> {
           : remove(this._sets.flexible, b);
       },
     };
-
     if (type === 'facile') {
       config.duration = this._randomDuration();
-      b = new FacileBarrage(config);
-    } else {
-      assert(options, 'Miss "options"');
-      const duration =
-        typeof options.duration === 'number'
-          ? options.duration
-          : this._randomDuration();
-      const position =
-        typeof options.position === 'function'
-          ? options.position(this.box)
-          : options.position;
-      b = new FlexibleBarrage({
-        ...config,
-        position,
-        duration,
-        direction: options.direction,
-      });
+      return new FacileBarrage(config);
     }
-    return b;
+    let { duration, position } = options!;
+    if (typeof position === 'function') position = position(this.box);
+    if (typeof duration !== 'number') duration = this._randomDuration();
+    return new FlexibleBarrage({
+      ...config,
+      duration,
+      position: position as Position,
+      direction: options!.direction,
+    });
   }
 
   private _randomDuration() {
