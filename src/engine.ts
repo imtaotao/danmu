@@ -53,7 +53,7 @@ export class Engine<T> {
           : toNumber(val)
         : NaN;
     if (n > this.box[attr]) n = this.box[attr];
-    assert(n && !Number.isNaN(n), `Invalid "${n}(${val})"`);
+    assert(!Number.isNaN(n), `Invalid "${n}(${val})"`);
     return n;
   }
 
@@ -127,8 +127,10 @@ export class Engine<T> {
   public format() {
     // Need to format the container first
     this.box.format();
-    this.options.gap = this.n('width', this.options.gap);
-    const h = this.n('height', this.options.trackHeight);
+    const { gap, trackHeight } = this.options;
+    this.options.gap = this.n('width', gap);
+    const h = this.n('height', trackHeight);
+    assert(h > 0, `Invalid "${trackHeight}(${h})"`);
     const rows = (this.rows = +(this.box.height / h).toFixed(0));
 
     for (let i = 0; i < rows; i++) {
