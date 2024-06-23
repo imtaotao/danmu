@@ -347,7 +347,7 @@ export class Engine<T> {
     type: BarrageType,
     data: T,
     viewStatus: ViewStatus,
-    options?: Omit<PushFlexOptions<T>, 'plugin'>,
+    args?: Omit<PushFlexOptions<T>, 'plugin'>,
   ): Barrage<T> {
     assert(this.box, 'Container not formatted');
     const config = {
@@ -363,11 +363,13 @@ export class Engine<T> {
           : remove(this._sets.flexible, b);
       },
     };
+    // Create FacileBarrage
     if (type === 'facile') {
       config.duration = this._randomDuration();
       return new FacileBarrage(config);
     }
-    const { duration, position, direction } = options!;
+    // Create FlexibleBarrage
+    const { duration, position, direction } = args!;
     return new FlexibleBarrage({
       ...config,
       direction,
