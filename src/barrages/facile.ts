@@ -1,8 +1,8 @@
 import { now, remove } from 'aidly';
+import type { Box } from '../box';
 import { createBarrageLifeCycle } from '../lifeCycle';
-import { ids, NO_EMIT, whenTransitionEnds } from '../utils';
+import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
-  Box,
   Position,
   MoveTimer,
   TrackData,
@@ -156,7 +156,7 @@ export class FacileBarrage<T> {
     this._status = 'hide';
     this.setStyle('visibility', 'hidden');
     this.setStyle('pointerEvents', 'none');
-    if (_flag !== NO_EMIT) {
+    if (_flag !== INTERNAL_FLAG) {
       this._plSys.lifecycle.hide.emit(this);
     }
   }
@@ -165,7 +165,7 @@ export class FacileBarrage<T> {
     this._status = 'show';
     this.setStyle('visibility', 'visible');
     this.setStyle('pointerEvents', 'auto');
-    if (_flag !== NO_EMIT) {
+    if (_flag !== INTERNAL_FLAG) {
       this._plSys.lifecycle.show.emit(this);
     }
   }
@@ -245,7 +245,9 @@ export class FacileBarrage<T> {
       const cw = this.options.box.width + w;
       const isNegative = this.direction === 'left' ? 1 : -1;
 
-      this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+      this._status === 'hide'
+        ? this.hide(INTERNAL_FLAG)
+        : this.show(INTERNAL_FLAG);
       this.setStyle('opacity', '1');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
       this.setStyle('transition', `transform linear ${this.duration}ms`);
@@ -265,7 +267,9 @@ export class FacileBarrage<T> {
   }
 
   public setStartStatus() {
-    this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+    this._status === 'hide'
+      ? this.hide(INTERNAL_FLAG)
+      : this.show(INTERNAL_FLAG);
     this.setStyle('zIndex', '1');
     this.setStyle('opacity', '0');
     this.setStyle('transform', '');

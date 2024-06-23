@@ -1,6 +1,6 @@
 import { raf } from 'aidly';
 
-export const NO_EMIT = Symbol();
+export const INTERNAL_FLAG = Symbol();
 
 export const ids = {
   r: 1,

@@ -1,6 +1,6 @@
 import { now } from 'aidly';
 import { FacileBarrage, FacileOptions } from './facile';
-import { ids, NO_EMIT, whenTransitionEnds } from '../utils';
+import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type { Position, BarrageType, BarragePlugin } from '../types';
 
 export interface FlexibleOptions<T> extends FacileOptions<T> {
@@ -151,6 +151,8 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
       'transform',
       `translateX(${this.position.x}px) translateY(${this.position.y}px)`,
     );
-    this._status === 'hide' ? this.hide(NO_EMIT) : this.show(NO_EMIT);
+    this._status === 'hide'
+      ? this.hide(INTERNAL_FLAG)
+      : this.show(INTERNAL_FLAG);
   }
 }

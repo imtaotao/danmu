@@ -1,8 +1,8 @@
 import { assert, hasOwn } from 'aidly';
-import { ids, NO_EMIT, toNumber } from './utils';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import { Engine, type EngineOptions } from './engine';
+import { ids, toNumber, INTERNAL_FLAG } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   Barrage,
@@ -12,7 +12,6 @@ import type {
   FilterCallback,
   ViewStatus,
   StreamPlugin,
-  SnapshotData,
   PushFlexOptions,
 } from './types';
 import { Box } from './box';
@@ -72,7 +71,7 @@ export class StreamManager<T extends unknown> {
       this._container = container;
     }
     assert(this._container, `Invalid "${container}"`);
-    if (this.playing()) this.clear(NO_EMIT);
+    if (this.playing()) this.clear(INTERNAL_FLAG);
     this._engine.box.mount(this._container);
     this._engine.format();
     return this;
@@ -82,7 +81,7 @@ export class StreamManager<T extends unknown> {
     // No need to use `destroy` to save loop times
     this.each((b) => b.removeNode());
     this._engine.clear();
-    if (_flag !== NO_EMIT) {
+    if (_flag !== INTERNAL_FLAG) {
       this._plSys.lifecycle.clear.emit();
     }
     return this;
@@ -99,8 +98,8 @@ export class StreamManager<T extends unknown> {
     this.options = Object.assign(this.options, newOptions);
 
     if (hasOwn(newOptions, 'interval')) {
-      this.stopPlaying(NO_EMIT);
-      this.startPlaying(NO_EMIT);
+      this.stopPlaying(INTERNAL_FLAG);
+      this.startPlaying(INTERNAL_FLAG);
     }
     this._plSys.lifecycle.updateOptions.emit(newOptions);
     return this;
@@ -109,7 +108,7 @@ export class StreamManager<T extends unknown> {
   public startPlaying(_flag?: Symbol) {
     if (this.playing()) return this;
     this._plSys.lock();
-    if (_flag !== NO_EMIT) {
+    if (_flag !== INTERNAL_FLAG) {
       this._plSys.lifecycle.start.emit();
     }
     const cycle = () => {
@@ -126,7 +125,7 @@ export class StreamManager<T extends unknown> {
       clearTimeout(this._renderTimer);
     }
     this._renderTimer = null;
-    if (_flag !== NO_EMIT) {
+    if (_flag !== INTERNAL_FLAG) {
       this._plSys.lifecycle.stop.emit();
     }
     this._plSys.unlock();
@@ -156,13 +155,13 @@ export class StreamManager<T extends unknown> {
   }
 
   public unshift(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
-    return this.push(data, plugin, true);
+    return this.push(data, plugin, INTERNAL_FLAG);
   }
 
   public push(
     data: T | FacileBarrage<T>,
     plugin?: BarragePlugin<T>,
-    _unshift?: boolean,
+    _unshift?: Symbol,
   ) {
     if (!this.canPush('facile')) {
       const { stash } = this.options.limits;
@@ -177,7 +176,7 @@ export class StreamManager<T extends unknown> {
     if (this.isBarrage(data) && plugin) {
       console.warn('When you add a barrage, the second parameter is invalid.');
     }
-    this._engine.add(data, plugin, !_unshift);
+    this._engine.add(data, plugin, _unshift === INTERNAL_FLAG);
     this._plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }

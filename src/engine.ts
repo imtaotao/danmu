@@ -70,10 +70,10 @@ export class Engine<T> {
   public add(
     data: T | FacileBarrage<T>,
     plugin?: BarragePlugin<T>,
-    isPush?: boolean,
+    isUnshift?: boolean,
   ) {
     const val = data instanceof FacileBarrage ? data : { data, plugin };
-    this._sets.stash[isPush ? 'push' : 'unshift'](val);
+    this._sets.stash[isUnshift ? 'unshift' : 'push'](val);
   }
 
   public updateOptions(newOptions: Partial<EngineOptions>) {
@@ -286,7 +286,7 @@ export class Engine<T> {
     if (prevent !== true) {
       // First createNode, users may add styles
       b.createNode();
-      b.appendNode(this.box.el);
+      b.appendNode(this.box.node);
       b.updateTrackData(trackData);
       b.updatePosition({ y: trackData.location[1] - b.getHeight() / 2 });
       this._sets.view.add(b);
@@ -334,7 +334,7 @@ export class Engine<T> {
             }
           }
         }
-        cur.appendNode(this.box.el);
+        cur.appendNode(this.box.node);
         cur.setOff().then(() => resolve(false));
       });
     });

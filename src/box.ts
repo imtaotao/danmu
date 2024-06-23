@@ -3,22 +3,28 @@ import { toNumber } from './utils';
 export class Box {
   public width = 0;
   public height = 0;
-  public el: HTMLDivElement;
+  public node: HTMLDivElement;
   public size = { x: 1, y: 1 };
 
   public constructor() {
-    this.el = document.createElement('div');
-    this.el.style.overflow = 'hidden';
-    this.el.style.position = 'relative';
-    this.el.style.top = '0';
-    this.el.style.left = '0';
+    this.node = document.createElement('div');
+    this.setStyle('overflow', 'hidden');
+    this.setStyle('position', 'relative');
+    this.setStyle('top', '0');
+    this.setStyle('left', '0');
+  }
+
+  public setStyle<
+    T extends keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>,
+  >(key: T, val: CSSStyleDeclaration[T]) {
+    this.node.style[key] = val;
   }
 
   public mount(c: HTMLElement) {
-    if (this.el.parentNode) {
-      this.el.parentNode.removeChild(this.el);
+    if (this.node.parentNode) {
+      this.node.parentNode.removeChild(this.node);
     }
-    c.appendChild(this.el);
+    c.appendChild(this.node);
   }
 
   public updateSize({ x, y }: Partial<Box['size']>) {
@@ -27,9 +33,9 @@ export class Box {
   }
 
   public format() {
-    this.el.style.width = `${this.size.x * 100}%`;
-    this.el.style.height = `${this.size.y * 100}%`;
-    const styles = getComputedStyle(this.el);
+    this.setStyle('width', `${this.size.x * 100}%`);
+    this.setStyle('height', `${this.size.y * 100}%`);
+    const styles = getComputedStyle(this.node);
     this.width = toNumber(styles.width);
     this.height = toNumber(styles.height);
   }

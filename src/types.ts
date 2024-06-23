@@ -1,3 +1,4 @@
+import type { Box } from './box';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
 import type { StreamManager, ManagerOptions } from './manager';
@@ -61,12 +62,6 @@ export interface StashData<T> {
   plugin?: BarragePlugin<T>;
 }
 
-export interface Box {
-  width: number;
-  height: number;
-  el: HTMLElement;
-}
-
 export interface InfoRecord {
   duration: number;
   pauseTime: number;
@@ -88,5 +83,3 @@ export interface RenderOptions<T> {
     willRender: StreamHook<T, 'willRender'>;
   };
 }
-
-export interface SnapshotData {}
