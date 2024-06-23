@@ -3,37 +3,23 @@ import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
 import type { StreamManager, ManagerOptions } from './manager';
 
+export type ViewStatus = 'hide' | 'show';
+
 export type BarrageType = 'facile' | 'flexible';
 
-export type ViewStatus = 'hide' | 'show';
+export type Mode = 'none' | 'strict' | 'adaptive';
 
 export type Direction = 'left' | 'right' | 'none';
 
-export type Mode = 'none' | 'strict' | 'adaptive';
+export type Layer<T> = StashData<T> | FacileBarrage<T>;
 
 export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<T>;
 
 export type FilterCallback<T> = EachCallback<T>;
 
-export type Layer<T> = StashData<T> | FacileBarrage<T>;
-
 export type EachCallback<T> = (
   b: FacileBarrage<T> | FlexibleBarrage<T>,
 ) => boolean | void;
-
-export type CreateOption<T> = Partial<ManagerOptions> & {
-  plugin?: StreamPlugin<T>;
-};
-
-export type StreamPlugin<T> = Omit<
-  ReturnType<StreamManager<T>['_plSys']['use']>,
-  'name'
-> & { name?: string };
-
-export type BarragePlugin<T> = Omit<
-  ReturnType<FacileBarrage<T>['_plSys']['use']>,
-  'name'
-> & { name?: string };
 
 export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
@@ -82,4 +68,18 @@ export interface RenderOptions<T> {
     finished: StreamHook<T, 'finished'>;
     willRender: StreamHook<T, 'willRender'>;
   };
+}
+
+export interface StreamPlugin<T>
+  extends Omit<ReturnType<StreamManager<T>['_plSys']['use']>, 'name'> {
+  name?: string;
+}
+
+export interface BarragePlugin<T>
+  extends Omit<ReturnType<FacileBarrage<T>['_plSys']['use']>, 'name'> {
+  name?: string;
+}
+
+export interface CreateOption<T> extends Partial<ManagerOptions> {
+  plugin?: StreamPlugin<T>;
 }

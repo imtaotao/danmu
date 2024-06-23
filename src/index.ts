@@ -5,13 +5,13 @@ import type { CreateOption } from './types';
 const formatOptions = <T>(options: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
+      gap: 0,
+      limits: {},
+      interval: 500,
       mode: 'strict',
       direction: 'right',
-      gap: 0,
-      interval: 500,
       trackHeight: '20%',
-      times: [3500, 4500],
-      limits: { stash: 1024 },
+      times: [4000, 6000],
     },
     options,
   );
@@ -27,8 +27,8 @@ export function isManager<T = unknown>(val: unknown): val is StreamManager<T> {
 }
 
 export function create<T extends unknown>(options: CreateOption<T>) {
-  const nop = formatOptions<T>(options);
-  const sm = new StreamManager<T>(nop);
-  if (nop.plugin) sm.usePlugin(nop.plugin);
-  return sm;
+  const o = formatOptions<T>(options);
+  const manager = new StreamManager<T>(o);
+  if (o.plugin) manager.usePlugin(o.plugin);
+  return manager;
 }

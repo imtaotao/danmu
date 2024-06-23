@@ -6,7 +6,6 @@ import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, randomIdx, nextFrame } from './utils';
 import type {
   Mode,
-  Position,
   TrackData,
   StashData,
   Direction,
