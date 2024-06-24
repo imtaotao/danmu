@@ -88,7 +88,8 @@ export class StreamManager<T extends unknown> {
     return this;
   }
 
-  public usePlugin(plugin: StreamPlugin<T>) {
+  public usePlugin(p: (m: this) => StreamPlugin<T>) {
+    const plugin = p(this);
     plugin.name = plugin.name || `__runtime_plugin_${ids.r++}__`;
     this._plSys.use(plugin as StreamPlugin<T> & { name: string });
     return this;

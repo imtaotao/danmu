@@ -72,7 +72,8 @@ export class FacileBarrage<T> {
     this.isLoop = false;
   }
 
-  public use(plugin: BarragePlugin<T>) {
+  public use(p: (b: this) => BarragePlugin<T>) {
+    const plugin = p(this);
     plugin.name = plugin.name || `__facile_barrage_plugin_${ids.f++}__`;
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
@@ -84,7 +85,9 @@ export class FacileBarrage<T> {
   }
 
   public updatePosition(p: Partial<Position>) {
-    if (typeof p.x === 'number') this.position.x = p.x;
+    if (typeof p.x === 'number') {
+      this.position.x = p.x;
+    }
     if (typeof p.y === 'number') {
       this.position.y = p.y;
       this.setStyle('top', `${p.y}px`);

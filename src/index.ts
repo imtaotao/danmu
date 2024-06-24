@@ -27,8 +27,10 @@ export function isManager<T = unknown>(val: unknown): val is StreamManager<T> {
 }
 
 export function create<T extends unknown>(options: CreateOption<T>) {
-  const o = formatOptions<T>(options);
-  const manager = new StreamManager<T>(o);
-  if (o.plugin) manager.usePlugin(o.plugin);
+  const opts = formatOptions<T>(options);
+  const manager = new StreamManager<T>(opts);
+  if (opts.plugin) {
+    manager.usePlugin(() => opts.plugin!);
+  }
   return manager;
 }
