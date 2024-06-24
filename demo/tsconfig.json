@@ -8,7 +8,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/components/*"]
+      "@/*": ["./src/*"],
     },
 
     /* Bundler mode */
