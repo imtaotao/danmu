@@ -1,7 +1,7 @@
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
 import { ids } from './utils';
 import type { StreamManager, ManagerOptions } from './manager';
-import type { Barrage, BarrageType, BarragePlugin } from './types';
+import type { PushData, Barrage, BarrageType, BarragePlugin } from './types';
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
   return new PluginSystem({
@@ -43,7 +43,7 @@ export function createManagerLifeCycle<T>() {
     render: new SyncHook<[BarrageType]>(),
     limitWarning: new SyncHook<[BarrageType, number]>(),
     updateOptions: new SyncHook<[Partial<ManagerOptions>]>(),
-    push: new SyncHook<[T | Barrage<T>, BarrageType, boolean]>(),
+    push: new SyncHook<[PushData<T> | Barrage<T>, BarrageType, boolean]>(),
     willRender: new SyncWaterfallHook<{
       prevent: boolean;
       type: BarrageType;

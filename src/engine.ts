@@ -6,6 +6,7 @@ import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, randomIdx, nextFrame } from './utils';
 import type {
   Mode,
+  PushData,
   TrackData,
   StashData,
   Direction,
@@ -68,7 +69,7 @@ export class Engine<T> {
   }
 
   public add(
-    data: T | FacileBarrage<T>,
+    data: PushData<T> | FacileBarrage<T>,
     plugin?: BarragePlugin<T>,
     isUnshift?: boolean,
   ) {
@@ -174,7 +175,7 @@ export class Engine<T> {
   }
 
   public renderFlexibleBarrage(
-    data: T,
+    data: PushData<T>,
     {
       hooks,
       position,
@@ -344,7 +345,7 @@ export class Engine<T> {
 
   private _create(
     type: BarrageType,
-    data: T,
+    data: PushData<T>,
     viewStatus: ViewStatus,
     args?: Omit<PushFlexOptions<T>, 'plugin'>,
   ): Barrage<T> {

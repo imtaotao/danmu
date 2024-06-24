@@ -43,8 +43,13 @@ export interface TrackData<T> {
   location: [number, number, number];
 }
 
+export interface PushData<T> {
+  value: T;
+  id?: string | number;
+}
+
 export interface StashData<T> {
-  data: T;
+  data: PushData<T>;
   plugin?: BarragePlugin<T>;
 }
 

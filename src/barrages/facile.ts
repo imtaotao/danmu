@@ -3,6 +3,7 @@ import type { Box } from '../box';
 import { createBarrageLifeCycle } from '../lifeCycle';
 import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
+  PushData,
   Position,
   MoveTimer,
   TrackData,
@@ -22,15 +23,14 @@ export type PlSys<T> = ReturnType<
 
 export interface FacileOptions<T> {
   box: Box;
-  data: T;
   duration: number;
+  data: PushData<T>;
   direction: Direction;
   defaultStatus: ViewStatus;
   delInTrack: (b: Barrage<T>) => void;
 }
 
 export class FacileBarrage<T> {
-  public data: T;
   public loops = 0;
   public isLoop = false;
   public paused = false;
@@ -38,6 +38,7 @@ export class FacileBarrage<T> {
   public isEnded = false;
   public isFixed = false;
   public duration: number;
+  public data: PushData<T>;
   public recorder: InfoRecord;
   public type: BarrageType = 'facile';
   public node: HTMLElement | null = null;

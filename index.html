@@ -53,7 +53,7 @@
       .startPlaying();
 
     function pf(y = 300, v = 'chentao') {
-      manager.pushFlexBarrage(v, {
+      manager.pushFlexBarrage({ value: v }, {
         direction: 'none',
         duration: 100000,
         position: (box) => {
@@ -80,7 +80,7 @@
 
       setInterval(() => {
         for (let i = 0; i < 20; i++) {
-          manager.push(a++, {
+          manager.push({value: a++}, {
             hooks: {
               moveStart(b) {
                 if (b.isFixed) {

@@ -8,6 +8,7 @@ import type {
   Barrage,
   BarrageType,
   BarragePlugin,
+  PushData,
   EachCallback,
   FilterCallback,
   ViewStatus,
@@ -154,12 +155,15 @@ export class StreamManager<T extends unknown> {
     return res;
   }
 
-  public unshift(data: T | FacileBarrage<T>, plugin?: BarragePlugin<T>) {
+  public unshift(
+    data: PushData<T> | FacileBarrage<T>,
+    plugin?: BarragePlugin<T>,
+  ) {
     return this.push(data, plugin, INTERNAL_FLAG);
   }
 
   public push(
-    data: T | FacileBarrage<T>,
+    data: PushData<T> | FacileBarrage<T>,
     plugin?: BarragePlugin<T>,
     _unshift?: Symbol,
   ) {
@@ -181,7 +185,7 @@ export class StreamManager<T extends unknown> {
     return true;
   }
 
-  public pushFlexBarrage(data: T, options: PushFlexOptions<T>) {
+  public pushFlexBarrage(data: PushData<T>, options: PushFlexOptions<T>) {
     if (!this.playing()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
