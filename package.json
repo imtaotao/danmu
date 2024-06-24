@@ -15,10 +15,10 @@
   "scripts": {
     "test": "jest",
     "prepare": "husky",
-    "dev": "http-server -c-1 -p 8000 ./ -o index.html",
+    "dev": "cd demo && pnpm run dev",
     "build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "build:watch": "rollup --config --watch",
-    "format": "prettier --write --parser typescript \"(src|dist)/**/*.(js|ts?(x))\""
+    "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.(js|ts?(x))\""
   },
   "lint-staged": {
     "*.js": [
@@ -54,7 +54,6 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@types/jest": "^29.5.12",
-    "http-server": "^14.1.1",
     "husky": "^9.0.11",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.5",
