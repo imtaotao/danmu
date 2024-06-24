@@ -326,7 +326,10 @@ export class Engine<T> {
           assert(cur.trackData, 'Barrage missing "tracData"');
           const prev = this._last(cur.trackData.list, 1);
           if (prev && cur.loops === 0) {
-            const fixTime = this._collisionPrediction(prev, cur);
+            const fixTime = this._collisionPrediction(
+              prev,
+              cur as FacileBarrage<T>,
+            );
             if (fixTime !== null) {
               if (isInBounds(times, fixTime)) {
                 cur.fixDuration(fixTime);

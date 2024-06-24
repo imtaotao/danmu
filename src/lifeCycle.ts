@@ -1,6 +1,6 @@
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
 import { ids } from './utils';
-import type { StreamManager, ManagerOptions } from './manager';
+import type { Manager, ManagerOptions } from './manager';
 import type { PushData, Barrage, BarrageType, BarragePlugin } from './types';
 
 export function createBarrageLifeCycle<T extends Barrage<any>>() {
@@ -56,7 +56,7 @@ const scope = '$';
 const cache = [] as Array<[string, string]>;
 
 export function createBridgePlugin<T>(
-  plSys: StreamManager<T>['_plSys'],
+  plSys: Manager<T>['_plSys'],
 ): BarragePlugin<T> {
   const hooks = {} as Record<string, unknown>;
 

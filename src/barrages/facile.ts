@@ -72,9 +72,11 @@ export class FacileBarrage<T> {
     this.isLoop = false;
   }
 
-  public use(p: (b: this) => BarragePlugin<T>) {
-    const plugin = p(this);
-    plugin.name = plugin.name || `__facile_barrage_plugin_${ids.f++}__`;
+  public use(plugin: BarragePlugin<T> | ((b: this) => BarragePlugin<T>)) {
+    if (typeof plugin === 'function') plugin = plugin(this);
+    if (!plugin.name) {
+      plugin.name = `__facile_barrage_plugin_${ids.f++}__`;
+    }
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 

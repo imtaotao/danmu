@@ -1,8 +1,8 @@
 import { assert } from 'aidly';
-import { StreamManager } from './manager';
+import { Manager } from './manager';
 import type { CreateOption } from './types';
 
-const formatOptions = <T>(options: CreateOption<T>) => {
+const formatOptions = <T>(options?: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
       gap: 0,
@@ -22,15 +22,15 @@ const formatOptions = <T>(options: CreateOption<T>) => {
   return newOptions;
 };
 
-export function isManager<T = unknown>(val: unknown): val is StreamManager<T> {
-  return val instanceof StreamManager;
+export function isManager<T = unknown>(val: unknown): val is Manager<T> {
+  return val instanceof Manager;
 }
 
-export function create<T extends unknown>(options: CreateOption<T>) {
+export function create<T extends unknown>(options?: CreateOption<T>) {
   const opts = formatOptions<T>(options);
-  const manager = new StreamManager<T>(opts);
+  const manager = new Manager<T>(opts);
   if (opts.plugin) {
-    manager.usePlugin(() => opts.plugin!);
+    manager.usePlugin(opts.plugin);
   }
   return manager;
 }

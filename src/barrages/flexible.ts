@@ -16,8 +16,11 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     this.position = options.position;
   }
 
-  public use(plugin: BarragePlugin<T>) {
-    plugin.name = plugin.name || `__flexible_barrage_plugin_${ids.f++}__`;
+  public use(plugin: BarragePlugin<T> | ((b: this) => BarragePlugin<T>)) {
+    if (typeof plugin === 'function') plugin = plugin(this);
+    if (!plugin.name) {
+      (plugin as any).name = `__flexible_barrage_plugin_${ids.f++}__`;
+    }
     this._plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 

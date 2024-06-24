@@ -12,7 +12,7 @@ import type {
   EachCallback,
   FilterCallback,
   ViewStatus,
-  StreamPlugin,
+  ManagerPlugin,
   PushFlexOptions,
 } from './types';
 import { Box } from './box';
@@ -21,7 +21,7 @@ export interface ManagerOptions extends EngineOptions {
   interval: number;
 }
 
-export class StreamManager<T extends unknown> {
+export class Manager<T extends unknown> {
   public version = __VERSION__;
   private _engine: Engine<T>;
   private _viewStatus: ViewStatus = 'show';
@@ -88,10 +88,12 @@ export class StreamManager<T extends unknown> {
     return this;
   }
 
-  public usePlugin(p: (m: this) => StreamPlugin<T>) {
-    const plugin = p(this);
-    plugin.name = plugin.name || `__runtime_plugin_${ids.r++}__`;
-    this._plSys.use(plugin as StreamPlugin<T> & { name: string });
+  public usePlugin(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
+    if (typeof plugin === 'function') plugin = plugin(this);
+    if (!plugin.name) {
+      plugin.name = `__runtime_plugin_${ids.r++}__`;
+    }
+    this._plSys.use(plugin as ManagerPlugin<T> & { name: string });
     return this;
   }
 

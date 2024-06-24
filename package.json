@@ -7,9 +7,9 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/danmu.esm.js",
+      "import": "./dist/danmu.esm-bundler.js",
       "require": "./dist/danmu.cjs.js",
-      "types": "./dist/danmu.d.ts"
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {

@@ -1,7 +1,7 @@
 import type { Box } from './box';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
-import type { StreamManager, ManagerOptions } from './manager';
+import type { Manager, ManagerOptions } from './manager';
 
 export type ViewStatus = 'hide' | 'show';
 
@@ -62,8 +62,8 @@ export interface InfoRecord {
 
 export type StreamHook<
   T,
-  K extends keyof StreamManager<T>['_plSys']['lifecycle'],
-> = Parameters<StreamManager<T>['_plSys']['lifecycle'][K]['on']>[1];
+  K extends keyof Manager<T>['_plSys']['lifecycle'],
+> = Parameters<Manager<T>['_plSys']['lifecycle'][K]['on']>[1];
 
 export interface RenderOptions<T> {
   viewStatus: ViewStatus;
@@ -75,8 +75,8 @@ export interface RenderOptions<T> {
   };
 }
 
-export interface StreamPlugin<T>
-  extends Omit<ReturnType<StreamManager<T>['_plSys']['use']>, 'name'> {
+export interface ManagerPlugin<T>
+  extends Omit<ReturnType<Manager<T>['_plSys']['use']>, 'name'> {
   name?: string;
 }
 
@@ -86,5 +86,5 @@ export interface BarragePlugin<T>
 }
 
 export interface CreateOption<T> extends Partial<ManagerOptions> {
-  plugin?: StreamPlugin<T>;
+  plugin?: ManagerPlugin<T>;
 }
