@@ -1,3 +1,4 @@
+import type { Plugin } from 'hooks-plugin';
 import type { Box } from './box';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
@@ -20,6 +21,11 @@ export type FilterCallback<T> = EachCallback<T>;
 export type EachCallback<T> = (
   b: FacileBarrage<T> | FlexibleBarrage<T>,
 ) => boolean | void;
+
+export type ValueType<M extends Manager<any>> = Extract<
+  Parameters<M['push']>[0],
+  PushData<unknown>
+>['value'];
 
 export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
@@ -60,7 +66,7 @@ export interface InfoRecord {
   prevPauseTime: number;
 }
 
-export type StreamHook<
+export type ManagerHook<
   T,
   K extends keyof Manager<T>['_plSys']['lifecycle'],
 > = Parameters<Manager<T>['_plSys']['lifecycle'][K]['on']>[1];
@@ -69,19 +75,19 @@ export interface RenderOptions<T> {
   viewStatus: ViewStatus;
   bridgePlugin: BarragePlugin<T>;
   hooks: {
-    render: StreamHook<T, 'render'>;
-    finished: StreamHook<T, 'finished'>;
-    willRender: StreamHook<T, 'willRender'>;
+    render: ManagerHook<T, 'render'>;
+    finished: ManagerHook<T, 'finished'>;
+    willRender: ManagerHook<T, 'willRender'>;
   };
 }
 
 export interface ManagerPlugin<T>
-  extends Omit<ReturnType<Manager<T>['_plSys']['use']>, 'name'> {
+  extends Omit<Plugin<Manager<T>['_plSys']['lifecycle']>, 'name'> {
   name?: string;
 }
 
 export interface BarragePlugin<T>
-  extends Omit<ReturnType<FacileBarrage<T>['_plSys']['use']>, 'name'> {
+  extends Omit<Plugin<FacileBarrage<T>['_plSys']['lifecycle']>, 'name'> {
   name?: string;
 }
 

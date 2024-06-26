@@ -27,7 +27,7 @@ export class Manager<T extends unknown> {
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
   private _container: HTMLElement | null = null;
-  private _plSys = createManagerLifeCycle<T>();
+  protected _plSys = createManagerLifeCycle<T>();
 
   public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
@@ -88,7 +88,7 @@ export class Manager<T extends unknown> {
     return this;
   }
 
-  public usePlugin(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
+  public use(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
       plugin.name = `__runtime_plugin_${ids.r++}__`;

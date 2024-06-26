@@ -30,7 +30,20 @@ export function create<T extends unknown>(options?: CreateOption<T>) {
   const opts = formatOptions<T>(options);
   const manager = new Manager<T>(opts);
   if (opts.plugin) {
-    manager.usePlugin(opts.plugin);
+    manager.use(opts.plugin);
   }
   return manager;
 }
+
+export type {
+  Mode,
+  Position,
+  PushData,
+  ValueType,
+  Direction,
+  CreateOption,
+  Barrage,
+  BarrageType,
+  BarragePlugin,
+  ManagerPlugin,
+} from './types';
