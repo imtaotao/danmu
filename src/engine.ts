@@ -188,6 +188,7 @@ export class Engine<T> {
   ) {
     assert(this.box, 'Container not formatted');
     hooks.render.call(null, 'flexible');
+
     const b = this._create('flexible', data, viewStatus, {
       position,
       duration,

@@ -137,11 +137,11 @@ export class Manager<T extends unknown> {
   }
 
   public show(filter?: FilterCallback<T>) {
-    return this._changeViewStatus('show', filter).then(() => this);
+    return this._setViewStatus('show', filter).then(() => this);
   }
 
   public hide(filter?: FilterCallback<T>) {
-    return this._changeViewStatus('hide', filter).then(() => this);
+    return this._setViewStatus('hide', filter).then(() => this);
   }
 
   public canPush(type: BarrageType) {
@@ -245,7 +245,7 @@ export class Manager<T extends unknown> {
     return this;
   }
 
-  private _changeViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
+  private _setViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
     return new Promise<void>((resolve) => {
       if (this._viewStatus === status) {
         resolve();
