@@ -1,5 +1,4 @@
-import { Queue } from 'small-queue';
-import { assert, hasOwn, remove, loopSlice, isInBounds } from 'aidly';
+import { assert, hasOwn, remove, Queue, loopSlice, isInBounds } from 'aidly';
 import { Box } from './box';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';

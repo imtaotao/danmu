@@ -2,9 +2,10 @@
   "name": "danmu",
   "version": "0.0.3",
   "description": "Flexible, cross-platform, powerful danmu library.",
-  "files": [
-    "dist"
-  ],
+  "main": "./dist/danmu.cjs.js",
+  "unpkg": "./dist/danmu.umd.js",
+  "module": "./dist/danmu.esm-bundler.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/danmu.esm-bundler.js",
@@ -12,6 +13,9 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest",
     "prepare": "husky",
@@ -66,8 +70,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "aidly": "^1.0.4",
-    "hooks-plugin": "^1.0.6",
-    "small-queue": "^1.0.1"
+    "aidly": "^1.0.7",
+    "hooks-plugin": "^1.0.6"
   }
 }
