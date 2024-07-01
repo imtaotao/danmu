@@ -1,4 +1,12 @@
-import { assert, hasOwn, remove, Queue, loopSlice, isInBounds } from 'aidly';
+import {
+  Queue,
+  assert,
+  hasOwn,
+  remove,
+  random,
+  loopSlice,
+  isInBounds,
+} from 'aidly';
 import { Box } from './box';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
@@ -390,14 +398,9 @@ export class Engine<T> {
   }
 
   private _randomDuration() {
-    const {
-      times: [min, max],
-    } = this.options;
-    const d = Number(
-      max === min ? max : (Math.random() * (max - min) + min).toFixed(0),
-    );
-    assert(d > 0, `Invalid move time "${d}"`);
-    return d;
+    const t = random(...this.options.times);
+    assert(t > 0, `Invalid move time "${t}"`);
+    return t;
   }
 
   private _last(ls: Array<FacileBarrage<T>>, li: number) {
