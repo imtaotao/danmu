@@ -21,7 +21,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     if (!plugin.name) {
       (plugin as any).name = `__flexible_barrage_plugin_${ids.f++}__`;
     }
-    this._plSys.use(plugin as BarragePlugin<T> & { name: string });
+    this.plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
   public updatePosition(p: Partial<Position>) {
@@ -116,12 +116,12 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
           this.moveTimer.clear();
           this.moveTimer = null;
         }
-        this._plSys.lifecycle.moveEnd.emit(this);
+        this.plSys.lifecycle.moveEnd.emit(this);
         resolve();
       };
       this.moving = true;
       this.recorder.startTime = now();
-      this._plSys.lifecycle.moveStart.emit(this);
+      this.plSys.lifecycle.moveStart.emit(this);
 
       if (this.direction === 'none') {
         let timer: number | null = setTimeout(onEnd, this.duration);

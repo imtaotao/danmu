@@ -56,8 +56,9 @@ const scope = '$';
 const cache = [] as Array<[string, string]>;
 
 export function createBridgePlugin<T>(
-  plSys: Manager<T>['_plSys'],
+  plSys: Manager<T>['plSys'],
 ): BarragePlugin<T> {
+  const name = `__bridge_plugin_${ids.b++}__`;
   const hooks = {} as Record<string, unknown>;
 
   if (cache.length) {
@@ -78,8 +79,5 @@ export function createBridgePlugin<T>(
       }
     }
   }
-  return {
-    hooks,
-    name: `__bridge_plugin_${ids.b++}__`,
-  };
+  return { name, hooks };
 }
