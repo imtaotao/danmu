@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.1.6
-        version: 1.1.6
+        specifier: ^1.2.0
+        version: 1.2.0
       hooks-plugin:
         specifier: ^1.0.7
         version: 1.0.7
@@ -1191,8 +1191,8 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
 
-  aidly@1.1.6:
-    resolution: {integrity: sha512-1X8u287688H/ttpFTaahlqVJ6w/vefFRiOf5G68d3VWdMdu9c3KAJSag5VCfdjTiiSrgeWuLpVnhsBvOn15mpw==}
+  aidly@1.2.0:
+    resolution: {integrity: sha512-3RwPR6xEshcl7ZBT08cVsNmyWwU+k+A4V4wRVDqSLlHnlxgKhRQwSMjTPXNyqQDHvbUs0nfjsvhdaH+6/WcaDQ==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -3782,7 +3782,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  aidly@1.1.6:
+  aidly@1.2.0:
     dependencies:
       small-queue: 1.0.1
 
@@ -4254,7 +4254,7 @@ snapshots:
 
   hooks-plugin@1.0.7:
     dependencies:
-      aidly: 1.1.6
+      aidly: 1.2.0
 
   html-escaper@2.0.2: {}
 

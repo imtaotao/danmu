@@ -68,8 +68,8 @@ export interface InfoRecord {
 
 export type ManagerHook<
   T,
-  K extends keyof Manager<T>['_plSys']['lifecycle'],
-> = Parameters<Manager<T>['_plSys']['lifecycle'][K]['on']>[1];
+  K extends keyof Manager<T>['plSys']['lifecycle'],
+> = Parameters<Manager<T>['plSys']['lifecycle'][K]['on']>[1];
 
 export interface RenderOptions<T> {
   viewStatus: ViewStatus;
@@ -82,12 +82,12 @@ export interface RenderOptions<T> {
 }
 
 export interface ManagerPlugin<T>
-  extends Omit<Plugin<Manager<T>['_plSys']['lifecycle']>, 'name'> {
+  extends Omit<Plugin<Manager<T>['plSys']['lifecycle']>, 'name'> {
   name?: string;
 }
 
 export interface BarragePlugin<T>
-  extends Omit<Plugin<FacileBarrage<T>['_plSys']['lifecycle']>, 'name'> {
+  extends Omit<Plugin<FacileBarrage<T>['plSys']['lifecycle']>, 'name'> {
   name?: string;
 }
 

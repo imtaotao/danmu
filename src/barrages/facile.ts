@@ -45,8 +45,8 @@ export class FacileBarrage<T> {
   public moveTimer: MoveTimer | null = null;
   public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
+  public plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
   protected _status: ViewStatus | null = null;
-  protected _plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
 
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
@@ -77,7 +77,7 @@ export class FacileBarrage<T> {
     if (!plugin.name) {
       plugin.name = `__facile_barrage_plugin_${ids.f++}__`;
     }
-    this._plSys.use(plugin as BarragePlugin<T> & { name: string });
+    this.plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
   public fixDuration(t: number) {
@@ -139,7 +139,7 @@ export class FacileBarrage<T> {
     this.setStyle('zIndex', '3');
     this.setStyle('transform', `translateX(${d}px)`);
     this.setStyle('transitionDuration', '0ms');
-    this._plSys.lifecycle.pause.emit(this);
+    this.plSys.lifecycle.pause.emit(this);
   }
 
   public resume() {
@@ -155,7 +155,7 @@ export class FacileBarrage<T> {
     this.setStyle('zIndex', '1');
     this.setStyle('transform', `translateX(${cw * isNegative}px)`);
     this.setStyle('transitionDuration', `${remainingTime}ms`);
-    this._plSys.lifecycle.resume.emit(this);
+    this.plSys.lifecycle.resume.emit(this);
   }
 
   public hide(_flag?: Symbol) {
@@ -163,7 +163,7 @@ export class FacileBarrage<T> {
     this.setStyle('visibility', 'hidden');
     this.setStyle('pointerEvents', 'none');
     if (_flag !== INTERNAL_FLAG) {
-      this._plSys.lifecycle.hide.emit(this);
+      this.plSys.lifecycle.hide.emit(this);
     }
   }
 
@@ -172,7 +172,7 @@ export class FacileBarrage<T> {
     this.setStyle('visibility', 'visible');
     this.setStyle('pointerEvents', 'auto');
     if (_flag !== INTERNAL_FLAG) {
-      this._plSys.lifecycle.show.emit(this);
+      this.plSys.lifecycle.show.emit(this);
     }
   }
 
@@ -181,7 +181,7 @@ export class FacileBarrage<T> {
     const parentNode = this.node.parentNode;
     if (!parentNode) return;
     parentNode.removeChild(this.node);
-    this._plSys.lifecycle.removeNode.emit(this);
+    this.plSys.lifecycle.removeNode.emit(this);
   }
 
   public destroy() {
@@ -192,7 +192,7 @@ export class FacileBarrage<T> {
       this.moveTimer.clear();
       this.moveTimer = null;
     }
-    this._plSys.lifecycle.destroy.emit(this);
+    this.plSys.lifecycle.destroy.emit(this);
     this.node = null;
   }
 
@@ -221,15 +221,15 @@ export class FacileBarrage<T> {
   public createNode() {
     if (this.node) return;
     this.node = document.createElement('div');
-    this._plSys.lock();
+    this.plSys.lock();
     this.setStartStatus();
-    this._plSys.lifecycle.createNode.emit(this);
+    this.plSys.lifecycle.createNode.emit(this);
   }
 
   public appendNode(container: HTMLElement) {
     if (!this.node || this.node.parentNode === container) return;
     container.appendChild(this.node);
-    this._plSys.lifecycle.appendNode.emit(this);
+    this.plSys.lifecycle.appendNode.emit(this);
   }
 
   public setStyle<
@@ -262,11 +262,11 @@ export class FacileBarrage<T> {
       }
       this.moving = true;
       this.recorder.startTime = now();
-      this._plSys.lifecycle.moveStart.emit(this);
+      this.plSys.lifecycle.moveStart.emit(this);
       whenTransitionEnds(this.node).then(() => {
         this.moving = false;
         this.isEnded = true;
-        this._plSys.lifecycle.moveEnd.emit(this);
+        this.plSys.lifecycle.moveEnd.emit(this);
         resolve();
       });
     });

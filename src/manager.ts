@@ -27,7 +27,7 @@ export class Manager<T extends unknown> {
   private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
   private _container: HTMLElement | null = null;
-  protected _plSys = createManagerLifeCycle<T>();
+  public plSys = createManagerLifeCycle<T>();
 
   public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
@@ -60,7 +60,7 @@ export class Manager<T extends unknown> {
 
   public format() {
     this._engine.format();
-    this._plSys.lifecycle.format.emit();
+    this.plSys.lifecycle.format.emit();
     return this;
   }
 
@@ -83,7 +83,7 @@ export class Manager<T extends unknown> {
     this.each((b) => b.removeNode());
     this._engine.clear();
     if (_flag !== INTERNAL_FLAG) {
-      this._plSys.lifecycle.clear.emit();
+      this.plSys.lifecycle.clear.emit();
     }
     return this;
   }
@@ -93,7 +93,7 @@ export class Manager<T extends unknown> {
     if (!plugin.name) {
       plugin.name = `__runtime_plugin_${ids.r++}__`;
     }
-    this._plSys.use(plugin as ManagerPlugin<T> & { name: string });
+    this.plSys.use(plugin as ManagerPlugin<T> & { name: string });
     return this;
   }
 
@@ -105,15 +105,15 @@ export class Manager<T extends unknown> {
       this.stopPlaying(INTERNAL_FLAG);
       this.startPlaying(INTERNAL_FLAG);
     }
-    this._plSys.lifecycle.updateOptions.emit(newOptions);
+    this.plSys.lifecycle.updateOptions.emit(newOptions);
     return this;
   }
 
   public startPlaying(_flag?: Symbol) {
     if (this.playing()) return this;
-    this._plSys.lock();
+    this.plSys.lock();
     if (_flag !== INTERNAL_FLAG) {
-      this._plSys.lifecycle.start.emit();
+      this.plSys.lifecycle.start.emit();
     }
     const cycle = () => {
       this._renderTimer = setTimeout(cycle, this.options.interval);
@@ -130,9 +130,9 @@ export class Manager<T extends unknown> {
     }
     this._renderTimer = null;
     if (_flag !== INTERNAL_FLAG) {
-      this._plSys.lifecycle.stop.emit();
+      this.plSys.lifecycle.stop.emit();
     }
-    this._plSys.unlock();
+    this.plSys.unlock();
     return this;
   }
 
@@ -172,7 +172,7 @@ export class Manager<T extends unknown> {
   ) {
     if (!this.canPush('facile')) {
       const { stash } = this.options.limits;
-      const hook = this._plSys.lifecycle.limitWarning;
+      const hook = this.plSys.lifecycle.limitWarning;
       !hook.isEmpty()
         ? hook.emit('facile', stash)
         : console.warn(
@@ -184,7 +184,7 @@ export class Manager<T extends unknown> {
       console.warn('When you add a barrage, the second parameter is invalid.');
     }
     this._engine.add(data, plugin, _unshift === INTERNAL_FLAG);
-    this._plSys.lifecycle.push.emit(data, 'facile', true);
+    this.plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
@@ -195,7 +195,7 @@ export class Manager<T extends unknown> {
     }
     if (!this.canPush('flexible')) {
       const { view } = this.options.limits;
-      const hook = this._plSys.lifecycle.limitWarning;
+      const hook = this.plSys.lifecycle.limitWarning;
       !hook.isEmpty()
         ? hook.emit('flexible', view || 0)
         : console.warn(
@@ -206,15 +206,15 @@ export class Manager<T extends unknown> {
     const res = this._engine.renderFlexibleBarrage(data, {
       ...options,
       viewStatus: this._viewStatus,
-      bridgePlugin: createBridgePlugin(this._plSys),
+      bridgePlugin: createBridgePlugin(this.plSys),
       hooks: {
-        finished: () => this._plSys.lifecycle.finished.emit(),
-        render: (val) => this._plSys.lifecycle.render.emit(val),
-        willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
+        finished: () => this.plSys.lifecycle.finished.emit(),
+        render: (val) => this.plSys.lifecycle.render.emit(val),
+        willRender: (val) => this.plSys.lifecycle.willRender.emit(val),
       },
     });
     if (res) {
-      this._plSys.lifecycle.push.emit(data, 'flexible', true);
+      this.plSys.lifecycle.push.emit(data, 'flexible', true);
       return true;
     }
     return false;
@@ -224,11 +224,11 @@ export class Manager<T extends unknown> {
     if (!this.playing()) return this;
     this._engine.renderFacileBarrage({
       viewStatus: this._viewStatus,
-      bridgePlugin: createBridgePlugin(this._plSys),
+      bridgePlugin: createBridgePlugin(this.plSys),
       hooks: {
-        finished: () => this._plSys.lifecycle.finished.emit(),
-        render: (val) => this._plSys.lifecycle.render.emit(val),
-        willRender: (val) => this._plSys.lifecycle.willRender.emit(val),
+        finished: () => this.plSys.lifecycle.finished.emit(),
+        render: (val) => this.plSys.lifecycle.render.emit(val),
+        willRender: (val) => this.plSys.lifecycle.willRender.emit(val),
       },
     });
     return this;
@@ -252,7 +252,7 @@ export class Manager<T extends unknown> {
         return;
       }
       this._viewStatus = status;
-      this._plSys.lifecycle[status].emit();
+      this.plSys.lifecycle[status].emit();
       this._engine
         .asyncEach((b) => {
           if (this._viewStatus === status) {
