@@ -4,7 +4,7 @@ import { create } from 'danmu';
 import { App } from './app';
 import './globals.css';
 
-const manager = create<string>({
+const manager = create<unknown>({
   plugin: {
     hooks: {
       $createNode(b) {
@@ -13,10 +13,9 @@ const manager = create<string>({
     },
   },
 });
-console.log(manager);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <App manager={manager} />
   </React.StrictMode>,
 );

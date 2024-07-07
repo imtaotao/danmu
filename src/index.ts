@@ -2,8 +2,6 @@ import { assert } from 'aidly';
 import { Manager } from './manager';
 import type { CreateOption } from './types';
 
-export type { HookOn, HooksOn, Plugin, HookType } from 'hooks-plugin';
-
 const formatOptions = <T>(options?: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
@@ -37,6 +35,8 @@ export function create<T extends unknown>(options?: CreateOption<T>) {
   return manager;
 }
 
+export type { Manager, ManagerOptions } from './manager';
+export type { HookOn, HooksOn, Plugin, HookType } from 'hooks-plugin';
 export type {
   Mode,
   Position,
