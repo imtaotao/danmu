@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.3.0
-        version: 1.3.0
+        specifier: ^1.4.0
+        version: 1.4.0
       hooks-plugin:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.2.1
+        version: 1.2.1
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -1191,8 +1191,8 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
 
-  aidly@1.3.0:
-    resolution: {integrity: sha512-4rvPuoIJ6EPxVKTa6XR98OzheOfyMPSlfYFvgb6n+duYakwcbrtHDDC1/O3Gh1OPV2mrS/LkR6hGI/TGpFVoDw==}
+  aidly@1.4.0:
+    resolution: {integrity: sha512-2PqzwC/MCpYHzh8kaIM+L6wEAO6FcYYbhR0aCd7WW3C7eNIH4vSKoOek4eajtVZOp/2zR+Dszz9rt/wObT/skw==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -1655,8 +1655,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hooks-plugin@1.1.0:
-    resolution: {integrity: sha512-O9+H/CT1wSyoTWrCeAwK8NDi5wnWtXi0j6OMTN3Q44uFfQ6Us7LlngQvcU/MGIWrbVYo93JFpAYCfnSmCIRnxQ==}
+  hooks-plugin@1.2.1:
+    resolution: {integrity: sha512-Iu/8d3qVkZ7ZH+1IpyNgbsP38Hhn9NhD2Y9CIg5QxxSphB24tzna1gRoJlUL1kSE1vPVr5Cd8EV54TrJZuZx/w==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -3782,7 +3782,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  aidly@1.3.0:
+  aidly@1.4.0:
     dependencies:
       small-queue: 1.0.1
 
@@ -4252,9 +4252,9 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hooks-plugin@1.1.0:
+  hooks-plugin@1.2.1:
     dependencies:
-      aidly: 1.3.0
+      aidly: 1.4.0
 
   html-escaper@2.0.2: {}
 

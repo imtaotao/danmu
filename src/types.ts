@@ -1,4 +1,4 @@
-import type { Plugin } from 'hooks-plugin';
+import type { Plugin, HooksOn } from 'hooks-plugin';
 import type { Box } from './box';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
@@ -66,19 +66,10 @@ export interface InfoRecord {
   prevPauseTime: number;
 }
 
-export type ManagerHook<
-  T,
-  K extends keyof Manager<T>['plSys']['lifecycle'],
-> = Parameters<Manager<T>['plSys']['lifecycle'][K]['on']>[1];
-
 export interface RenderOptions<T> {
   viewStatus: ViewStatus;
   bridgePlugin: BarragePlugin<T>;
-  hooks: {
-    render: ManagerHook<T, 'render'>;
-    finished: ManagerHook<T, 'finished'>;
-    willRender: ManagerHook<T, 'willRender'>;
-  };
+  hooks: HooksOn<Manager<T>['plSys'], ['render', 'finished', 'willRender']>;
 }
 
 export interface ManagerPlugin<T>

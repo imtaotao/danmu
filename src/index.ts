@@ -2,6 +2,8 @@ import { assert } from 'aidly';
 import { Manager } from './manager';
 import type { CreateOption } from './types';
 
+export type { HookOn, HooksOn, Plugin, HookType } from 'hooks-plugin';
+
 const formatOptions = <T>(options?: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
