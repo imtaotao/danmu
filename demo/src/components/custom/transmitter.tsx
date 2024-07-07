@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { type Manager } from 'danmu';
+import type { Manager } from 'danmu';
+import type { BarrageValue } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-export const Send = (props: { manager: Manager<unknown> }) => {
+export const Transmitter = ({
+  manager,
+}: {
+  manager: Manager<BarrageValue>;
+}) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -71,7 +76,7 @@ export const Send = (props: { manager: Manager<unknown> }) => {
                   移动方向
                 </Label>
                 <Select defaultValue="right">
-                  <SelectTrigger className="w-[255px]">
+                  <SelectTrigger className="w-[257px]">
                     <SelectValue placeholder="选择方向" />
                   </SelectTrigger>
                   <SelectContent>
@@ -85,9 +90,9 @@ export const Send = (props: { manager: Manager<unknown> }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">发送</Button>
-              <Button onClick={() => setVisible(false)} className="mb-[5px]">
-                取消
+              <Button onClick={() => setVisible(false)}>取消</Button>
+              <Button type="submit" className="mb-[5px]">
+                发送
               </Button>
             </DialogFooter>
           </DialogHeader>

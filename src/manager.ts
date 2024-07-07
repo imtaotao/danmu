@@ -65,7 +65,7 @@ export class Manager<T extends unknown> {
   }
 
   public mount(container?: HTMLElement | string) {
-    if (!container) return;
+    if (!container) return this;
     if (typeof container === 'string') {
       this._container = document.querySelector(container);
     } else {

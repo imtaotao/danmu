@@ -1,4 +1,5 @@
 import { type Manager } from 'danmu';
+import type { BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export const Sidebar = (props: { manager: Manager<unknown> }) => {
+export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div>
       <div className="flex h-8 mb-4 items-center justify-between">
@@ -35,30 +36,41 @@ export const Sidebar = (props: { manager: Manager<unknown> }) => {
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          渲染频率
+          弹幕之间的间距
+        </Label>
+        <Input
+          className="h-4/5"
+          type="number"
+          placeholder="弹幕间距"
+          defaultValue={manager.options.gap}
+        />
+      </div>
+      <div className="flex h-8 mb-4 items-center justify-between">
+        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
+          渲染频率 (ms)
         </Label>
         <Input
           className="h-4/5"
           type="number"
           placeholder="渲染频率"
-          defaultValue={500}
+          defaultValue={manager.options.interval}
         />
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          运动时长
+          运动时长 (ms)
         </Label>
         <Input
           className="h-4/5 mr-2"
           type="number"
           placeholder="min"
-          defaultValue={3000}
+          defaultValue={manager.options.times[0]}
         />
         <Input
           className="h-4/5"
           type="number"
           placeholder="max"
-          defaultValue={5000}
+          defaultValue={manager.options.times[1]}
         />
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
