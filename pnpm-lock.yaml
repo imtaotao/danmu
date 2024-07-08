@@ -12,8 +12,8 @@ importers:
         specifier: ^1.4.1
         version: 1.4.1
       hooks-plugin:
-        specifier: ^1.2.1
-        version: 1.2.1
+        specifier: ^1.2.2
+        version: 1.2.2
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -1751,8 +1751,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hooks-plugin@1.2.1:
-    resolution: {integrity: sha512-Iu/8d3qVkZ7ZH+1IpyNgbsP38Hhn9NhD2Y9CIg5QxxSphB24tzna1gRoJlUL1kSE1vPVr5Cd8EV54TrJZuZx/w==}
+  hooks-plugin@1.2.2:
+    resolution: {integrity: sha512-V7yuHCXzOBDK6llOIrT/q/JA279Z+ERe8r4oToUdurZBsLBVaQRN60JOOaBLyXzEdXjGJWi3MX/ABA8+JfqNCg==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -4460,7 +4460,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hooks-plugin@1.2.1:
+  hooks-plugin@1.2.2:
     dependencies:
       aidly: 1.4.1
 

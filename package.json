@@ -71,6 +71,6 @@
   },
   "dependencies": {
     "aidly": "^1.4.1",
-    "hooks-plugin": "^1.2.1"
+    "hooks-plugin": "^1.2.2"
   }
 }

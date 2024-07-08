@@ -225,7 +225,6 @@ export class FacileBarrage<T> {
   public createNode() {
     if (this.node) return;
     this.node = document.createElement('div');
-    this.plSys.lock();
     this.setStartStatus();
     this.plSys.lifecycle.createNode.emit(this);
   }

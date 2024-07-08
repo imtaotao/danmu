@@ -120,7 +120,6 @@ export class Manager<T extends unknown> {
 
   public startPlaying(_flag?: Symbol) {
     if (this.playing()) return this;
-    this.plSys.lock();
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.start.emit();
     }
@@ -141,7 +140,6 @@ export class Manager<T extends unknown> {
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.stop.emit();
     }
-    this.plSys.unlock();
     return this;
   }
 
