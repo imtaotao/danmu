@@ -45,6 +45,10 @@ export class Manager<T extends unknown> {
     return this._renderTimer !== null;
   }
 
+  public isShow() {
+    return this._viewStatus === 'show';
+  }
+
   public isBarrage(b: unknown): b is Barrage<T> {
     return b instanceof FacileBarrage || b instanceof FlexibleBarrage;
   }
@@ -94,6 +98,11 @@ export class Manager<T extends unknown> {
       plugin.name = `__runtime_plugin_${ids.r++}__`;
     }
     this.plSys.use(plugin as ManagerPlugin<T> & { name: string });
+    return this;
+  }
+
+  public remove(pluginName: string) {
+    this.plSys.remove(pluginName);
     return this;
   }
 

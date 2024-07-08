@@ -112,8 +112,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.4.1
+        version: 1.4.1
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1286,9 +1286,6 @@ packages:
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
-
-  aidly@1.4.0:
-    resolution: {integrity: sha512-2PqzwC/MCpYHzh8kaIM+L6wEAO6FcYYbhR0aCd7WW3C7eNIH4vSKoOek4eajtVZOp/2zR+Dszz9rt/wObT/skw==}
 
   aidly@1.4.1:
     resolution: {integrity: sha512-l2Dc015muQPActXp60pZJNXUDcODZTcdPNe93wZDNC5fOjYkeoS94jJuCscYolNUbJhXIE5TFy6pMJrOnHTQMg==}
@@ -3992,10 +3989,6 @@ snapshots:
       vite: 5.3.1(@types/node@18.19.34)
     transitivePeerDependencies:
       - supports-color
-
-  aidly@1.4.0:
-    dependencies:
-      small-queue: 1.0.1
 
   aidly@1.4.1:
     dependencies:

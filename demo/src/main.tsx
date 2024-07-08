@@ -3,22 +3,19 @@ import ReactDOM from 'react-dom/client';
 import { random } from 'aidly';
 import { create } from 'danmu';
 import type { BarrageValue } from './types';
-import { App } from './App';
+import { App } from '@/App';
+import { BarrageBox } from '@/components/custom/barrage';
 import './globals.css';
 
 const manager = create<BarrageValue>({
   gap: 20,
-  times: [3500, 6500],
+  trackHeight: '14%',
+  times: [4000, 7000],
   plugin: {
     hooks: {
       $createNode(b) {
         if (!b.node) return;
-        b.node.textContent = b.data.value;
-        const cs =
-          'h-[35px] py-1 px-3 rounded-xl bg-gray-600 text-slate-100 text-center';
-        cs.split(' ').forEach((c) => {
-          b.node!.classList.add(c);
-        });
+        ReactDOM.createRoot(b.node).render(<BarrageBox barrage={b} />);
       },
     },
   },

@@ -24,6 +24,10 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     this.plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
+  public remove(pluginName: string) {
+    this.plSys.remove(pluginName);
+  }
+
   public updatePosition(p: Partial<Position>) {
     let needUpdateStyle = false;
     if (typeof p.x === 'number') {

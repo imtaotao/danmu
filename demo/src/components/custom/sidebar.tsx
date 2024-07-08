@@ -1,4 +1,4 @@
-import { type Manager } from 'danmu';
+import type { Manager, Mode } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,15 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
+export const Sidebar = ({
+  manager,
+  allNumber,
+  renderNumber,
+}: {
+  manager: Manager<BarrageValue>;
+  allNumber: number;
+  renderNumber: number;
+}) => {
   return (
     <div>
       <div className="flex h-8 mb-4 items-center justify-between">
@@ -80,7 +88,13 @@ export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
         >
           显示/隐藏
         </Label>
-        <Switch id="show-hide" defaultChecked />
+        <Switch
+          id="show-hide"
+          defaultChecked
+          onCheckedChange={(v) => {
+            v ? manager.show() : manager.hide();
+          }}
+        />
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label
@@ -89,7 +103,13 @@ export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
         >
           启动/停止
         </Label>
-        <Switch id="start-stop" defaultChecked />
+        <Switch
+          id="start-stop"
+          defaultChecked
+          onCheckedChange={(v) =>
+            v ? manager.startPlaying() : manager.stopPlaying()
+          }
+        />
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label
@@ -98,19 +118,27 @@ export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
         >
           方向（左/右）
         </Label>
-        <Switch id="render-direction" defaultChecked />
+        <Switch
+          id="render-direction"
+          defaultChecked
+          onCheckedChange={(v) =>
+            manager.updateOptions({
+              direction: v ? 'right' : 'left',
+            })
+          }
+        />
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
           实时渲染数量
         </Label>
-        <Badge>0</Badge>
+        <Badge>{renderNumber}</Badge>
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
           现有弹幕总量（包含暂存区）
         </Label>
-        <Badge>0</Badge>
+        <Badge>{allNumber}</Badge>
       </div>
       <div className="flex h-8 mb-8 items-center justify-between">
         <Label
@@ -121,7 +149,9 @@ export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
         </Label>
         <Tabs
           defaultValue="strict"
-          onFocus={(e) => console.log(e.target.textContent)}
+          onFocus={(e) =>
+            manager.updateOptions({ mode: e.target.textContent as Mode })
+          }
         >
           <TabsList>
             <TabsTrigger className="px-2 font-bold" value="none">
@@ -137,7 +167,7 @@ export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
         </Tabs>
       </div>
       <div className="flex h-8 items-center justify-end">
-        <Button>清空弹幕</Button>
+        <Button onClick={() => manager.clear()}>清空弹幕</Button>
       </div>
     </div>
   );

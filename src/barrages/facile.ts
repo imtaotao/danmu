@@ -80,6 +80,10 @@ export class FacileBarrage<T> {
     this.plSys.use(plugin as BarragePlugin<T> & { name: string });
   }
 
+  public remove(pluginName: string) {
+    this.plSys.remove(pluginName);
+  }
+
   public fixDuration(t: number) {
     this.duration = t;
     this.recorder.duration = t;
