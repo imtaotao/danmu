@@ -445,9 +445,18 @@ export class Engine<T> {
     }
     const i = randomIdx(founds, this.rows);
     const trackData = this._tracks[i];
-    if (mode === 'none') return trackData;
+    if (mode === 'none') {
+      return trackData;
+    }
     const last = this._last(trackData.list, 0);
-    if (!last || last.getMoveDistance() >= (gap as number) + last.getWidth()) {
+    if (!last) {
+      return trackData;
+    }
+    const lastWidth = last.getWidth();
+    if (
+      lastWidth > 0 &&
+      last.getMoveDistance() >= (gap as number) + lastWidth
+    ) {
       return trackData;
     }
     founds.add(i);

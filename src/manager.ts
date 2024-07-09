@@ -23,13 +23,14 @@ export interface ManagerOptions extends EngineOptions {
 
 export class Manager<T extends unknown> {
   public version = __VERSION__;
+  public plSys = createManagerLifeCycle<T>();
+  public statuses: Record<string, unknown> = Object.create(null);
   private _engine: Engine<T>;
-  private _viewStatus: ViewStatus = 'show';
   private _renderTimer: number | null = null;
   private _container: HTMLElement | null = null;
-  public plSys = createManagerLifeCycle<T>();
 
   public constructor(public options: ManagerOptions) {
+    this.statuses['_viewStatus'] = 'show';
     this._engine = new Engine(options);
   }
 
@@ -46,7 +47,7 @@ export class Manager<T extends unknown> {
   }
 
   public isShow() {
-    return this._viewStatus === 'show';
+    return this.statuses['_viewStatus'] === 'show';
   }
 
   public isBarrage(b: unknown): b is Barrage<T> {
@@ -212,8 +213,8 @@ export class Manager<T extends unknown> {
     }
     const res = this._engine.renderFlexibleBarrage(data, {
       ...options,
-      viewStatus: this._viewStatus,
       bridgePlugin: createBridgePlugin(this.plSys),
+      viewStatus: this.statuses['_viewStatus'] as ViewStatus,
       hooks: {
         finished: () => this.plSys.lifecycle.finished.emit(),
         render: (val) => this.plSys.lifecycle.render.emit(val),
@@ -230,8 +231,8 @@ export class Manager<T extends unknown> {
   public render() {
     if (!this.playing()) return this;
     this._engine.renderFacileBarrage({
-      viewStatus: this._viewStatus,
       bridgePlugin: createBridgePlugin(this.plSys),
+      viewStatus: this.statuses['_viewStatus'] as ViewStatus,
       hooks: {
         finished: () => this.plSys.lifecycle.finished.emit(),
         render: (val) => this.plSys.lifecycle.render.emit(val),
@@ -254,15 +255,15 @@ export class Manager<T extends unknown> {
 
   private _setViewStatus(status: ViewStatus, filter?: FilterCallback<T>) {
     return new Promise<void>((resolve) => {
-      if (this._viewStatus === status) {
+      if (this.statuses['_viewStatus'] === status) {
         resolve();
         return;
       }
-      this._viewStatus = status;
+      this.statuses['_viewStatus'] = status;
       this.plSys.lifecycle[status].emit();
       this._engine
         .asyncEach((b) => {
-          if (this._viewStatus === status) {
+          if (this.statuses['_viewStatus'] === status) {
             if (!filter || filter(b) !== true) {
               b[status]();
             }

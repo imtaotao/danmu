@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Barrage } from 'danmu';
+import { Manager, type Barrage } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';
 import {
@@ -8,9 +8,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
+export const BarrageBox = (props: {
+  manager: Manager<BarrageValue>;
+  barrage: Barrage<BarrageValue>;
+}) => {
   const b = props.barrage;
   const { content, isSelf } = b.data.value;
+  const opacity = (props.manager.statuses['_opacity'] as string) || '1';
   const [open, setOpen] = useState(false);
 
   b.use({
@@ -19,7 +23,7 @@ export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
   });
 
   return (
-    <>
+    <div style={{ opacity }}>
       <Popover open={open}>
         <PopoverTrigger asChild>
           <div
@@ -31,7 +35,7 @@ export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
             }}
             className={cn(
               isSelf ? 'border-2 border-slate-500' : '',
-              'h-[35px] py-1 px-3 rounded-xl font-bold text-slate-900 text-center cursor-pointer hover:bg-gray-300',
+              'py-[1px] px-3 rounded-xl font-bold text-slate-900 text-center cursor-pointer bg-gray-300 hover:bg-gray-400',
             )}
           >
             {b.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
@@ -42,6 +46,6 @@ export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
           {b.data.id})
         </PopoverContent>
       </Popover>
-    </>
+    </div>
   );
 };
