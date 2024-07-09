@@ -29,9 +29,7 @@ export function isManager<T = unknown>(val: unknown): val is Manager<T> {
 export function create<T extends unknown>(options?: CreateOption<T>) {
   const opts = formatOptions<T>(options);
   const manager = new Manager<T>(opts);
-  if (opts.plugin) {
-    manager.use(opts.plugin);
-  }
+  if (opts.plugin) manager.use(opts.plugin);
   return manager;
 }
 

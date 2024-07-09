@@ -58,12 +58,13 @@ const cache = [] as Array<[string, string]>;
 export function createBridgePlugin<T>(
   plSys: Manager<T>['plSys'],
 ): BarragePlugin<T> {
-  const name = `__bridge_plugin_${ids.b++}__`;
-  const hooks = {} as Record<string, unknown>;
+  const plugin = {
+    name: `__bridge_plugin_${ids.b++}__`,
+  } as Record<string, unknown>;
 
   if (cache.length) {
     for (const [k, nk] of cache) {
-      hooks[nk] = (...args: Array<unknown>) => {
+      plugin[nk] = (...args: Array<unknown>) => {
         return (plSys.lifecycle as any)[k].emit(...args);
       };
     }
@@ -73,11 +74,11 @@ export function createBridgePlugin<T>(
       if (k.startsWith(scope)) {
         const nk = k.replace(scope, '');
         cache.push([k, nk]);
-        hooks[nk] = (...args: Array<unknown>) => {
+        plugin[nk] = (...args: Array<unknown>) => {
           return (plSys.lifecycle as any)[k].emit(...args);
         };
       }
     }
   }
-  return { name, hooks };
+  return plugin;
 }

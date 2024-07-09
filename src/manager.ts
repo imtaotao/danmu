@@ -97,7 +97,7 @@ export class Manager<T extends unknown> {
     if (!plugin.name) {
       plugin.name = `__runtime_plugin_${ids.r++}__`;
     }
-    this.plSys.use(plugin as ManagerPlugin<T> & { name: string });
+    this.plSys.useRefine(plugin);
     return this;
   }
 

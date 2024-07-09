@@ -34,12 +34,12 @@ export const Transmitter = ({
   const [content, setContent] = useState('');
   const [x, setX] = useState(50);
   const [y, setY] = useState(50);
-  const [direction, setDirection] = useState('right');
+  const [direction, setDirection] = useState(manager.options.direction);
   const [duration, setDuration] = useState(random(...manager.options.times));
 
   const tip = () => {
     toast({
-      duration: 1000,
+      duration: 800,
       title: '发送失败',
       description: '弹幕值不能为空',
     });
@@ -133,7 +133,7 @@ export const Transmitter = ({
                   移动方向
                 </Label>
                 <Select
-                  defaultValue={direction}
+                  defaultValue={direction as string}
                   onValueChange={(e) => setDirection(e)}
                 >
                   <SelectTrigger className="w-[185px]">
@@ -169,7 +169,6 @@ export const Transmitter = ({
                       duration,
                       direction: direction as Direction,
                       position: (box, b) => {
-                        console.log();
                         return {
                           x: ((box.width - b.getWidth()) * x) / 100,
                           y: ((box.height - b.getHeight()) * y) / 100,

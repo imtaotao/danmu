@@ -1,3 +1,4 @@
+import { debounce } from 'aidly';
 import type { Manager, Mode } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';

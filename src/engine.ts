@@ -9,7 +9,7 @@ import {
 } from 'aidly';
 import { Box } from './box';
 import { FacileBarrage } from './barrages/facile';
-import { FlexibleBarrage } from './barrages/flexible';
+import { FlexibleBarrage, type FlexibleOptions } from './barrages/flexible';
 import { toNumber, randomIdx, nextFrame } from './utils';
 import type {
   Mode,
@@ -349,7 +349,9 @@ export class Engine<T> {
           }
         }
         cur.appendNode(this.box.node);
-        cur.setOff().then(() => resolve(false));
+        nextFrame(() => {
+          cur.setOff().then(() => resolve(false));
+        });
       });
     });
   }
@@ -358,7 +360,7 @@ export class Engine<T> {
     type: BarrageType,
     data: PushData<T>,
     viewStatus: ViewStatus,
-    args?: Omit<PushFlexOptions<T>, 'plugin'>,
+    options?: Omit<PushFlexOptions<T>, 'plugin'>,
   ): Barrage<T> {
     assert(this.box, 'Container not formatted');
     const config = {
@@ -374,26 +376,37 @@ export class Engine<T> {
           : remove(this._sets.flexible, b);
       },
     };
+
     // Create FacileBarrage
     if (type === 'facile') {
       config.duration = this._randomDuration();
       return new FacileBarrage(config);
+    } else {
+      // Create FlexibleBarrage
+      assert(options, 'Unexpected Error');
+      const { direction, duration, position } = options;
+      config.direction = direction;
+      config.duration =
+        typeof duration === 'number' ? duration : this._randomDuration();
+
+      const b = new FlexibleBarrage(config);
+      // If it is a function, the postion will be updated after the node is created,
+      // so that the function can get accurate bullet comment data.
+      if (typeof position !== 'function') {
+        b.updatePosition(position);
+      } else {
+        b.use({
+          appendNode: () => {
+            assert(
+              typeof position === 'function',
+              '"position" must be a function',
+            );
+            b.updatePosition(position(this.box, b));
+          },
+        });
+      }
+      return b;
     }
-    // Create FlexibleBarrage
-    const { duration, position, direction } = args!;
-    const defaultPostion =
-      typeof position === 'function' ? { x: 0, y: 0 } : position;
-    const b = new FlexibleBarrage({
-      ...config,
-      direction,
-      position: defaultPostion,
-      duration:
-        typeof duration === 'number' ? duration : this._randomDuration(),
-    });
-    if (typeof position === 'function') {
-      b.updatePosition(position(this.box, b));
-    }
-    return b;
   }
 
   private _randomDuration() {

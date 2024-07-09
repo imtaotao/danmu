@@ -11,31 +11,30 @@ export function App({ manager }: { manager: Manager<BarrageValue> }) {
   const [renderNumber, setRenderNumber] = useState(0);
 
   useEffect(() => {
+    const name = 'BarrageNumber';
     manager.use({
-      name: 'BarrageNumber',
-      hooks: {
-        push() {
-          setAllNumber(manager.len().all);
-        },
-        render() {
-          const { all, view } = manager.len();
-          setAllNumber(all);
-          setRenderNumber(view);
-        },
-        clear() {
-          const { all, view } = manager.len();
-          setAllNumber(all);
-          setRenderNumber(view);
-        },
-        $destroy() {
-          const { all, view } = manager.len();
-          setAllNumber(all);
-          setRenderNumber(view);
-        },
+      name,
+      push() {
+        setAllNumber(manager.len().all);
+      },
+      render() {
+        const { all, view } = manager.len();
+        setAllNumber(all);
+        setRenderNumber(view);
+      },
+      clear() {
+        const { all, view } = manager.len();
+        setAllNumber(all);
+        setRenderNumber(view);
+      },
+      $destroy() {
+        const { all, view } = manager.len();
+        setAllNumber(all);
+        setRenderNumber(view);
       },
     });
     return () => {
-      manager.remove('BarrageNumber');
+      manager.remove(name);
     };
   }, []);
 

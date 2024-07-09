@@ -1,4 +1,4 @@
-import type { Plugin, HooksOn } from 'hooks-plugin';
+import type { HooksOn, RefinePlugin } from 'hooks-plugin';
 import type { Box } from './box';
 import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
@@ -26,6 +26,12 @@ export type ValueType<M extends Manager<any>> = Extract<
   Parameters<M['push']>[0],
   PushData<unknown>
 >['value'];
+
+export type ManagerPlugin<T> = RefinePlugin<Manager<T>['plSys']['lifecycle']>;
+
+export type BarragePlugin<T> = RefinePlugin<
+  FacileBarrage<T>['plSys']['lifecycle']
+>;
 
 export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
@@ -70,16 +76,6 @@ export interface RenderOptions<T> {
   viewStatus: ViewStatus;
   bridgePlugin: BarragePlugin<T>;
   hooks: HooksOn<Manager<T>['plSys'], ['render', 'finished', 'willRender']>;
-}
-
-export interface ManagerPlugin<T>
-  extends Omit<Plugin<Manager<T>['plSys']['lifecycle']>, 'name'> {
-  name?: string;
-}
-
-export interface BarragePlugin<T>
-  extends Omit<Plugin<FacileBarrage<T>['plSys']['lifecycle']>, 'name'> {
-  name?: string;
 }
 
 export interface CreateOption<T> extends Partial<ManagerOptions> {

@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.4.1
-        version: 1.4.1
+        specifier: ^1.4.3
+        version: 1.4.3
       hooks-plugin:
-        specifier: ^1.2.2
-        version: 1.2.2
+        specifier: ^1.2.3
+        version: 1.2.3
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -112,8 +112,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.4.1
-        version: 1.4.1
+        specifier: ^1.4.3
+        version: 1.4.3
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1287,8 +1287,8 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
 
-  aidly@1.4.1:
-    resolution: {integrity: sha512-l2Dc015muQPActXp60pZJNXUDcODZTcdPNe93wZDNC5fOjYkeoS94jJuCscYolNUbJhXIE5TFy6pMJrOnHTQMg==}
+  aidly@1.4.3:
+    resolution: {integrity: sha512-Ph/iNkDQnpa0a2q/ob4B5pJl9uI5m5rDYIasaOgd/YixCqeFfDy1RgEaeauT79kt98WypYM3dVMy+1RI6Ps1ZQ==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -1751,8 +1751,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hooks-plugin@1.2.2:
-    resolution: {integrity: sha512-V7yuHCXzOBDK6llOIrT/q/JA279Z+ERe8r4oToUdurZBsLBVaQRN60JOOaBLyXzEdXjGJWi3MX/ABA8+JfqNCg==}
+  hooks-plugin@1.2.3:
+    resolution: {integrity: sha512-ZIGK9+8HGc/jntSrBmADUCpVOKThngMVnp7SD6eaMKhRw6RPu/Go57b5j/xKkTAwZWsRcrfyUU2XrddLrrQedg==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -3990,7 +3990,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  aidly@1.4.1:
+  aidly@1.4.3:
     dependencies:
       small-queue: 1.0.1
 
@@ -4460,9 +4460,9 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hooks-plugin@1.2.2:
+  hooks-plugin@1.2.3:
     dependencies:
-      aidly: 1.4.1
+      aidly: 1.4.3
 
   html-escaper@2.0.2: {}
 

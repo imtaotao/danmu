@@ -4,7 +4,7 @@ import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type { Position, BarrageType, BarragePlugin } from '../types';
 
 export interface FlexibleOptions<T> extends FacileOptions<T> {
-  position: Position;
+  position?: Position;
 }
 
 export class FlexibleBarrage<T> extends FacileBarrage<T> {
@@ -13,7 +13,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
 
   public constructor(public options: FlexibleOptions<T>) {
     super(options);
-    this.position = options.position;
+    this.position = options.position || { x: 0, y: 0 };
   }
 
   public use(plugin: BarragePlugin<T> | ((b: this) => BarragePlugin<T>)) {
@@ -21,7 +21,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     if (!plugin.name) {
       (plugin as any).name = `__flexible_barrage_plugin_${ids.f++}__`;
     }
-    this.plSys.use(plugin as BarragePlugin<T> & { name: string });
+    this.plSys.useRefine(plugin);
   }
 
   public remove(pluginName: string) {
@@ -73,6 +73,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
         }px)`,
       );
     }
+    this.plSys.lifecycle.pause.emit(this);
   }
 
   public resume() {
@@ -93,16 +94,17 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
           timer = null;
         };
       }
-      return;
+    } else {
+      const ex =
+        this.direction === 'left' ? this.options.box.width : -this.getWidth();
+      this.setStyle('zIndex', '0');
+      this.setStyle('transitionDuration', `${remainingTime}ms`);
+      this.setStyle(
+        'transform',
+        `translateX(${ex}px) translateY(${this.position.y}px)`,
+      );
     }
-    const ex =
-      this.direction === 'left' ? this.options.box.width : -this.getWidth();
-    this.setStyle('zIndex', '0');
-    this.setStyle('transitionDuration', `${remainingTime}ms`);
-    this.setStyle(
-      'transform',
-      `translateX(${ex}px) translateY(${this.position.y}px)`,
-    );
+    this.plSys.lifecycle.resume.emit(this);
   }
 
   public setOff() {

@@ -77,7 +77,7 @@ export class FacileBarrage<T> {
     if (!plugin.name) {
       plugin.name = `__facile_barrage_plugin_${ids.f++}__`;
     }
-    this.plSys.use(plugin as BarragePlugin<T> & { name: string });
+    this.plSys.useRefine(plugin);
   }
 
   public remove(pluginName: string) {
