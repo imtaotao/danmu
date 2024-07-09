@@ -31,7 +31,7 @@ export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
   duration?: number;
   direction: Direction;
-  position: Position | ((box: Box) => Position);
+  position: Position | ((box: Box, b: Barrage<T>) => Position);
 }
 
 export interface Position {

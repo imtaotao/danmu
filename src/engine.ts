@@ -381,20 +381,19 @@ export class Engine<T> {
     }
     // Create FlexibleBarrage
     const { duration, position, direction } = args!;
-    return new FlexibleBarrage({
+    const defaultPostion =
+      typeof position === 'function' ? { x: 0, y: 0 } : position;
+    const b = new FlexibleBarrage({
       ...config,
       direction,
-      // prettier-ignore
+      position: defaultPostion,
       duration:
-        typeof duration === 'number'
-          ? duration 
-          : this._randomDuration(),
-      // prettier-ignore
-      position:
-        typeof position === 'function'
-          ? position(this.box)
-          : position,
+        typeof duration === 'number' ? duration : this._randomDuration(),
     });
+    if (typeof position === 'function') {
+      b.updatePosition(position(this.box, b));
+    }
+    return b;
   }
 
   private _randomDuration() {

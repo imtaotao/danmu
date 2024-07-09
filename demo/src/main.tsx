@@ -29,16 +29,20 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 (() => {
   const list = [
-    'Imtaotao',
-    'Supertaotao',
-    'I can see it',
-    'Do you feel alright?',
-    'Yes, I feel wonderfull tonight',
-    "Tell me someday we'll get together",
+    '哇塞！',
+    '不可思议！',
+    '这也太厉害了吧！',
+    '惊呆了！',
+    '太神奇了！',
+    '这是什么操作？',
+    '我看到了什么？',
+    '这是什么原理？',
+    '我有点看不懂了。',
+    '这是什么操作？',
   ];
   setInterval(() => {
-    for (const value of list) {
-      manager.push({ value, id: random(1000) });
+    for (const content of list) {
+      manager.push({ value: { content, isSelf: false }, id: random(1000) });
     }
-  }, 500);
+  }, 1000);
 })();

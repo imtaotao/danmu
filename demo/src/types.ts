@@ -1,1 +1,4 @@
-export type BarrageValue = string;
+export type BarrageValue = {
+  content: string;
+  isSelf: boolean;
+};

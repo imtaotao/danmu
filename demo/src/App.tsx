@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Manager } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { Area } from '@/components/custom/area';
+import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/custom/sidebar';
 import { Transmitter } from '@/components/custom/transmitter';
 
@@ -57,6 +58,7 @@ export function App({ manager }: { manager: Manager<BarrageValue> }) {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
