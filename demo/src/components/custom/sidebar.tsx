@@ -21,13 +21,13 @@ const Opacity = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
         max={100}
         defaultValue={[100]}
         className="w-[100%] h-full"
-        onValueChange={(v) => {
+        onValueChange={throttle(500, (v) => {
           const opacity = String(v[0] / 100);
           manager.statuses['_opacity'] = opacity;
-          manager.each((b) => {
+          manager.asyncEach((b) => {
             b.setStyle('opacity', opacity);
           });
-        }}
+        })}
       />
     </div>
   );
@@ -45,7 +45,7 @@ const DisplayArea = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
         defaultValue={[100]}
         className="w-[100%] h-full"
         onValueChange={throttle(2000, (v) => {
-          manager.setArea({ height: `${v}%` });
+          manager.setArea({ height: `${v[0]}%` });
         })}
       />
     </div>

@@ -14,16 +14,20 @@ export const BarrageBox = (props: {
 }) => {
   const b = props.barrage;
   const { content, isSelf } = b.data.value;
-  const opacity = (props.manager.statuses['_opacity'] as string) || '1';
   const [open, setOpen] = useState(false);
 
   b.use({
     pause: () => setOpen(true),
     resume: () => setOpen(false),
+    // 不能在 createNode 和 appendNode 里面改 opacity 的样式
+    moveStart(b) {
+      const opacity = (props.manager.statuses['_opacity'] as string) || '1';
+      b.setStyle('opacity', opacity);
+    },
   });
 
   return (
-    <div style={{ opacity }}>
+    <div>
       <Popover open={open}>
         <PopoverTrigger asChild>
           <div

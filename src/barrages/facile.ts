@@ -257,7 +257,7 @@ export class FacileBarrage<T> {
       this._status === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
-      this.setStyle('opacity', '1');
+      this.setStyle('opacity', '');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
       this.setStyle('transition', `transform linear ${this.duration}ms`);
       if (this.direction !== 'none') {
