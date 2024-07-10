@@ -7,6 +7,7 @@
 
 Flexible, cross-platform, powerful danmu library.
 
+> Demo preview: https://imtaotao.github.io/danmu/
 
 ### Usage
 

@@ -44,10 +44,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imtaotao/danmuku.git"
+    "url": "git+https://github.com/imtaotao/danmu.git"
   },
   "bugs": {
-    "url": "https://github.com/imtaotao/danmuku/issues"
+    "url": "https://github.com/imtaotao/danmu/issues"
   },
   "packageManager": "pnpm@9.1.3",
   "engines": {
