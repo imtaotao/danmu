@@ -1,7 +1,7 @@
 <div align="center">
 <h2>danmu</h2>
 
-[![NPM version](https://img.shields.io/npm/v/danmu.svg?color=a1b858&label=)](https://www.npmjs.com/package/danmu) [![build status](https://github.com/imtaotao/danmu/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/imtaotao/danmu/actions/workflows/ci.yml)
+[![NPM version](https://img.shields.io/npm/v/danmu.svg?color=a1b858&label=)](https://www.npmjs.com/package/danmu) [![build status](https://github.com/imtaotao/danmu/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/imtaotao/danmu/actions/workflows/ci.yml)
 
 </div>
 
