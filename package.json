@@ -20,7 +20,7 @@
     "test": "jest",
     "prepare": "husky",
     "demo": "cd demo && pnpm run dev",
-    "demo:build": "rimraf ./output && cd demo && pnpm run build",
+    "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
     "build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "build:watch": "rollup --config --watch",
     "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.(js|ts?(x))\""
