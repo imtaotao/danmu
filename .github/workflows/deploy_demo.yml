@@ -3,7 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - chore/workflows
+      - main
+      - feat/2.0
 
 jobs:
   build-and-deploy:
