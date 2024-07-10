@@ -8,30 +8,23 @@ import { Transmitter } from '@/components/custom/transmitter';
 
 export function App({ manager }: { manager: Manager<BarrageValue> }) {
   const [allNumber, setAllNumber] = useState(0);
+  const [stashNumber, setStashNumber] = useState(0);
   const [renderNumber, setRenderNumber] = useState(0);
 
   useEffect(() => {
     const name = 'BarrageNumber';
+    const update = () => {
+      const { all, view, stash, flexible } = manager.len();
+      setAllNumber(all);
+      setStashNumber(stash);
+      setRenderNumber(view + flexible);
+    };
     manager.use({
       name,
-      push() {
-        setAllNumber(manager.len().all);
-      },
-      render() {
-        const { all, view } = manager.len();
-        setAllNumber(all);
-        setRenderNumber(view);
-      },
-      clear() {
-        const { all, view } = manager.len();
-        setAllNumber(all);
-        setRenderNumber(view);
-      },
-      $destroy() {
-        const { all, view } = manager.len();
-        setAllNumber(all);
-        setRenderNumber(view);
-      },
+      $destroy: () => update(),
+      $moveStart: () => update(),
+      push: () => update(),
+      clear: () => update(),
     });
     return () => {
       manager.remove(name);
@@ -45,6 +38,7 @@ export function App({ manager }: { manager: Manager<BarrageValue> }) {
           <Sidebar
             manager={manager}
             allNumber={allNumber}
+            stashNumber={stashNumber}
             renderNumber={renderNumber}
           />
         </div>

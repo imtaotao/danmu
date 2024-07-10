@@ -1,7 +1,7 @@
 import { now, remove } from 'aidly';
 import type { Box } from '../box';
 import { createBarrageLifeCycle } from '../lifeCycle';
-import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
+import { ids, nextFrame, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
   PushData,
   Position,
@@ -41,6 +41,7 @@ export class FacileBarrage<T> {
   public data: PushData<T>;
   public statuses: Statuses;
   public recorder: InfoRecord;
+  public nextFrame = nextFrame;
   public type: BarrageType = 'facile';
   public node: HTMLElement | null = null;
   public moveTimer: MoveTimer | null = null;
@@ -130,7 +131,7 @@ export class FacileBarrage<T> {
     return cw / this.recorder.duration;
   }
 
-  public pause() {
+  public pause(_flag?: Symbol) {
     if (!this.moving || this.paused) return;
     let d = this.getMoveDistance();
     if (Number.isNaN(d)) return;
@@ -140,13 +141,15 @@ export class FacileBarrage<T> {
     if (this.direction === 'right') {
       d *= -1;
     }
-    this.setStyle('zIndex', '3');
+    this.setStyle('zIndex', '2');
     this.setStyle('transform', `translateX(${d}px)`);
     this.setStyle('transitionDuration', '0ms');
-    this.plSys.lifecycle.pause.emit(this);
+    if (_flag !== INTERNAL_FLAG) {
+      this.plSys.lifecycle.pause.emit(this);
+    }
   }
 
-  public resume() {
+  public resume(_flag?: Symbol) {
     if (!this.moving || !this.paused) return;
     const cw = this.options.box.width + this.getWidth();
     const isNegative = this.direction === 'left' ? 1 : -1;
@@ -156,10 +159,12 @@ export class FacileBarrage<T> {
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
     this.recorder.prevPauseTime = 0;
     this.recorder.duration = remainingTime;
-    this.setStyle('zIndex', '1');
+    this.setStyle('zIndex', '0');
     this.setStyle('transform', `translateX(${cw * isNegative}px)`);
     this.setStyle('transitionDuration', `${remainingTime}ms`);
-    this.plSys.lifecycle.resume.emit(this);
+    if (_flag !== INTERNAL_FLAG) {
+      this.plSys.lifecycle.resume.emit(this);
+    }
   }
 
   public hide(_flag?: Symbol) {
@@ -180,12 +185,14 @@ export class FacileBarrage<T> {
     }
   }
 
-  public removeNode() {
+  public removeNode(_flag?: Symbol) {
     if (!this.node) return;
     const parentNode = this.node.parentNode;
     if (!parentNode) return;
     parentNode.removeChild(this.node);
-    this.plSys.lifecycle.removeNode.emit(this);
+    if (_flag !== INTERNAL_FLAG) {
+      this.plSys.lifecycle.removeNode.emit(this);
+    }
   }
 
   public destroy() {
@@ -279,7 +286,7 @@ export class FacileBarrage<T> {
     this.statuses._viewStatus === 'hide'
       ? this.hide(INTERNAL_FLAG)
       : this.show(INTERNAL_FLAG);
-    this.setStyle('zIndex', '1');
+    this.setStyle('zIndex', '0');
     this.setStyle('opacity', '0');
     this.setStyle('transform', '');
     this.setStyle('transition', '');

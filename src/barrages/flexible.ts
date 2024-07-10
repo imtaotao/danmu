@@ -56,7 +56,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
       : x - (x + this.getWidth()) * percent;
   }
 
-  public pause() {
+  public pause(_flag?: Symbol) {
     if (!this.moving || this.paused) return;
     this.paused = true;
     this.recorder.prevPauseTime = now();
@@ -64,7 +64,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     if (this.direction === 'none') {
       if (this.moveTimer) this.moveTimer.clear();
     } else {
-      this.setStyle('zIndex', '2');
+      this.setStyle('zIndex', '3');
       this.setStyle('transitionDuration', '0ms');
       this.setStyle(
         'transform',
@@ -73,10 +73,12 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
         }px)`,
       );
     }
-    this.plSys.lifecycle.pause.emit(this);
+    if (_flag !== INTERNAL_FLAG) {
+      this.plSys.lifecycle.pause.emit(this);
+    }
   }
 
-  public resume() {
+  public resume(_flag?: Symbol) {
     if (!this.moving || !this.paused) return;
     this.paused = false;
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
@@ -97,14 +99,16 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     } else {
       const ex =
         this.direction === 'left' ? this.options.box.width : -this.getWidth();
-      this.setStyle('zIndex', '0');
+      this.setStyle('zIndex', '1');
       this.setStyle('transitionDuration', `${remainingTime}ms`);
       this.setStyle(
         'transform',
         `translateX(${ex}px) translateY(${this.position.y}px)`,
       );
     }
-    this.plSys.lifecycle.resume.emit(this);
+    if (_flag !== INTERNAL_FLAG) {
+      this.plSys.lifecycle.resume.emit(this);
+    }
   }
 
   public setOff() {
@@ -152,7 +156,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
   }
 
   public setStartStatus() {
-    this.setStyle('zIndex', '0');
+    this.setStyle('zIndex', '1');
     this.setStyle('transform', '');
     this.setStyle('transition', '');
     this.setStyle('position', 'absolute');

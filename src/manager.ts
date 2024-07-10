@@ -1,8 +1,8 @@
-import { assert, hasOwn } from 'aidly';
+import { assert, hasOwn, isEmptyObject } from 'aidly';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
 import { Engine, type EngineOptions } from './engine';
-import { ids, toNumber, INTERNAL_FLAG } from './utils';
+import { ids, toNumber, nextFrame, INTERNAL_FLAG } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   Barrage,
@@ -10,12 +10,13 @@ import type {
   BarragePlugin,
   PushData,
   Statuses,
+  AreaOptions,
   EachCallback,
+  FreezeOptions,
   FilterCallback,
   ManagerPlugin,
   PushFlexOptions,
 } from './types';
-import { Box } from './box';
 
 export interface ManagerOptions extends EngineOptions {
   interval: number;
@@ -23,6 +24,7 @@ export interface ManagerOptions extends EngineOptions {
 
 export class Manager<T extends unknown> {
   public version = __VERSION__;
+  public nextFrame = nextFrame;
   public plSys = createManagerLifeCycle<T>();
   public statuses: Statuses = Object.create(null);
   private _engine: Engine<T>;
@@ -32,22 +34,27 @@ export class Manager<T extends unknown> {
   public constructor(public options: ManagerOptions) {
     this.statuses._viewStatus = 'show';
     this._engine = new Engine(options);
+    this.plSys.lifecycle.init.emit(this);
+  }
+
+  public get box() {
+    return this._engine.box;
   }
 
   public len() {
     return this._engine.len();
   }
 
-  public box() {
-    return this._engine.box;
-  }
-
-  public playing() {
-    return this._renderTimer !== null;
-  }
-
   public isShow() {
     return this.statuses._viewStatus === 'show';
+  }
+
+  public isFreeze() {
+    return this.statuses._freeze === true;
+  }
+
+  public isPlaying() {
+    return this._renderTimer !== null;
   }
 
   public isBarrage(b: unknown): b is Barrage<T> {
@@ -61,6 +68,28 @@ export class Manager<T extends unknown> {
 
   public asyncEach(fn: EachCallback<T>) {
     return this._engine.asyncEach(fn).then(() => this);
+  }
+
+  public freeze({ preventEvents = [] }: FreezeOptions = {}) {
+    let stopFlag: Symbol | undefined;
+    let pauseFlag: Symbol | undefined;
+    if (preventEvents.includes('stop')) stopFlag = INTERNAL_FLAG;
+    if (preventEvents.includes('pause')) pauseFlag = INTERNAL_FLAG;
+    this.stopPlaying(stopFlag);
+    this.each((b) => b.pause(pauseFlag));
+    this.statuses._freeze = true;
+    this.plSys.lifecycle.freeze.emit();
+  }
+
+  public unfreeze({ preventEvents = [] }: FreezeOptions = {}) {
+    let startFlag: Symbol | undefined;
+    let resumeFlag: Symbol | undefined;
+    if (preventEvents.includes('start')) startFlag = INTERNAL_FLAG;
+    if (preventEvents.includes('resume')) resumeFlag = INTERNAL_FLAG;
+    this.each((b) => b.resume(resumeFlag));
+    this.startPlaying(startFlag);
+    this.statuses._freeze = false;
+    this.plSys.lifecycle.unfreeze.emit();
   }
 
   public format() {
@@ -77,9 +106,10 @@ export class Manager<T extends unknown> {
       this._container = container;
     }
     assert(this._container, `Invalid "${container}"`);
-    if (this.playing()) this.clear(INTERNAL_FLAG);
+    if (this.isPlaying()) this.clear(INTERNAL_FLAG);
     this._engine.box.mount(this._container);
-    this._engine.format();
+    this.format();
+    this.plSys.lifecycle.mount.emit();
     return this;
   }
 
@@ -120,7 +150,7 @@ export class Manager<T extends unknown> {
   }
 
   public startPlaying(_flag?: Symbol) {
-    if (this.playing()) return this;
+    if (this.isPlaying()) return this;
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.start.emit();
     }
@@ -133,7 +163,7 @@ export class Manager<T extends unknown> {
   }
 
   public stopPlaying(_flag?: Symbol) {
-    if (!this.playing()) return this;
+    if (!this.isPlaying()) return this;
     if (this._renderTimer) {
       clearTimeout(this._renderTimer);
     }
@@ -197,7 +227,7 @@ export class Manager<T extends unknown> {
   }
 
   public pushFlexBarrage(data: PushData<T>, options: PushFlexOptions<T>) {
-    if (!this.playing()) return false;
+    if (!this.isPlaying()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
     }
@@ -229,7 +259,7 @@ export class Manager<T extends unknown> {
   }
 
   public render() {
-    if (!this.playing()) return this;
+    if (!this.isPlaying()) return this;
     this._engine.renderFacileBarrage({
       statuses: this.statuses,
       bridgePlugin: createBridgePlugin(this.plSys),
@@ -242,13 +272,21 @@ export class Manager<T extends unknown> {
     return this;
   }
 
-  public setArea({ width, height }: { width?: string; height?: string }) {
-    const size = Object.create(null) as Box['size'];
-    if (width) size.x = toNumber(width) / 100;
-    if (height) size.y = toNumber(height) / 100;
-    if (Object.keys(size).length > 0) {
+  public setArea({ x, y }: AreaOptions) {
+    const size = Object.create(null);
+    if (x) {
+      if (!size.x) size.x = Object.create(null);
+      if (x.end) size.x.end = toNumber(x.end) / 100;
+      if (x.start) size.x.start = toNumber(x.start) / 100;
+    }
+    if (y) {
+      if (!size.y) size.y = Object.create(null);
+      if (y.end) size.y.end = toNumber(y.end) / 100;
+      if (y.start) size.y.start = toNumber(y.start) / 100;
+    }
+    if (!isEmptyObject(size)) {
       this._engine.box.updateSize(size);
-      this._engine.format();
+      this.format();
     }
     return this;
   }

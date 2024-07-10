@@ -1,23 +1,24 @@
-import { random } from 'aidly';
+import { uuid } from 'aidly';
 import ReactDOM from 'react-dom/client';
 import { type Manager, create } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { BarrageBox } from '@/components/custom/barrage';
 
 export const initManager = () => {
-  const manager = create<BarrageValue>({
+  return create<BarrageValue>({
     trackHeight: 36,
     times: [4000, 7000],
     plugin: {
+      init(manager) {
+        manager.box.node.classList.add('bg-slate-200');
+      },
       $createNode(b) {
         if (!b.node) return;
-        ReactDOM.createRoot(b.node).render(
-          <BarrageBox manager={manager} barrage={b} />,
-        );
+        (b as any).node.b = b;
+        ReactDOM.createRoot(b.node).render(<BarrageBox barrage={b} />);
       },
     },
   });
-  return manager;
 };
 
 export const mock = (manager: Manager<BarrageValue>) => {
@@ -36,12 +37,12 @@ export const mock = (manager: Manager<BarrageValue>) => {
   setInterval(() => {
     for (const content of list) {
       manager.push({
-        id: random(1000),
+        id: uuid(),
         value: {
           content,
           isSelf: false,
         },
       });
     }
-  }, 1000);
+  }, 800);
 };

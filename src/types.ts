@@ -25,7 +25,17 @@ export type ValueType<M extends Manager<any>> = Extract<
   PushData<unknown>
 >['value'];
 
+export type ManagerPlugin<T> = RefinePlugin<Manager<T>['plSys']['lifecycle']>;
+
+export type BarragePlugin<T> = RefinePlugin<
+  FacileBarrage<T>['plSys']['lifecycle']
+>;
+
 export type Statuses = {
+  /**
+   * This is the status of whether the barrage is frozen or not, do not change it.
+   */
+  _freeze: boolean;
   /**
    * This is the private state of barrage `show/hide`, do not change it.
    */
@@ -33,12 +43,6 @@ export type Statuses = {
 } & {
   [K: string]: unknown;
 };
-
-export type ManagerPlugin<T> = RefinePlugin<Manager<T>['plSys']['lifecycle']>;
-
-export type BarragePlugin<T> = RefinePlugin<
-  FacileBarrage<T>['plSys']['lifecycle']
->;
 
 export interface PushFlexOptions<T> {
   plugin?: BarragePlugin<T>;
@@ -60,6 +64,10 @@ export interface MoveTimer {
 export interface AreaOptions {
   x?: { start?: string; end?: string };
   y?: { start?: string; end?: string };
+}
+
+export interface FreezeOptions {
+  preventEvents?: Array<'pause' | 'stop' | 'resume' | 'start' | (string & {})>;
 }
 
 export interface TrackData<T> {

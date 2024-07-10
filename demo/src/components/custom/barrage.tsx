@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Manager, type Barrage } from 'danmu';
+import { type Barrage } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';
 import {
@@ -8,10 +8,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-export const BarrageBox = (props: {
-  manager: Manager<BarrageValue>;
-  barrage: Barrage<BarrageValue>;
-}) => {
+export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
   const b = props.barrage;
   const { content, isSelf } = b.data.value;
   const [open, setOpen] = useState(false);
@@ -21,8 +18,10 @@ export const BarrageBox = (props: {
     resume: () => setOpen(false),
     // 不能在 createNode 和 appendNode 里面改 opacity 的样式
     moveStart(b) {
-      const opacity = (props.manager.statuses['_opacity'] as string) || '1';
-      b.setStyle('opacity', opacity);
+      for (const key in b.statuses) {
+        if (key === '_viewStatus') continue;
+        b.setStyle(key as any, b.statuses[key] as string);
+      }
     },
   });
 
@@ -45,9 +44,8 @@ export const BarrageBox = (props: {
             {b.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-50 text-gray-400">
-          这个是一个{b.type === 'flexible' ? '高级' : '普通'}弹幕 (ID:{' '}
-          {b.data.id})
+        <PopoverContent className="w-60 text-gray-400 text-center">
+          这个是一个{b.type === 'flexible' ? '高级' : '普通'}弹幕
         </PopoverContent>
       </Popover>
     </div>

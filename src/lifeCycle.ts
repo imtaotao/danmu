@@ -33,17 +33,21 @@ export function createManagerLifeCycle<T>() {
     $appendNode: lifecycle.appendNode,
     $removeNode: lifecycle.removeNode,
     // Global hooks
-    stop: new SyncHook<[]>(),
+    mount: new SyncHook<[]>(),
+    format: new SyncHook<[]>(),
     start: new SyncHook<[]>(),
+    stop: new SyncHook<[]>(),
     show: new SyncHook<[]>(),
     hide: new SyncHook<[]>(),
     clear: new SyncHook<[]>(),
-    format: new SyncHook<[]>(),
+    freeze: new SyncHook<[]>(),
+    unfreeze: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
-    render: new SyncHook<[BarrageType]>(),
+    init: new SyncHook<[manager: Manager<T>]>(),
     limitWarning: new SyncHook<[BarrageType, number]>(),
     updateOptions: new SyncHook<[Partial<ManagerOptions>]>(),
     push: new SyncHook<[PushData<T> | Barrage<T>, BarrageType, boolean]>(),
+    render: new SyncHook<[BarrageType]>(),
     willRender: new SyncWaterfallHook<{
       prevent: boolean;
       type: BarrageType;

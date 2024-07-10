@@ -6,11 +6,12 @@ import {
   random,
   loopSlice,
   isInBounds,
+  batchProcess,
 } from 'aidly';
 import { Box } from './box';
 import { FacileBarrage } from './barrages/facile';
 import { FlexibleBarrage } from './barrages/flexible';
-import { toNumber, randomIdx, nextFrame } from './utils';
+import { toNumber, randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
   Mode,
   Statuses,
@@ -33,8 +34,8 @@ export interface EngineOptions {
   times: [number, number];
   direction: Omit<Direction, 'none'>;
   limits: {
-    stash: number;
     view?: number;
+    stash: number;
   };
 }
 
@@ -48,6 +49,12 @@ export class Engine<T> {
     flexible: new Set<FlexibleBarrage<T>>(),
     stash: [] as Array<StashData<T> | FacileBarrage<T>>,
   };
+  // Avoid frequent deletion of bullet comments.
+  // collect the bullet comments that need to be deleted within 2 seconds and delete them together.
+  private _destoryBatch = batchProcess<Barrage<T>>({
+    ms: 3000,
+    processor: (ls) => ls.forEach((b) => b.destroy()),
+  });
 
   public constructor(public options: EngineOptions) {}
 
@@ -98,6 +105,9 @@ export class Engine<T> {
     this._sets.view.clear();
     this._sets.flexible.clear();
     this._sets.stash.length = 0;
+    for (let i = 0; i < this._tracks.length; i++) {
+      this._clearTarck(i);
+    }
   }
 
   // `flexible` and `view` are both xx,
@@ -138,10 +148,17 @@ export class Engine<T> {
     const { gap, trackHeight } = this.options;
     this.options.gap = this.n('width', gap);
     const h = this.n('height', trackHeight);
-    assert(h > 0, `Invalid trackHeight "${h}"`);
+
+    if (h <= 0) {
+      for (let i = 0; i < this._tracks.length; i++) {
+        this._clearTarck(i);
+      }
+      return;
+    }
     const rows = (this.rows = +(this.box.height / h).toFixed(0));
 
     for (let i = 0; i < rows; i++) {
+      const track = this._tracks[i];
       const start = h * i;
       const end = h * (i + 1) - 1;
       const mid = (end - start) / 2 + start;
@@ -149,16 +166,24 @@ export class Engine<T> {
 
       if (end > this.box.height) {
         this.rows--;
-        if (this._tracks[i]) {
+        if (track) {
+          this._clearTarck(i);
           this._tracks.splice(i, 1);
         }
-      } else if (this._tracks[i]) {
+      } else if (track) {
         // If the reused track is larger than the container height,
         // the overflow needs to be deleted.
-        if (this._tracks[i].location[2] > this.box.height) {
+        if (track.location[2] > this.box.height) {
           this._clearTarck(i);
+        } else {
+          // Don't let the rendering of barrages exceed the container
+          Array.from(track.list).forEach((b) => {
+            if (b.getHeight() + track.location[2] > this.box.height) {
+              b.destroy();
+            }
+          });
         }
-        this._tracks[i].location = location;
+        track.location = location;
       } else {
         this._tracks.push({
           location,
@@ -218,7 +243,13 @@ export class Engine<T> {
     const setup = () => {
       b.createNode();
       this._sets.flexible.add(b as FlexibleBarrage<T>);
-      this._setAction(b).then(() => {
+      this._setAction(b, statuses).then((isFreeze) => {
+        if (isFreeze) {
+          console.error(
+            'Currently in a freeze state, unable to render "FlexibleBarrage"',
+          );
+          return;
+        }
         if (b.isLoop) {
           b.loops++;
           b.setStartStatus();
@@ -278,6 +309,7 @@ export class Engine<T> {
     const trackData = this._getTrackData();
     if (!trackData) {
       this._sets.stash.unshift(layer);
+      // If there is nothing to render, return `false` to stop the loop.
       return false;
     }
 
@@ -299,11 +331,10 @@ export class Engine<T> {
       b.createNode();
       b.appendNode(this.box.node);
       b.updateTrackData(trackData);
-      b.updatePosition({ y: trackData.location[1] - b.getHeight() / 2 });
-      this._sets.view.add(b);
 
       const setup = () => {
-        this._setAction(b).then((isStash) => {
+        this._sets.view.add(b);
+        this._setAction(b, statuses).then((isStash) => {
           if (isStash) {
             b.reset();
             this._sets.view.delete(b);
@@ -316,19 +347,32 @@ export class Engine<T> {
             setup();
             return;
           }
-          b.destroy();
+          this._destoryBatch(b);
           if (this.len().all === 0) {
             hooks.finished.call(null);
           }
         });
       };
-      setup();
+      // Waiting for the style to take effect,
+      // we need to get the barrage screen height.
+      nextFrame(() =>
+        nextFrame(() => {
+          const y = trackData.location[1] - b.getHeight() / 2;
+          if (y + b.getHeight() > this.box.height) return;
+          b.updatePosition({ y });
+          setup();
+        }),
+      );
     }
   }
 
-  private _setAction(cur: Barrage<T>) {
+  private _setAction(cur: Barrage<T>, statuses: Statuses) {
     return new Promise<boolean>((resolve) => {
       nextFrame(() => {
+        if (statuses._freeze === true) {
+          resolve(true);
+          return;
+        }
         const { mode, times } = this.options;
         if (mode !== 'none' && cur.type === 'facile') {
           assert(cur.trackData, 'Barrage missing "tracData"');
@@ -350,7 +394,12 @@ export class Engine<T> {
         }
         cur.appendNode(this.box.node);
         nextFrame(() => {
-          cur.setOff().then(() => resolve(false));
+          if (statuses._freeze === true) {
+            cur.removeNode(INTERNAL_FLAG);
+            resolve(true);
+          } else {
+            cur.setOff().then(() => resolve(false));
+          }
         });
       });
     });
