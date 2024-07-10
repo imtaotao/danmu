@@ -4,8 +4,6 @@ import type { FacileBarrage } from './barrages/facile';
 import type { FlexibleBarrage } from './barrages/flexible';
 import type { Manager, ManagerOptions } from './manager';
 
-export type ViewStatus = 'hide' | 'show';
-
 export type BarrageType = 'facile' | 'flexible';
 
 export type Mode = 'none' | 'strict' | 'adaptive';
@@ -26,6 +24,15 @@ export type ValueType<M extends Manager<any>> = Extract<
   Parameters<M['push']>[0],
   PushData<unknown>
 >['value'];
+
+export type Statuses = {
+  /**
+   * This is the private state of barrage `show/hide`, do not change it.
+   */
+  _viewStatus: 'hide' | 'show';
+} & {
+  [K: string]: unknown;
+};
 
 export type ManagerPlugin<T> = RefinePlugin<Manager<T>['plSys']['lifecycle']>;
 
@@ -48,6 +55,11 @@ export interface Position {
 export interface MoveTimer {
   cb: () => void;
   clear: () => void;
+}
+
+export interface AreaOptions {
+  x?: { start?: string; end?: string };
+  y?: { start?: string; end?: string };
 }
 
 export interface TrackData<T> {
@@ -73,7 +85,7 @@ export interface InfoRecord {
 }
 
 export interface RenderOptions<T> {
-  viewStatus: ViewStatus;
+  statuses: Statuses;
   bridgePlugin: BarragePlugin<T>;
   hooks: HooksOn<Manager<T>['plSys'], ['render', 'finished', 'willRender']>;
 }

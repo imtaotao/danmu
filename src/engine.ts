@@ -9,15 +9,15 @@ import {
 } from 'aidly';
 import { Box } from './box';
 import { FacileBarrage } from './barrages/facile';
-import { FlexibleBarrage, type FlexibleOptions } from './barrages/flexible';
+import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, randomIdx, nextFrame } from './utils';
 import type {
   Mode,
+  Statuses,
   PushData,
   TrackData,
   StashData,
   Direction,
-  ViewStatus,
   EachCallback,
   Barrage,
   BarrageType,
@@ -188,7 +188,7 @@ export class Engine<T> {
       position,
       duration,
       direction,
-      viewStatus,
+      statuses,
       plugin,
       bridgePlugin,
     }: RenderOptions<T> & PushFlexOptions<T>,
@@ -196,7 +196,7 @@ export class Engine<T> {
     assert(this.box, 'Container not formatted');
     hooks.render.call(null, 'flexible');
 
-    const b = this._create('flexible', data, viewStatus, {
+    const b = this._create('flexible', data, statuses, {
       position,
       duration,
       direction,
@@ -237,7 +237,7 @@ export class Engine<T> {
 
   public renderFacileBarrage({
     hooks,
-    viewStatus,
+    statuses,
     bridgePlugin,
   }: RenderOptions<T>) {
     const { mode, limits } = this.options;
@@ -254,7 +254,7 @@ export class Engine<T> {
       }
       if (l <= 0) return;
       hooks.render.call(null, 'facile');
-      return loopSlice(l, () => this._consume(viewStatus, bridgePlugin, hooks));
+      return loopSlice(l, () => this._consume(statuses, bridgePlugin, hooks));
     };
 
     if (mode === 'strict') {
@@ -268,7 +268,7 @@ export class Engine<T> {
   }
 
   private _consume(
-    viewStatus: ViewStatus,
+    statuses: Statuses,
     bridgePlugin: BarragePlugin<T>,
     hooks: RenderOptions<T>['hooks'],
   ) {
@@ -284,7 +284,7 @@ export class Engine<T> {
     if (layer instanceof FacileBarrage) {
       b = layer;
     } else {
-      b = this._create('facile', layer.data, viewStatus);
+      b = this._create('facile', layer.data, statuses);
       if (layer.plugin) b.use(layer.plugin);
       b.use(bridgePlugin);
     }
@@ -359,15 +359,15 @@ export class Engine<T> {
   private _create(
     type: BarrageType,
     data: PushData<T>,
-    viewStatus: ViewStatus,
+    statuses: Statuses,
     options?: Omit<PushFlexOptions<T>, 'plugin'>,
   ): Barrage<T> {
     assert(this.box, 'Container not formatted');
     const config = {
       data,
+      statuses,
       duration: 0,
       box: this.box,
-      defaultStatus: viewStatus,
       direction: this.options.direction as Direction,
       delInTrack: (b: Barrage<T>) => {
         remove(this._sets.view, b);

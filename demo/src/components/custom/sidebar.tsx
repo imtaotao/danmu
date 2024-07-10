@@ -5,10 +5,10 @@ import type { BarrageValue } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Slider } from '@/components/ui/slider';
 
 const Opacity = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
@@ -41,11 +41,12 @@ const DisplayArea = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
       </Label>
       <Slider
         step={1}
+        min={1}
         max={100}
-        defaultValue={[100]}
+        defaultValue={[1, 100]}
         className="w-[100%] h-full"
         onValueChange={throttle(2000, (v) => {
-          manager.setArea({ height: `${v[0]}%` });
+          manager.setArea({ height: `${v[1]}%` });
         })}
       />
     </div>
