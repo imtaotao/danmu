@@ -33,8 +33,8 @@ export function App({ manager }: { manager: Manager<BarrageValue> }) {
 
   return (
     <div className="w-full bg-slate-200">
-      <div className="container aspect-[4/3] p-3 mx-auto h-screen flex text-slate-600">
-        <div className="min-w-80 w-96 mr-2 px-4 py-3 border-slate-400 border-indigo-500/50 rounded-sm bg-slate-300">
+      <div className="mx-auto aspect-[4/2] p-3 h-screen flex text-slate-600">
+        <div className="min-w-96 w-96 mr-2 px-4 py-3 border-slate-400 border-indigo-500/50 rounded-sm bg-slate-300">
           <Sidebar
             manager={manager}
             allNumber={allNumber}

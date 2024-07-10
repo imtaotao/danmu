@@ -5,8 +5,8 @@ import type { BarrageValue } from '@/types';
 import { BarrageBox } from '@/components/custom/barrage';
 
 export const initManager = () => {
-  return create<BarrageValue>({
-    trackHeight: 36,
+  const manager = create<BarrageValue>({
+    trackHeight: 40,
     times: [4000, 7000],
     plugin: {
       init(manager) {
@@ -15,10 +15,13 @@ export const initManager = () => {
       $createNode(b) {
         if (!b.node) return;
         (b as any).node.b = b;
-        ReactDOM.createRoot(b.node).render(<BarrageBox barrage={b} />);
+        ReactDOM.createRoot(b.node).render(
+          <BarrageBox manager={manager} barrage={b} />,
+        );
       },
     },
   });
+  return manager;
 };
 
 export const mock = (manager: Manager<BarrageValue>) => {

@@ -1,25 +1,30 @@
 import { useState } from 'react';
-import { type Barrage } from 'danmu';
+import { ThumbsUp } from 'lucide-react';
+import type { Barrage, Manager } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';
+import avatarPath from '@/assets/avatar.jpg';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
-  const b = props.barrage;
-  const { content, isSelf } = b.data.value;
+export const BarrageBox = (props: {
+  barrage: Barrage<BarrageValue>;
+  manager: Manager<BarrageValue>;
+}) => {
+  const { manager, barrage } = props;
+  const { content, isSelf } = barrage.data.value;
   const [open, setOpen] = useState(false);
 
-  b.use({
+  barrage.use({
     pause: () => setOpen(true),
     resume: () => setOpen(false),
-    // 不能在 createNode 和 appendNode 里面改 opacity 的样式
     moveStart(b) {
       for (const key in b.statuses) {
-        if (key === '_viewStatus') continue;
+        if (key.startsWith('_')) continue;
         b.setStyle(key as any, b.statuses[key] as string);
       }
     },
@@ -30,22 +35,36 @@ export const BarrageBox = (props: { barrage: Barrage<BarrageValue> }) => {
       <Popover open={open}>
         <PopoverTrigger asChild>
           <div
-            onMouseEnter={() => b.pause()}
-            onMouseLeave={() => b.resume()}
+            onMouseEnter={() => barrage.pause()}
+            onMouseLeave={() => {
+              if (!manager.isFreeze()) {
+                barrage.resume();
+              }
+            }}
             onClick={() => {
               setOpen(false);
-              setTimeout(() => b.destroy(), 100);
+              setTimeout(() => barrage.destroy(), 100);
             }}
             className={cn(
-              isSelf ? 'border-2 border-slate-500' : '',
-              'py-[1px] px-3 rounded-xl font-bold text-slate-900 text-center cursor-pointer bg-gray-300 hover:bg-gray-400',
+              isSelf ? 'border-2 border-teal-500' : '',
+              'py-[5px] px-3 rounded-xl font-bold text-slate-900 text-center cursor-pointer bg-gray-300 hover:bg-gray-400 flex items-center',
             )}
           >
-            {b.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
+            <Avatar className="w-[20px] h-[20px] mr-1">
+              <AvatarImage src={avatarPath} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <span className="mr-1">
+              {barrage.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
+            </span>
+            <ThumbsUp />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-60 text-gray-400 text-center">
-          这个是一个{b.type === 'flexible' ? '高级' : '普通'}弹幕
+        <PopoverContent className="w-44 p-2 text-xs text-gray-500 text-center">
+          这个是一个
+          <span className="font-bold text-green-600">
+            {barrage.type === 'flexible' ? '高级' : '普通'}弹幕
+          </span>
         </PopoverContent>
       </Popover>
     </div>

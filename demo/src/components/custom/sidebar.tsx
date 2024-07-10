@@ -15,12 +15,26 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Bird,
+  Dog,
+  Fish,
+  Rabbit,
+  Bone,
+  Snail,
+  Shell,
+  PawPrint,
+  Turtle,
+  Squirrel,
+  Asterisk,
+} from 'lucide-react';
 
 const Opacity = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-        透明度
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+        <PawPrint />
+        <span className="ml-3">透明度</span>
       </Label>
       <Slider
         step={1}
@@ -42,8 +56,9 @@ const Opacity = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
 const SetArea = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-        显示区域 (Y)
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+        <Dog />
+        <span className="ml-3">显示区域 (Y)</span>
       </Label>
       <Slider
         step={1}
@@ -67,8 +82,9 @@ const SetArea = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
 const Gap = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-        弹幕之间的间距
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+        <Squirrel />
+        <span className="ml-3">弹幕之间的间距</span>
       </Label>
       <Input
         className="h-4/5"
@@ -87,8 +103,9 @@ export const Frequency = memo(
   ({ manager }: { manager: Manager<BarrageValue> }) => {
     return (
       <div className="flex h-8 mb-4 items-center justify-between">
-        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          渲染频率 (ms)
+        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+          <Fish />
+          <span className="ml-3">渲染频率 (ms)</span>
         </Label>
         <Input
           className="h-4/5"
@@ -107,8 +124,9 @@ export const Frequency = memo(
 const MoveTimes = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-        运动时长 (ms)
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+        <Rabbit />
+        <span className="ml-3">运动时长 (ms)</span>
       </Label>
       <Input
         className="h-4/5 mr-2"
@@ -141,9 +159,10 @@ const Show = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
     <div className="flex h-8 mb-4 items-center justify-between">
       <Label
         htmlFor="show-hide"
-        className="shrink-0 mr-3 h-full text-base font-bold leading-8"
+        className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
       >
-        隐藏/显示
+        <Turtle />
+        <span className="ml-3">隐藏/显示</span>
       </Label>
       <Switch
         id="show-hide"
@@ -170,9 +189,10 @@ const StartAndStop = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
     <div className="flex h-8 mb-4 items-center justify-between">
       <Label
         htmlFor="start-stop"
-        className="shrink-0 mr-3 h-full text-base font-bold leading-8"
+        className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
       >
-        停止/启动
+        <Bird />
+        <span className="ml-3">停止/启动</span>
       </Label>
       <Switch
         id="start-stop"
@@ -190,9 +210,10 @@ const Direction = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
     <div className="flex h-8 mb-4 items-center justify-between">
       <Label
         htmlFor="render-direction"
-        className="shrink-0 mr-3 h-full text-base font-bold leading-8"
+        className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
       >
-        方向（左/右）
+        <Bone />
+        <span className="ml-3">方向（左/右）</span>
       </Label>
       <Switch
         id="render-direction"
@@ -212,9 +233,10 @@ const Freeze = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
     <div className="flex h-8 mb-4 items-center justify-between">
       <Label
         htmlFor="freeze"
-        className="shrink-0 mr-3 h-full text-base font-bold leading-8"
+        className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
       >
-        恢复/冻结
+        <Shell />
+        <span className="ml-3">恢复/冻结</span>
       </Label>
       <Switch
         id="freeze"
@@ -230,12 +252,13 @@ const Freeze = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
 
 const ModeSelect = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
-    <div className="flex h-8 mb-8 items-center justify-between">
+    <div className="flex h-8 mb-4 items-center justify-between">
       <Label
         htmlFor="render-direction"
-        className="shrink-0 mr-3 h-full text-base font-bold leading-8"
+        className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
       >
-        渲染模式
+        <Snail />
+        <span className="ml-3">渲染模式</span>
       </Label>
       <Tabs
         defaultValue="strict"
@@ -312,20 +335,23 @@ export const Sidebar = ({
       <StartAndStop manager={manager} />
       <Freeze manager={manager} />
       <div className="flex h-8 mb-4 items-center justify-between">
-        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          实时渲染弹幕
+        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+          <Asterisk />
+          <span className="ml-3">实时渲染弹幕</span>
         </Label>
         <Badge>{renderNumber}</Badge>
       </div>
       <div className="flex h-8 mb-4 items-center justify-between">
-        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          暂存区弹幕
+        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+          <Asterisk />
+          <span className="ml-3">暂存区弹幕</span>
         </Label>
         <Badge>{stashNumber}</Badge>
       </div>
-      <div className="flex h-8 mb-4 items-center justify-between">
-        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          弹幕总量（包含暂存区）
+      <div className="flex h-8 mb-8 items-center justify-between">
+        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
+          <Asterisk />
+          <span className="ml-3">弹幕总量（包含暂存区）</span>
         </Label>
         <Badge>{allNumber}</Badge>
       </div>

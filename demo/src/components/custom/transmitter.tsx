@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { random, uuid } from 'aidly';
+import { Send, Pickaxe } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { Label } from '@/components/ui/label';
@@ -37,11 +38,11 @@ export const Transmitter = ({
   const [direction, setDirection] = useState(manager.options.direction);
   const [duration, setDuration] = useState(random(...manager.options.times));
 
-  const tip = () => {
+  const tip = (msg?: string) => {
     toast({
       duration: 800,
       title: '发送失败',
-      description: '弹幕值不能为空',
+      description: msg || '弹幕值不能为空',
     });
   };
 
@@ -50,7 +51,7 @@ export const Transmitter = ({
       <Textarea
         value={content}
         className="mb-4"
-        placeholder="发送你的弹幕。"
+        placeholder="输入你的弹幕内容。"
         onChange={(e) => setContent(e.target.value)}
       />
       <div className="flex items-center justify-end">
@@ -60,7 +61,7 @@ export const Transmitter = ({
             setOpen(true);
           }}
         >
-          发送高级弹幕
+          <Pickaxe />
         </Button>
         <Button
           className="ml-4"
@@ -76,7 +77,7 @@ export const Transmitter = ({
             setContent('');
           }}
         >
-          发送普通弹幕
+          <Send />
         </Button>
       </div>
 
@@ -150,10 +151,12 @@ export const Transmitter = ({
               </div>
             </div>
             <SheetFooter>
-              <Button onClick={() => setOpen(false)}>取消</Button>
               <Button
                 className="mb-[5px]"
                 onClick={() => {
+                  if (manager.isFreeze()) {
+                    return tip('当前处于冻结状态');
+                  }
                   setOpen(false);
                   setContent('');
                   setDuration(random(...manager.options.times));
@@ -178,7 +181,7 @@ export const Transmitter = ({
                   );
                 }}
               >
-                发送
+                <Send />
               </Button>
             </SheetFooter>
           </SheetHeader>
