@@ -25,10 +25,14 @@ export class Box {
   }
 
   public mount(c: HTMLElement) {
+    this.unmount();
+    c.appendChild(this.node);
+  }
+
+  public unmount() {
     if (this.node.parentNode) {
       this.node.parentNode.removeChild(this.node);
     }
-    c.appendChild(this.node);
   }
 
   public updateSize({ x, y }: Partial<Box['size']>) {

@@ -47,7 +47,7 @@ export const SidebarNumbers = memo(
           </Label>
           <Badge>{stashNumber}</Badge>
         </div>
-        <div className="flex h-8 mb-8 items-center justify-between">
+        <div className="flex h-8 mb-5 items-center justify-between">
           <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
             <Asterisk />
             <span className="ml-3">弹幕总量（包含暂存区）</span>

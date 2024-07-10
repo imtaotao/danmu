@@ -113,6 +113,13 @@ export class Manager<T extends unknown> {
     return this;
   }
 
+  public unmount() {
+    this.box.unmount();
+    this._container = null;
+    this.plSys.lifecycle.unmount.emit();
+    return this;
+  }
+
   public clear(_flag?: Symbol) {
     // No need to use `destroy` to save loop times
     this.each((b) => b.removeNode());

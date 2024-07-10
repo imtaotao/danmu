@@ -41,7 +41,7 @@ export const Transmitter = ({
   const tip = (msg?: string) => {
     toast({
       duration: 800,
-      title: '发送失败',
+      variant: 'destructive',
       description: msg || '弹幕值不能为空',
     });
   };
@@ -152,7 +152,6 @@ export const Transmitter = ({
             </div>
             <SheetFooter>
               <Button
-                className="mb-[5px]"
                 onClick={() => {
                   if (manager.isFreeze()) {
                     return tip('当前处于冻结状态');

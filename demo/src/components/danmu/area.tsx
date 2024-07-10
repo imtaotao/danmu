@@ -7,7 +7,9 @@ export const Area = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const format = () => manager.format();
+    const format = () => {
+      manager.nextFrame(() => manager.format());
+    };
     if (ref.current) {
       manager.mount(ref.current).startPlaying();
       document.addEventListener('fullscreenchange', format);
