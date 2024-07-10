@@ -2,7 +2,7 @@ import { uuid } from 'aidly';
 import ReactDOM from 'react-dom/client';
 import { type Manager, create } from 'danmu';
 import type { BarrageValue } from '@/types';
-import { BarrageBox } from '@/components/custom/barrage';
+import { BarrageBox } from '@/components/danmu/barrage';
 
 export const initManager = () => {
   const manager = create<BarrageValue>({

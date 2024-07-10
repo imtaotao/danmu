@@ -1,37 +1,12 @@
-import { useState, useEffect } from 'react';
 import type { Manager } from 'danmu';
 import type { BarrageValue } from '@/types';
 import githubLogo from '@/assets/github.svg';
-import { Area } from '@/components/custom/area';
+import { Area } from '@/components/danmu/area';
 import { Toaster } from '@/components/ui/toaster';
-import { Sidebar } from '@/components/custom/sidebar';
-import { Transmitter } from '@/components/custom/transmitter';
+import { Sidebar } from '@/components/sidebar/index';
+import { Transmitter } from '@/components/danmu/transmitter';
 
 export function App({ manager }: { manager: Manager<BarrageValue> }) {
-  const [allNumber, setAllNumber] = useState(0);
-  const [stashNumber, setStashNumber] = useState(0);
-  const [renderNumber, setRenderNumber] = useState(0);
-
-  useEffect(() => {
-    const name = 'BarrageNumber';
-    const update = () => {
-      const { all, view, stash, flexible } = manager.len();
-      setAllNumber(all);
-      setStashNumber(stash);
-      setRenderNumber(view + flexible);
-    };
-    manager.use({
-      name,
-      $destroy: () => update(),
-      $moveStart: () => update(),
-      push: () => update(),
-      clear: () => update(),
-    });
-    return () => {
-      manager.remove(name);
-    };
-  }, []);
-
   return (
     <div className="w-full bg-slate-200">
       <div className="mx-auto aspect-[4/2] p-3 h-screen flex text-slate-600">
@@ -43,12 +18,7 @@ export function App({ manager }: { manager: Manager<BarrageValue> }) {
               className="w-[30px] h-[30px] mb-4"
             />
           </a>
-          <Sidebar
-            manager={manager}
-            allNumber={allNumber}
-            stashNumber={stashNumber}
-            renderNumber={renderNumber}
-          />
+          <Sidebar manager={manager} />
         </div>
         <div className="w-full flex flex-col">
           <div className="h-5/6 p-3 border-slate-400 border-indigo-500/50 rounded bg-slate-100">
