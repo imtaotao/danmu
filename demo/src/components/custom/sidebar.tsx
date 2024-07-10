@@ -82,9 +82,20 @@ const SetArea = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
 const Gap = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
-        <Squirrel />
-        <span className="ml-3">弹幕之间的间距</span>
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center cursor-pointer">
+                <Squirrel />
+                <span className="ml-3">弹幕之间的间距</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              同一条轨道在碰撞检测的啥情况下，后一条弹幕与前一条弹幕最小相隔的距离
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </Label>
       <Input
         className="h-4/5"
@@ -103,9 +114,20 @@ export const Frequency = memo(
   ({ manager }: { manager: Manager<BarrageValue> }) => {
     return (
       <div className="flex h-8 mb-4 items-center justify-between">
-        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
-          <Fish />
-          <span className="ml-3">渲染频率 (ms)</span>
+        <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center cursor-pointer">
+                  <Fish />
+                  <span className="ml-3">渲染频率 (ms)</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                manager 会有一个定时器来轮询 push 普通弹幕，请设置合适的值
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </Label>
         <Input
           className="h-4/5"
@@ -124,9 +146,20 @@ export const Frequency = memo(
 const MoveTimes = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center">
-        <Rabbit />
-        <span className="ml-3">运动时长 (ms)</span>
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center cursor-pointer">
+                <Rabbit />
+                <span className="ml-3">运动时长 (ms)</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </Label>
       <Input
         className="h-4/5 mr-2"
@@ -253,12 +286,20 @@ const Freeze = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
 const ModeSelect = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
   return (
     <div className="flex h-8 mb-4 items-center justify-between">
-      <Label
-        htmlFor="render-direction"
-        className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
-      >
-        <Snail />
-        <span className="ml-3">渲染模式</span>
+      <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center cursor-pointer">
+                <Snail />
+                <span className="ml-3">渲染模式</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              渲染模式决定着碰撞检测的规则和弹幕渲染的时机
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </Label>
       <Tabs
         defaultValue="strict"
