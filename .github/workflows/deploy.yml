@@ -26,7 +26,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build project
+      - name: Build src
+        run: pnpm run build
+
+      - name: Build demo
         run: pnpm run demo:build
 
       - name: Deploy to GitHub Pages
