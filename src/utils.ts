@@ -1,4 +1,4 @@
-import { raf } from 'aidly';
+import { raf, once } from 'aidly';
 
 export const INTERNAL_FLAG = Symbol();
 
@@ -25,14 +25,10 @@ export const toNumber = (val: number | string) => {
 
 export function whenTransitionEnds(node: HTMLElement) {
   return new Promise<void>((resolve) => {
-    let called = false;
-    const onEnd = () => {
-      if (!called) {
-        called = true;
-        node.removeEventListener('transitionend', onEnd);
-        resolve();
-      }
-    };
+    const onEnd = once(() => {
+      node.removeEventListener('transitionend', onEnd);
+      resolve();
+    });
     node.addEventListener('transitionend', onEnd);
   });
 }

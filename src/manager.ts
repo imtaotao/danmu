@@ -32,7 +32,7 @@ export class Manager<T extends unknown> {
   private _container: HTMLElement | null = null;
 
   public constructor(public options: ManagerOptions) {
-    this.statuses._viewStatus = 'show';
+    this.statuses.$viewStatus = 'show';
     this._engine = new Engine(options);
     this.plSys.lifecycle.init.emit(this);
   }
@@ -46,11 +46,11 @@ export class Manager<T extends unknown> {
   }
 
   public isShow() {
-    return this.statuses._viewStatus === 'show';
+    return this.statuses.$viewStatus === 'show';
   }
 
   public isFreeze() {
-    return this.statuses._freeze === true;
+    return this.statuses.$freeze === true;
   }
 
   public isPlaying() {
@@ -77,7 +77,7 @@ export class Manager<T extends unknown> {
     if (preventEvents.includes('pause')) pauseFlag = INTERNAL_FLAG;
     this.stopPlaying(stopFlag);
     this.each((b) => b.pause(pauseFlag));
-    this.statuses._freeze = true;
+    this.statuses.$freeze = true;
     this.plSys.lifecycle.freeze.emit();
   }
 
@@ -88,7 +88,7 @@ export class Manager<T extends unknown> {
     if (preventEvents.includes('resume')) resumeFlag = INTERNAL_FLAG;
     this.each((b) => b.resume(resumeFlag));
     this.startPlaying(startFlag);
-    this.statuses._freeze = false;
+    this.statuses.$freeze = false;
     this.plSys.lifecycle.unfreeze.emit();
   }
 
@@ -299,19 +299,19 @@ export class Manager<T extends unknown> {
   }
 
   private _setViewStatus(
-    status: Statuses['_viewStatus'],
+    status: Statuses['$viewStatus'],
     filter?: FilterCallback<T>,
   ) {
     return new Promise<void>((resolve) => {
-      if (this.statuses._viewStatus === status) {
+      if (this.statuses.$viewStatus === status) {
         resolve();
         return;
       }
-      this.statuses._viewStatus = status;
+      this.statuses.$viewStatus = status;
       this.plSys.lifecycle[status].emit();
       this._engine
         .asyncEach((b) => {
-          if (this.statuses._viewStatus === status) {
+          if (this.statuses.$viewStatus === status) {
             if (!filter || filter(b) !== true) {
               b[status]();
             }

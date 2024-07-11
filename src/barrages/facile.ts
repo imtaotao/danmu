@@ -168,7 +168,7 @@ export class FacileBarrage<T> {
   }
 
   public hide(_flag?: Symbol) {
-    this.statuses._viewStatus = 'hide';
+    this.statuses.$viewStatus = 'hide';
     this.setStyle('visibility', 'hidden');
     this.setStyle('pointerEvents', 'none');
     if (_flag !== INTERNAL_FLAG) {
@@ -177,7 +177,7 @@ export class FacileBarrage<T> {
   }
 
   public show(_flag?: Symbol) {
-    this.statuses._viewStatus = 'show';
+    this.statuses.$viewStatus = 'show';
     this.setStyle('visibility', 'visible');
     this.setStyle('pointerEvents', 'auto');
     if (_flag !== INTERNAL_FLAG) {
@@ -261,7 +261,7 @@ export class FacileBarrage<T> {
       const cw = this.options.box.width + w;
       const isNegative = this.direction === 'left' ? 1 : -1;
 
-      this.statuses._viewStatus === 'hide'
+      this.statuses.$viewStatus === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
       this.setStyle('opacity', '');
@@ -283,7 +283,7 @@ export class FacileBarrage<T> {
   }
 
   public setStartStatus() {
-    this.statuses._viewStatus === 'hide'
+    this.statuses.$viewStatus === 'hide'
       ? this.hide(INTERNAL_FLAG)
       : this.show(INTERNAL_FLAG);
     this.setStyle('zIndex', '0');

@@ -35,11 +35,11 @@ export type Statuses = {
   /**
    * This is the status of whether the barrage is frozen or not, do not change it.
    */
-  _freeze: boolean;
+  $freeze: boolean;
   /**
    * This is the private state of barrage `show/hide`, do not change it.
    */
-  _viewStatus: 'hide' | 'show';
+  $viewStatus: 'hide' | 'show';
 } & {
   [K: string]: unknown;
 };

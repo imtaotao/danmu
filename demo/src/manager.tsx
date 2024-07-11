@@ -14,7 +14,6 @@ export const initManager = () => {
       },
       $createNode(b) {
         if (!b.node) return;
-        (b as any).node.b = b;
         ReactDOM.createRoot(b.node).render(
           <BarrageBox manager={manager} barrage={b} />,
         );

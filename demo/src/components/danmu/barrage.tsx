@@ -11,21 +11,24 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-export const BarrageBox = (props: {
+export const BarrageBox = ({
+  manager,
+  barrage,
+}: {
   barrage: Barrage<BarrageValue>;
   manager: Manager<BarrageValue>;
 }) => {
-  const { manager, barrage } = props;
   const { content, isSelf } = barrage.data.value;
   const [open, setOpen] = useState(false);
 
   barrage.use({
     pause: () => setOpen(true),
     resume: () => setOpen(false),
-    moveStart(b) {
-      for (const key in b.statuses) {
-        if (key.startsWith('_')) continue;
-        b.setStyle(key as any, b.statuses[key] as string);
+    moveStart(barrage) {
+      for (const key in barrage.statuses) {
+        // 弹幕库内部默认的状态以 `$` 开头
+        if (key.startsWith('$')) continue;
+        barrage.setStyle(key as any, barrage.statuses[key] as string);
       }
     },
   });

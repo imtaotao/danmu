@@ -369,7 +369,7 @@ export class Engine<T> {
   private _setAction(cur: Barrage<T>, statuses: Statuses) {
     return new Promise<boolean>((resolve) => {
       nextFrame(() => {
-        if (statuses._freeze === true) {
+        if (statuses.$freeze === true) {
           resolve(true);
           return;
         }
@@ -394,7 +394,7 @@ export class Engine<T> {
         }
         cur.appendNode(this.box.node);
         nextFrame(() => {
-          if (statuses._freeze === true) {
+          if (statuses.$freeze === true) {
             cur.removeNode(INTERNAL_FLAG);
             resolve(true);
           } else {
