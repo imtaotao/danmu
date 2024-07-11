@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feat/2.0
 
 jobs:
   build-and-deploy:

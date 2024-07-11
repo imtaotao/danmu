@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
+// 弹幕的渲染文件：demo/src/manager.tsx
 export const BarrageBox = ({
   manager,
   barrage,
