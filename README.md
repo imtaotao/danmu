@@ -5,10 +5,10 @@
 </div>
 
 
-A highly extensible danmu library with occlusion prevention and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin), featuring a robust plugin system.
-
+A highly extensible danmu library with a robust plugin system, occlusion prevention, and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
 
 > Demo preview: https://imtaotao.github.io/danmu/
+
 
 ### Usage
 
