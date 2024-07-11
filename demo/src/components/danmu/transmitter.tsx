@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { random, uuid } from 'aidly';
-import { Send, Pickaxe } from 'lucide-react';
+import { Send, Pickaxe, CircleAlert } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   Select,
   SelectContent,
@@ -84,14 +90,25 @@ export const Transmitter = ({
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>设置高级弹幕的位置信息</SheetTitle>
-            <SheetDescription>
-              这里 demo 单位默认为 "%"，通过计算会转换为 px。
-            </SheetDescription>
+            <SheetTitle className="flex items-center">
+              <span className="mr-2">设置高级弹幕的位置信息</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <CircleAlert size={18} className="cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    由于弹幕库默认只支持 position 的单位为 px, 虽然这里是 %
+                    的含义，是因为在组件内部通过计算会转换成了 px。
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </SheetTitle>
+
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-x" className="text-right font-bold">
-                  位置 (X)
+                  位置 (x%)
                 </Label>
                 <Input
                   id="postion-x"
@@ -105,7 +122,7 @@ export const Transmitter = ({
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-y" className="text-right font-bold">
-                  位置 (Y)
+                  位置 (y%)
                 </Label>
                 <Input
                   id="postion-y"

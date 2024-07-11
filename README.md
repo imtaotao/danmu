@@ -5,7 +5,7 @@
 
 </div>
 
-Flexible, cross-platform, powerful danmu library.
+A highly extensible, pluggable danmu library with occlusion prevention and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
 
 > Demo preview: https://imtaotao.github.io/danmu/
 

@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { throttle } from 'aidly';
-import { Rabbit } from 'lucide-react';
+import { Rabbit, CircleAlert } from 'lucide-react';
 import type { Manager } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { Label } from '@/components/ui/label';
@@ -17,19 +17,20 @@ export const SidebarMoveTimes = memo(
     return (
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center cursor-pointer">
-                  <Rabbit />
-                  <span className="ml-3">运动时长 (ms)</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center">
+            <Rabbit />
+            <span className="ml-3 mr-1">运动时长 (ms)</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <CircleAlert size={16} className="cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </Label>
         <Input
           className="h-4/5 mr-2"
