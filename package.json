@@ -1,6 +1,6 @@
 {
   "name": "danmu",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "main": "./dist/danmu.cjs.js",
   "unpkg": "./dist/danmu.umd.js",
@@ -8,14 +8,18 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/danmu.esm-bundler.js",
-      "require": "./dist/danmu.cjs.js",
-      "types": "./dist/index.d.ts"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "node": "./dist/danmu.esm-bundler.mjs",
+        "default": "./dist/danmu.esm-bundler.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/danmu.cjs.js"
+      }
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "test": "jest",
     "prepare": "husky",
@@ -23,7 +27,7 @@
     "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
     "build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "build:watch": "rollup --config --watch",
-    "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.(js|ts?(x))\""
+    "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.((m)?js|ts?(x))\""
   },
   "lint-staged": {
     "*.js": [
@@ -71,7 +75,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "aidly": "^1.4.4",
-    "hooks-plugin": "^1.2.3"
+    "aidly": "^1.4.6",
+    "hooks-plugin": "^1.2.5"
   }
 }

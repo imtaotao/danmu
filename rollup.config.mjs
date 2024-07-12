@@ -6,7 +6,7 @@ import replace from "@rollup/plugin-replace";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import pkg from "./package.json" assert { type: "json" };
+import pkg from "./package.json" with { type: "json" };
 
 const { dirname: __dirname } = import.meta;
 
@@ -22,9 +22,13 @@ const outputConfigs = {
     format: "cjs",
     file: path.resolve(__dirname, "dist/danmu.cjs.js"),
   },
-  "esm-bundler": {
+  "esm-bundler-js": {
     format: "es",
     file: path.resolve(__dirname, "dist/danmu.esm-bundler.js"),
+  },
+  "esm-bundler-mjs": {
+    format: "es",
+    file: path.resolve(__dirname, "dist/danmu.esm-bundler.mjs"),
   },
   umd: {
     format: "umd",

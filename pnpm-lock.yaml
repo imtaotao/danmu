@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.4.4
-        version: 1.4.4
+        specifier: ^1.4.6
+        version: 1.4.6
       hooks-plugin:
-        specifier: ^1.2.3
-        version: 1.2.3
+        specifier: ^1.2.5
+        version: 1.2.5
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -1306,6 +1306,9 @@ packages:
   aidly@1.4.4:
     resolution: {integrity: sha512-n999V3sZZ5/mgcRpmQWajwsjxsPouz3zilPidgOsgL7XxV5kBblzBVnzrw3PQWWlRCL7p2nBZzcEWhawFKkV6w==}
 
+  aidly@1.4.6:
+    resolution: {integrity: sha512-LYNCW5M2wBvwbaGUvg0SD0hx/etuBIn2/xh4cteABkCYxH4KVdebEFHt7sZByL3tYO18k29V5hCHYPzNtIIegg==}
+
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
     engines: {node: '>=8'}
@@ -1767,8 +1770,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hooks-plugin@1.2.3:
-    resolution: {integrity: sha512-ZIGK9+8HGc/jntSrBmADUCpVOKThngMVnp7SD6eaMKhRw6RPu/Go57b5j/xKkTAwZWsRcrfyUU2XrddLrrQedg==}
+  hooks-plugin@1.2.5:
+    resolution: {integrity: sha512-4Vbc5IkvZ8D9v1cJMiujC8oHK2YqiTjRB4UA72oSU2h9NgmRNSmh63KduMVQg/GqVZnKWcmoDNmkqVoRI0CYDA==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -2512,6 +2515,9 @@ packages:
 
   small-queue@1.0.1:
     resolution: {integrity: sha512-+T/HHAoiyDIyBwR9Utt/0q7WZhWeA6zBf5O+DUs97gJkme9IgX1nkgfa8W5VfF3PWPoZ0dZqjUq6eBFjc4gUsQ==}
+
+  small-queue@1.1.2:
+    resolution: {integrity: sha512-K6zQPh7cRjkzv+upcwrOTbR4kU3neY3KZR2F1nc8Fuez8uJyh4BguOUs4KGKHcuzU1LJmK8yfCkMUZbconLe8Q==}
 
   source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
@@ -4030,6 +4036,10 @@ snapshots:
     dependencies:
       small-queue: 1.0.1
 
+  aidly@1.4.6:
+    dependencies:
+      small-queue: 1.1.2
+
   ansi-escapes@4.3.2:
     dependencies:
       type-fest: 0.21.3
@@ -4496,9 +4506,9 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hooks-plugin@1.2.3:
+  hooks-plugin@1.2.5:
     dependencies:
-      aidly: 1.4.4
+      aidly: 1.4.6
 
   html-escaper@2.0.2: {}
 
@@ -5376,6 +5386,8 @@ snapshots:
       is-fullwidth-code-point: 5.0.0
 
   small-queue@1.0.1: {}
+
+  small-queue@1.1.2: {}
 
   source-map-js@1.2.0: {}
 
