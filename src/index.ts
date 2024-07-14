@@ -26,9 +26,12 @@ export function isManager<T = unknown>(val: unknown): val is Manager<T> {
   return val instanceof Manager;
 }
 
-export function create<T extends unknown>(options?: CreateOption<T>) {
+export function create<
+  T extends unknown,
+  S extends Record<any, unknown> = Record<PropertyKey, unknown>,
+>(options?: CreateOption<T>) {
   const opts = formatOptions<T>(options);
-  const manager = new Manager<T>(opts);
+  const manager = new Manager<T, S>(opts);
   if (opts.plugin) {
     manager.use(opts.plugin);
     manager.plSys.lifecycle.init.emit(manager);

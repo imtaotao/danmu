@@ -14,7 +14,6 @@ import { FlexibleBarrage } from './barrages/flexible';
 import { toNumber, randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
   Mode,
-  Statuses,
   PushData,
   TrackData,
   StashData,
@@ -25,6 +24,7 @@ import type {
   BarragePlugin,
   RenderOptions,
   PushFlexOptions,
+  InternalStatuses,
 } from './types';
 
 export interface EngineOptions {
@@ -299,7 +299,7 @@ export class Engine<T> {
   }
 
   private _consume(
-    statuses: Statuses,
+    statuses: InternalStatuses,
     bridgePlugin: BarragePlugin<T>,
     hooks: RenderOptions<T>['hooks'],
   ) {
@@ -366,10 +366,10 @@ export class Engine<T> {
     }
   }
 
-  private _setAction(cur: Barrage<T>, statuses: Statuses) {
+  private _setAction(cur: Barrage<T>, internalStatuses: InternalStatuses) {
     return new Promise<boolean>((resolve) => {
       nextFrame(() => {
-        if (statuses.$freeze === true) {
+        if (internalStatuses.freeze === true) {
           resolve(true);
           return;
         }
@@ -394,7 +394,7 @@ export class Engine<T> {
         }
         cur.appendNode(this.box.node);
         nextFrame(() => {
-          if (statuses.$freeze === true) {
+          if (internalStatuses.freeze === true) {
             cur.removeNode(INTERNAL_FLAG);
             resolve(true);
           } else {
@@ -408,15 +408,15 @@ export class Engine<T> {
   private _create(
     type: BarrageType,
     data: PushData<T>,
-    statuses: Statuses,
+    internalStatuses: InternalStatuses,
     options?: Omit<PushFlexOptions<T>, 'plugin'>,
   ): Barrage<T> {
     assert(this.box, 'Container not formatted');
     const config = {
       data,
-      statuses,
       duration: 0,
       box: this.box,
+      internalStatuses,
       direction: this.options.direction as Direction,
       delInTrack: (b: Barrage<T>) => {
         remove(this._sets.view, b);

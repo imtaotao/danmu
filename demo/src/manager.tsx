@@ -1,11 +1,11 @@
 import { uuid } from 'aidly';
 import ReactDOM from 'react-dom/client';
 import { type Manager, create } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { Statuses, BarrageValue } from '@/types';
 import { BarrageBox } from '@/components/danmu/barrage';
 
 export const initManager = () => {
-  const manager = create<BarrageValue>({
+  const manager = create<BarrageValue, Statuses>({
     trackHeight: 40,
     times: [4000, 7000],
     plugin: {

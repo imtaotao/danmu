@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ThumbsUp } from 'lucide-react';
 import type { Barrage, Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { Statuses, BarrageValue } from '@/types';
 import { cn } from '@/lib/utils';
 import avatarPath from '@/assets/avatar.jpg';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,7 +17,7 @@ export const BarrageBox = ({
   barrage,
 }: {
   barrage: Barrage<BarrageValue>;
-  manager: Manager<BarrageValue>;
+  manager: Manager<BarrageValue, Statuses>;
 }) => {
   const { content, isSelf } = barrage.data.value;
   const [open, setOpen] = useState(false);
@@ -26,10 +26,9 @@ export const BarrageBox = ({
     pause: () => setOpen(true),
     resume: () => setOpen(false),
     moveStart(barrage) {
-      for (const key in barrage.statuses) {
-        // 弹幕库内部默认的状态以 `$` 开头
-        if (key.startsWith('$')) continue;
-        barrage.setStyle(key as any, barrage.statuses[key] as string);
+      for (const key in manager.statuses) {
+        type K = keyof typeof manager.statuses;
+        barrage.setStyle(key as K, manager.statuses[key as K]);
       }
     },
   });

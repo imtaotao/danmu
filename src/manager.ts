@@ -9,32 +9,36 @@ import type {
   BarrageType,
   BarragePlugin,
   PushData,
-  Statuses,
   AreaOptions,
   EachCallback,
   FreezeOptions,
   FilterCallback,
   ManagerPlugin,
   PushFlexOptions,
+  InternalStatuses,
 } from './types';
 
 export interface ManagerOptions extends EngineOptions {
   interval: number;
 }
 
-export class Manager<T extends unknown> {
+export class Manager<
+  T extends unknown,
+  S extends Record<any, unknown> = Record<PropertyKey, unknown>,
+> {
   public version = __VERSION__;
   public nextFrame = nextFrame;
+  public statuses: S = Object.create(null);
   public plSys = createManagerLifeCycle<T>();
-  public statuses: Statuses = Object.create(null);
   private _engine: Engine<T>;
   private _renderTimer: number | null = null;
   private _container: HTMLElement | null = null;
+  private _internalStatuses: InternalStatuses = Object.create(null);
 
   public constructor(public options: ManagerOptions) {
-    this.statuses.$viewStatus = 'show';
     this._engine = new Engine(options);
     this.plSys.lifecycle.init.emit(this);
+    this._internalStatuses.viewStatus = 'show';
   }
 
   public get box() {
@@ -46,11 +50,11 @@ export class Manager<T extends unknown> {
   }
 
   public isShow() {
-    return this.statuses.$viewStatus === 'show';
+    return this._internalStatuses.viewStatus === 'show';
   }
 
   public isFreeze() {
-    return this.statuses.$freeze === true;
+    return this._internalStatuses.freeze === true;
   }
 
   public isPlaying() {
@@ -77,7 +81,7 @@ export class Manager<T extends unknown> {
     if (preventEvents.includes('pause')) pauseFlag = INTERNAL_FLAG;
     this.stopPlaying(stopFlag);
     this.each((b) => b.pause(pauseFlag));
-    this.statuses.$freeze = true;
+    this._internalStatuses.freeze = true;
     this.plSys.lifecycle.freeze.emit();
   }
 
@@ -88,7 +92,7 @@ export class Manager<T extends unknown> {
     if (preventEvents.includes('resume')) resumeFlag = INTERNAL_FLAG;
     this.each((b) => b.resume(resumeFlag));
     this.startPlaying(startFlag);
-    this.statuses.$freeze = false;
+    this._internalStatuses.freeze = false;
     this.plSys.lifecycle.unfreeze.emit();
   }
 
@@ -250,7 +254,7 @@ export class Manager<T extends unknown> {
     }
     const res = this._engine.renderFlexibleBarrage(data, {
       ...options,
-      statuses: this.statuses,
+      statuses: this._internalStatuses,
       bridgePlugin: createBridgePlugin(this.plSys),
       hooks: {
         finished: () => this.plSys.lifecycle.finished.emit(),
@@ -268,7 +272,7 @@ export class Manager<T extends unknown> {
   public render() {
     if (!this.isPlaying()) return this;
     this._engine.renderFacileBarrage({
-      statuses: this.statuses,
+      statuses: this._internalStatuses,
       bridgePlugin: createBridgePlugin(this.plSys),
       hooks: {
         finished: () => this.plSys.lifecycle.finished.emit(),
@@ -299,19 +303,19 @@ export class Manager<T extends unknown> {
   }
 
   private _setViewStatus(
-    status: Statuses['$viewStatus'],
+    status: InternalStatuses['viewStatus'],
     filter?: FilterCallback<T>,
   ) {
     return new Promise<void>((resolve) => {
-      if (this.statuses.$viewStatus === status) {
+      if (this._internalStatuses.viewStatus === status) {
         resolve();
         return;
       }
-      this.statuses.$viewStatus = status;
+      this._internalStatuses.viewStatus = status;
       this.plSys.lifecycle[status].emit();
       this._engine
         .asyncEach((b) => {
-          if (this.statuses.$viewStatus === status) {
+          if (this._internalStatuses.viewStatus === status) {
             if (!filter || filter(b) !== true) {
               b[status]();
             }

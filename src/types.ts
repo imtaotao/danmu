@@ -31,17 +31,9 @@ export type BarragePlugin<T> = RefinePlugin<
   FacileBarrage<T>['plSys']['lifecycle']
 >;
 
-export type Statuses = {
-  /**
-   * This is the status of whether the barrage is frozen or not, do not change it.
-   */
-  $freeze: boolean;
-  /**
-   * This is the private state of barrage `show/hide`, do not change it.
-   */
-  $viewStatus: 'hide' | 'show';
-} & {
-  [K: string]: unknown;
+export type InternalStatuses = {
+  freeze: boolean;
+  viewStatus: 'hide' | 'show';
 };
 
 export interface PushFlexOptions<T> {
@@ -93,7 +85,7 @@ export interface InfoRecord {
 }
 
 export interface RenderOptions<T> {
-  statuses: Statuses;
+  statuses: InternalStatuses;
   bridgePlugin: BarragePlugin<T>;
   hooks: HooksOn<Manager<T>['plSys'], ['render', 'finished', 'willRender']>;
 }

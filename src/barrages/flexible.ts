@@ -164,7 +164,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
       'transform',
       `translateX(${this.position.x}px) translateY(${this.position.y}px)`,
     );
-    this.statuses.$viewStatus === 'hide'
+    this._internalStatuses.viewStatus === 'hide'
       ? this.hide(INTERNAL_FLAG)
       : this.show(INTERNAL_FLAG);
   }

@@ -7,12 +7,12 @@ import type {
   Position,
   MoveTimer,
   TrackData,
-  Statuses,
   Direction,
   InfoRecord,
   Barrage,
   BarrageType,
   BarragePlugin,
+  InternalStatuses,
 } from '../types';
 
 // The declaration must be displayed,
@@ -24,9 +24,9 @@ export type PlSys<T> = ReturnType<
 export interface FacileOptions<T> {
   box: Box;
   duration: number;
-  statuses: Statuses;
   data: PushData<T>;
   direction: Direction;
+  internalStatuses: InternalStatuses;
   delInTrack: (b: Barrage<T>) => void;
 }
 
@@ -39,7 +39,6 @@ export class FacileBarrage<T> {
   public isFixed = false;
   public duration: number;
   public data: PushData<T>;
-  public statuses: Statuses;
   public recorder: InfoRecord;
   public nextFrame = nextFrame;
   public type: BarrageType = 'facile';
@@ -48,11 +47,12 @@ export class FacileBarrage<T> {
   public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
   public plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
+  protected _internalStatuses: InternalStatuses;
 
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
-    this.statuses = options.statuses;
     this.duration = options.duration;
+    this._internalStatuses = options.internalStatuses;
     this.recorder = {
       pauseTime: 0,
       startTime: 0,
@@ -168,7 +168,6 @@ export class FacileBarrage<T> {
   }
 
   public hide(_flag?: Symbol) {
-    this.statuses.$viewStatus = 'hide';
     this.setStyle('visibility', 'hidden');
     this.setStyle('pointerEvents', 'none');
     if (_flag !== INTERNAL_FLAG) {
@@ -177,7 +176,6 @@ export class FacileBarrage<T> {
   }
 
   public show(_flag?: Symbol) {
-    this.statuses.$viewStatus = 'show';
     this.setStyle('visibility', 'visible');
     this.setStyle('pointerEvents', 'auto');
     if (_flag !== INTERNAL_FLAG) {
@@ -261,7 +259,7 @@ export class FacileBarrage<T> {
       const cw = this.options.box.width + w;
       const isNegative = this.direction === 'left' ? 1 : -1;
 
-      this.statuses.$viewStatus === 'hide'
+      this._internalStatuses.viewStatus === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
       this.setStyle('opacity', '');
@@ -283,7 +281,7 @@ export class FacileBarrage<T> {
   }
 
   public setStartStatus() {
-    this.statuses.$viewStatus === 'hide'
+    this._internalStatuses.viewStatus === 'hide'
       ? this.hide(INTERNAL_FLAG)
       : this.show(INTERNAL_FLAG);
     this.setStyle('zIndex', '0');
