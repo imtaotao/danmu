@@ -5,10 +5,12 @@ import { Engine, type EngineOptions } from './engine';
 import { ids, toNumber, nextFrame, INTERNAL_FLAG } from './utils';
 import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
+  Mode,
   Barrage,
   BarrageType,
   BarragePlugin,
   PushData,
+  Direction,
   AreaOptions,
   EachCallback,
   FreezeOptions,
@@ -281,6 +283,14 @@ export class Manager<
       },
     });
     return this;
+  }
+
+  public setDirection(direction: Direction) {
+    return this.updateOptions({ direction });
+  }
+
+  public setMode(mode: Mode) {
+    return this.updateOptions({ mode });
   }
 
   public setArea({ x, y }: AreaOptions) {
