@@ -83,7 +83,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     this.paused = false;
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
     this.recorder.prevPauseTime = 0;
-    const remainingTime = (1 - this.getMovePercent()) * this.duration;
+    const remainingTime = (1 - this.getMovePercent()) * this.actualDuration();
 
     if (this.direction === 'none') {
       if (this.moveTimer) {
@@ -134,7 +134,7 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
       this.plSys.lifecycle.moveStart.emit(this);
 
       if (this.direction === 'none') {
-        let timer: number | null = setTimeout(onEnd, this.duration);
+        let timer: number | null = setTimeout(onEnd, this.actualDuration());
         this.moveTimer = {
           cb: onEnd,
           clear() {
@@ -145,7 +145,10 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
       } else {
         const ex =
           this.direction === 'left' ? this.options.box.width : -this.getWidth();
-        this.setStyle('transition', `transform linear ${this.duration}ms`);
+        this.setStyle(
+          'transition',
+          `transform linear ${this.actualDuration()}ms`,
+        );
         this.setStyle(
           'transform',
           `translateX(${ex}px) translateY(${this.position.y}px)`,

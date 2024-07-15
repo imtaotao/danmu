@@ -60,12 +60,18 @@ export class FacileBarrage<T> {
       pauseTime: 0,
       startTime: 0,
       prevPauseTime: 0,
-      duration: this.duration,
+      duration: this.actualDuration(),
     };
   }
 
   get direction() {
     return this.options.direction;
+  }
+
+  // When our total distance remains constant,
+  // acceleration is inversely proportional to time.
+  public actualDuration() {
+    return this.duration / this.rate;
   }
 
   public setloop() {
@@ -88,10 +94,10 @@ export class FacileBarrage<T> {
     this.plSys.remove(pluginName);
   }
 
-  public fixDuration(t: number) {
-    this.duration = t;
-    this.recorder.duration = t;
+  public fixDuration(duration: number) {
     this.isFixed = true;
+    this.duration = duration;
+    this.recorder.duration = this.actualDuration();
   }
 
   public updatePosition(p: Partial<Position>) {
@@ -125,7 +131,7 @@ export class FacileBarrage<T> {
   public getMovePercent() {
     const { pauseTime, startTime, prevPauseTime } = this.recorder;
     const ct = this.paused ? prevPauseTime : now();
-    return (ct - startTime - pauseTime) / this.duration;
+    return (ct - startTime - pauseTime) / this.actualDuration();
   }
 
   public getMoveDistance() {
@@ -161,7 +167,7 @@ export class FacileBarrage<T> {
     if (!this.moving || !this.paused) return;
     const cw = this.options.box.width + this.getWidth();
     const isNegative = this.direction === 'left' ? 1 : -1;
-    const remainingTime = (1 - this.getMovePercent()) * this.duration;
+    const remainingTime = (1 - this.getMovePercent()) * this.actualDuration();
 
     this.paused = false;
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
@@ -238,6 +244,7 @@ export class FacileBarrage<T> {
   public createNode() {
     if (this.node) return;
     this.node = document.createElement('div');
+    (this.node as any).__debugBarrage__ = this;
     this.setStartStatus();
     this.plSys.lifecycle.createNode.emit(this);
   }
@@ -272,7 +279,10 @@ export class FacileBarrage<T> {
         : this.show(INTERNAL_FLAG);
       this.setStyle('opacity', '');
       this.setStyle('transform', `translateX(${isNegative * cw}px)`);
-      this.setStyle('transition', `transform linear ${this.duration}ms`);
+      this.setStyle(
+        'transition',
+        `transform linear ${this.actualDuration()}ms`,
+      );
       if (this.direction !== 'none') {
         this.setStyle(this.direction, `-${w}px`);
       }
