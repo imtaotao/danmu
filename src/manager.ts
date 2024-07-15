@@ -293,6 +293,43 @@ export class Manager<
     return this.updateOptions({ mode });
   }
 
+  public setGap(gap: number | string) {
+    return this.updateOptions({ gap });
+  }
+
+  public setTrackHeight(trackHeight: number | string) {
+    return this.updateOptions({ trackHeight });
+  }
+
+  public setInterval(interval: number) {
+    return this.updateOptions({ interval });
+  }
+
+  public setTimes(times: [number, number]) {
+    return this.updateOptions({ times });
+  }
+
+  public setRate(rate: number) {
+    return this.updateOptions({ rate });
+  }
+
+  public setLimits({ view, stash }: { view?: number; stash?: number }) {
+    let needUpdate = false;
+    const limits = Object.assign({}, this.options.limits);
+    if (typeof view === 'number') {
+      needUpdate = true;
+      limits.view = view;
+    }
+    if (typeof stash === 'number') {
+      needUpdate = true;
+      limits.stash = stash;
+    }
+    if (needUpdate) {
+      this.updateOptions({ limits });
+    }
+    return this;
+  }
+
   public setArea({ x, y }: AreaOptions) {
     const size = Object.create(null);
     if (x) {

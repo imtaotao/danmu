@@ -29,6 +29,7 @@ import type {
 
 export interface EngineOptions {
   mode: Mode;
+  rate: number;
   gap: number | string;
   trackHeight: number | string;
   times: [number, number];

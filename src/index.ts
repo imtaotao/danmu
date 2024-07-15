@@ -6,6 +6,7 @@ const formatOptions = <T>(options?: CreateOption<T>) => {
   const newOptions = Object.assign(
     {
       gap: 0,
+      rate: 1,
       limits: {},
       interval: 500,
       mode: 'strict',
