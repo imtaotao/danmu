@@ -39,8 +39,10 @@ export class Manager<
 
   public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
-    this.plSys.lifecycle.init.emit(this);
+    this._internalStatuses.rate = 1;
+    this._internalStatuses.freeze = false;
     this._internalStatuses.viewStatus = 'show';
+    this.plSys.lifecycle.init.emit(this);
   }
 
   public get box() {
@@ -49,6 +51,10 @@ export class Manager<
 
   public len() {
     return this._engine.len();
+  }
+
+  public rate() {
+    return this._internalStatuses.rate;
   }
 
   public isShow() {
@@ -309,9 +315,7 @@ export class Manager<
     return this.updateOptions({ times });
   }
 
-  public setRate(rate: number) {
-    return this.updateOptions({ rate });
-  }
+  public setRate(rate: number) {}
 
   public setLimits({ view, stash }: { view?: number; stash?: number }) {
     let needUpdate = false;

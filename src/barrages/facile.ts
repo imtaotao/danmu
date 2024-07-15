@@ -37,6 +37,7 @@ export class FacileBarrage<T> {
   public moving = false;
   public isEnded = false;
   public isFixed = false;
+  public rate: number;
   public duration: number;
   public data: PushData<T>;
   public recorder: InfoRecord;
@@ -52,6 +53,7 @@ export class FacileBarrage<T> {
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
     this.duration = options.duration;
+    this.rate = options.internalStatuses.rate;
     this._internalStatuses = options.internalStatuses;
     this.recorder = {
       pauseTime: 0,
@@ -104,6 +106,11 @@ export class FacileBarrage<T> {
   public updateTrackData(data: TrackData<T> | null) {
     if (data) data.list.push(this);
     this.trackData = data;
+  }
+
+  public updateRate(rate: number) {
+    this.rate = rate;
+    // TODO: ...
   }
 
   public getHeight() {
