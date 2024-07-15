@@ -23,6 +23,7 @@ export type PlSys<T> = ReturnType<
 
 export interface FacileOptions<T> {
   box: Box;
+  rate: number;
   duration: number;
   data: PushData<T>;
   direction: Direction;
@@ -52,8 +53,8 @@ export class FacileBarrage<T> {
 
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
+    this.rate = options.rate;
     this.duration = options.duration;
-    this.rate = options.internalStatuses.rate;
     this._internalStatuses = options.internalStatuses;
     this.recorder = {
       pauseTime: 0,

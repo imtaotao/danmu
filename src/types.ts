@@ -32,7 +32,6 @@ export type BarragePlugin<T> = RefinePlugin<
 >;
 
 export type InternalStatuses = {
-  rate: number;
   freeze: boolean;
   viewStatus: 'hide' | 'show';
 };

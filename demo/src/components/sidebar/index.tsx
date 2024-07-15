@@ -1,6 +1,7 @@
 import type { Manager } from 'danmu';
 import type { BarrageValue } from '@/types';
 import { SidebarGap } from '@/components/sidebar/sidebarGap';
+import { SidebarRate } from '@/components/sidebar/sidebarRate';
 import { SidebarArea } from '@/components/sidebar/sidebarArea';
 import { SidebarFreeze } from '@/components/sidebar/sidebarFreeze';
 import { SidebarOpacity } from '@/components/sidebar/sidebarOpacity';
@@ -21,6 +22,7 @@ export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
       <SidebarGap manager={manager} />
       <SidebarFrequency manager={manager} />
       <SidebarMoveTimes manager={manager} />
+      <SidebarRate manager={manager} />
       <SidebarModeSelect manager={manager} />
       <SidebarFreeze manager={manager} />
       <SidebarDirection manager={manager} />

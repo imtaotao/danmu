@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.4.6
-        version: 1.4.6
+        specifier: ^1.4.7
+        version: 1.4.7
       hooks-plugin:
         specifier: ^1.2.5
         version: 1.2.5
@@ -1306,8 +1306,8 @@ packages:
   aidly@1.4.4:
     resolution: {integrity: sha512-n999V3sZZ5/mgcRpmQWajwsjxsPouz3zilPidgOsgL7XxV5kBblzBVnzrw3PQWWlRCL7p2nBZzcEWhawFKkV6w==}
 
-  aidly@1.4.6:
-    resolution: {integrity: sha512-LYNCW5M2wBvwbaGUvg0SD0hx/etuBIn2/xh4cteABkCYxH4KVdebEFHt7sZByL3tYO18k29V5hCHYPzNtIIegg==}
+  aidly@1.4.7:
+    resolution: {integrity: sha512-vFVdlSX6e4J394vmT8SRLc+RfX6iM3iVn1lusUaqIJYtYef/GBWjFo5kFfRSLCZQP6e24ZG9bByj6bg1n0aPeA==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -4036,7 +4036,7 @@ snapshots:
     dependencies:
       small-queue: 1.0.1
 
-  aidly@1.4.6:
+  aidly@1.4.7:
     dependencies:
       small-queue: 1.1.2
 
@@ -4508,7 +4508,7 @@ snapshots:
 
   hooks-plugin@1.2.5:
     dependencies:
-      aidly: 1.4.6
+      aidly: 1.4.7
 
   html-escaper@2.0.2: {}
 

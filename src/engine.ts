@@ -29,6 +29,7 @@ import type {
 
 export interface EngineOptions {
   mode: Mode;
+  rate: number;
   gap: number | string;
   trackHeight: number | string;
   times: [number, number];
@@ -417,6 +418,7 @@ export class Engine<T> {
       duration: 0,
       box: this.box,
       internalStatuses,
+      rate: this.options.rate,
       direction: this.options.direction as Direction,
       delInTrack: (b: Barrage<T>) => {
         remove(this._sets.view, b);
