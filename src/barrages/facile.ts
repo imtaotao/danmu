@@ -60,7 +60,6 @@ export class FacileBarrage<T> {
       pauseTime: 0,
       startTime: 0,
       prevPauseTime: 0,
-      duration: this.actualDuration(),
     };
   }
 
@@ -97,7 +96,6 @@ export class FacileBarrage<T> {
   public fixDuration(duration: number) {
     this.isFixed = true;
     this.duration = duration;
-    this.recorder.duration = this.actualDuration();
   }
 
   public updatePosition(p: Partial<Position>) {
@@ -116,8 +114,18 @@ export class FacileBarrage<T> {
   }
 
   public updateRate(rate: number) {
-    this.rate = rate;
-    // TODO: ...
+    // const cw = this.options.box.width + this.getWidth();
+    // const isNegative = this.direction === 'left' ? 1 : -1;
+    // const remainingTime = (1 - this.getMovePercent()) * this.actualDuration();
+    // this.pause(INTERNAL_FLAG);
+    // this.setStyle('zIndex', '0');
+    // this.setStyle('transform', `translateX(${cw * isNegative}px)`);
+    // this.setStyle(
+    //   'transitionDuration',
+    //   `${(remainingTime * this.rate) / rate}ms`,
+    // );
+    // this.rate = rate;
+    // this.paused = false;
   }
 
   public getHeight() {
@@ -142,7 +150,7 @@ export class FacileBarrage<T> {
   public getSpeed() {
     const cw = this._summaryWidth();
     if (cw == null) return 0;
-    return cw / this.recorder.duration;
+    return cw / this.actualDuration();
   }
 
   public pause(_flag?: Symbol) {
@@ -156,8 +164,8 @@ export class FacileBarrage<T> {
       d *= -1;
     }
     this.setStyle('zIndex', '2');
-    this.setStyle('transform', `translateX(${d}px)`);
     this.setStyle('transitionDuration', '0ms');
+    this.setStyle('transform', `translateX(${d}px)`);
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.pause.emit(this);
     }
@@ -172,10 +180,9 @@ export class FacileBarrage<T> {
     this.paused = false;
     this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
     this.recorder.prevPauseTime = 0;
-    this.recorder.duration = remainingTime;
     this.setStyle('zIndex', '0');
-    this.setStyle('transform', `translateX(${cw * isNegative}px)`);
     this.setStyle('transitionDuration', `${remainingTime}ms`);
+    this.setStyle('transform', `translateX(${cw * isNegative}px)`);
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.resume.emit(this);
     }
@@ -237,7 +244,6 @@ export class FacileBarrage<T> {
       pauseTime: 0,
       startTime: 0,
       prevPauseTime: 0,
-      duration: this.duration,
     };
   }
 

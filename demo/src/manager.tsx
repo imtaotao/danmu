@@ -6,13 +6,15 @@ import { BarrageBox } from '@/components/danmu/barrage';
 
 export const initManager = () => {
   const manager = create<BarrageValue, Statuses>({
-    rate: 5,
+    rate: 1,
+    interval: 100,
     trackHeight: 40,
     times: [4000, 7000],
     plugin: {
       init(manager) {
         manager.box.node.classList.add('bg-slate-200');
       },
+      limitWarning() {},
       $createNode(b) {
         if (!b.node) return;
         ReactDOM.createRoot(b.node).render(
@@ -27,15 +29,15 @@ export const initManager = () => {
 export const mock = (manager: Manager<BarrageValue>) => {
   const list = [
     '哇塞！',
-    '不可思议！',
-    '这也太厉害了吧！',
-    '惊呆了！',
-    '太神奇了！',
-    '这是什么操作？',
-    '我看到了什么？',
-    '这是什么原理？',
-    '我有点看不懂了。',
-    '这是什么操作？',
+    // '不可思议！',
+    // '这也太厉害了吧！',
+    // '惊呆了！',
+    // '太神奇了！',
+    // '这是什么操作？',
+    // '我看到了什么？',
+    // '这是什么原理？',
+    // '我有点看不懂了。',
+    // '这是什么操作？',
   ];
   setInterval(() => {
     for (const content of list) {
@@ -47,5 +49,5 @@ export const mock = (manager: Manager<BarrageValue>) => {
         },
       });
     }
-  }, 800);
+  }, 2000);
 };

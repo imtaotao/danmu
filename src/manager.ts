@@ -312,10 +312,10 @@ export class Manager<
 
   public setRate(
     rate: number,
-    { updateExisting }: { updateExisting?: boolean } = {},
+    { updateExistingDanmu }: { updateExistingDanmu?: boolean } = {},
   ) {
     if (rate !== this.options.rate) {
-      if (updateExisting) {
+      if (updateExistingDanmu) {
         this.asyncEach((b) => {
           b.updateRate(rate);
         });

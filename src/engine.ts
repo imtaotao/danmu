@@ -115,10 +115,14 @@ export class Engine<T> {
   // so deleting some of them in the loop will not affect
   public each(fn: EachCallback<T>) {
     for (const item of this._sets.flexible) {
-      if (fn(item) === false) return;
+      if (!item.isEnded) {
+        if (fn(item) === false) return;
+      }
     }
     for (const item of this._sets.view) {
-      if (fn(item) === false) return;
+      if (!item.isEnded) {
+        if (fn(item) === false) return;
+      }
     }
   }
 
@@ -130,16 +134,26 @@ export class Engine<T> {
     return loopSlice(
       arr.length,
       (i) => {
-        if (fn(arr[i]) === false) {
-          stop = true;
-          return false;
+        if (!arr[i].isEnded) {
+          if (fn(arr[i]) === false) {
+            stop = true;
+            return false;
+          }
         }
       },
       17,
     ).then(() => {
       if (stop) return;
       const arr = Array.from(this._sets.view);
-      return loopSlice(arr.length, (i) => fn(arr[i]), 17);
+      return loopSlice(
+        arr.length,
+        (i) => {
+          if (!arr[i].isEnded) {
+            return fn(arr[i]);
+          }
+        },
+        17,
+      );
     });
   }
 
@@ -356,14 +370,21 @@ export class Engine<T> {
       };
       // Waiting for the style to take effect,
       // we need to get the barrage screen height.
-      nextFrame(() =>
+      let i = 0;
+      const triggerSetup = () => {
         nextFrame(() => {
-          const y = trackData.location[1] - b.getHeight() / 2;
-          if (y + b.getHeight() > this.box.height) return;
-          b.updatePosition({ y });
-          setup();
-        }),
-      );
+          const height = b.getHeight();
+          if (height === 0 && ++i < 20) {
+            triggerSetup();
+          } else {
+            const y = trackData.location[1] - height / 2;
+            if (y + height > this.box.height) return;
+            b.updatePosition({ y });
+            setup();
+          }
+        });
+      };
+      triggerSetup();
     }
   }
 

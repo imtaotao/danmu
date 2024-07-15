@@ -78,7 +78,6 @@ export interface StashData<T> {
 }
 
 export interface InfoRecord {
-  duration: number;
   pauseTime: number;
   startTime: number;
   prevPauseTime: number;

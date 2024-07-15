@@ -38,7 +38,9 @@ export const SidebarRate = memo(
           placeholder="弹幕间距"
           defaultValue={manager.options.rate}
           onChange={throttle(500, (e) => {
-            manager.setRate(Number(e.target.value));
+            manager.setRate(Number(e.target.value), {
+              updateExistingDanmu: true,
+            });
           })}
         />
       </div>

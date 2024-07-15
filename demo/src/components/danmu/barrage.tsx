@@ -49,7 +49,7 @@ export const BarrageBox = ({
               setTimeout(() => barrage.destroy(), 100);
             }}
             className={cn(
-              isSelf ? 'border-2 border-teal-500' : '',
+              isSelf ? 'border-2 border-solid border-teal-500' : '',
               'py-[5px] px-3 rounded-xl font-bold text-slate-900 text-center cursor-pointer bg-gray-300 hover:bg-gray-400 flex items-center',
             )}
           >
@@ -63,10 +63,11 @@ export const BarrageBox = ({
             <ThumbsUp />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-44 p-2 text-xs text-gray-500 text-center">
+        <PopoverContent className="w-60 p-2 text-xs text-gray-500 text-center">
           这个是一个
           <span className="font-bold text-green-600">
             {barrage.type === 'flexible' ? '高级' : '普通'}弹幕
+            {barrage.isFixed ? ' (被修正过运动时间)' : ''}
           </span>
         </PopoverContent>
       </Popover>

@@ -24,10 +24,11 @@ import {
 } from '@/components/ui/select';
 import {
   Sheet,
-  SheetContent,
+  SheetTitle,
   SheetFooter,
   SheetHeader,
-  SheetTitle,
+  SheetContent,
+  SheetDescription,
 } from '@/components/ui/sheet';
 
 export const Transmitter = ({
@@ -85,8 +86,8 @@ export const Transmitter = ({
           <Send />
         </Button>
       </div>
-
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={setOpen} aria-describedb>
+        <SheetDescription />
         <SheetContent>
           <SheetHeader>
             <SheetTitle className="flex items-center">
@@ -103,7 +104,6 @@ export const Transmitter = ({
                 </Tooltip>
               </TooltipProvider>
             </SheetTitle>
-
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-x" className="text-right font-bold">
