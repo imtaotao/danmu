@@ -1,5 +1,5 @@
 import type { Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 import { SidebarGap } from '@/components/sidebar/sidebarGap';
 import { SidebarRate } from '@/components/sidebar/sidebarRate';
 import { SidebarArea } from '@/components/sidebar/sidebarArea';
@@ -14,7 +14,7 @@ import { SidebarModeSelect } from '@/components/sidebar/sidebarModeSelect';
 import { SidebarShowAndHide } from '@/components/sidebar/sidebarShowAndHide';
 import { SidebarStartAndStop } from '@/components/sidebar/sidebarStartAndStop';
 
-export const Sidebar = ({ manager }: { manager: Manager<BarrageValue> }) => {
+export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
   return (
     <>
       <SidebarOpacity manager={manager} />

@@ -1,12 +1,12 @@
 import { memo } from 'react';
 import { Turtle } from 'lucide-react';
 import type { Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
 export const SidebarShowAndHide = memo(
-  ({ manager }: { manager: Manager<BarrageValue> }) => {
+  ({ manager }: { manager: Manager<DanmakuValue> }) => {
     return (
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label

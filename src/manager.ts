@@ -1,14 +1,14 @@
 import { assert, hasOwn, isEmptyObject } from 'aidly';
-import { FacileBarrage } from './barrages/facile';
-import { FlexibleBarrage } from './barrages/flexible';
+import { FacileDanmaku } from './danmaku/facile';
+import { FlexibleDanmaku } from './danmaku/flexible';
 import { Engine, type EngineOptions } from './engine';
 import { ids, toNumber, nextFrame, INTERNAL_FLAG } from './utils';
-import { createBridgePlugin, createManagerLifeCycle } from './lifeCycle';
+import { createDanmakuPlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   Mode,
-  Barrage,
-  BarrageType,
-  BarragePlugin,
+  Danmaku,
+  DanmakuType,
+  DanmakuPlugin,
   PushData,
   Direction,
   AreaOptions,
@@ -64,8 +64,8 @@ export class Manager<
     return this._renderTimer !== null;
   }
 
-  public isBarrage(b: unknown): b is Barrage<T> {
-    return b instanceof FacileBarrage || b instanceof FlexibleBarrage;
+  public isDanmaku(b: unknown): b is Danmaku<T> {
+    return b instanceof FacileDanmaku || b instanceof FlexibleDanmaku;
   }
 
   public each(fn: EachCallback<T>) {
@@ -196,7 +196,7 @@ export class Manager<
     return this._setViewStatus('hide', filter).then(() => this);
   }
 
-  public canPush(type: BarrageType) {
+  public canPush(type: DanmakuType) {
     let res = true;
     const isFacile = type === 'facile';
     const { limits } = this.options;
@@ -211,15 +211,15 @@ export class Manager<
   }
 
   public unshift(
-    data: PushData<T> | FacileBarrage<T>,
-    plugin?: BarragePlugin<T>,
+    data: PushData<T> | FacileDanmaku<T>,
+    plugin?: DanmakuPlugin<T>,
   ) {
     return this.push(data, plugin, INTERNAL_FLAG);
   }
 
   public push(
-    data: PushData<T> | FacileBarrage<T>,
-    plugin?: BarragePlugin<T>,
+    data: PushData<T> | FacileDanmaku<T>,
+    plugin?: DanmakuPlugin<T>,
     _unshift?: Symbol,
   ) {
     if (!this.canPush('facile')) {
@@ -232,15 +232,15 @@ export class Manager<
           );
       return false;
     }
-    if (this.isBarrage(data) && plugin) {
-      console.warn('When you add a barrage, the second parameter is invalid.');
+    if (this.isDanmaku(data) && plugin) {
+      console.warn('When you add a danmaku, the second parameter is invalid.');
     }
     this._engine.add(data, plugin, _unshift === INTERNAL_FLAG);
     this.plSys.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
-  public pushFlexBarrage(data: PushData<T>, options: PushFlexOptions<T>) {
+  public pushFlexDanmaku(data: PushData<T>, options: PushFlexOptions<T>) {
     if (!this.isPlaying()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
@@ -251,14 +251,14 @@ export class Manager<
       !hook.isEmpty()
         ? hook.emit('flexible', view || 0)
         : console.warn(
-            `The number of views barrage exceeds the limit (${view})`,
+            `The number of views danmaku exceeds the limit (${view})`,
           );
       return false;
     }
-    const res = this._engine.renderFlexibleBarrage(data, {
+    const res = this._engine.renderFlexibleDanmaku(data, {
       ...options,
       statuses: this._internalStatuses,
-      bridgePlugin: createBridgePlugin(this.plSys),
+      danmakuPlugin: createDanmakuPlugin(this.plSys),
       hooks: {
         finished: () => this.plSys.lifecycle.finished.emit(),
         render: (val) => this.plSys.lifecycle.render.emit(val),
@@ -274,9 +274,9 @@ export class Manager<
 
   public render() {
     if (!this.isPlaying()) return this;
-    this._engine.renderFacileBarrage({
+    this._engine.renderFacileDanmaku({
       statuses: this._internalStatuses,
-      bridgePlugin: createBridgePlugin(this.plSys),
+      danmakuPlugin: createDanmakuPlugin(this.plSys),
       hooks: {
         finished: () => this.plSys.lifecycle.finished.emit(),
         render: (val) => this.plSys.lifecycle.render.emit(val),

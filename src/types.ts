@@ -1,23 +1,23 @@
 import type { HooksOn, RefinePlugin } from 'hooks-plugin';
 import type { Box } from './box';
-import type { FacileBarrage } from './barrages/facile';
-import type { FlexibleBarrage } from './barrages/flexible';
+import type { FacileDanmaku } from './danmaku/facile';
+import type { FlexibleDanmaku } from './danmaku/flexible';
 import type { Manager, ManagerOptions } from './manager';
 
-export type BarrageType = 'facile' | 'flexible';
+export type DanmakuType = 'facile' | 'flexible';
 
 export type Mode = 'none' | 'strict' | 'adaptive';
 
 export type Direction = 'left' | 'right' | 'none';
 
-export type Layer<T> = StashData<T> | FacileBarrage<T>;
+export type Layer<T> = StashData<T> | FacileDanmaku<T>;
 
-export type Barrage<T> = FacileBarrage<T> | FlexibleBarrage<T>;
+export type Danmaku<T> = FacileDanmaku<T> | FlexibleDanmaku<T>;
 
 export type FilterCallback<T> = EachCallback<T>;
 
 export type EachCallback<T> = (
-  b: FacileBarrage<T> | FlexibleBarrage<T>,
+  b: FacileDanmaku<T> | FlexibleDanmaku<T>,
 ) => boolean | void;
 
 export type ValueType<M extends Manager<any>> = Extract<
@@ -27,8 +27,8 @@ export type ValueType<M extends Manager<any>> = Extract<
 
 export type ManagerPlugin<T> = RefinePlugin<Manager<T>['plSys']['lifecycle']>;
 
-export type BarragePlugin<T> = RefinePlugin<
-  FacileBarrage<T>['plSys']['lifecycle']
+export type DanmakuPlugin<T> = RefinePlugin<
+  FacileDanmaku<T>['plSys']['lifecycle']
 >;
 
 export type InternalStatuses = {
@@ -37,10 +37,10 @@ export type InternalStatuses = {
 };
 
 export interface PushFlexOptions<T> {
-  plugin?: BarragePlugin<T>;
+  plugin?: DanmakuPlugin<T>;
   duration?: number;
   direction: Direction;
-  position: Position | ((box: Box, b: Barrage<T>) => Position);
+  position: Position | ((box: Box, b: Danmaku<T>) => Position);
 }
 
 export interface Position {
@@ -63,7 +63,7 @@ export interface FreezeOptions {
 }
 
 export interface TrackData<T> {
-  list: Array<FacileBarrage<T>>;
+  list: Array<FacileDanmaku<T>>;
   location: [number, number, number];
 }
 
@@ -74,7 +74,7 @@ export interface PushData<T> {
 
 export interface StashData<T> {
   data: PushData<T>;
-  plugin?: BarragePlugin<T>;
+  plugin?: DanmakuPlugin<T>;
 }
 
 export interface InfoRecord {
@@ -85,7 +85,7 @@ export interface InfoRecord {
 
 export interface RenderOptions<T> {
   statuses: InternalStatuses;
-  bridgePlugin: BarragePlugin<T>;
+  danmakuPlugin: DanmakuPlugin<T>;
   hooks: HooksOn<Manager<T>['plSys'], ['render', 'finished', 'willRender']>;
 }
 

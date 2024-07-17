@@ -1,9 +1,9 @@
 import { useEffect, useRef, memo } from 'react';
 import { Maximize } from 'lucide-react';
 import type { Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 
-export const Area = memo(({ manager }: { manager: Manager<BarrageValue> }) => {
+export const Area = memo(({ manager }: { manager: Manager<DanmakuValue> }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

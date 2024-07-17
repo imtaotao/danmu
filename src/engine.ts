@@ -9,8 +9,8 @@ import {
   batchProcess,
 } from 'aidly';
 import { Box } from './box';
-import { FacileBarrage } from './barrages/facile';
-import { FlexibleBarrage } from './barrages/flexible';
+import { FacileDanmaku } from './danmaku/facile';
+import { FlexibleDanmaku } from './danmaku/flexible';
 import { toNumber, randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
   Mode,
@@ -19,9 +19,9 @@ import type {
   StashData,
   Direction,
   EachCallback,
-  Barrage,
-  BarrageType,
-  BarragePlugin,
+  Danmaku,
+  DanmakuType,
+  DanmakuPlugin,
   RenderOptions,
   PushFlexOptions,
   InternalStatuses,
@@ -46,15 +46,15 @@ export class Engine<T> {
   private _fx = new Queue();
   private _tracks = [] as Array<TrackData<T>>;
   private _sets = {
-    view: new Set<FacileBarrage<T>>(),
-    flexible: new Set<FlexibleBarrage<T>>(),
-    stash: [] as Array<StashData<T> | FacileBarrage<T>>,
+    view: new Set<FacileDanmaku<T>>(),
+    flexible: new Set<FlexibleDanmaku<T>>(),
+    stash: [] as Array<StashData<T> | FacileDanmaku<T>>,
   };
   // Avoid frequent deletion of bullet comments.
   // collect the bullet comments that need to be deleted within 2 seconds and delete them together.
-  private _destoryBatch = batchProcess<Barrage<T>>({
+  private _destoryBatch = batchProcess<Danmaku<T>>({
     ms: 3000,
-    processor: (ls) => ls.forEach((b) => b.destroy()),
+    processor: (ls) => ls.forEach((d) => d.destroy()),
   });
 
   public constructor(public options: EngineOptions) {}
@@ -84,11 +84,11 @@ export class Engine<T> {
   }
 
   public add(
-    data: PushData<T> | FacileBarrage<T>,
-    plugin?: BarragePlugin<T>,
+    data: PushData<T> | FacileDanmaku<T>,
+    plugin?: DanmakuPlugin<T>,
     isUnshift?: boolean,
   ) {
-    const val = data instanceof FacileBarrage ? data : { data, plugin };
+    const val = data instanceof FacileDanmaku ? data : { data, plugin };
     this._sets.stash[isUnshift ? 'unshift' : 'push'](val);
   }
 
@@ -191,10 +191,10 @@ export class Engine<T> {
         if (track.location[2] > this.box.height) {
           this._clearTarck(i);
         } else {
-          // Don't let the rendering of barrages exceed the container
-          Array.from(track.list).forEach((b) => {
-            if (b.getHeight() + track.location[2] > this.box.height) {
-              b.destroy();
+          // Don't let the rendering of danmaku exceed the container
+          Array.from(track.list).forEach((d) => {
+            if (d.getHeight() + track.location[2] > this.box.height) {
+              d.destroy();
             }
           });
         }
@@ -206,22 +206,22 @@ export class Engine<T> {
         });
       }
     }
-    // Delete the extra tracks and the barrages inside
+    // Delete the extra tracks and the danmaku inside
     if (this._tracks.length > this.rows) {
       for (let i = this.rows; i < this._tracks.length; i++) {
         this._clearTarck(i);
       }
       this._tracks.splice(this.rows, this._tracks.length - this.rows);
     }
-    // If `flexible` barrage is also outside the view, it also needs to be deleted
-    for (const b of this._sets.flexible) {
-      if (b.position.y > this.box.height) {
-        b.destroy();
+    // If `flexible` danmaku is also outside the view, it also needs to be deleted
+    for (const d of this._sets.flexible) {
+      if (d.position.y > this.box.height) {
+        d.destroy();
       }
     }
   }
 
-  public renderFlexibleBarrage(
+  public renderFlexibleDanmaku(
     data: PushData<T>,
     {
       hooks,
@@ -230,24 +230,24 @@ export class Engine<T> {
       direction,
       statuses,
       plugin,
-      bridgePlugin,
+      danmakuPlugin,
     }: RenderOptions<T> & PushFlexOptions<T>,
   ) {
     assert(this.box, 'Container not formatted');
     hooks.render.call(null, 'flexible');
 
-    const b = this._create('flexible', data, statuses, {
+    const d = this._create('flexible', data, statuses, {
       position,
       duration,
       direction,
     });
-    if (b.position.x > this.box.width) return false;
-    if (b.position.y > this.box.height) return false;
-    if (plugin) b.use(plugin);
-    b.use(bridgePlugin);
+    if (d.position.x > this.box.width) return false;
+    if (d.position.y > this.box.height) return false;
+    if (plugin) d.use(plugin);
+    d.use(danmakuPlugin);
 
     const { prevent } = hooks.willRender.call(null, {
-      barrage: b,
+      danmaku: d,
       prevent: false,
       type: 'flexible',
     });
@@ -256,22 +256,22 @@ export class Engine<T> {
     }
 
     const setup = () => {
-      b.createNode();
-      this._sets.flexible.add(b as FlexibleBarrage<T>);
-      this._setAction(b, statuses).then((isFreeze) => {
+      d.createNode();
+      this._sets.flexible.add(d as FlexibleDanmaku<T>);
+      this._setAction(d, statuses).then((isFreeze) => {
         if (isFreeze) {
           console.error(
-            'Currently in a freeze state, unable to render "FlexibleBarrage"',
+            'Currently in a freeze state, unable to render "FlexibleDanmaku"',
           );
           return;
         }
-        if (b.isLoop) {
-          b.loops++;
-          b.setStartStatus();
+        if (d.isLoop) {
+          d.loops++;
+          d.setStartStatus();
           setup();
           return;
         }
-        b.destroy();
+        d.destroy();
         if (this.len().all === 0) {
           hooks.finished.call(null);
         }
@@ -281,10 +281,10 @@ export class Engine<T> {
     return true;
   }
 
-  public renderFacileBarrage({
+  public renderFacileDanmaku({
     hooks,
     statuses,
-    bridgePlugin,
+    danmakuPlugin,
   }: RenderOptions<T>) {
     const { mode, limits } = this.options;
 
@@ -300,7 +300,7 @@ export class Engine<T> {
       }
       if (l <= 0) return;
       hooks.render.call(null, 'facile');
-      return loopSlice(l, () => this._consume(statuses, bridgePlugin, hooks));
+      return loopSlice(l, () => this._consume(statuses, danmakuPlugin, hooks));
     };
 
     if (mode === 'strict') {
@@ -315,10 +315,10 @@ export class Engine<T> {
 
   private _consume(
     statuses: InternalStatuses,
-    bridgePlugin: BarragePlugin<T>,
+    danmakuPlugin: DanmakuPlugin<T>,
     hooks: RenderOptions<T>['hooks'],
   ) {
-    let b: FacileBarrage<T>;
+    let d: FacileDanmaku<T>;
     const layer = this._sets.stash.shift();
     if (!layer) return;
     const trackData = this._getTrackData();
@@ -328,58 +328,58 @@ export class Engine<T> {
       return false;
     }
 
-    if (layer instanceof FacileBarrage) {
-      b = layer;
+    if (layer instanceof FacileDanmaku) {
+      d = layer;
     } else {
-      b = this._create('facile', layer.data, statuses);
-      if (layer.plugin) b.use(layer.plugin);
-      b.use(bridgePlugin);
+      d = this._create('facile', layer.data, statuses);
+      if (layer.plugin) d.use(layer.plugin);
+      d.use(danmakuPlugin);
     }
     const { prevent } = hooks.willRender.call(null, {
-      barrage: b,
+      danmaku: d,
       prevent: false,
       type: 'facile',
     });
 
     if (prevent !== true) {
       // First createNode, users may add styles
-      b.createNode();
-      b.appendNode(this.box.node);
-      b.updateTrackData(trackData);
+      d.createNode();
+      d.appendNode(this.box.node);
+      d.updateTrackData(trackData);
 
       const setup = () => {
-        this._sets.view.add(b);
-        this._setAction(b, statuses).then((isStash) => {
+        this._sets.view.add(d);
+        this._setAction(d, statuses).then((isStash) => {
           if (isStash) {
-            b.reset();
-            this._sets.view.delete(b);
-            this._sets.stash.unshift(b);
+            d.reset();
+            this._sets.view.delete(d);
+            this._sets.stash.unshift(d);
             return;
           }
-          if (b.isLoop) {
-            b.loops++;
-            b.setStartStatus();
+          if (d.isLoop) {
+            d.loops++;
+            d.setStartStatus();
             setup();
             return;
           }
-          this._destoryBatch(b);
+          this._destoryBatch(d);
           if (this.len().all === 0) {
             hooks.finished.call(null);
           }
         });
       };
       // Waiting for the style to take effect,
-      // we need to get the barrage screen height.
+      // we need to get the danmaku screen height.
       let i = 0;
       const triggerSetup = () => {
         nextFrame(() => {
-          const height = b.getHeight();
+          const height = d.getHeight();
           if (height === 0 && ++i < 20) {
             triggerSetup();
           } else {
             const y = trackData.location[1] - height / 2;
             if (y + height > this.box.height) return;
-            b.updatePosition({ y });
+            d.updatePosition({ y });
             setup();
           }
         });
@@ -388,7 +388,7 @@ export class Engine<T> {
     }
   }
 
-  private _setAction(cur: Barrage<T>, internalStatuses: InternalStatuses) {
+  private _setAction(cur: Danmaku<T>, internalStatuses: InternalStatuses) {
     return new Promise<boolean>((resolve) => {
       nextFrame(() => {
         if (internalStatuses.freeze === true) {
@@ -397,12 +397,12 @@ export class Engine<T> {
         }
         const { mode, times } = this.options;
         if (mode !== 'none' && cur.type === 'facile') {
-          assert(cur.trackData, 'Barrage missing "tracData"');
+          assert(cur.trackData, 'Danmaku missing "trackData"');
           const prev = this._last(cur.trackData.list, 1);
           if (prev && cur.loops === 0) {
             const fixTime = this._collisionPrediction(
               prev,
-              cur as FacileBarrage<T>,
+              cur as FacileDanmaku<T>,
             );
             if (fixTime !== null) {
               if (isInBounds(times, fixTime)) {
@@ -428,11 +428,11 @@ export class Engine<T> {
   }
 
   private _create(
-    type: BarrageType,
+    type: DanmakuType,
     data: PushData<T>,
     internalStatuses: InternalStatuses,
     options?: Omit<PushFlexOptions<T>, 'plugin'>,
-  ): Barrage<T> {
+  ): Danmaku<T> {
     assert(this.box, 'Container not formatted');
     const config = {
       data,
@@ -441,7 +441,7 @@ export class Engine<T> {
       internalStatuses,
       rate: this.options.rate,
       direction: this.options.direction as Direction,
-      delInTrack: (b: Barrage<T>) => {
+      delInTrack: (b: Danmaku<T>) => {
         remove(this._sets.view, b);
         type === 'facile'
           ? remove(this._sets.stash, b)
@@ -449,36 +449,35 @@ export class Engine<T> {
       },
     };
 
-    // Create FacileBarrage
+    // Create FacileDanmaku
     if (type === 'facile') {
       config.duration = this._randomDuration();
-      return new FacileBarrage(config);
-    } else {
-      // Create FlexibleBarrage
-      assert(options, 'Unexpected Error');
-      const { direction, duration, position } = options;
-      config.direction = direction;
-      config.duration =
-        typeof duration === 'number' ? duration : this._randomDuration();
-
-      const b = new FlexibleBarrage(config);
-      // If it is a function, the postion will be updated after the node is created,
-      // so that the function can get accurate bullet comment data.
-      if (typeof position !== 'function') {
-        b.updatePosition(position);
-      } else {
-        b.use({
-          appendNode: () => {
-            assert(
-              typeof position === 'function',
-              '"position" must be a function',
-            );
-            b.updatePosition(position(this.box, b));
-          },
-        });
-      }
-      return b;
+      return new FacileDanmaku(config);
     }
+    // Create FlexibleDanmaku
+    assert(options, 'Unexpected Error');
+    const { direction, duration, position } = options;
+    config.direction = direction;
+    config.duration =
+      typeof duration === 'number' ? duration : this._randomDuration();
+
+    const d = new FlexibleDanmaku(config);
+    // If it is a function, the postion will be updated after the node is created,
+    // so that the function can get accurate bullet comment data.
+    if (typeof position !== 'function') {
+      d.updatePosition(position);
+    } else {
+      d.use({
+        appendNode: () => {
+          assert(
+            typeof position === 'function',
+            '"position" must be a function',
+          );
+          d.updatePosition(position(this.box, d));
+        },
+      });
+    }
+    return d;
   }
 
   private _randomDuration() {
@@ -487,22 +486,22 @@ export class Engine<T> {
     return t;
   }
 
-  private _last(ls: Array<FacileBarrage<T>>, li: number) {
+  private _last(ls: Array<FacileDanmaku<T>>, li: number) {
     for (let i = ls.length - 1; i >= 0; i--) {
-      const b = ls[i - li];
-      if (b && !b.paused && b.loops === 0 && b.type === 'facile') {
-        return b;
+      const d = ls[i - li];
+      if (d && !d.paused && d.loops === 0 && d.type === 'facile') {
+        return d;
       }
     }
     return null;
   }
 
   // We have to make a copy.
-  // During the loop, there are too many factors that change barrages,
+  // During the loop, there are too many factors that change danmaku,
   // which makes it impossible to guarantee the stability of the list.
   private _clearTarck(i: number) {
-    for (const b of Array.from(this._tracks[i].list)) {
-      b.destroy();
+    for (const d of Array.from(this._tracks[i].list)) {
+      d.destroy();
     }
   }
 
@@ -535,7 +534,7 @@ export class Engine<T> {
     return this._getTrackData(founds, trackData);
   }
 
-  private _collisionPrediction(prv: FacileBarrage<T>, cur: FacileBarrage<T>) {
+  private _collisionPrediction(prv: FacileDanmaku<T>, cur: FacileDanmaku<T>) {
     const cs = cur.getSpeed();
     const ps = prv.getSpeed();
     const acceleration = cs - ps;

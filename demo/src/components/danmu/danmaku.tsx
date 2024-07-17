@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ThumbsUp } from 'lucide-react';
-import type { Barrage, Manager } from 'danmu';
-import type { Statuses, BarrageValue } from '@/types';
+import type { Danmaku, Manager } from 'danmu';
+import type { Statuses, DanmakuValue } from '@/types';
 import { cn } from '@/lib/utils';
 import avatarPath from '@/assets/avatar.jpg';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,23 +12,23 @@ import {
 } from '@/components/ui/popover';
 
 // 弹幕的渲染文件：demo/src/manager.tsx
-export const BarrageBox = ({
+export const DanmakuBox = ({
   manager,
-  barrage,
+  danmaku,
 }: {
-  barrage: Barrage<BarrageValue>;
-  manager: Manager<BarrageValue, Statuses>;
+  danmaku: Danmaku<DanmakuValue>;
+  manager: Manager<DanmakuValue, Statuses>;
 }) => {
-  const { content, isSelf } = barrage.data.value;
+  const { content, isSelf } = danmaku.data.value;
   const [open, setOpen] = useState(false);
 
-  barrage.use({
+  danmaku.use({
     pause: () => setOpen(true),
     resume: () => setOpen(false),
-    moveStart(barrage) {
+    moveStart(danmaku) {
       for (const key in manager.statuses) {
         type K = keyof typeof manager.statuses;
-        barrage.setStyle(key as K, manager.statuses[key as K]);
+        danmaku.setStyle(key as K, manager.statuses[key as K]);
       }
     },
   });
@@ -38,15 +38,15 @@ export const BarrageBox = ({
       <Popover open={open}>
         <PopoverTrigger asChild>
           <div
-            onMouseEnter={() => barrage.pause()}
+            onMouseEnter={() => danmaku.pause()}
             onMouseLeave={() => {
               if (!manager.isFreeze()) {
-                barrage.resume();
+                danmaku.resume();
               }
             }}
             onClick={() => {
               setOpen(false);
-              setTimeout(() => barrage.destroy(), 100);
+              setTimeout(() => danmaku.destroy(), 100);
             }}
             className={cn(
               isSelf ? 'border-2 border-solid border-teal-500' : '',
@@ -58,7 +58,7 @@ export const BarrageBox = ({
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <span className="mr-1">
-              {barrage.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
+              {danmaku.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
             </span>
             <ThumbsUp />
           </div>
@@ -66,8 +66,8 @@ export const BarrageBox = ({
         <PopoverContent className="w-60 p-2 text-xs text-gray-500 text-center">
           这个是一个
           <span className="font-bold text-green-600">
-            {barrage.type === 'flexible' ? '高级' : '普通'}弹幕
-            {barrage.isFixed ? ' (被修正过运动时间)' : ''}
+            {danmaku.type === 'flexible' ? '高级' : '普通'}弹幕
+            {danmaku.isFixed ? ' (被修正过运动时间)' : ''}
           </span>
         </PopoverContent>
       </Popover>

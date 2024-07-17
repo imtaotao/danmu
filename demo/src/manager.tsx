@@ -1,11 +1,11 @@
 import { uuid } from 'aidly';
 import ReactDOM from 'react-dom/client';
 import { type Manager, create } from 'danmu';
-import type { Statuses, BarrageValue } from '@/types';
-import { BarrageBox } from '@/components/danmu/barrage';
+import type { Statuses, DanmakuValue } from '@/types';
+import { DanmakuBox } from '@/components/danmu/danmaku';
 
 export const initManager = () => {
-  const manager = create<BarrageValue, Statuses>({
+  const manager = create<DanmakuValue, Statuses>({
     trackHeight: 40,
     times: [4000, 7000],
     plugin: {
@@ -13,10 +13,10 @@ export const initManager = () => {
         manager.box.node.classList.add('bg-slate-200');
       },
       limitWarning() {},
-      $createNode(b) {
-        if (!b.node) return;
-        ReactDOM.createRoot(b.node).render(
-          <BarrageBox manager={manager} barrage={b} />,
+      $createNode(d) {
+        if (!d.node) return;
+        ReactDOM.createRoot(d.node).render(
+          <DanmakuBox manager={manager} danmaku={d} />,
         );
       },
     },
@@ -24,7 +24,7 @@ export const initManager = () => {
   return manager;
 };
 
-export const mock = (manager: Manager<BarrageValue>) => {
+export const mock = (manager: Manager<DanmakuValue>) => {
   const list = [
     '哇塞！',
     '不可思议！',

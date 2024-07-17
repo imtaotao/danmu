@@ -1,4 +1,4 @@
-export interface BarrageValue {
+export interface DanmakuValue {
   content: string;
   isSelf: boolean;
 }

@@ -1,6 +1,6 @@
 import { now, remove } from 'aidly';
 import type { Box } from '../box';
-import { createBarrageLifeCycle } from '../lifeCycle';
+import { createDanmakuLifeCycle } from '../lifeCycle';
 import { ids, nextFrame, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
   PushData,
@@ -9,16 +9,16 @@ import type {
   TrackData,
   Direction,
   InfoRecord,
-  Barrage,
-  BarrageType,
-  BarragePlugin,
+  Danmaku,
+  DanmakuType,
+  DanmakuPlugin,
   InternalStatuses,
 } from '../types';
 
 // The declaration must be displayed,
 // otherwise a circular reference error will be reported.
 export type PlSys<T> = ReturnType<
-  typeof createBarrageLifeCycle<FacileBarrage<T>>
+  typeof createDanmakuLifeCycle<FacileDanmaku<T>>
 >;
 
 export interface FacileOptions<T> {
@@ -28,10 +28,10 @@ export interface FacileOptions<T> {
   data: PushData<T>;
   direction: Direction;
   internalStatuses: InternalStatuses;
-  delInTrack: (b: Barrage<T>) => void;
+  delInTrack: (b: Danmaku<T>) => void;
 }
 
-export class FacileBarrage<T> {
+export class FacileDanmaku<T> {
   public loops = 0;
   public isLoop = false;
   public paused = false;
@@ -43,12 +43,12 @@ export class FacileBarrage<T> {
   public data: PushData<T>;
   public recorder: InfoRecord;
   public nextFrame = nextFrame;
-  public type: BarrageType = 'facile';
+  public type: DanmakuType = 'facile';
   public node: HTMLElement | null = null;
   public moveTimer: MoveTimer | null = null;
   public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
-  public plSys: PlSys<T> = createBarrageLifeCycle<FacileBarrage<T>>();
+  public plSys: PlSys<T> = createDanmakuLifeCycle<FacileDanmaku<T>>();
   protected _internalStatuses: InternalStatuses;
 
   public constructor(public options: FacileOptions<T>) {
@@ -81,10 +81,10 @@ export class FacileBarrage<T> {
     this.isLoop = false;
   }
 
-  public use(plugin: BarragePlugin<T> | ((b: this) => BarragePlugin<T>)) {
+  public use(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
-      plugin.name = `__facile_barrage_plugin_${ids.f++}__`;
+      plugin.name = `__facile_danmaku_plugin_${ids.f++}__`;
     }
     this.plSys.useRefine(plugin);
   }
@@ -239,8 +239,9 @@ export class FacileBarrage<T> {
   public createNode() {
     if (this.node) return;
     this.node = document.createElement('div');
-    (this.node as any).__debugBarrage__ = this;
     this.setStartStatus();
+    // @ts-ignore
+    this.node.__danmaku__ = this;
     this.plSys.lifecycle.createNode.emit(this);
   }
 

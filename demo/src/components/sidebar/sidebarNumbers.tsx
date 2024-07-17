@@ -1,18 +1,18 @@
 import { memo, useState, useEffect } from 'react';
 import { Asterisk } from 'lucide-react';
 import type { Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
 export const SidebarNumbers = memo(
-  ({ manager }: { manager: Manager<BarrageValue> }) => {
+  ({ manager }: { manager: Manager<DanmakuValue> }) => {
     const [allNumber, setAllNumber] = useState(0);
     const [stashNumber, setStashNumber] = useState(0);
     const [renderNumber, setRenderNumber] = useState(0);
 
     useEffect(() => {
-      const name = 'BarrageNumber';
+      const name = 'DanmakuNumber';
       const update = () => {
         const { all, view, stash, flexible } = manager.len();
         setAllNumber(all);

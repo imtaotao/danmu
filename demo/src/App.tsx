@@ -1,12 +1,12 @@
 import type { Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 import githubLogo from '@/assets/github.svg';
 import { Area } from '@/components/danmu/area';
 import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/sidebar/index';
 import { Transmitter } from '@/components/danmu/transmitter';
 
-export function App({ manager }: { manager: Manager<BarrageValue> }) {
+export function App({ manager }: { manager: Manager<DanmakuValue> }) {
   return (
     <div className="w-full bg-slate-200">
       <div className="p-3 h-screen flex text-slate-600">

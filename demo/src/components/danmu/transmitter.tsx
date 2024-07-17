@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { random, uuid } from 'aidly';
 import { Send, Pickaxe, CircleAlert } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ import {
 export const Transmitter = ({
   manager,
 }: {
-  manager: Manager<BarrageValue>;
+  manager: Manager<DanmakuValue>;
 }) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -175,7 +175,7 @@ export const Transmitter = ({
                   setOpen(false);
                   setContent('');
                   setDuration(random(...manager.options.times));
-                  manager.pushFlexBarrage(
+                  manager.pushFlexDanmaku(
                     {
                       id: uuid(),
                       value: {

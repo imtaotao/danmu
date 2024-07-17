@@ -1,9 +1,9 @@
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
 import { ids } from './utils';
 import type { Manager, ManagerOptions } from './manager';
-import type { PushData, Barrage, BarrageType, BarragePlugin } from './types';
+import type { PushData, Danmaku, DanmakuType, DanmakuPlugin } from './types';
 
-export function createBarrageLifeCycle<T extends Barrage<any>>() {
+export function createDanmakuLifeCycle<T extends Danmaku<any>>() {
   return new PluginSystem({
     hide: new SyncHook<[T]>(),
     show: new SyncHook<[T]>(),
@@ -19,9 +19,9 @@ export function createBarrageLifeCycle<T extends Barrage<any>>() {
 }
 
 export function createManagerLifeCycle<T>() {
-  const { lifecycle } = createBarrageLifeCycle<Barrage<T>>();
+  const { lifecycle } = createDanmakuLifeCycle<Danmaku<T>>();
   return new PluginSystem({
-    // Barrage hooks
+    // Danmaku hooks
     $show: lifecycle.show,
     $hide: lifecycle.hide,
     $pause: lifecycle.pause,
@@ -45,14 +45,14 @@ export function createManagerLifeCycle<T>() {
     unfreeze: new SyncHook<[]>(),
     finished: new SyncHook<[]>(),
     init: new SyncHook<[manager: Manager<T>]>(),
-    limitWarning: new SyncHook<[BarrageType, number]>(),
+    limitWarning: new SyncHook<[DanmakuType, number]>(),
     updateOptions: new SyncHook<[Partial<ManagerOptions>]>(),
-    push: new SyncHook<[PushData<T> | Barrage<T>, BarrageType, boolean]>(),
-    render: new SyncHook<[BarrageType]>(),
+    push: new SyncHook<[PushData<T> | Danmaku<T>, DanmakuType, boolean]>(),
+    render: new SyncHook<[DanmakuType]>(),
     willRender: new SyncWaterfallHook<{
       prevent: boolean;
-      type: BarrageType;
-      barrage: Barrage<T>;
+      type: DanmakuType;
+      danmaku: Danmaku<T>;
     }>(),
   });
 }
@@ -60,11 +60,11 @@ export function createManagerLifeCycle<T>() {
 const scope = '$';
 const cache = [] as Array<[string, string]>;
 
-export function createBridgePlugin<T>(
+export function createDanmakuPlugin<T>(
   plSys: Manager<T>['plSys'],
-): BarragePlugin<T> {
+): DanmakuPlugin<T> {
   const plugin = {
-    name: `__bridge_plugin_${ids.b++}__`,
+    name: `__danmaku_plugin_${ids.b++}__`,
   } as Record<string, unknown>;
 
   if (cache.length) {

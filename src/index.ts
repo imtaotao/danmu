@@ -49,8 +49,8 @@ export type {
   ValueType,
   Direction,
   CreateOption,
-  Barrage,
-  BarrageType,
-  BarragePlugin,
+  Danmaku,
+  DanmakuType,
+  DanmakuPlugin,
   ManagerPlugin,
 } from './types';

@@ -1,14 +1,14 @@
 import { now } from 'aidly';
-import { FacileBarrage, FacileOptions } from './facile';
+import { FacileDanmaku, FacileOptions } from './facile';
 import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
-import type { Position, BarrageType, BarragePlugin } from '../types';
+import type { Position, DanmakuType, DanmakuPlugin } from '../types';
 
 export interface FlexibleOptions<T> extends FacileOptions<T> {
   position?: Position;
 }
 
-export class FlexibleBarrage<T> extends FacileBarrage<T> {
-  public type: BarrageType = 'flexible';
+export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
+  public type: DanmakuType = 'flexible';
   public position: Position;
 
   public constructor(public options: FlexibleOptions<T>) {
@@ -16,10 +16,10 @@ export class FlexibleBarrage<T> extends FacileBarrage<T> {
     this.position = options.position || { x: 0, y: 0 };
   }
 
-  public use(plugin: BarragePlugin<T> | ((b: this) => BarragePlugin<T>)) {
+  public use(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
-      (plugin as any).name = `__flexible_barrage_plugin_${ids.f++}__`;
+      (plugin as any).name = `__flexible_danmaku_plugin_${ids.f++}__`;
     }
     this.plSys.useRefine(plugin);
   }

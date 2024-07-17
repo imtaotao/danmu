@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import { randomColor } from 'aidly';
 import type { Manager } from 'danmu';
-import type { BarrageValue } from '@/types';
+import type { DanmakuValue } from '@/types';
 import { Button } from '@/components/ui/button';
 
 export const SidebarButtons = memo(
-  ({ manager }: { manager: Manager<BarrageValue> }) => {
+  ({ manager }: { manager: Manager<DanmakuValue> }) => {
     return (
       <div className="flex h-8 items-center justify-end">
         <Button className="mr-3" onClick={() => manager.clear()}>
