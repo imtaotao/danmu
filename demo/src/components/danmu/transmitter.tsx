@@ -175,7 +175,7 @@ export const Transmitter = ({
                   setOpen(false);
                   setContent('');
                   setDuration(random(...manager.options.times));
-                  manager.pushFlexDanmaku(
+                  manager.pushFlexibleDanmaku(
                     {
                       id: uuid(),
                       value: {
