@@ -114,18 +114,7 @@ export class FacileBarrage<T> {
   }
 
   public updateRate(rate: number) {
-    // const cw = this.options.box.width + this.getWidth();
-    // const isNegative = this.direction === 'left' ? 1 : -1;
-    // const remainingTime = (1 - this.getMovePercent()) * this.actualDuration();
-    // this.pause(INTERNAL_FLAG);
-    // this.setStyle('zIndex', '0');
-    // this.setStyle('transform', `translateX(${cw * isNegative}px)`);
-    // this.setStyle(
-    //   'transitionDuration',
-    //   `${(remainingTime * this.rate) / rate}ms`,
-    // );
-    // this.rate = rate;
-    // this.paused = false;
+    // TODO: ...
   }
 
   public getHeight() {

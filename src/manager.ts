@@ -310,17 +310,10 @@ export class Manager<
     return this.updateOptions({ times });
   }
 
-  public setRate(
-    rate: number,
-    { updateExistingDanmu }: { updateExistingDanmu?: boolean } = {},
-  ) {
+  public setRate(rate: number) {
     if (rate !== this.options.rate) {
-      if (updateExistingDanmu) {
-        this.asyncEach((b) => {
-          b.updateRate(rate);
-        });
-      }
       this.updateOptions({ rate });
+      this.asyncEach((b) => b.updateRate(rate));
     }
     return this;
   }

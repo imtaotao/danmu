@@ -6,8 +6,6 @@ import { BarrageBox } from '@/components/danmu/barrage';
 
 export const initManager = () => {
   const manager = create<BarrageValue, Statuses>({
-    rate: 1,
-    interval: 100,
     trackHeight: 40,
     times: [4000, 7000],
     plugin: {
@@ -29,15 +27,15 @@ export const initManager = () => {
 export const mock = (manager: Manager<BarrageValue>) => {
   const list = [
     '哇塞！',
-    // '不可思议！',
-    // '这也太厉害了吧！',
-    // '惊呆了！',
-    // '太神奇了！',
-    // '这是什么操作？',
-    // '我看到了什么？',
-    // '这是什么原理？',
-    // '我有点看不懂了。',
-    // '这是什么操作？',
+    '不可思议！',
+    '这也太厉害了吧！',
+    '惊呆了！',
+    '太神奇了！',
+    '这是什么操作？',
+    '我看到了什么？',
+    '这是什么原理？',
+    '我有点看不懂了。',
+    '这是什么操作？',
   ];
   setInterval(() => {
     for (const content of list) {
@@ -49,5 +47,5 @@ export const mock = (manager: Manager<BarrageValue>) => {
         },
       });
     }
-  }, 2000);
+  }, 800);
 };
