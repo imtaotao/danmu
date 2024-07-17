@@ -240,7 +240,7 @@ export class Manager<
     return true;
   }
 
-  public pushFlexDanmaku(data: PushData<T>, options: PushFlexOptions<T>) {
+  public pushFlexibleDanmaku(data: PushData<T>, options: PushFlexOptions<T>) {
     if (!this.isPlaying()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
