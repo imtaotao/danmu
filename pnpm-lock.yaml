@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.4.7
-        version: 1.4.7
+        specifier: ^1.4.8
+        version: 1.4.8
       hooks-plugin:
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.6
+        version: 1.2.6
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -115,8 +115,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.4.4
-        version: 1.4.4
+        specifier: ^1.4.8
+        version: 1.4.8
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1303,11 +1303,8 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
 
-  aidly@1.4.4:
-    resolution: {integrity: sha512-n999V3sZZ5/mgcRpmQWajwsjxsPouz3zilPidgOsgL7XxV5kBblzBVnzrw3PQWWlRCL7p2nBZzcEWhawFKkV6w==}
-
-  aidly@1.4.7:
-    resolution: {integrity: sha512-vFVdlSX6e4J394vmT8SRLc+RfX6iM3iVn1lusUaqIJYtYef/GBWjFo5kFfRSLCZQP6e24ZG9bByj6bg1n0aPeA==}
+  aidly@1.4.8:
+    resolution: {integrity: sha512-oiGowPSLER3RUW/FARreDc1U+LODqQgl+e0S29cgXtf53CooHkUHlYhClYdMQe1Cp/GujkYijR+wt7sHzIVyBw==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -1770,8 +1767,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hooks-plugin@1.2.5:
-    resolution: {integrity: sha512-4Vbc5IkvZ8D9v1cJMiujC8oHK2YqiTjRB4UA72oSU2h9NgmRNSmh63KduMVQg/GqVZnKWcmoDNmkqVoRI0CYDA==}
+  hooks-plugin@1.2.6:
+    resolution: {integrity: sha512-gMkKA/y4YO4FQQjwkBRWSDjh6CtNTe1FUMlryepsoTB3RSB19+XdyDopj6HqcmctO6Y147rNHEUParMcSnUPnQ==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -2512,9 +2509,6 @@ packages:
   slice-ansi@7.1.0:
     resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
     engines: {node: '>=18'}
-
-  small-queue@1.0.1:
-    resolution: {integrity: sha512-+T/HHAoiyDIyBwR9Utt/0q7WZhWeA6zBf5O+DUs97gJkme9IgX1nkgfa8W5VfF3PWPoZ0dZqjUq6eBFjc4gUsQ==}
 
   small-queue@1.1.2:
     resolution: {integrity: sha512-K6zQPh7cRjkzv+upcwrOTbR4kU3neY3KZR2F1nc8Fuez8uJyh4BguOUs4KGKHcuzU1LJmK8yfCkMUZbconLe8Q==}
@@ -4032,11 +4026,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  aidly@1.4.4:
-    dependencies:
-      small-queue: 1.0.1
-
-  aidly@1.4.7:
+  aidly@1.4.8:
     dependencies:
       small-queue: 1.1.2
 
@@ -4506,9 +4496,9 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hooks-plugin@1.2.5:
+  hooks-plugin@1.2.6:
     dependencies:
-      aidly: 1.4.7
+      aidly: 1.4.8
 
   html-escaper@2.0.2: {}
 
@@ -5384,8 +5374,6 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
-
-  small-queue@1.0.1: {}
 
   small-queue@1.1.2: {}
 
