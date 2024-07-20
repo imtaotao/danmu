@@ -15,7 +15,7 @@ export const SidebarOcclusion = memo(
           className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
         >
           <VenetianMask />
-          <span className="ml-3">防遮挡/取消遮挡</span>
+          <span className="ml-3">取消/防遮挡</span>
         </Label>
         <Switch
           id="occlusion"
