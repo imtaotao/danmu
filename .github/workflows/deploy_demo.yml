@@ -27,7 +27,7 @@ jobs:
         run: pnpm install
 
       - name: Build src
-        run: pnpm run build
+        run: pnpm run core:build
 
       - name: Build demo
         run: pnpm run demo:build

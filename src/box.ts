@@ -56,12 +56,11 @@ export class Box {
   }
 
   public updateOccluded(url?: string | null) {
-    console.log(url, url && typeof url === 'string', typeof url);
     if (url && typeof url === 'string') {
+      this.setStyle('maskImage', `url("${url}")`);
+      this.setStyle('webkitMaskImage', `url("${url}")`);
       this.setStyle('maskSize', 'cover');
-      this.setStyle('maskImage', `url(${url})`);
       this.setStyle('webkitMaskSize', 'cover');
-      this.setStyle('webkitMaskImage', `url(${url})`);
     } else {
       this.setStyle('maskImage', 'none');
       this.setStyle('webkitMaskImage', 'none');

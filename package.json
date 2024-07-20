@@ -1,6 +1,6 @@
 {
   "name": "danmu",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "main": "./dist/danmu.cjs.js",
   "unpkg": "./dist/danmu.umd.js",
@@ -23,10 +23,10 @@
   "scripts": {
     "test": "jest",
     "prepare": "husky",
-    "demo": "cd demo && pnpm run dev",
+    "demo:dev": "cd demo && pnpm run dev",
     "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
-    "build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
-    "build:watch": "rollup --config --watch --environment BUILD:development",
+    "core:dev": "rollup --config --environment BUILD:development",
+    "core:build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.((m)?js|ts?(x))\""
   },
   "lint-staged": {

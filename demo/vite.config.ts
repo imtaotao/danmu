@@ -6,6 +6,11 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: '/danmu',
   plugins: [react()],
+  server: {
+    watch: {
+      ignored: '!**/node_modules/danmu/dist/**',
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
