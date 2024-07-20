@@ -36,6 +36,14 @@ const outputConfigs = {
   },
 };
 
+if (process.env.BUILD === 'development') {
+  Object.keys(outputConfigs).forEach(key => {
+    if (key !== 'esm-bundler-js') {
+      delete outputConfigs[key];
+    }
+  })
+}
+
 const packageConfigs = Object.keys(outputConfigs).map((format) =>
   createConfig(format, outputConfigs[format]),
 );

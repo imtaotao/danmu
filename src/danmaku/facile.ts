@@ -17,8 +17,8 @@ import type {
 
 // The declaration must be displayed,
 // otherwise a circular reference error will be reported.
-export type PlSys<T> = ReturnType<
-  typeof createDanmakuLifeCycle<FacileDanmaku<T>>
+export type PlSys<D extends Danmaku<any>> = ReturnType<
+  typeof createDanmakuLifeCycle<D>
 >;
 
 export interface FacileOptions<T> {
@@ -48,7 +48,7 @@ export class FacileDanmaku<T> {
   public moveTimer: MoveTimer | null = null;
   public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
-  public plSys: PlSys<T> = createDanmakuLifeCycle<FacileDanmaku<T>>();
+  public plSys: PlSys<Danmaku<T>> = createDanmakuLifeCycle<Danmaku<T>>();
   protected _internalStatuses: InternalStatuses;
 
   public constructor(public options: FacileOptions<T>) {

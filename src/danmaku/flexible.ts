@@ -1,5 +1,5 @@
 import { now } from 'aidly';
-import { FacileDanmaku, FacileOptions } from './facile';
+import { type PlSys, FacileDanmaku, FacileOptions } from './facile';
 import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type { Position, DanmakuType, DanmakuPlugin } from '../types';
 
@@ -8,8 +8,8 @@ export interface FlexibleOptions<T> extends FacileOptions<T> {
 }
 
 export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
-  public type: DanmakuType = 'flexible';
   public position: Position;
+  public type: DanmakuType = 'flexible';
 
   public constructor(public options: FlexibleOptions<T>) {
     super(options);

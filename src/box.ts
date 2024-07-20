@@ -56,6 +56,7 @@ export class Box {
   }
 
   public updateOccluded(url?: string | null) {
+    console.log(url, url && typeof url === 'string', typeof url);
     if (url && typeof url === 'string') {
       this.setStyle('maskSize', 'cover');
       this.setStyle('maskImage', `url(${url})`);

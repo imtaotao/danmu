@@ -26,7 +26,7 @@
     "demo": "cd demo && pnpm run dev",
     "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
     "build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
-    "build:watch": "rollup --config --watch",
+    "build:watch": "rollup --config --watch --environment BUILD:development",
     "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.((m)?js|ts?(x))\""
   },
   "lint-staged": {
