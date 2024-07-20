@@ -251,34 +251,35 @@ export class Engine<T> {
       prevent: false,
       type: 'flexible',
     });
-    if (prevent === true) {
-      return false;
+
+    if (this.options.rate > 0 && prevent !== true) {
+      const setup = () => {
+        d.createNode();
+        this._sets.flexible.add(d as FlexibleDanmaku<T>);
+        this._setAction(d, statuses).then((isFreeze) => {
+          if (isFreeze) {
+            console.error(
+              'Currently in a freeze state, unable to render "FlexibleDanmaku"',
+            );
+            return;
+          }
+          if (d.isLoop) {
+            d.loops++;
+            d.setStartStatus();
+            setup();
+            return;
+          }
+          d.destroy();
+          if (this.len().all === 0) {
+            hooks.finished.call(null);
+          }
+        });
+      };
+      setup();
+      return true;
     }
 
-    const setup = () => {
-      d.createNode();
-      this._sets.flexible.add(d as FlexibleDanmaku<T>);
-      this._setAction(d, statuses).then((isFreeze) => {
-        if (isFreeze) {
-          console.error(
-            'Currently in a freeze state, unable to render "FlexibleDanmaku"',
-          );
-          return;
-        }
-        if (d.isLoop) {
-          d.loops++;
-          d.setStartStatus();
-          setup();
-          return;
-        }
-        d.destroy();
-        if (this.len().all === 0) {
-          hooks.finished.call(null);
-        }
-      });
-    };
-    setup();
-    return true;
+    return false;
   }
 
   public renderFacileDanmaku({
@@ -335,13 +336,17 @@ export class Engine<T> {
       if (layer.plugin) d.use(layer.plugin);
       d.use(danmakuPlugin);
     }
+
     const { prevent } = hooks.willRender.call(null, {
       danmaku: d,
       prevent: false,
       type: 'facile',
     });
 
-    if (prevent !== true) {
+    // When the rate is less than or equal to 0,
+    // the bullet comment will never move, but it will be rendered,
+    // so just don't render it here.
+    if (this.options.rate > 0 && prevent !== true) {
       // First createNode, users may add styles
       d.createNode();
       d.appendNode(this.box.node);
