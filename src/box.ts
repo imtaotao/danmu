@@ -55,18 +55,6 @@ export class Box {
     }
   }
 
-  public updateOccluded(url?: string | null) {
-    if (url && typeof url === 'string') {
-      this.setStyle('maskImage', `url("${url}")`);
-      this.setStyle('webkitMaskImage', `url("${url}")`);
-      this.setStyle('maskSize', 'cover');
-      this.setStyle('webkitMaskSize', 'cover');
-    } else {
-      this.setStyle('maskImage', 'none');
-      this.setStyle('webkitMaskImage', 'none');
-    }
-  }
-
   public format() {
     const w = this.size.x.end - this.size.x.start;
     const h = this.size.y.end - this.size.y.start;

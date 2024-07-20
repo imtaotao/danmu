@@ -272,8 +272,27 @@ export class Manager<
     return false;
   }
 
-  public updateOccludedUrl(url?: string | null) {
-    this.box.updateOccluded(url);
+  public updateOccludedUrl(url?: string | null, el?: HTMLElement | null) {
+    const setStyle = (
+      key: 'maskSize' | 'maskImage' | 'webkitMaskSize' | 'webkitMaskImage',
+      val: string,
+    ) => {
+      if (el) {
+        el.style[key] = val;
+      } else {
+        this.box.setStyle(key, val);
+      }
+    };
+    if (url) {
+      assert(typeof url === 'string', 'The url must be a string');
+      setStyle('maskImage', `url("${url}")`);
+      setStyle('webkitMaskImage', `url("${url}")`);
+      setStyle('maskSize', 'cover');
+      setStyle('webkitMaskSize', 'cover');
+    } else {
+      setStyle('maskImage', 'none');
+      setStyle('webkitMaskImage', 'none');
+    }
     return this;
   }
 

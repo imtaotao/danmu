@@ -19,7 +19,14 @@ export const SidebarOcclusion = memo(
         </Label>
         <Switch
           id="occlusion"
-          onCheckedChange={(v) => manager.updateOccludedUrl(v ? maskPath : '')}
+          onCheckedChange={(v) => {
+            // 第二个参数是可选，如果不传递，默认是内置的弹幕容器
+            // 但是需要注意的是：弹幕容器会随着设置显示区域而变化，此时可能需要第二个参数
+            manager.updateOccludedUrl(
+              v ? maskPath : '',
+              document.getElementById('AreaContainer'),
+            );
+          }}
         />
       </div>
     );
