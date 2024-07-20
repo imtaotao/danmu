@@ -140,7 +140,7 @@ export class Manager<
   public use(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
-      plugin.name = `__runtime_plugin_${ids.r++}__`;
+      plugin.name = `__runtime_plugin_${ids.runtime++}__`;
     }
     this.plSys.useRefine(plugin);
     return plugin as ManagerPlugin<T> & { name: string };

@@ -84,7 +84,7 @@ export class FacileDanmaku<T> {
   public use(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
-      plugin.name = `__facile_danmaku_plugin_${ids.f++}__`;
+      plugin.name = `__facile_danmaku_plugin_${ids.danmu++}__`;
     }
     this.plSys.useRefine(plugin);
     return plugin as DanmakuPlugin<T> & { name: string };

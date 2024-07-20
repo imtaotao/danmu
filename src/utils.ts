@@ -3,9 +3,9 @@ import { raf, once } from 'aidly';
 export const INTERNAL_FLAG = Symbol();
 
 export const ids = {
-  r: 1,
-  f: 1,
-  b: 1,
+  danmu: 1,
+  bridge: 1,
+  runtime: 1,
 };
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));

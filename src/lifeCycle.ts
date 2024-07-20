@@ -64,7 +64,7 @@ export function createDanmakuPlugin<T>(
   plSys: Manager<T>['plSys'],
 ): DanmakuPlugin<T> {
   const plugin = {
-    name: `__danmaku_plugin_${ids.b++}__`,
+    name: `__danmaku_plugin_${ids.bridge++}__`,
   } as Record<string, unknown>;
 
   if (cache.length) {
