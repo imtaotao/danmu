@@ -22,6 +22,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       (plugin as any).name = `__flexible_danmaku_plugin_${ids.f++}__`;
     }
     this.plSys.useRefine(plugin);
+    return plugin as DanmakuPlugin<T> & { name: string };
   }
 
   public remove(pluginName: string) {

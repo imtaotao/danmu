@@ -12,6 +12,7 @@ export class Box {
 
   public constructor() {
     this.node = document.createElement('div');
+    this.node.setAttribute('data-danmu-container', '1');
     this.setStyle('overflow', 'hidden');
     this.setStyle('position', 'relative');
     this.setStyle('top', '0');
@@ -51,6 +52,18 @@ export class Box {
       if (typeof y.end === 'number') this.size.y.end = y.end;
       if (typeof y.start === 'number') this.size.y.start = y.start;
       check('y');
+    }
+  }
+
+  public updateOccluded(url?: string | null) {
+    if (url && typeof url === 'string') {
+      this.setStyle('maskSize', 'cover');
+      this.setStyle('maskImage', `url(${url})`);
+      this.setStyle('webkitMaskSize', 'cover');
+      this.setStyle('webkitMaskImage', `url(${url})`);
+    } else {
+      this.setStyle('maskImage', 'none');
+      this.setStyle('webkitMaskImage', 'none');
     }
   }
 

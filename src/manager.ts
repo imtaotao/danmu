@@ -143,7 +143,7 @@ export class Manager<
       plugin.name = `__runtime_plugin_${ids.r++}__`;
     }
     this.plSys.useRefine(plugin);
-    return this;
+    return plugin as ManagerPlugin<T> & { name: string };
   }
 
   public remove(pluginName: string) {
@@ -170,7 +170,7 @@ export class Manager<
     }
     const cycle = () => {
       this._renderTimer = setTimeout(cycle, this.options.interval);
-      this.render();
+      this._render();
     };
     cycle();
     return this;
@@ -272,17 +272,8 @@ export class Manager<
     return false;
   }
 
-  public render() {
-    if (!this.isPlaying()) return this;
-    this._engine.renderFacileDanmaku({
-      statuses: this._internalStatuses,
-      danmakuPlugin: createDanmakuPlugin(this.plSys),
-      hooks: {
-        finished: () => this.plSys.lifecycle.finished.emit(),
-        render: (val) => this.plSys.lifecycle.render.emit(val),
-        willRender: (val) => this.plSys.lifecycle.willRender.emit(val),
-      },
-    });
+  public updateOccludedUrl(url?: string | null) {
+    this.box.updateOccluded(url);
     return this;
   }
 
@@ -313,7 +304,6 @@ export class Manager<
   public setRate(rate: number) {
     if (rate !== this.options.rate) {
       this.updateOptions({ rate });
-      this.asyncEach((b) => b.updateRate(rate));
     }
     return this;
   }
@@ -351,6 +341,20 @@ export class Manager<
       this._engine.box.updateSize(size);
       this.format();
     }
+    return this;
+  }
+
+  private _render() {
+    if (!this.isPlaying()) return this;
+    this._engine.renderFacileDanmaku({
+      statuses: this._internalStatuses,
+      danmakuPlugin: createDanmakuPlugin(this.plSys),
+      hooks: {
+        finished: () => this.plSys.lifecycle.finished.emit(),
+        render: (val) => this.plSys.lifecycle.render.emit(val),
+        willRender: (val) => this.plSys.lifecycle.willRender.emit(val),
+      },
+    });
     return this;
   }
 

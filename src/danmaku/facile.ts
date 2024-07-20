@@ -87,6 +87,7 @@ export class FacileDanmaku<T> {
       plugin.name = `__facile_danmaku_plugin_${ids.f++}__`;
     }
     this.plSys.useRefine(plugin);
+    return plugin as DanmakuPlugin<T> & { name: string };
   }
 
   public remove(pluginName: string) {
@@ -111,10 +112,6 @@ export class FacileDanmaku<T> {
   public updateTrackData(data: TrackData<T> | null) {
     if (data) data.list.push(this);
     this.trackData = data;
-  }
-
-  public updateRate(rate: number) {
-    // TODO: ...
   }
 
   public getHeight() {

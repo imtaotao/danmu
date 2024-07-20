@@ -12,7 +12,6 @@ export const initManager = () => {
       init(manager) {
         manager.box.node.classList.add('bg-slate-200');
       },
-      limitWarning() {},
       $createNode(d) {
         if (!d.node) return;
         ReactDOM.createRoot(d.node).render(
