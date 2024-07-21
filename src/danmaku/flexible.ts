@@ -29,34 +29,6 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     this.plSys.remove(pluginName);
   }
 
-  public updatePosition(p: Partial<Position>) {
-    let needUpdateStyle = false;
-    if (typeof p.x === 'number') {
-      this.position.x = p.x;
-      needUpdateStyle = true;
-    }
-    if (typeof p.y === 'number') {
-      this.position.y = p.y;
-      needUpdateStyle = true;
-    }
-    if (needUpdateStyle) {
-      this.setStyle(
-        'transform',
-        `translateX(${this.position.x}px) translateY(${this.position.y}px)`,
-      );
-    }
-  }
-
-  public getMoveDistance() {
-    if (!this.moving) return 0;
-    const { x } = this.position;
-    if (this.direction === 'none') return x;
-    const percent = this.getMovePercent();
-    return this.direction === 'left'
-      ? x + (this.options.box.width - this.position.x) * percent
-      : x - (x + this.getWidth()) * percent;
-  }
-
   public pause(_flag?: Symbol) {
     if (!this.moving || this.paused) return;
     this.paused = true;
@@ -112,6 +84,9 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     }
   }
 
+  /**
+   * @internal
+   */
   public setOff() {
     return new Promise<void>((resolve) => {
       if (!this.node) {
@@ -159,6 +134,9 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     });
   }
 
+  /**
+   * @internal
+   */
   public setStartStatus() {
     this.setStyle('zIndex', '1');
     this.setStyle('transform', '');
@@ -171,5 +149,39 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     this._internalStatuses.viewStatus === 'hide'
       ? this.hide(INTERNAL_FLAG)
       : this.show(INTERNAL_FLAG);
+  }
+
+  /**
+   * @internal
+   */
+  public updatePosition(p: Partial<Position>) {
+    let needUpdateStyle = false;
+    if (typeof p.x === 'number') {
+      this.position.x = p.x;
+      needUpdateStyle = true;
+    }
+    if (typeof p.y === 'number') {
+      this.position.y = p.y;
+      needUpdateStyle = true;
+    }
+    if (needUpdateStyle) {
+      this.setStyle(
+        'transform',
+        `translateX(${this.position.x}px) translateY(${this.position.y}px)`,
+      );
+    }
+  }
+
+  /**
+   * @internal
+   */
+  public getMoveDistance() {
+    if (!this.moving) return 0;
+    const { x } = this.position;
+    if (this.direction === 'none') return x;
+    const percent = this.getMovePercent();
+    return this.direction === 'left'
+      ? x + (this.options.box.width - this.position.x) * percent
+      : x - (x + this.getWidth()) * percent;
   }
 }

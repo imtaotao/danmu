@@ -2,7 +2,8 @@ import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
 import { SidebarGap } from '@/components/sidebar/sidebarGap';
 import { SidebarRate } from '@/components/sidebar/sidebarRate';
-import { SidebarArea } from '@/components/sidebar/sidebarArea';
+import { SidebarAreaX } from '@/components/sidebar/sidebarAreaX';
+import { SidebarAreaY } from '@/components/sidebar/sidebarAreaY';
 import { SidebarFreeze } from '@/components/sidebar/sidebarFreeze';
 import { SidebarOpacity } from '@/components/sidebar/sidebarOpacity';
 import { SidebarNumbers } from '@/components/sidebar/sidebarNumbers';
@@ -19,7 +20,8 @@ export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
   return (
     <>
       <SidebarOpacity manager={manager} />
-      <SidebarArea manager={manager} />
+      <SidebarAreaX manager={manager} />
+      <SidebarAreaY manager={manager} />
       <SidebarGap manager={manager} />
       <SidebarFrequency manager={manager} />
       <SidebarMoveTimes manager={manager} />

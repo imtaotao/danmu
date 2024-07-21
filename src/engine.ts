@@ -159,6 +159,7 @@ export class Engine<T> {
 
   public format() {
     // Need to format the container first
+    const oldWidth = this.box.width;
     this.box.format();
     const { gap, trackHeight } = this.options;
     this.options.gap = this.n('width', gap);
@@ -191,12 +192,7 @@ export class Engine<T> {
         if (track.location[2] > this.box.height) {
           this._clearTarck(i);
         } else {
-          // Don't let the rendering of danmaku exceed the container
-          Array.from(track.list).forEach((d) => {
-            if (d.getHeight() + track.location[2] > this.box.height) {
-              d.destroy();
-            }
-          });
+          Array.from(track.list).forEach((d) => d.format(track, oldWidth));
         }
         track.location = location;
       } else {

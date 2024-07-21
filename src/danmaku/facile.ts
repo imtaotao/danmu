@@ -94,49 +94,12 @@ export class FacileDanmaku<T> {
     this.plSys.remove(pluginName);
   }
 
-  public fixDuration(duration: number) {
-    this.isFixed = true;
-    this.duration = duration;
-  }
-
-  public updatePosition(p: Partial<Position>) {
-    if (typeof p.x === 'number') {
-      this.position.x = p.x;
-    }
-    if (typeof p.y === 'number') {
-      this.position.y = p.y;
-      this.setStyle('top', `${p.y}px`);
-    }
-  }
-
-  public updateTrackData(data: TrackData<T> | null) {
-    if (data) data.list.push(this);
-    this.trackData = data;
-  }
-
   public getHeight() {
     return (this.node && this.node.clientHeight) || 0;
   }
 
   public getWidth() {
     return (this.node && this.node.clientWidth) || 0;
-  }
-
-  public getMovePercent() {
-    const { pauseTime, startTime, prevPauseTime } = this.recorder;
-    const ct = this.paused ? prevPauseTime : now();
-    return (ct - startTime - pauseTime) / this.actualDuration();
-  }
-
-  public getMoveDistance() {
-    if (!this.moving) return 0;
-    return this.getMovePercent() * this._summaryWidth();
-  }
-
-  public getSpeed() {
-    const cw = this._summaryWidth();
-    if (cw == null) return 0;
-    return cw / this.actualDuration();
   }
 
   public pause(_flag?: Symbol) {
@@ -190,16 +153,6 @@ export class FacileDanmaku<T> {
     }
   }
 
-  public removeNode(_flag?: Symbol) {
-    if (!this.node) return;
-    const parentNode = this.node.parentNode;
-    if (!parentNode) return;
-    parentNode.removeChild(this.node);
-    if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.removeNode.emit(this);
-    }
-  }
-
   public destroy() {
     this.moving = false;
     this._delInTrack();
@@ -212,42 +165,6 @@ export class FacileDanmaku<T> {
     this.node = null;
   }
 
-  // Clear state and cache, keep node
-  public reset() {
-    this.paused = false;
-    this.moving = false;
-    this.position = { x: 0, y: 0 };
-    this.removeNode();
-    this._delInTrack();
-    this.setStartStatus();
-    this.setStyle('top', '');
-    this.updateTrackData(null);
-    if (this.moveTimer) {
-      this.moveTimer.clear();
-      this.moveTimer = null;
-    }
-    this.recorder = {
-      pauseTime: 0,
-      startTime: 0,
-      prevPauseTime: 0,
-    };
-  }
-
-  public createNode() {
-    if (this.node) return;
-    this.node = document.createElement('div');
-    this.setStartStatus();
-    // @ts-ignore
-    this.node.__danmaku__ = this;
-    this.plSys.lifecycle.createNode.emit(this);
-  }
-
-  public appendNode(container: HTMLElement) {
-    if (!this.node || this.node.parentNode === container) return;
-    container.appendChild(this.node);
-    this.plSys.lifecycle.appendNode.emit(this);
-  }
-
   public setStyle<
     T extends keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>,
   >(key: T, val: CSSStyleDeclaration[T]) {
@@ -255,6 +172,68 @@ export class FacileDanmaku<T> {
     this.node.style[key] = val;
   }
 
+  /**
+   * @internal
+   */
+  public getMovePercent() {
+    const { pauseTime, startTime, prevPauseTime } = this.recorder;
+    const ct = this.paused ? prevPauseTime : now();
+    return (ct - startTime - pauseTime) / this.actualDuration();
+  }
+
+  /**
+   * @internal
+   */
+  public getMoveDistance() {
+    if (!this.moving) return 0;
+    return this.getMovePercent() * this._summaryWidth();
+  }
+
+  /**
+   * @internal
+   */
+  public getSpeed() {
+    const cw = this._summaryWidth();
+    if (cw == null) return 0;
+    return cw / this.actualDuration();
+  }
+
+  /**
+   * @internal
+   */
+  public createNode() {
+    if (this.node) return;
+    this.node = document.createElement('div');
+    this.setStartStatus();
+    (this.node as any).__danmaku__ = this;
+    this.plSys.lifecycle.createNode.emit(this);
+  }
+
+  /**
+   * @internal
+   */
+  public appendNode(container: HTMLElement) {
+    if (!this.node || this.node.parentNode === container) return;
+    container.appendChild(this.node);
+    this.plSys.lifecycle.appendNode.emit(this);
+  }
+
+  /**
+   * @internal
+   */
+  public removeNode(_flag?: Symbol) {
+    if (!this.node) return;
+    const parentNode = this.node.parentNode;
+    if (!parentNode) return;
+    parentNode.removeChild(this.node);
+    if (_flag !== INTERNAL_FLAG) {
+      this.plSys.lifecycle.removeNode.emit(this);
+    }
+  }
+
+  /**
+   * @internal
+   */
   public setOff() {
     return new Promise<void>((resolve) => {
       if (!this.node) {
@@ -291,6 +270,9 @@ export class FacileDanmaku<T> {
     });
   }
 
+  /**
+   * @internal
+   */
   public setStartStatus() {
     this._internalStatuses.viewStatus === 'hide'
       ? this.hide(INTERNAL_FLAG)
@@ -306,10 +288,86 @@ export class FacileDanmaku<T> {
     }
   }
 
-  private _summaryWidth() {
-    return this.options.box.width + this.getWidth();
+  /**
+   * @internal
+   */
+  public fixDuration(duration: number) {
+    this.isFixed = true;
+    this.duration = duration;
   }
 
+  /**
+   * @internal
+   */
+  public updatePosition(p: Partial<Position>) {
+    if (typeof p.x === 'number') {
+      this.position.x = p.x;
+    }
+    if (typeof p.y === 'number') {
+      this.position.y = p.y;
+      this.setStyle('top', `${p.y}px`);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  public updateTrackData(data: TrackData<T> | null) {
+    if (data) data.list.push(this);
+    this.trackData = data;
+  }
+
+  /**
+   * @internal
+   */
+  public format(newTrack: TrackData<T>, oldWidth: number) {
+    // Don't let the rendering of danmaku exceed the container
+    if (this.getHeight() + newTrack.location[2] > this.options.box.height) {
+      this.destroy();
+    }
+    // If danmaku move distance less than box width, we need update it
+    else if (this.direction !== 'none' && oldWidth > this.options.box.width) {
+      const oldSumWidth = this._summaryWidth(oldWidth);
+      const v = this.actualDuration() / oldSumWidth;
+      const rt = ((this._summaryWidth() - oldSumWidth) / v) * this.rate;
+    }
+  }
+
+  /**
+   * @internal
+   */
+  private _summaryWidth(boxWidth?: number) {
+    return typeof boxWidth === 'number'
+      ? boxWidth
+      : this.options.box.width + this.getWidth();
+  }
+
+  /**
+   * @internal
+   */
+  public reset() {
+    this.paused = false;
+    this.moving = false;
+    this.position = { x: 0, y: 0 };
+    this.removeNode();
+    this._delInTrack();
+    this.setStartStatus();
+    this.setStyle('top', '');
+    this.updateTrackData(null);
+    if (this.moveTimer) {
+      this.moveTimer.clear();
+      this.moveTimer = null;
+    }
+    this.recorder = {
+      pauseTime: 0,
+      startTime: 0,
+      prevPauseTime: 0,
+    };
+  }
+
+  /**
+   * @internal
+   */
   protected _delInTrack() {
     if (!this.trackData) return;
     remove(this.trackData.list, this);
