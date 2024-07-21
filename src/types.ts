@@ -39,7 +39,7 @@ export type InternalStatuses = {
 export interface PushFlexOptions<T> {
   plugin?: DanmakuPlugin<T>;
   duration?: number;
-  direction: Direction;
+  direction?: Direction;
   position: Position | ((box: Box, b: Danmaku<T>) => Position);
 }
 

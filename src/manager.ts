@@ -363,9 +363,6 @@ export class Manager<
     return this;
   }
 
-  /**
-   * @internal
-   */
   private _render() {
     if (!this.isPlaying()) return this;
     this._engine.renderFacileDanmaku({
@@ -380,9 +377,6 @@ export class Manager<
     return this;
   }
 
-  /**
-   * @internal
-   */
   private _setViewStatus(
     status: InternalStatuses['viewStatus'],
     filter?: FilterCallback<T>,

@@ -1,6 +1,6 @@
 {
   "name": "danmu",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "main": "./dist/danmu.cjs.js",
   "unpkg": "./dist/danmu.umd.js",
@@ -75,7 +75,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "aidly": "^1.4.8",
+    "aidly": "^1.4.9",
     "hooks-plugin": "^1.2.6"
   }
 }

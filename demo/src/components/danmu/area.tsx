@@ -1,22 +1,10 @@
 import { useEffect, useRef, memo } from 'react';
-import { once } from 'aidly';
 import { Maximize } from 'lucide-react';
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
 
 export const Area = memo(({ manager }: { manager: Manager<DanmakuValue> }) => {
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const plugin = manager.use({
-      render: once(() => {
-        manager.box.setStyle('backgroundColor', '#f1f5f9');
-      }),
-    });
-    return () => {
-      manager.remove(plugin.name);
-    };
-  }, []);
 
   useEffect(() => {
     const format = () => {

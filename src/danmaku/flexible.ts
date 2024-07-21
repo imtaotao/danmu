@@ -177,11 +177,38 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
    */
   public getMoveDistance() {
     if (!this.moving) return 0;
+    let d;
     const { x } = this.position;
-    if (this.direction === 'none') return x;
-    const percent = this.getMovePercent();
-    return this.direction === 'left'
-      ? x + (this.options.box.width - this.position.x) * percent
-      : x - (x + this.getWidth()) * percent;
+    if (this.direction === 'none') {
+      d = x;
+    } else {
+      const percent = this.getMovePercent();
+      if (this.direction === 'left') {
+        d = x + (this.options.box.width - x) * percent;
+      } else {
+        d = x - (x + this.getWidth()) * percent;
+      }
+    }
+    return d;
+  }
+
+  /**
+   * @internal
+   */
+  public format() {
+    const { width, duration } = this._originData;
+    const speed = (width + this.getWidth()) / duration;
+    this.fixDuration(this._summaryWidth() / speed, false);
+
+    const d = this.getMoveDistance();
+
+    this.setStyle('transitionDuration', '0ms');
+    this.setStyle(
+      'transform',
+      `translateX(${this.getMoveDistance()}px) translateY(${
+        this.position.y
+      }px)`,
+    );
+    console.log(d);
   }
 }

@@ -50,12 +50,17 @@ export class FacileDanmaku<T> {
   public trackData: TrackData<T> | null = null;
   public plSys: PlSys<Danmaku<T>> = createDanmakuLifeCycle<Danmaku<T>>();
   protected _internalStatuses: InternalStatuses;
+  protected _originData: { width: number; duration: number };
 
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
     this.rate = options.rate;
     this.duration = options.duration;
     this._internalStatuses = options.internalStatuses;
+    this._originData = {
+      width: options.box.width,
+      duration: options.duration,
+    };
     this.recorder = {
       pauseTime: 0,
       startTime: 0,
@@ -106,15 +111,13 @@ export class FacileDanmaku<T> {
     if (!this.moving || this.paused) return;
     let d = this.getMoveDistance();
     if (Number.isNaN(d)) return;
+    const negative = this.direction === 'left' ? 1 : -1;
 
     this.paused = true;
     this.recorder.prevPauseTime = now();
-    if (this.direction === 'right') {
-      d *= -1;
-    }
     this.setStyle('zIndex', '2');
     this.setStyle('transitionDuration', '0ms');
-    this.setStyle('transform', `translateX(${d}px)`);
+    this.setStyle('transform', `translateX(${d * negative}px)`);
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.pause.emit(this);
     }
@@ -122,8 +125,8 @@ export class FacileDanmaku<T> {
 
   public resume(_flag?: Symbol) {
     if (!this.moving || !this.paused) return;
-    const cw = this.options.box.width + this.getWidth();
-    const isNegative = this.direction === 'left' ? 1 : -1;
+    const cw = this._summaryWidth();
+    const negative = this.direction === 'left' ? 1 : -1;
     const remainingTime = (1 - this.getMovePercent()) * this.actualDuration();
 
     this.paused = false;
@@ -131,7 +134,7 @@ export class FacileDanmaku<T> {
     this.recorder.prevPauseTime = 0;
     this.setStyle('zIndex', '0');
     this.setStyle('transitionDuration', `${remainingTime}ms`);
-    this.setStyle('transform', `translateX(${cw * isNegative}px)`);
+    this.setStyle('transform', `translateX(${cw * negative}px)`);
     if (_flag !== INTERNAL_FLAG) {
       this.plSys.lifecycle.resume.emit(this);
     }
@@ -244,13 +247,13 @@ export class FacileDanmaku<T> {
       }
       const w = this.getWidth();
       const cw = this.options.box.width + w;
-      const isNegative = this.direction === 'left' ? 1 : -1;
+      const negative = this.direction === 'left' ? 1 : -1;
 
       this._internalStatuses.viewStatus === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
       this.setStyle('opacity', '');
-      this.setStyle('transform', `translateX(${isNegative * cw}px)`);
+      this.setStyle('transform', `translateX(${negative * cw}px)`);
       this.setStyle(
         'transition',
         `transform linear ${this.actualDuration()}ms`,
@@ -291,9 +294,12 @@ export class FacileDanmaku<T> {
   /**
    * @internal
    */
-  public fixDuration(duration: number) {
+  public fixDuration(duration: number, updateOriginData: boolean) {
     this.isFixed = true;
     this.duration = duration;
+    if (updateOriginData) {
+      this._originData.duration = duration;
+    }
   }
 
   /**
@@ -320,26 +326,36 @@ export class FacileDanmaku<T> {
   /**
    * @internal
    */
-  public format(newTrack: TrackData<T>, oldWidth: number) {
-    // Don't let the rendering of danmaku exceed the container
-    if (this.getHeight() + newTrack.location[2] > this.options.box.height) {
+  public format(oldWidth: number, oldHeight: number, newTrack: TrackData<T>) {
+    if (this.isEnded) {
       this.destroy();
+      return;
     }
-    // If danmaku move distance less than box width, we need update it
-    else if (this.direction !== 'none' && oldWidth > this.options.box.width) {
-      const oldSumWidth = this._summaryWidth(oldWidth);
-      const v = this.actualDuration() / oldSumWidth;
-      const rt = ((this._summaryWidth() - oldSumWidth) / v) * this.rate;
+    // Don't let the rendering of danmaku exceed the container
+    if (
+      this.options.box.height !== oldHeight &&
+      this.getHeight() + newTrack.location[2] > this.options.box.height
+    ) {
+      this.destroy();
+      return;
+    }
+    // As the x-axis varies, the motion area of danmu also changes
+    if (this.options.box.width !== oldWidth) {
+      const { width, duration } = this._originData;
+      const speed = (width + this.getWidth()) / duration;
+      this.fixDuration(this._summaryWidth() / speed, false);
+      if (!this.paused) {
+        this.pause(INTERNAL_FLAG);
+        this.resume(INTERNAL_FLAG);
+      }
     }
   }
 
   /**
    * @internal
    */
-  private _summaryWidth(boxWidth?: number) {
-    return typeof boxWidth === 'number'
-      ? boxWidth
-      : this.options.box.width + this.getWidth();
+  protected _summaryWidth() {
+    return this.options.box.width + this.getWidth();
   }
 
   /**
@@ -369,8 +385,9 @@ export class FacileDanmaku<T> {
    * @internal
    */
   protected _delInTrack() {
-    if (!this.trackData) return;
-    remove(this.trackData.list, this);
     this.options.delInTrack(this);
+    if (this.trackData) {
+      remove(this.trackData.list, this);
+    }
   }
 }

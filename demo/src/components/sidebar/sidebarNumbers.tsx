@@ -14,10 +14,10 @@ export const SidebarNumbers = memo(
     useEffect(() => {
       const name = 'DanmakuNumber';
       const update = () => {
-        const { all, view, stash, flexible } = manager.len();
+        const { all, view, stash } = manager.len();
         setAllNumber(all);
         setStashNumber(stash);
-        setRenderNumber(view + flexible);
+        setRenderNumber(view);
       };
       manager.use({
         name,

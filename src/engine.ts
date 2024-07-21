@@ -158,8 +158,8 @@ export class Engine<T> {
   }
 
   public format() {
+    const { width, height } = this.box;
     // Need to format the container first
-    const oldWidth = this.box.width;
     this.box.format();
     const { gap, trackHeight } = this.options;
     this.options.gap = this.n('width', gap);
@@ -192,7 +192,7 @@ export class Engine<T> {
         if (track.location[2] > this.box.height) {
           this._clearTarck(i);
         } else {
-          Array.from(track.list).forEach((d) => d.format(track, oldWidth));
+          Array.from(track.list).forEach((d) => d.format(width, height, track));
         }
         track.location = location;
       } else {
@@ -213,6 +213,8 @@ export class Engine<T> {
     for (const d of this._sets.flexible) {
       if (d.position.y > this.box.height) {
         d.destroy();
+      } else if (width !== this.box.width) {
+        d.format();
       }
     }
   }
@@ -407,7 +409,7 @@ export class Engine<T> {
             );
             if (fixTime !== null) {
               if (isInBounds(times, fixTime)) {
-                cur.fixDuration(fixTime);
+                cur.fixDuration(fixTime, true);
               } else if (mode === 'strict') {
                 resolve(true);
                 return;
@@ -457,12 +459,11 @@ export class Engine<T> {
     }
     // Create FlexibleDanmaku
     assert(options, 'Unexpected Error');
-    const { direction, duration, position } = options;
-    config.direction = direction;
-    config.duration =
-      typeof duration === 'number' ? duration : this._randomDuration();
-
+    const { direction, position, duration = this._randomDuration() } = options;
+    config.duration = duration;
+    direction && (config.direction = direction);
     const d = new FlexibleDanmaku(config);
+
     // If it is a function, the postion will be updated after the node is created,
     // so that the function can get accurate bullet comment data.
     if (typeof position !== 'function') {
