@@ -25,12 +25,6 @@ export const DanmakuBox = ({
   danmaku.use({
     pause: () => setOpen(true),
     resume: () => setOpen(false),
-    moveStart(danmaku) {
-      for (const key in manager.statuses) {
-        type K = keyof typeof manager.statuses;
-        danmaku.setStyle(key as K, manager.statuses[key as K]);
-      }
-    },
   });
 
   return (

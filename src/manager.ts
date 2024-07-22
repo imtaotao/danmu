@@ -39,6 +39,7 @@ export class Manager<
 
   public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
+    this._internalStatuses.opacity = 1;
     this._internalStatuses.freeze = false;
     this._internalStatuses.viewStatus = 'show';
     this.plSys.lifecycle.init.emit(this);
@@ -323,6 +324,20 @@ export class Manager<
   public setRate(rate: number) {
     if (rate !== this.options.rate) {
       this.updateOptions({ rate });
+    }
+    return this;
+  }
+
+  public setOpacity(opacity: number) {
+    if (opacity < 0) opacity = 0;
+    else if (opacity > 1) opacity = 1;
+    if (opacity !== this._internalStatuses.opacity) {
+      this._internalStatuses.opacity = opacity;
+      this._engine.asyncEach((b) => {
+        if (b.moving) {
+          b.setStyle('opacity', String(opacity));
+        }
+      });
     }
     return this;
   }

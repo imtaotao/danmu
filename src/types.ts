@@ -33,6 +33,7 @@ export type DanmakuPlugin<T> = RefinePlugin<
 
 export type InternalStatuses = {
   freeze: boolean;
+  opacity: number;
   viewStatus: 'hide' | 'show';
 };
 

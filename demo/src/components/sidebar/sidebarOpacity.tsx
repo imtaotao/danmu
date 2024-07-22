@@ -19,12 +19,8 @@ export const SidebarOpacity = memo(
           max={100}
           defaultValue={[100]}
           className="w-[100%] h-full"
-          onValueChange={throttle(500, (v) => {
-            const opacity = String(v[0] / 100);
-            manager.statuses['opacity'] = opacity;
-            manager.asyncEach((b) => {
-              b.setStyle('opacity', opacity);
-            });
+          onValueChange={throttle(100, (v) => {
+            manager.setOpacity(v[0] / 100);
           })}
         />
       </div>

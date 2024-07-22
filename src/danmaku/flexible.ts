@@ -118,6 +118,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
         this.plSys.lifecycle.moveEnd.emit(this);
         resolve();
       };
+
       this.moving = true;
       this.recorder.startTime = now();
       this.plSys.lifecycle.moveStart.emit(this);
@@ -155,6 +156,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     this.setStyle('transform', '');
     this.setStyle('transition', '');
     this.setStyle('position', 'absolute');
+    this.setStyle('opacity', String(this._internalStatuses.opacity));
     this.setStyle(
       'transform',
       `translateX(${this.position.x}px) translateY(${this.position.y}px)`,

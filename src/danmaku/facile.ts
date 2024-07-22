@@ -252,7 +252,7 @@ export class FacileDanmaku<T> {
       this._internalStatuses.viewStatus === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
-      this.setStyle('opacity', '');
+      this.setStyle('opacity', String(this._internalStatuses.opacity));
       this.setStyle('transform', `translateX(${negative * cw}px)`);
       this.setStyle(
         'transition',
