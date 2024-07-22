@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { random, uuid } from 'aidly';
 import { Send, Pickaxe, CircleAlert } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
@@ -43,6 +43,16 @@ export const Transmitter = ({
   const [y, setY] = useState(50);
   const [direction, setDirection] = useState(manager.options.direction);
   const [duration, setDuration] = useState(random(...manager.options.times));
+
+  useEffect(() => {
+    manager.use({
+      updateOptions(newOptions) {
+        if ('direction' in newOptions) {
+          setDirection(newOptions.direction!);
+        }
+      },
+    });
+  }, []);
 
   const tip = (msg?: string) => {
     toast({

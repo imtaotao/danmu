@@ -214,7 +214,7 @@ export class Engine<T> {
       if (d.position.y > this.box.height) {
         d.destroy();
       } else if (width !== this.box.width) {
-        d.format(width);
+        d.format();
       }
     }
   }
