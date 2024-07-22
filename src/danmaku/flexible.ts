@@ -178,7 +178,10 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   public getMoveDistance() {
     if (!this.moving) return 0;
     let d;
-    const { x } = this.position;
+    let { x } = this.position;
+    const diff = this._originData.width - this.options.box.width;
+    const dp = this.duration / this._originData.duration;
+
     if (this.direction === 'none') {
       d = x;
     } else {
@@ -186,6 +189,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       if (this.direction === 'left') {
         d = x + (this.options.box.width - x) * percent;
       } else {
+        x -= diff;
         d = x - (x + this.getWidth()) * percent;
       }
     }
@@ -195,20 +199,14 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public format() {
+  public format(oldWidth: number) {
     const { width, duration } = this._originData;
     const speed = (width + this.getWidth()) / duration;
-    this.fixDuration(this._summaryWidth() / speed, false);
-
-    const d = this.getMoveDistance();
-
-    this.setStyle('transitionDuration', '0ms');
-    this.setStyle(
-      'transform',
-      `translateX(${this.getMoveDistance()}px) translateY(${
-        this.position.y
-      }px)`,
-    );
-    console.log(d);
+    const newDuration = this._summaryWidth() / speed;
+    console.log(newDuration / duration);
+    this.fixDuration(newDuration, false);
+    this._originData.width = oldWidth;
+    this.pause(INTERNAL_FLAG);
+    this.resume(INTERNAL_FLAG);
   }
 }
