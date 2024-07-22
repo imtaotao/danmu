@@ -1,6 +1,6 @@
 export interface DanmakuValue {
   content: string;
-  isSelf: boolean;
+  isSelf?: boolean;
 }
 
 export type Statuses = {

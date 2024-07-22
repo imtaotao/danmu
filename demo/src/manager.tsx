@@ -8,11 +8,11 @@ export const initManager = () => {
   const manager = create<DanmakuValue, Statuses>({
     trackHeight: 40,
     times: [4000, 7000],
-    // direction: 'left',
     plugin: {
       init(manager) {
-        // manager.box.node.classList.add('bg-slate-200');
-        manager.box.node.classList.add('bg-slate-500');
+        'shadow shadow-slate-300'.split(' ').forEach((c) => {
+          manager.box.node.classList.add(c);
+        });
       },
       $createNode(d) {
         if (!d.node) return;
