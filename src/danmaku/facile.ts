@@ -50,14 +50,14 @@ export class FacileDanmaku<T> {
   public trackData: TrackData<T> | null = null;
   public plSys: PlSys<Danmaku<T>> = createDanmakuLifeCycle<Danmaku<T>>();
   protected _internalStatuses: InternalStatuses;
-  protected _originData: { width: number; duration: number };
+  protected _initData: { width: number; duration: number };
 
   public constructor(public options: FacileOptions<T>) {
     this.data = options.data;
     this.rate = options.rate;
     this.duration = options.duration;
     this._internalStatuses = options.internalStatuses;
-    this._originData = {
+    this._initData = {
       width: options.box.width,
       duration: options.duration,
     };
@@ -294,11 +294,11 @@ export class FacileDanmaku<T> {
   /**
    * @internal
    */
-  public fixDuration(duration: number, updateOriginData: boolean) {
+  public fixDuration(duration: number, updateInitData: boolean) {
     this.isFixed = true;
     this.duration = duration;
-    if (updateOriginData) {
-      this._originData.duration = duration;
+    if (updateInitData) {
+      this._initData.duration = duration;
     }
   }
 
@@ -341,7 +341,7 @@ export class FacileDanmaku<T> {
     }
     // As the x-axis varies, the motion area of danmu also changes
     if (this.options.box.width !== oldWidth) {
-      const { width, duration } = this._originData;
+      const { width, duration } = this._initData;
       const speed = (width + this.getWidth()) / duration;
       this.fixDuration(this._summaryWidth() / speed, false);
       if (!this.paused) {

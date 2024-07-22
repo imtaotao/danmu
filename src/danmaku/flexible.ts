@@ -89,7 +89,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
    */
   public getSpeed() {
     if (this.direction === 'none') return 0;
-    const { duration } = this._originData;
+    const { duration } = this._initData;
     const cw =
       this.direction === 'right'
         ? this.position.x + this.getWidth()
@@ -187,14 +187,17 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     }
   }
 
-  public getMovePercent(useOriginData?: boolean) {
+  /**
+   * @internal
+   */
+  public getMovePercent(useInitData?: boolean) {
     const { pauseTime, startTime, prevPauseTime } = this.recorder;
     const ct = this.paused ? prevPauseTime : now();
     const moveTime = ct - startTime - pauseTime;
     return (
       moveTime /
-      (useOriginData
-        ? this._originData.duration / this.rate
+      (useInitData
+        ? this._initData.duration / this.rate
         : this.actualDuration())
     );
   }
@@ -206,7 +209,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     if (!this.moving) return 0;
     let d;
     let { x } = this.position;
-    const diff = this._originData.width - this.options.box.width;
+    const diff = this._initData.width - this.options.box.width;
 
     if (this.direction === 'none') {
       d = x - diff;
@@ -237,7 +240,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       );
       return;
     }
-    const diff = this._originData.width - this.options.box.width;
+    const diff = this._initData.width - this.options.box.width;
     const cw = this.position.x + this.getWidth();
     this.fixDuration((cw - diff) / this.getSpeed(), false);
 
