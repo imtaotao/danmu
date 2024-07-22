@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.4.8
-        version: 1.4.8
+        specifier: ^1.4.9
+        version: 1.4.9
       hooks-plugin:
         specifier: ^1.2.6
         version: 1.2.6
@@ -115,8 +115,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.4.8
-        version: 1.4.8
+        specifier: ^1.4.9
+        version: 1.4.9
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1303,8 +1303,8 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
 
-  aidly@1.4.8:
-    resolution: {integrity: sha512-oiGowPSLER3RUW/FARreDc1U+LODqQgl+e0S29cgXtf53CooHkUHlYhClYdMQe1Cp/GujkYijR+wt7sHzIVyBw==}
+  aidly@1.4.9:
+    resolution: {integrity: sha512-jWN9OOjp17CsVa3Fm6VkhMdk+2nP/icG0jNmqNdlEMhWtpIj/GcneOmthEdKXlyNgz1AqiJ2wwj7foOcWLvSmQ==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -4026,7 +4026,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  aidly@1.4.8:
+  aidly@1.4.9:
     dependencies:
       small-queue: 1.1.2
 
@@ -4498,7 +4498,7 @@ snapshots:
 
   hooks-plugin@1.2.6:
     dependencies:
-      aidly: 1.4.8
+      aidly: 1.4.9
 
   html-escaper@2.0.2: {}
 
