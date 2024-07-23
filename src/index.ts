@@ -23,10 +23,6 @@ const formatOptions = <T>(options?: CreateOption<T>) => {
   return newOptions;
 };
 
-export function isManager<T = unknown>(val: unknown): val is Manager<T> {
-  return val instanceof Manager;
-}
-
 export function create<
   T extends unknown,
   S extends Record<any, unknown> = Record<PropertyKey, unknown>,

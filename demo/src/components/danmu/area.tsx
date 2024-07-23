@@ -22,7 +22,11 @@ export const Area = memo(({ manager }: { manager: Manager<DanmakuValue> }) => {
   }, []);
 
   return (
-    <div ref={ref} id="AreaContainer" className="w-full h-full relative">
+    <div
+      ref={ref}
+      id="AreaContainer"
+      className="w-full h-full relative shadow shadow-slate-200 bg-slate-100"
+    >
       <Maximize
         color="#000"
         strokeWidth={3}

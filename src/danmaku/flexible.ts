@@ -11,83 +11,15 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   public position: Position;
   public type: DanmakuType = 'flexible';
 
-  public constructor(public options: FlexibleOptions<T>) {
-    super(options);
-    this.position = options.position || { x: 0, y: 0 };
-  }
-
-  public use(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) {
-    if (typeof plugin === 'function') plugin = plugin(this);
-    if (!plugin.name) {
-      (plugin as any).name = `__flexible_danmaku_plugin_${ids.danmu++}__`;
-    }
-    this.pluginSystem.useRefine(plugin);
-    return plugin as DanmakuPlugin<T> & { name: string };
-  }
-
-  public remove(pluginName: string) {
-    this.pluginSystem.remove(pluginName);
-  }
-
-  public pause(_flag?: Symbol) {
-    if (!this.moving || this.paused) return;
-    this.paused = true;
-    this.recorder.prevPauseTime = now();
-
-    if (this.direction === 'none') {
-      if (this.moveTimer) this.moveTimer.clear();
-    } else {
-      this.setStyle('zIndex', '3');
-      this.setStyle('transitionDuration', '0ms');
-      this.setStyle(
-        'transform',
-        `translateX(${this.getMoveDistance()}px) translateY(${
-          this.position.y
-        }px)`,
-      );
-    }
-    if (_flag !== INTERNAL_FLAG) {
-      this.pluginSystem.lifecycle.pause.emit(this);
-    }
-  }
-
-  public resume(_flag?: Symbol) {
-    if (!this.moving || !this.paused) return;
-    this.paused = false;
-    this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
-    this.recorder.prevPauseTime = 0;
-    const remainingTime = (1 - this.getMovePercent()) * this.actualDuration();
-
-    if (this.direction === 'none') {
-      if (this.moveTimer) {
-        let timer: number | null = setTimeout(
-          this.moveTimer.cb || (() => {}),
-          remainingTime,
-        );
-        this.moveTimer.clear = () => {
-          clearTimeout(timer as number);
-          timer = null;
-        };
-      }
-    } else {
-      const ex =
-        this.direction === 'left' ? this.options.box.width : -this.getWidth();
-      this.setStyle('zIndex', '1');
-      this.setStyle('transitionDuration', `${remainingTime}ms`);
-      this.setStyle(
-        'transform',
-        `translateX(${ex}px) translateY(${this.position.y}px)`,
-      );
-    }
-    if (_flag !== INTERNAL_FLAG) {
-      this.pluginSystem.lifecycle.resume.emit(this);
-    }
+  public constructor(protected _options: FlexibleOptions<T>) {
+    super(_options);
+    this.position = _options.position || { x: 0, y: 0 };
   }
 
   /**
    * @internal
    */
-  public getSpeed() {
+  public _getSpeed() {
     if (this.direction === 'none') return 0;
     const { duration } = this._initData;
     const cw =
@@ -100,7 +32,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public setOff() {
+  public _setOff() {
     return new Promise<void>((resolve) => {
       if (!this.node) {
         this.moving = false;
@@ -134,7 +66,9 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
         };
       } else {
         const ex =
-          this.direction === 'left' ? this.options.box.width : -this.getWidth();
+          this.direction === 'left'
+            ? this._options.box.width
+            : -this.getWidth();
         this.setStyle(
           'transition',
           `transform linear ${this.actualDuration()}ms`,
@@ -151,7 +85,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public setStartStatus() {
+  public _setStartStatus() {
     this.setStyle('zIndex', '1');
     this.setStyle('transform', '');
     this.setStyle('transition', '');
@@ -169,7 +103,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public updatePosition(p: Partial<Position>) {
+  public _updatePosition(p: Partial<Position>) {
     let needUpdateStyle = false;
     if (typeof p.x === 'number') {
       this.position.x = p.x;
@@ -190,7 +124,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public getMovePercent(useInitData?: boolean) {
+  public _getMovePercent(useInitData?: boolean) {
     const { pauseTime, startTime, prevPauseTime } = this.recorder;
     const ct = this.paused ? prevPauseTime : now();
     const moveTime = ct - startTime - pauseTime;
@@ -205,20 +139,20 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public getMoveDistance() {
+  public _getMoveDistance() {
     if (!this.moving) return 0;
     let d;
     let { x } = this.position;
-    const diff = this._initData.width - this.options.box.width;
+    const diff = this._initData.width - this._options.box.width;
 
     if (this.direction === 'none') {
       d = x - diff;
     } else {
-      const percent = this.getMovePercent(true);
+      const percent = this._getMovePercent(true);
       if (this.direction === 'left') {
         // When the container changes and the direction of movement is to the right,
         // there is no need for any changes
-        d = x + (this.options.box.width - x) * percent;
+        d = x + (this._options.box.width - x) * percent;
       } else {
         d = x - (x + this.getWidth()) * percent - diff;
       }
@@ -229,20 +163,20 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
   /**
    * @internal
    */
-  public format() {
+  public _format() {
     if (this.direction === 'left') return;
     if (this.direction === 'none') {
       this.setStyle(
         'transform',
-        `translateX(${this.getMoveDistance()}px) translateY(${
+        `translateX(${this._getMoveDistance()}px) translateY(${
           this.position.y
         }px)`,
       );
       return;
     }
-    const diff = this._initData.width - this.options.box.width;
+    const diff = this._initData.width - this._options.box.width;
     const cw = this.position.x + this.getWidth();
-    this.fixDuration((cw - diff) / this.getSpeed(), false);
+    this._fixDuration((cw - diff) / this._getSpeed(), false);
 
     if (this.paused) {
       this.resume(INTERNAL_FLAG);
@@ -251,5 +185,73 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       this.pause(INTERNAL_FLAG);
       this.resume(INTERNAL_FLAG);
     }
+  }
+
+  public pause(_flag?: Symbol) {
+    if (!this.moving || this.paused) return;
+    this.paused = true;
+    this.recorder.prevPauseTime = now();
+
+    if (this.direction === 'none') {
+      if (this.moveTimer) this.moveTimer.clear();
+    } else {
+      this.setStyle('zIndex', '3');
+      this.setStyle('transitionDuration', '0ms');
+      this.setStyle(
+        'transform',
+        `translateX(${this._getMoveDistance()}px) translateY(${
+          this.position.y
+        }px)`,
+      );
+    }
+    if (_flag !== INTERNAL_FLAG) {
+      this.pluginSystem.lifecycle.pause.emit(this);
+    }
+  }
+
+  public resume(_flag?: Symbol) {
+    if (!this.moving || !this.paused) return;
+    this.paused = false;
+    this.recorder.pauseTime += now() - this.recorder.prevPauseTime;
+    this.recorder.prevPauseTime = 0;
+    const remainingTime = (1 - this._getMovePercent()) * this.actualDuration();
+
+    if (this.direction === 'none') {
+      if (this.moveTimer) {
+        let timer: number | null = setTimeout(
+          this.moveTimer.cb || (() => {}),
+          remainingTime,
+        );
+        this.moveTimer.clear = () => {
+          clearTimeout(timer as number);
+          timer = null;
+        };
+      }
+    } else {
+      const ex =
+        this.direction === 'left' ? this._options.box.width : -this.getWidth();
+      this.setStyle('zIndex', '1');
+      this.setStyle('transitionDuration', `${remainingTime}ms`);
+      this.setStyle(
+        'transform',
+        `translateX(${ex}px) translateY(${this.position.y}px)`,
+      );
+    }
+    if (_flag !== INTERNAL_FLAG) {
+      this.pluginSystem.lifecycle.resume.emit(this);
+    }
+  }
+
+  public remove(pluginName: string) {
+    this.pluginSystem.remove(pluginName);
+  }
+
+  public use(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) {
+    if (typeof plugin === 'function') plugin = plugin(this);
+    if (!plugin.name) {
+      (plugin as any).name = `__flexible_danmaku_plugin_${ids.danmu++}__`;
+    }
+    this.pluginSystem.useRefine(plugin);
+    return plugin as DanmakuPlugin<T> & { name: string };
   }
 }

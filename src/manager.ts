@@ -45,6 +45,45 @@ export class Manager<
     this.pluginSystem.lifecycle.init.emit(this);
   }
 
+  private _render() {
+    if (!this.isPlaying()) return this;
+    this._engine.renderFacileDanmaku({
+      statuses: this._internalStatuses,
+      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
+      hooks: {
+        finished: () => this.pluginSystem.lifecycle.finished.emit(),
+        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
+        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
+      },
+    });
+    return this;
+  }
+
+  private _setViewStatus(
+    status: InternalStatuses['viewStatus'],
+    filter?: FilterCallback<T>,
+  ) {
+    return new Promise<void>((resolve) => {
+      if (this._internalStatuses.viewStatus === status) {
+        resolve();
+        return;
+      }
+      this._internalStatuses.viewStatus = status;
+      this.pluginSystem.lifecycle[status].emit();
+      this._engine
+        .asyncEach((b) => {
+          if (this._internalStatuses.viewStatus === status) {
+            if (!filter || filter(b) !== true) {
+              b[status]();
+            }
+          } else {
+            return false;
+          }
+        })
+        .then(resolve);
+    });
+  }
+
   public get box() {
     return this._engine.box;
   }
@@ -106,7 +145,10 @@ export class Manager<
     return this;
   }
 
-  public mount(container?: HTMLElement | string) {
+  public mount(
+    container?: HTMLElement | string,
+    { clear = true }: { clear?: boolean } = {},
+  ) {
     if (!container) return this;
     if (typeof container === 'string') {
       this._container = document.querySelector(container);
@@ -114,15 +156,17 @@ export class Manager<
       this._container = container;
     }
     assert(this._container, `Invalid "${container}"`);
-    if (this.isPlaying()) this.clear(INTERNAL_FLAG);
-    this._engine.box.mount(this._container);
+    if (this.isPlaying()) {
+      clear && this.clear(INTERNAL_FLAG);
+    }
+    this._engine.box._mount(this._container);
     this.format();
     this.pluginSystem.lifecycle.mount.emit();
     return this;
   }
 
   public unmount() {
-    this.box.unmount();
+    this.box._unmount();
     this._container = null;
     this.pluginSystem.lifecycle.unmount.emit();
     return this;
@@ -130,25 +174,11 @@ export class Manager<
 
   public clear(_flag?: Symbol) {
     // No need to use `destroy` to save loop times
-    this.each((b) => b.removeNode());
+    this.each((b) => b._removeNode());
     this._engine.clear();
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.clear.emit();
     }
-    return this;
-  }
-
-  public use(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
-    if (typeof plugin === 'function') plugin = plugin(this);
-    if (!plugin.name) {
-      plugin.name = `__runtime_plugin_${ids.runtime++}__`;
-    }
-    this.pluginSystem.useRefine(plugin);
-    return plugin as ManagerPlugin<T> & { name: string };
-  }
-
-  public remove(pluginName: string) {
-    this.pluginSystem.remove(pluginName);
     return this;
   }
 
@@ -372,48 +402,23 @@ export class Manager<
       if (y.start) size.y.start = toNumber(y.start) / 100;
     }
     if (!isEmptyObject(size)) {
-      this._engine.box.updateSize(size);
+      this._engine.box._updateSize(size);
       this.format();
     }
     return this;
   }
 
-  private _render() {
-    if (!this.isPlaying()) return this;
-    this._engine.renderFacileDanmaku({
-      statuses: this._internalStatuses,
-      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
-      hooks: {
-        finished: () => this.pluginSystem.lifecycle.finished.emit(),
-        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
-        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
-      },
-    });
+  public remove(pluginName: string) {
+    this.pluginSystem.remove(pluginName);
     return this;
   }
 
-  private _setViewStatus(
-    status: InternalStatuses['viewStatus'],
-    filter?: FilterCallback<T>,
-  ) {
-    return new Promise<void>((resolve) => {
-      if (this._internalStatuses.viewStatus === status) {
-        resolve();
-        return;
-      }
-      this._internalStatuses.viewStatus = status;
-      this.pluginSystem.lifecycle[status].emit();
-      this._engine
-        .asyncEach((b) => {
-          if (this._internalStatuses.viewStatus === status) {
-            if (!filter || filter(b) !== true) {
-              b[status]();
-            }
-          } else {
-            return false;
-          }
-        })
-        .then(resolve);
-    });
+  public use(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
+    if (typeof plugin === 'function') plugin = plugin(this);
+    if (!plugin.name) {
+      plugin.name = `__runtime_plugin_${ids.runtime++}__`;
+    }
+    this.pluginSystem.useRefine(plugin);
+    return plugin as ManagerPlugin<T> & { name: string };
   }
 }

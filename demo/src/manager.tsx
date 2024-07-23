@@ -9,11 +9,6 @@ export const initManager = () => {
     trackHeight: 40,
     times: [4000, 7000],
     plugin: {
-      init(manager) {
-        'shadow shadow-slate-300'.split(' ').forEach((c) => {
-          manager.box.node.classList.add(c);
-        });
-      },
       $createNode(d) {
         if (!d.node) return;
         ReactDOM.createRoot(d.node).render(

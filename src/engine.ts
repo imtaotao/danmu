@@ -52,7 +52,7 @@ export class Engine<T> {
   };
   // Avoid frequent deletion of bullet comments.
   // collect the bullet comments that need to be deleted within 2 seconds and delete them together.
-  private _destoryBatch = batchProcess<Danmaku<T>>({
+  private _addDestoryQueue = batchProcess<Danmaku<T>>({
     ms: 3000,
     processor: (ls) => ls.forEach((d) => d.destroy()),
   });
@@ -160,7 +160,7 @@ export class Engine<T> {
   public format() {
     const { width, height } = this.box;
     // Need to format the container first
-    this.box.format();
+    this.box._format();
     const { gap, trackHeight } = this.options;
     this.options.gap = this.n('width', gap);
     const h = this.n('height', trackHeight);
@@ -192,7 +192,9 @@ export class Engine<T> {
         if (track.location[2] > this.box.height) {
           this._clearTarck(i);
         } else {
-          Array.from(track.list).forEach((d) => d.format(width, height, track));
+          Array.from(track.list).forEach((d) =>
+            d._format(width, height, track),
+          );
         }
         track.location = location;
       } else {
@@ -214,7 +216,7 @@ export class Engine<T> {
       if (d.position.y > this.box.height) {
         d.destroy();
       } else if (width !== this.box.width) {
-        d.format();
+        d._format();
       }
     }
   }
@@ -252,7 +254,7 @@ export class Engine<T> {
 
     if (this.options.rate > 0 && prevent !== true) {
       const setup = () => {
-        d.createNode();
+        d._createNode();
         this._sets.flexible.add(d as FlexibleDanmaku<T>);
         this._setAction(d, statuses).then((isFreeze) => {
           if (isFreeze) {
@@ -263,7 +265,7 @@ export class Engine<T> {
           }
           if (d.isLoop) {
             d.loops++;
-            d.setStartStatus();
+            d._setStartStatus();
             setup();
             return;
           }
@@ -346,26 +348,26 @@ export class Engine<T> {
     // so just don't render it here.
     if (this.options.rate > 0 && prevent !== true) {
       // First createNode, users may add styles
-      d.createNode();
-      d.appendNode(this.box.node);
-      d.updateTrackData(trackData);
+      d._createNode();
+      d._appendNode(this.box.node);
+      d._updateTrackData(trackData);
 
       const setup = () => {
         this._sets.view.add(d);
         this._setAction(d, statuses).then((isStash) => {
           if (isStash) {
-            d.reset();
+            d._reset();
             this._sets.view.delete(d);
             this._sets.stash.unshift(d);
             return;
           }
           if (d.isLoop) {
             d.loops++;
-            d.setStartStatus();
+            d._setStartStatus();
             setup();
             return;
           }
-          this._destoryBatch(d);
+          this._addDestoryQueue(d);
           if (this.len().all === 0) {
             hooks.finished.call(null);
           }
@@ -382,7 +384,7 @@ export class Engine<T> {
           } else {
             const y = trackData.location[1] - height / 2;
             if (y + height > this.box.height) return;
-            d.updatePosition({ y });
+            d._updatePosition({ y });
             setup();
           }
         });
@@ -409,7 +411,7 @@ export class Engine<T> {
             );
             if (fixTime !== null) {
               if (isInBounds(times, fixTime)) {
-                cur.fixDuration(fixTime, true);
+                cur._fixDuration(fixTime, true);
               } else if (mode === 'strict') {
                 resolve(true);
                 return;
@@ -417,13 +419,13 @@ export class Engine<T> {
             }
           }
         }
-        cur.appendNode(this.box.node);
+        cur._appendNode(this.box.node);
         nextFrame(() => {
           if (internalStatuses.freeze === true) {
-            cur.removeNode(INTERNAL_FLAG);
+            cur._removeNode(INTERNAL_FLAG);
             resolve(true);
           } else {
-            cur.setOff().then(() => resolve(false));
+            cur._setOff().then(() => resolve(false));
           }
         });
       });
@@ -467,7 +469,7 @@ export class Engine<T> {
     // If it is a function, the postion will be updated after the node is created,
     // so that the function can get accurate bullet comment data.
     if (typeof position !== 'function') {
-      d.updatePosition(position);
+      d._updatePosition(position);
     } else {
       d.use({
         appendNode: () => {
@@ -475,7 +477,7 @@ export class Engine<T> {
             typeof position === 'function',
             '"position" must be a function',
           );
-          d.updatePosition(position(this.box, d));
+          d._updatePosition(position(this.box, d));
         },
       });
     }
@@ -528,7 +530,7 @@ export class Engine<T> {
     const lastWidth = last.getWidth();
     if (
       lastWidth > 0 &&
-      last.getMoveDistance() >= (gap as number) + lastWidth
+      last._getMoveDistance() >= (gap as number) + lastWidth
     ) {
       return trackData;
     }
@@ -537,20 +539,20 @@ export class Engine<T> {
   }
 
   private _collisionPrediction(prv: FacileDanmaku<T>, cur: FacileDanmaku<T>) {
-    const cs = cur.getSpeed();
-    const ps = prv.getSpeed();
+    const cs = cur._getSpeed();
+    const ps = prv._getSpeed();
     const acceleration = cs - ps;
     if (acceleration <= 0) return null;
 
     const cw = cur.getWidth();
     const pw = prv.getWidth();
     const { gap } = this.options;
-    const distance = prv.getMoveDistance() - cw - pw - (gap as number);
+    const distance = prv._getMoveDistance() - cw - pw - (gap as number);
     const collisionTime = distance / acceleration;
     if (collisionTime >= cur.duration) return null;
 
     assert(this.box, 'Container not formatted');
-    const remainingTime = (1 - prv.getMovePercent()) * prv.duration;
+    const remainingTime = (1 - prv._getMovePercent()) * prv.duration;
     const currentFixTime =
       ((cw + (gap as number)) * remainingTime) / this.box.width;
     return remainingTime + currentFixTime;

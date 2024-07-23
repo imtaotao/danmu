@@ -25,18 +25,27 @@ export class Box {
     this.node.style[key] = val;
   }
 
-  public mount(c: HTMLElement) {
-    this.unmount();
+  /**
+   * @internal
+   */
+  public _mount(c: HTMLElement) {
+    this._unmount();
     c.appendChild(this.node);
   }
 
-  public unmount() {
+  /**
+   * @internal
+   */
+  public _unmount() {
     if (this.node.parentNode) {
       this.node.parentNode.removeChild(this.node);
     }
   }
 
-  public updateSize({ x, y }: Partial<Box['size']>) {
+  /**
+   * @internal
+   */
+  public _updateSize({ x, y }: Partial<Box['size']>) {
     const check = (p: 'x' | 'y') => {
       assert(
         this.size[p].end >= this.size[p].start,
@@ -55,7 +64,10 @@ export class Box {
     }
   }
 
-  public format() {
+  /**
+   * @internal
+   */
+  public _format() {
     const w = this.size.x.end - this.size.x.start;
     const h = this.size.y.end - this.size.y.start;
     this.setStyle('width', `${w * 100}%`);
