@@ -61,7 +61,7 @@ const scope = '$';
 const cache = [] as Array<[string, string]>;
 
 export function createDanmakuPlugin<T>(
-  plSys: Manager<T>['plSys'],
+  plSys: Manager<T>['pluginSystem'],
 ): DanmakuPlugin<T> {
   const plugin = {
     name: `__danmaku_plugin_${ids.bridge++}__`,

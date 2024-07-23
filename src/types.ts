@@ -25,10 +25,12 @@ export type ValueType<M extends Manager<any>> = Extract<
   PushData<unknown>
 >['value'];
 
-export type ManagerPlugin<T> = RefinePlugin<Manager<T>['plSys']['lifecycle']>;
+export type ManagerPlugin<T> = RefinePlugin<
+  Manager<T>['pluginSystem']['lifecycle']
+>;
 
 export type DanmakuPlugin<T> = RefinePlugin<
-  FacileDanmaku<T>['plSys']['lifecycle']
+  FacileDanmaku<T>['pluginSystem']['lifecycle']
 >;
 
 export type InternalStatuses = {
@@ -87,7 +89,10 @@ export interface InfoRecord {
 export interface RenderOptions<T> {
   statuses: InternalStatuses;
   danmakuPlugin: DanmakuPlugin<T>;
-  hooks: HooksOn<Manager<T>['plSys'], ['render', 'finished', 'willRender']>;
+  hooks: HooksOn<
+    Manager<T>['pluginSystem'],
+    ['render', 'finished', 'willRender']
+  >;
 }
 
 export interface CreateOption<T> extends Partial<ManagerOptions> {

@@ -35,7 +35,7 @@ export function create<
   const manager = new Manager<T, S>(opts);
   if (opts.plugin) {
     manager.use(opts.plugin);
-    manager.plSys.lifecycle.init.emit(manager);
+    manager.pluginSystem.lifecycle.init.emit(manager);
   }
   return manager;
 }

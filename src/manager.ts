@@ -31,7 +31,7 @@ export class Manager<
   public version = __VERSION__;
   public nextFrame = nextFrame;
   public statuses: S = Object.create(null);
-  public plSys = createManagerLifeCycle<T>();
+  public pluginSystem = createManagerLifeCycle<T>();
   private _engine: Engine<T>;
   private _renderTimer: number | null = null;
   private _container: HTMLElement | null = null;
@@ -42,7 +42,7 @@ export class Manager<
     this._internalStatuses.opacity = 1;
     this._internalStatuses.freeze = false;
     this._internalStatuses.viewStatus = 'show';
-    this.plSys.lifecycle.init.emit(this);
+    this.pluginSystem.lifecycle.init.emit(this);
   }
 
   public get box() {
@@ -86,7 +86,7 @@ export class Manager<
     this.stopPlaying(stopFlag);
     this.each((b) => b.pause(pauseFlag));
     this._internalStatuses.freeze = true;
-    this.plSys.lifecycle.freeze.emit();
+    this.pluginSystem.lifecycle.freeze.emit();
   }
 
   public unfreeze({ preventEvents = [] }: FreezeOptions = {}) {
@@ -97,12 +97,12 @@ export class Manager<
     this.each((b) => b.resume(resumeFlag));
     this.startPlaying(startFlag);
     this._internalStatuses.freeze = false;
-    this.plSys.lifecycle.unfreeze.emit();
+    this.pluginSystem.lifecycle.unfreeze.emit();
   }
 
   public format() {
     this._engine.format();
-    this.plSys.lifecycle.format.emit();
+    this.pluginSystem.lifecycle.format.emit();
     return this;
   }
 
@@ -117,14 +117,14 @@ export class Manager<
     if (this.isPlaying()) this.clear(INTERNAL_FLAG);
     this._engine.box.mount(this._container);
     this.format();
-    this.plSys.lifecycle.mount.emit();
+    this.pluginSystem.lifecycle.mount.emit();
     return this;
   }
 
   public unmount() {
     this.box.unmount();
     this._container = null;
-    this.plSys.lifecycle.unmount.emit();
+    this.pluginSystem.lifecycle.unmount.emit();
     return this;
   }
 
@@ -133,7 +133,7 @@ export class Manager<
     this.each((b) => b.removeNode());
     this._engine.clear();
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.clear.emit();
+      this.pluginSystem.lifecycle.clear.emit();
     }
     return this;
   }
@@ -143,12 +143,12 @@ export class Manager<
     if (!plugin.name) {
       plugin.name = `__runtime_plugin_${ids.runtime++}__`;
     }
-    this.plSys.useRefine(plugin);
+    this.pluginSystem.useRefine(plugin);
     return plugin as ManagerPlugin<T> & { name: string };
   }
 
   public remove(pluginName: string) {
-    this.plSys.remove(pluginName);
+    this.pluginSystem.remove(pluginName);
     return this;
   }
 
@@ -160,14 +160,14 @@ export class Manager<
       this.stopPlaying(INTERNAL_FLAG);
       this.startPlaying(INTERNAL_FLAG);
     }
-    this.plSys.lifecycle.updateOptions.emit(newOptions);
+    this.pluginSystem.lifecycle.updateOptions.emit(newOptions);
     return this;
   }
 
   public startPlaying(_flag?: Symbol) {
     if (this.isPlaying()) return this;
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.start.emit();
+      this.pluginSystem.lifecycle.start.emit();
     }
     const cycle = () => {
       this._renderTimer = setTimeout(cycle, this.options.interval);
@@ -184,7 +184,7 @@ export class Manager<
     }
     this._renderTimer = null;
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.stop.emit();
+      this.pluginSystem.lifecycle.stop.emit();
     }
     return this;
   }
@@ -225,7 +225,7 @@ export class Manager<
   ) {
     if (!this.canPush('facile')) {
       const { stash } = this.options.limits;
-      const hook = this.plSys.lifecycle.limitWarning;
+      const hook = this.pluginSystem.lifecycle.limitWarning;
       !hook.isEmpty()
         ? hook.emit('facile', stash)
         : console.warn(
@@ -237,7 +237,7 @@ export class Manager<
       console.warn('When you add a danmaku, the second parameter is invalid.');
     }
     this._engine.add(data, plugin, _unshift === INTERNAL_FLAG);
-    this.plSys.lifecycle.push.emit(data, 'facile', true);
+    this.pluginSystem.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
@@ -248,7 +248,7 @@ export class Manager<
     }
     if (!this.canPush('flexible')) {
       const { view } = this.options.limits;
-      const hook = this.plSys.lifecycle.limitWarning;
+      const hook = this.pluginSystem.lifecycle.limitWarning;
       !hook.isEmpty()
         ? hook.emit('flexible', view || 0)
         : console.warn(
@@ -259,15 +259,15 @@ export class Manager<
     const res = this._engine.renderFlexibleDanmaku(data, {
       ...options,
       statuses: this._internalStatuses,
-      danmakuPlugin: createDanmakuPlugin(this.plSys),
+      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
       hooks: {
-        finished: () => this.plSys.lifecycle.finished.emit(),
-        render: (val) => this.plSys.lifecycle.render.emit(val),
-        willRender: (val) => this.plSys.lifecycle.willRender.emit(val),
+        finished: () => this.pluginSystem.lifecycle.finished.emit(),
+        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
+        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
       },
     });
     if (res) {
-      this.plSys.lifecycle.push.emit(data, 'flexible', true);
+      this.pluginSystem.lifecycle.push.emit(data, 'flexible', true);
       return true;
     }
     return false;
@@ -382,11 +382,11 @@ export class Manager<
     if (!this.isPlaying()) return this;
     this._engine.renderFacileDanmaku({
       statuses: this._internalStatuses,
-      danmakuPlugin: createDanmakuPlugin(this.plSys),
+      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
       hooks: {
-        finished: () => this.plSys.lifecycle.finished.emit(),
-        render: (val) => this.plSys.lifecycle.render.emit(val),
-        willRender: (val) => this.plSys.lifecycle.willRender.emit(val),
+        finished: () => this.pluginSystem.lifecycle.finished.emit(),
+        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
+        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
       },
     });
     return this;
@@ -402,7 +402,7 @@ export class Manager<
         return;
       }
       this._internalStatuses.viewStatus = status;
-      this.plSys.lifecycle[status].emit();
+      this.pluginSystem.lifecycle[status].emit();
       this._engine
         .asyncEach((b) => {
           if (this._internalStatuses.viewStatus === status) {

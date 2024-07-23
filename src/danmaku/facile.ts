@@ -17,7 +17,7 @@ import type {
 
 // The declaration must be displayed,
 // otherwise a circular reference error will be reported.
-export type PlSys<D extends Danmaku<any>> = ReturnType<
+export type PluginSystem<D extends Danmaku<any>> = ReturnType<
   typeof createDanmakuLifeCycle<D>
 >;
 
@@ -48,7 +48,8 @@ export class FacileDanmaku<T> {
   public moveTimer: MoveTimer | null = null;
   public position: Position = { x: 0, y: 0 };
   public trackData: TrackData<T> | null = null;
-  public plSys: PlSys<Danmaku<T>> = createDanmakuLifeCycle<Danmaku<T>>();
+  public pluginSystem: PluginSystem<Danmaku<T>> =
+    createDanmakuLifeCycle<Danmaku<T>>();
   protected _internalStatuses: InternalStatuses;
   protected _initData: { width: number; duration: number };
 
@@ -91,12 +92,12 @@ export class FacileDanmaku<T> {
     if (!plugin.name) {
       plugin.name = `__facile_danmaku_plugin_${ids.danmu++}__`;
     }
-    this.plSys.useRefine(plugin);
+    this.pluginSystem.useRefine(plugin);
     return plugin as DanmakuPlugin<T> & { name: string };
   }
 
   public remove(pluginName: string) {
-    this.plSys.remove(pluginName);
+    this.pluginSystem.remove(pluginName);
   }
 
   public getHeight() {
@@ -119,7 +120,7 @@ export class FacileDanmaku<T> {
     this.setStyle('transitionDuration', '0ms');
     this.setStyle('transform', `translateX(${d * negative}px)`);
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.pause.emit(this);
+      this.pluginSystem.lifecycle.pause.emit(this);
     }
   }
 
@@ -136,7 +137,7 @@ export class FacileDanmaku<T> {
     this.setStyle('transitionDuration', `${remainingTime}ms`);
     this.setStyle('transform', `translateX(${cw * negative}px)`);
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.resume.emit(this);
+      this.pluginSystem.lifecycle.resume.emit(this);
     }
   }
 
@@ -144,7 +145,7 @@ export class FacileDanmaku<T> {
     this.setStyle('visibility', 'hidden');
     this.setStyle('pointerEvents', 'none');
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.hide.emit(this);
+      this.pluginSystem.lifecycle.hide.emit(this);
     }
   }
 
@@ -152,7 +153,7 @@ export class FacileDanmaku<T> {
     this.setStyle('visibility', 'visible');
     this.setStyle('pointerEvents', 'auto');
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.show.emit(this);
+      this.pluginSystem.lifecycle.show.emit(this);
     }
   }
 
@@ -164,7 +165,7 @@ export class FacileDanmaku<T> {
       this.moveTimer.clear();
       this.moveTimer = null;
     }
-    this.plSys.lifecycle.destroy.emit(this);
+    this.pluginSystem.lifecycle.destroy.emit(this);
     this.node = null;
   }
 
@@ -209,7 +210,7 @@ export class FacileDanmaku<T> {
     this.node = document.createElement('div');
     this.setStartStatus();
     (this.node as any).__danmaku__ = this;
-    this.plSys.lifecycle.createNode.emit(this);
+    this.pluginSystem.lifecycle.createNode.emit(this);
   }
 
   /**
@@ -218,7 +219,7 @@ export class FacileDanmaku<T> {
   public appendNode(container: HTMLElement) {
     if (!this.node || this.node.parentNode === container) return;
     container.appendChild(this.node);
-    this.plSys.lifecycle.appendNode.emit(this);
+    this.pluginSystem.lifecycle.appendNode.emit(this);
   }
 
   /**
@@ -230,7 +231,7 @@ export class FacileDanmaku<T> {
     if (!parentNode) return;
     parentNode.removeChild(this.node);
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.removeNode.emit(this);
+      this.pluginSystem.lifecycle.removeNode.emit(this);
     }
   }
 
@@ -263,11 +264,11 @@ export class FacileDanmaku<T> {
       }
       this.moving = true;
       this.recorder.startTime = now();
-      this.plSys.lifecycle.moveStart.emit(this);
+      this.pluginSystem.lifecycle.moveStart.emit(this);
       whenTransitionEnds(this.node).then(() => {
         this.moving = false;
         this.isEnded = true;
-        this.plSys.lifecycle.moveEnd.emit(this);
+        this.pluginSystem.lifecycle.moveEnd.emit(this);
         resolve();
       });
     });

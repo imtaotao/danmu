@@ -21,12 +21,12 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     if (!plugin.name) {
       (plugin as any).name = `__flexible_danmaku_plugin_${ids.danmu++}__`;
     }
-    this.plSys.useRefine(plugin);
+    this.pluginSystem.useRefine(plugin);
     return plugin as DanmakuPlugin<T> & { name: string };
   }
 
   public remove(pluginName: string) {
-    this.plSys.remove(pluginName);
+    this.pluginSystem.remove(pluginName);
   }
 
   public pause(_flag?: Symbol) {
@@ -47,7 +47,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       );
     }
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.pause.emit(this);
+      this.pluginSystem.lifecycle.pause.emit(this);
     }
   }
 
@@ -80,7 +80,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       );
     }
     if (_flag !== INTERNAL_FLAG) {
-      this.plSys.lifecycle.resume.emit(this);
+      this.pluginSystem.lifecycle.resume.emit(this);
     }
   }
 
@@ -115,13 +115,13 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
           this.moveTimer.clear();
           this.moveTimer = null;
         }
-        this.plSys.lifecycle.moveEnd.emit(this);
+        this.pluginSystem.lifecycle.moveEnd.emit(this);
         resolve();
       };
 
       this.moving = true;
       this.recorder.startTime = now();
-      this.plSys.lifecycle.moveStart.emit(this);
+      this.pluginSystem.lifecycle.moveStart.emit(this);
 
       if (this.direction === 'none') {
         let timer: number | null = setTimeout(onEnd, this.actualDuration());
