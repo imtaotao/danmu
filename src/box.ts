@@ -68,14 +68,14 @@ export class Box {
    * @internal
    */
   public _format() {
-    const { _size } = this;
+    const { _size, node } = this;
     const w = _size.x.end - _size.x.start;
     const h = _size.y.end - _size.y.start;
     this.setStyle('width', `${w * 100}%`);
     this.setStyle('height', `${h * 100}%`);
     this.setStyle('left', `${_size.x.start * 100}%`);
     this.setStyle('top', `${_size.y.start * 100}%`);
-    const styles = getComputedStyle(this.node);
+    const styles = getComputedStyle(node);
     this.width = toNumber(styles.width);
     this.height = toNumber(styles.height);
   }
