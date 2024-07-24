@@ -3,6 +3,7 @@ import type { Box } from '../box';
 import { createDanmakuLifeCycle } from '../lifeCycle';
 import { ids, nextFrame, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
+  StyleKey,
   PushData,
   Position,
   MoveTimer,
@@ -156,6 +157,9 @@ export class FacileDanmaku<T> {
         resolve();
         return;
       }
+      for (const key in this._internalStatuses.styles) {
+        this.setStyle(key as StyleKey, this._internalStatuses.styles[key]);
+      }
       const w = this.getWidth();
       const cw = this._options.box.width + w;
       const negative = this.direction === 'left' ? 1 : -1;
@@ -163,7 +167,6 @@ export class FacileDanmaku<T> {
       this._internalStatuses.viewStatus === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
-      this.setStyle('opacity', String(this._internalStatuses.opacity));
       this.setStyle('transform', `translateX(${negative * cw}px)`);
       this.setStyle(
         'transition',
@@ -372,9 +375,7 @@ export class FacileDanmaku<T> {
     this.node = null;
   }
 
-  public setStyle<
-    T extends keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>,
-  >(key: T, val: CSSStyleDeclaration[T]) {
+  public setStyle<T extends StyleKey>(key: T, val: CSSStyleDeclaration[T]) {
     if (!this.node) return;
     this.node.style[key] = val;
   }

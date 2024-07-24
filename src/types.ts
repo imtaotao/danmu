@@ -14,6 +14,8 @@ export type Layer<T> = StashData<T> | FacileDanmaku<T>;
 
 export type Danmaku<T> = FacileDanmaku<T> | FlexibleDanmaku<T>;
 
+export type StyleKey = keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>;
+
 export type FilterCallback<T> = EachCallback<T>;
 
 export type EachCallback<T> = (
@@ -35,8 +37,8 @@ export type DanmakuPlugin<T> = RefinePlugin<
 
 export type InternalStatuses = {
   freeze: boolean;
-  opacity: number;
   viewStatus: 'hide' | 'show';
+  styles: Record<StyleKey, CSSStyleDeclaration[StyleKey]>;
 };
 
 export interface PushFlexOptions<T> {

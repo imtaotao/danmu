@@ -57,7 +57,7 @@ export class Engine<T> {
     processor: (ls) => ls.forEach((d) => d.destroy()),
   });
 
-  public constructor(public options: EngineOptions) {}
+  public constructor(private _options: EngineOptions) {}
 
   public n(attr: 'height' | 'width', val: number | string) {
     let n =
@@ -93,9 +93,9 @@ export class Engine<T> {
   }
 
   public updateOptions(newOptions: Partial<EngineOptions>) {
-    this.options = Object.assign(this.options, newOptions);
+    this._options = Object.assign(this._options, newOptions);
     if (hasOwn(newOptions, 'gap')) {
-      this.options.gap = this.n('width', this.options.gap);
+      this._options.gap = this.n('width', this._options.gap);
     }
     if (hasOwn(newOptions, 'trackHeight')) {
       this.format();
@@ -161,8 +161,8 @@ export class Engine<T> {
     const { width, height } = this.box;
     // Need to format the container first
     this.box._format();
-    const { gap, trackHeight } = this.options;
-    this.options.gap = this.n('width', gap);
+    const { gap, trackHeight } = this._options;
+    this._options.gap = this.n('width', gap);
     const h = this.n('height', trackHeight);
 
     if (h <= 0) {
@@ -252,7 +252,7 @@ export class Engine<T> {
       type: 'flexible',
     });
 
-    if (this.options.rate > 0 && prevent !== true) {
+    if (this._options.rate > 0 && prevent !== true) {
       const setup = () => {
         d._createNode();
         this._sets.flexible.add(d as FlexibleDanmaku<T>);
@@ -287,7 +287,7 @@ export class Engine<T> {
     statuses,
     danmakuPlugin,
   }: RenderOptions<T>) {
-    const { mode, limits } = this.options;
+    const { mode, limits } = this._options;
 
     const launch = () => {
       const num = this.len();
@@ -346,7 +346,7 @@ export class Engine<T> {
     // When the rate is less than or equal to 0,
     // the bullet comment will never move, but it will be rendered,
     // so just don't render it here.
-    if (this.options.rate > 0 && prevent !== true) {
+    if (this._options.rate > 0 && prevent !== true) {
       // First createNode, users may add styles
       d._createNode();
       d._appendNode(this.box.node);
@@ -400,7 +400,7 @@ export class Engine<T> {
           resolve(true);
           return;
         }
-        const { mode, times } = this.options;
+        const { mode, times } = this._options;
         if (mode !== 'none' && cur.type === 'facile') {
           assert(cur.trackData, 'Danmaku missing "trackData"');
           const prev = this._last(cur.trackData.list, 1);
@@ -444,8 +444,8 @@ export class Engine<T> {
       duration: 0,
       box: this.box,
       internalStatuses,
-      rate: this.options.rate,
-      direction: this.options.direction as Direction,
+      rate: this._options.rate,
+      direction: this._options.direction as Direction,
       delInTrack: (b: Danmaku<T>) => {
         remove(this._sets.view, b);
         type === 'facile'
@@ -485,7 +485,7 @@ export class Engine<T> {
   }
 
   private _randomDuration() {
-    const t = random(...this.options.times);
+    const t = random(...this._options.times);
     assert(t > 0, `Invalid move time "${t}"`);
     return t;
   }
@@ -514,7 +514,7 @@ export class Engine<T> {
     prev?: TrackData<T>,
   ): TrackData<T> | null {
     if (this.rows === 0) return null;
-    const { gap, mode } = this.options;
+    const { gap, mode } = this._options;
     if (founds.size === this._tracks.length) {
       return mode === 'adaptive' ? prev! : null;
     }
@@ -546,7 +546,7 @@ export class Engine<T> {
 
     const cw = cur.getWidth();
     const pw = prv.getWidth();
-    const { gap } = this.options;
+    const { gap } = this._options;
     const distance = prv._getMoveDistance() - cw - pw - (gap as number);
     const collisionTime = distance / acceleration;
     if (collisionTime >= cur.duration) return null;

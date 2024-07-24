@@ -1,7 +1,7 @@
 import { now } from 'aidly';
 import { FacileDanmaku, FacileOptions } from './facile';
 import { ids, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
-import type { Position, DanmakuType, DanmakuPlugin } from '../types';
+import type { StyleKey, Position, DanmakuType, DanmakuPlugin } from '../types';
 
 export interface FlexibleOptions<T> extends FacileOptions<T> {
   position?: Position;
@@ -50,7 +50,9 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
         this.pluginSystem.lifecycle.moveEnd.emit(this);
         resolve();
       };
-
+      for (const key in this._internalStatuses.styles) {
+        this.setStyle(key as StyleKey, this._internalStatuses.styles[key]);
+      }
       this.moving = true;
       this.recorder.startTime = now();
       this.pluginSystem.lifecycle.moveStart.emit(this);
@@ -90,7 +92,6 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     this.setStyle('transform', '');
     this.setStyle('transition', '');
     this.setStyle('position', 'absolute');
-    this.setStyle('opacity', String(this._internalStatuses.opacity));
     this.setStyle(
       'transform',
       `translateX(${this.position.x}px) translateY(${this.position.y}px)`,

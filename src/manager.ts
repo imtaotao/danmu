@@ -9,6 +9,7 @@ import type {
   Danmaku,
   DanmakuType,
   DanmakuPlugin,
+  StyleKey,
   PushData,
   Direction,
   AreaOptions,
@@ -39,9 +40,10 @@ export class Manager<
 
   public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
-    this._internalStatuses.opacity = 1;
     this._internalStatuses.freeze = false;
     this._internalStatuses.viewStatus = 'show';
+    this._internalStatuses.styles = Object.create(null);
+    this._internalStatuses.styles.opacity = '';
     this.pluginSystem.lifecycle.init.emit(this);
   }
 
@@ -304,7 +306,7 @@ export class Manager<
   }
 
   public updateOccludedUrl(url?: string | null, el?: HTMLElement | null) {
-    const setStyle = (
+    const set = (
       key: 'maskSize' | 'maskImage' | 'webkitMaskSize' | 'webkitMaskImage',
       val: string,
     ) => {
@@ -316,13 +318,13 @@ export class Manager<
     };
     if (url) {
       assert(typeof url === 'string', 'The url must be a string');
-      setStyle('maskImage', `url("${url}")`);
-      setStyle('webkitMaskImage', `url("${url}")`);
-      setStyle('maskSize', 'cover');
-      setStyle('webkitMaskSize', 'cover');
+      set('maskImage', `url("${url}")`);
+      set('webkitMaskImage', `url("${url}")`);
+      set('maskSize', 'cover');
+      set('webkitMaskSize', 'cover');
     } else {
-      setStyle('maskImage', 'none');
-      setStyle('webkitMaskImage', 'none');
+      set('maskImage', 'none');
+      set('webkitMaskImage', 'none');
     }
     return this;
   }
@@ -358,18 +360,29 @@ export class Manager<
     return this;
   }
 
-  public setOpacity(opacity: number) {
-    if (opacity < 0) opacity = 0;
-    else if (opacity > 1) opacity = 1;
-    if (opacity !== this._internalStatuses.opacity) {
-      this._internalStatuses.opacity = opacity;
+  public setStyle<T extends StyleKey>(key: T, val: CSSStyleDeclaration[T]) {
+    const { styles } = this._internalStatuses;
+    if (styles[key] !== val) {
+      styles[key] = val;
       this._engine.asyncEach((b) => {
         if (b.moving) {
-          b.setStyle('opacity', String(opacity));
+          b.setStyle(key, val);
         }
       });
     }
     return this;
+  }
+
+  public setOpacity(opacity: number | string) {
+    if (typeof opacity === 'string') {
+      opacity = Number(opacity);
+    }
+    if (opacity < 0) {
+      opacity = 0;
+    } else if (opacity > 1) {
+      opacity = 1;
+    }
+    return this.setStyle('opacity', String(opacity));
   }
 
   public setLimits({ view, stash }: { view?: number; stash?: number }) {
