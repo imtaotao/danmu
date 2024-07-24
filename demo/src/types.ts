@@ -4,6 +4,5 @@ export interface DanmakuValue {
 }
 
 export type Statuses = {
-  opacity: string;
   background: string;
 };

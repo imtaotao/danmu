@@ -23,8 +23,20 @@ export const DanmakuBox = ({
   const [open, setOpen] = useState(false);
 
   danmaku.use({
-    pause: () => setOpen(true),
-    resume: () => setOpen(false),
+    pause() {
+      setOpen(true);
+    },
+    resume() {
+      setOpen(false);
+    },
+    moveStart(b) {
+      for (const key in manager.statuses) {
+        b.setStyle(
+          key as keyof Statuses,
+          manager.statuses[key as keyof Statuses],
+        );
+      }
+    },
   });
 
   return (
