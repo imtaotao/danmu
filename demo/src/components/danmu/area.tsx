@@ -2,6 +2,7 @@ import { useEffect, useRef, memo } from 'react';
 import { Maximize } from 'lucide-react';
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
+import githubLogo from '@/assets/github.svg';
 
 export const Area = memo(({ manager }: { manager: Manager<DanmakuValue> }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,6 +24,17 @@ export const Area = memo(({ manager }: { manager: Manager<DanmakuValue> }) => {
 
   return (
     <div ref={ref} id="AreaContainer" className="w-full h-full relative">
+      <a
+        className="block w-[30px]"
+        target="_blank"
+        href="https://github.com/imtaotao/danmu"
+      >
+        <img
+          src={githubLogo}
+          alt="github logo"
+          className="w-[30px] h-[30px] absolute z-10 right-2"
+        />
+      </a>
       <Maximize
         color="#000"
         strokeWidth={3}

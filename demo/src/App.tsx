@@ -1,6 +1,5 @@
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
-import githubLogo from '@/assets/github.svg';
 import { Area } from '@/components/danmu/area';
 import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/sidebar/index';
@@ -11,17 +10,6 @@ export function App({ manager }: { manager: Manager<DanmakuValue> }) {
     <div className="w-full bg-slate-200">
       <div className="p-3 h-screen flex text-slate-600">
         <div className="min-w-96 w-96 mr-2 px-4 py-3 border-slate-400 border-indigo-500/50 rounded-sm bg-slate-300">
-          <a
-            className="block w-[30px]"
-            target="_blank"
-            href="https://github.com/imtaotao/danmu"
-          >
-            <img
-              src={githubLogo}
-              alt="github logo"
-              className="w-[30px] h-[30px] mb-4"
-            />
-          </a>
           <Sidebar manager={manager} />
         </div>
         <div className="w-full flex flex-col">

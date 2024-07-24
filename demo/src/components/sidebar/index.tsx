@@ -7,7 +7,6 @@ import { SidebarAreaY } from '@/components/sidebar/sidebarAreaY';
 import { SidebarFreeze } from '@/components/sidebar/sidebarFreeze';
 import { SidebarOpacity } from '@/components/sidebar/sidebarOpacity';
 import { SidebarNumbers } from '@/components/sidebar/sidebarNumbers';
-import { SidebarButtons } from '@/components/sidebar/sidebarButtons';
 import { SidebarDirection } from '@/components/sidebar/sidebarDirection';
 import { SidebarFrequency } from '@/components/sidebar/sidebarFrequency';
 import { SidebarMoveTimes } from '@/components/sidebar/sidebarMoveTimes';
@@ -33,7 +32,6 @@ export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
       <SidebarShowAndHide manager={manager} />
       <SidebarStartAndStop manager={manager} />
       <SidebarNumbers manager={manager} />
-      <SidebarButtons manager={manager} />
     </>
   );
 };

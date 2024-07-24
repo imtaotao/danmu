@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { random, uuid } from 'aidly';
+import { uuid, random, randomColor } from 'aidly';
 import { Send, Pickaxe, CircleAlert } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
 import type { DanmakuValue } from '@/types';
@@ -71,7 +71,19 @@ export const Transmitter = ({
         onChange={(e) => setContent(e.target.value)}
       />
       <div className="flex items-center justify-end">
+        <Button onClick={() => manager.clear()}>清空弹幕</Button>
         <Button
+          className="ml-4"
+          onClick={() => {
+            const color = `#${randomColor('hex')}`;
+            manager.statuses['background'] = color;
+            manager.asyncEach((b) => b.setStyle('background', color));
+          }}
+        >
+          随机颜色
+        </Button>
+        <Button
+          className="ml-4"
           onClick={() => {
             if (!content) return tip();
             setOpen(true);
