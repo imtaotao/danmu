@@ -27,6 +27,7 @@
     "prepare": "husky",
     "demo:dev": "cd demo && pnpm run dev",
     "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
+    "docs:dev": "cd website && pnpm run docs:dev",
     "core:dev": "rollup --config --environment BUILD:development",
     "core:build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "format": "prettier --write --parser typescript \"(src|dist|demo)/**/*.((m)?js|ts?(x))\""
