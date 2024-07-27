@@ -64,10 +64,10 @@ export class Engine<T> {
       typeof val === 'number'
         ? val
         : typeof val === 'string'
-        ? val.endsWith('%')
-          ? this.box[attr] * (toNumber(val) / 100)
-          : toNumber(val)
-        : NaN;
+          ? val.endsWith('%')
+            ? this.box[attr] * (toNumber(val) / 100)
+            : toNumber(val)
+          : NaN;
     if (n > this.box[attr]) n = this.box[attr];
     assert(!Number.isNaN(n), `Invalid "${n}: ${val}"`);
     return n;

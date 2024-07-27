@@ -1,0 +1,34 @@
+---
+title: Danmaku 🌘 Collision detection, highly customized danmu screen styles, you deserve it
+description: A powerful and flexible danmaku framework
+template: splash
+editUrl: false
+hero:
+  title: 强大灵活且高度可扩展的弹幕框架
+  tagline: Danmaku 是一个用来管理，渲染，发送弹幕的框架，覆盖了很多业务场景，并且提供了好用的扩展方式。
+  image:
+    file: ../../assets/luna.svg
+  actions:
+    - text: 开始使用
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="多种渲染算法" icon="star">
+    默认提供了严格的碰撞检测算法，也提供了渐进式的碰撞检测算法，以及普通的全量实时渲染算法。
+  </Card>
+  <Card title="丰富的 API" icon="open-book">
+    提供了很多业务场景需要的 api，最大程度的简化开发方式。
+  </Card>
+  <Card title="样式高度可扩展" icon="rocket">
+    弹幕的渲染层由 CSS 提供，可以绘制任何适用 DOM 的弹幕需求，样式规则完全复用
+    CSS，没有额外的学习成本。
+  </Card>
+  <Card title="内核插件化" icon="twitch">
+    我们提供了丰富的钩子，这允许你方便的开发插件来满足更加定制化的需求，这是非常强大的能力。
+  </Card>
+</CardGrid>

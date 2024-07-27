@@ -1,6 +1,6 @@
 .DS_Store
 .vscode
 dist
-cache
+.astro
 node_modules
 tsconfig.tsbuildinfo

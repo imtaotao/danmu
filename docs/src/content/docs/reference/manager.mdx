@@ -1,0 +1,31 @@
+---
+title: Manager 实例
+description: An reference of all available Lunaria runtime functions.
+sidebar:
+  order: 1
+---
+
+Lunaria can also be used outside of its build process, allowing for integrations and other use cases through its available runtime functions.
+
+:::caution
+Lunaria exports more runtime functions than currently documented. Their behavior, as well as support is not guaranteed during public beta.
+:::
+
+## `lunaria()`
+
+The `lunaria()` function is a way to get Lunaria's localization status during runtime. It will validate the configuration, clone your git history (if used in a shallow repository), and return a Promise of your localization status array.
+
+```ts title="example-usage.ts"
+import { lunaria } from '@lunariajs/core';
+
+const config = {
+  // your Lunaria configuration
+  // ...
+};
+
+const status = await lunaria(config);
+```
+
+:::tip
+You can see an example of how this function is used in the [Astro Docs' Translation Tuesday Bot](https://github.com/withastro/docs/blob/main/scripts/tuesday-bot.ts#L10).
+:::

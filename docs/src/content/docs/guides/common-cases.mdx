@@ -1,0 +1,209 @@
+---
+title: 常用 Case
+description: Learn how tracking works and how to track content in Lunaria.
+sidebar:
+  order: 1
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Lunaria implements a unique localization tracking system powered by Git. This guide explains how it works, how to manipulate it, and all its associated features.
+
+## How it works
+
+To track changes, Lunaria uses the repository's git history to compare the latest **major** commit date from the source and localized version of a file. If the localization has been last changed after the source, then it is considered up-to-date. Otherwise, it is considered outdated.
+
+A "major commit" is the name given to a commit that has significant content changes. When a major commit is merged into the tracked branch, it will trigger status changes on Lunaria. Those are predictable, and can only be one of the following:
+
+- The source content was changed, marking localizations as outdated.
+- A localization was updated, marking it as done.
+
+By default, every commit is considered _major_, and to allow for certain commits to not be considered, Lunaria offers a few ways to [manipulate status changes](#manipulating-status-changes).
+
+## Set up tracking
+
+To add files to Lunaria's tracking system, you need to add the `files` field to your `lunaria.config.json` file. It will receive an array of [objects of the `File` type](/reference/configuration/#file), like the following example:
+
+```json title="lunaria.config.json" add={2-8}
+{
+  "files": [
+    {
+      "location": "src/content/docs/**/*.md",
+      "pattern": "src/content/docs/@lang/@path",
+      "type": "universal"
+    }
+  ]
+}
+```
+
+In this example, Lunaria will track all Markdown files within the `src/content/docs` directory and its subdirectories. More entries can be added to `files` to track different sets of files differently or to better organize them in the generated dashboard since the order in the array will be respected.
+
+Read further to understand how all of these fields work.
+
+### `location`
+
+The `location` field expects a [glob pattern](<https://en.wikipedia.org/wiki/Glob_(programming)>) string that matches all of the desired files to be tracked within all locales.
+
+Lunaria's glob patterns are powered by [micromatch](https://github.com/micromatch/micromatch), and although it's not the place for this documentation to explain glob patterns, here are a few common snippets that you can find useful to know:
+
+- `**/*.md`: Matches all `.md` files on the directory and its subdirectories.
+- `*.md`: Matches all `.md` files on the directory.
+- `**/*.{md,mdx}`: Matches all `.md` and `.mdx` files on the directory and its subdirectories.
+- `**/!(index).md`: Matches all `.md` files on the directory and its subdirectories, except for the `index.md` file.
+
+### `pattern`
+
+The `pattern` field expects a [path-to-regexp](https://github.com/pillarjs/path-to-regexp) string that will be used to extract the shared path of files and infer their relation. Lunaria adds the `@lang` and `@path` placeholders to help you indicate where the locale and the rest of the path should be added in.
+
+In very few cases, `@lang` and `@path` might not correctly represent your project's file structure. Internally, these placeholders are replaced with slightly opinionated `:lang` and `:path` path parameters. You can also use these parameters instead of placeholders, tweaking them with [prefixes, suffixes, and/or modifiers](https://github.com/pillarjs/path-to-regexp#parameters) to match your project's file structure.
+
+For example, to support Nextra's rather unique i18n file structure, you could use the following pattern using `:path+` instead of `@path`:
+
+```json title="lunaria.config.json" mark={5}
+{
+  "files": [
+    {
+      "location": "pages/**/*.mdx",
+      "pattern": "pages/:path+.@lang.mdx",
+      "type": "universal"
+    }
+  ]
+}
+```
+
+### `type`
+
+The `type` field determines how these files will be treated by Lunaria. Different types can change and augment how files are displayed in the dashboard, have different requirements (e.g. supported file types), and how their outdated/done status is calculated.
+
+For more information, read the available types in the [file types section of the configuration reference](/reference/configuration/#file-types).
+
+### `ignore`
+
+Optionally, the `ignore` field can be added to exclude specific files from tracking. It expects an array of [glob pattern](<https://en.wikipedia.org/wiki/Glob_(programming)>) strings that match all of the files to be ignored, for example:
+
+```json title="lunaria.config.json" add={7}
+{
+  "files": [
+    {
+      "location": "src/content/docs/**/*.md",
+      "pattern": "src/content/docs/@lang/@path",
+      "type": "universal",
+      "ignore": ["src/content/docs/**/old.md"]
+    }
+  ]
+}
+```
+
+## Granularly enabling files for localization
+
+You may wish to only enable certain files for localization, e.g. only files that have been in the source locale for more than a week, or that aren't expecting to be restructured soon.
+
+One way of doing so would be to exclude specific files with the [`ignore`](#ignore) field, but this would require you to manually update the configuration file every time a file is ready for localization.
+
+Instead, you can use the [`localizableProperty`](/reference/configuration/#localizableproperty) available to files that accept frontmatter metadata (e.g. Markdown, MDX, YAML). Every file where the property is `true` will be added to the dashboard, and omitted otherwise:
+
+<Steps>
+1. Add the [`localizableProperty`](/reference/configuration/#localizableproperty) field to your `lunaria.config.json` file, with the name of the frontmatter property that will be used to enable localization:
+
+    ```json title="lunaria.config.json" add={2}
+    {
+      "localizableProperty": "isLocalizable"
+    }
+    ```
+
+2.  Add the frontmatter property to the files you want to enable for localization with the value `true`:
+
+        ```mdx title="my-page.mdx" mark={3}
+        ---
+        title: My page
+        isLocalizable: true
+        ---
+
+        # My MDX page
+        ```
+
+    </Steps>
+
+## Manipulating status changes
+
+In a few cases, it might be relevant to intervene in the tracking system to prevent undesired status changes from happening.
+
+This is helpful when there are changes that shouldn't mark localizations as outdated, like typo fixes in the source content, or when a change shouldn't mark a localization as done, like updating a broken link in an otherwise outdated localization.
+
+### Ignoring commits
+
+To ignore all changes within a commit, you can add a [`ignoreKeyword`](/reference/configuration/#ignorekeywords) to your commit or pull request's title (when squash merging). By default, the keywords `fix typo` and `lunaria-ignore` will be ignored.
+
+For example, the following commit title would be ignored:
+
+```plaintext
+[lunaria-ignore] Format localization files
+```
+
+On the other hand, the following commit title would trigger status changes:
+
+```plaintext
+Add a new section on `getting-started.mdx` file
+```
+
+Different `ignoreKeywords` can be added, overriding the default ones:
+
+<Steps>
+1. Add the `ignoreKeywords` field to your `lunaria.config.json` file, with an array of keywords to be ignored:
+
+    ```json title="lunaria.config.json" add={2}
+    {
+      "ignoreKeywords": ["@ignore", "[ci]", "[format]"]
+    }
+    ```
+
+</Steps>
+
+The `ignoreKeywords` feature can also be disabled completely:
+
+<Steps>
+1. Add the `ignoreKeywords` field to your `lunaria.config.json` file, with an empty array:
+
+    ```json title="lunaria.config.json" add={2}
+    {
+      "ignoreKeywords": []
+    }
+    ```
+
+</Steps>
+
+:::tip
+Noticing when a commit will be ignored can be tricky. To simplify this, it's recommended to use [squashed merged commits](/recommendations#prefer-squashed-merge-commits) so all commits in a pull request will be considered as one.
+
+Also, the official [Lunaria GitHub Action](/integrations/github-action/) will assist you by commenting on pull requests and warning you when a pull request's title includes an ignored keyword.
+:::
+
+### Triggering changes per-file
+
+Sometimes, a commit might include both changes that should trigger status changes and changes that shouldn't, especially when there are circular references between files that need to be in the same pull request to avoid errors. When that's the case, your best option is to use a tracker directive.
+
+A tracker directive is a custom syntax added to a commit's description with a list of files or globs separated with `;` that will be considered by the tracker directive:
+
+```plaintext
+@lunaria-ignore:docs/en/first.mdx;docs/ja/second.mdx;docs/**/third.mdx
+```
+
+#### `@lunaria-track`
+
+The `@lunaria-track` directive will track the changes of all the listed files, and ignore all the ones that weren't on the same commit.
+
+**Example:**
+
+```
+@lunaria-track:src/content/docs/en/**.mdx
+```
+
+#### `@lunaria-ignore`
+
+The `@lunaria-ignore` directive will ignore the changes of all the listed files, and track all the ones that weren't on the same commit.
+
+**Example:**
+
+```
+@lunaria-ignorek:src/content/docs/ja/**.mdx
+```

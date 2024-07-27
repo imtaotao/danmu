@@ -1,0 +1,93 @@
+---
+title: Danmaku 实例
+description: An reference of all available Lunaria renderer configuration options.
+sidebar:
+  order: 2
+---
+
+Lunaria allows for slotting and overriding content into your generated dashboard. This reference covers all the available renderer options.
+
+```ts title="renderer.config.ts"
+import { defineRendererConfig } from '@lunariajs/core';
+
+export default defineRendererConfig({
+  // your configuration options go here...
+});
+```
+
+:::tip
+For your renderer configuration to be applied, don't forget to fill the [`renderer`](/reference/configuration/#renderer) field of your `lunaria.config.json` file.
+:::
+
+## Components
+
+Lunaria comes with a built-in `html` tagged template literal to allow for a better component authoring experience.
+
+```ts title="renderer.config.ts"
+import { defineRendererConfig, html } from '@lunariajs/core';
+
+export default defineRendererConfig({
+  slots: {
+    afterTitle: () => html`<p>This is a example component!</p>`,
+  },
+});
+```
+
+Syntax highlighting and language support is available through the [lit-html VSCode extension](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) and the [vim-jsx-pretty plugin](https://github.com/MaxMEllon/vim-jsx-pretty).
+
+## Top-level Options
+
+### slots
+
+**Type: [`Slots`](#slots-1)**
+
+```ts
+export default defineRendererConfig({
+  slots: {
+    head: (config) => html`<meta name="robots" content="noindex" />`,
+    beforeTitle: (config) => html`<p>Example component</p>`,
+    afterTitle: (config) => html`<p>Example component</p>`,
+    afterStatusByLocale: (config) => html`<p>Example component</p>`,
+    afterStatusByFile: (config) => html`<p>Example component</p>`,
+  },
+});
+```
+
+#### `Slots`
+
+```ts
+type Slots = {
+  head?: (config: LunariaConfig) => string;
+  beforeTitle?: (config: LunariaConfig) => string;
+  afterTitle?: (config: LunariaConfig) => string;
+  afterStatusByLocale?: (config: LunariaConfig) => string;
+  afterStatusByFile?: (config: LunariaConfig) => string;
+};
+```
+
+### overrides
+
+**Type: [`Overrides`](#overrides-1)**
+
+```ts
+export default defineRendererConfig({
+  overrides: {
+    meta: (config) => html`<meta name="robots" content="noindex" />`,
+    body: (config, status) => html`<main>Example component</main>`,
+    statusByLocale: (config, status) => html`<p>Example component</p>`,
+    statusByFile: (config, status) => html`<p>Example component</p>`,
+  },
+});
+```
+
+#### `Overrides`
+
+{/* prettier-ignore */}
+```ts
+type Overrides = {
+	meta?: (config: LunariaConfig) => string;
+	body?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
+	statusByLocale?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
+	statusByFile?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
+};
+```

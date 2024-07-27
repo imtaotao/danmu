@@ -1,0 +1,377 @@
+---
+title: 配置
+description: An reference of all available Lunaria configuration options.
+sidebar:
+  order: 0
+---
+
+Lunaria allows for extensive customization of its default behavior. This reference covers all the available options in a `lunaria.config.json` file.
+
+```json title="lunaria.config.json"
+{
+  " $schema": "./node_modules/@lunariajs/core/config.schema.json"
+}
+```
+
+## Top-level Options
+
+### repository (required)
+
+**Type: [`Repository`](#repository)**
+
+Configure your dashboard's displayed git hosting links. The expected properties are:
+
+- `name` — The unique name of your repository in the git hosting platform, e.g. `'yanthomasdev/lunaria'`.
+- `branch` — The name of your repository's branch tracked content, by default `'main'`.
+- `rootDir` — The root directory of the project if using a monorepo, e.g. `'docs'`.
+- `hosting` — The git hosting platform being used, e.g. `'github'` or `'gitlab'`.
+
+#### `Repository`
+
+```ts
+type Repository = {
+  name: string;
+  branch: string;
+  rootDir?: string;
+  hosting: 'github' | 'gitlab';
+};
+```
+
+### defaultLocale (required)
+
+**Type: `{ label: string; lang: string }`**
+
+Set the default locale of your project, where the source content is from.
+
+`label` is the display name of the locale (e.g. `"English"`), and `lang` is the [BCP-47 tag](https://datatracker.ietf.org/doc/html/rfc5646), or other identifying code of the locale used in the tracked file's path (e.g. `"en"`).
+
+```json
+{
+  "defaultLocale": {
+    "label": "English",
+    "lang": "en"
+  }
+}
+```
+
+### locales (required)
+
+**Type: `{ label: string; lang: string }[]`**
+
+Set all the locales for localization of your project. Its entries follow the same signature as [defaultLocale](#defaultlocale-required).
+
+```json
+{
+  "locales": [
+    {
+      "label": "Spanish",
+      "lang": "es"
+    },
+    {
+      "label": "Português",
+      "lang": "pt"
+    }
+  ]
+}
+```
+
+### files (required)
+
+**Type: [`File[]`](#file)**
+
+Configure your dashboard's tracked files.
+
+The order of the entries in `files` will be respected and displayed accordingly in the dashboard. Each entry must have the following properties:
+
+- `location` — a glob pattern of the file(s) to be tracked, e.g. `'src/content/docs/**/*.mdx'`.
+- `ignore` — an array of glob patterns to be ignored from being tracked, defaults to `['node_modules']`.
+- `pattern` — a [path-to-regexp pattern](https://github.com/pillarjs/path-to-regexp) of the file(s) paths, e.g. `'src/content/docs/@lang/@path'` (`@lang` and `@path` are custom syntax provided by Lunaria, in more complex cases can be changed for normal `:lang` and `:path` parameters).
+
+#### File types
+
+Each entry in `files` has to include a `type`, changing how the tracking system works, the way the files are displayed in the dashboard, and adding new properties:
+
+##### `universal`
+
+The `universal` file type makes Lunaria track the file's status by the git history alone, while also accepting any file extension.
+
+```json {6}
+{
+  "files": [
+    {
+      "location": "**/*.md",
+      "pattern": "@lang/@path",
+      "type": "universal"
+    }
+  ]
+}
+```
+
+##### `dictionary`
+
+Alongside the normal git history tracking, the `dictionary` file type makes Lunaria check for key completion: each key in a source dictionary has to be present in the localizations to be marked as done.
+
+The following file extensions are supported: `json`, `yml`, `md`, `markdown`, `mdx`, `mdoc`, `js`, `cjs`, `mjs`, `ts`, `cts`, `mts`.
+
+If any keys are missing in localizations, the dashboard's details for that locale will include a collapsible list of the missing keys for it to be considered done.
+
+You can make keys optional (they don't need to be included for a localization to be considered done) in the additional `optionalKeys` property. Each `optionalKeys` key is a shared path with an array of dictionary keys to be considered optional.
+
+```json {6-10}
+{
+  "files": [
+    {
+      "location": "ui/**/*.{json,yml}",
+      "pattern": "ui/@lang/@path",
+      "type": "dictionary",
+      "optionalKeys": {
+        "ui/nav.json": ["footer", "sidebar"],
+        "ui/ui.yml": ["search"]
+      }
+    }
+  ]
+}
+```
+
+#### `File`
+
+```ts
+type File = {
+  location: string;
+  ignore: string[];
+  pattern: string;
+} & (
+  | { type: 'universal' }
+  | { type: 'dictionary'; optionalKeys?: Record<string, string[]> }
+);
+```
+
+### ignoreKeywords
+
+**Type: `string[]`**<br/>
+**Default: `['lunaria-ignore', 'fix typo']`**
+
+List of keywords in a commit's title for Lunaria to automatically ignore and don't trigger status changes. By default, any commits' title including `lunaria-ignore` or `fix typo` will be ignored.
+
+You can disable the feature by providing an empty array (`[]`), or override with your own keywords.
+
+```json
+{
+  "ignoreKeywords": ["i18nIgnore", "en-only"]
+}
+```
+
+### localizableProperty
+
+**Type: `string`**
+
+Name of a frontmatter property with boolean value determining if a file can be localized or not.
+
+Any files where the property is absent or found with a `false` will not be tracked, while the ones with `true` will, and in case a file was found with a non-boolean value, an error will be thrown.
+
+For files that do not support frontmatter, this option will be ignored and the file assumed to be localizable.
+
+This option is recommended when you use a file format that supports frontmatter metadata (e.g. Markdown, MDX, YAML) and you want to gradually make files available for localization. If you expect a specific file to never be localized, consider not tracking it in the first place.
+
+```json
+{
+  "localizableProperty": "readyForL10n"
+}
+```
+
+### outDir
+
+**Type: `string`**<br/>
+**Default: `'./dist/lunaria'`**
+
+Set the directory that `lunaria build` writes your final dashboard and status to.
+
+The expected value is a relative path from the project's root.
+
+```json
+{
+  "outDir": "./lunaria"
+}
+```
+
+### cloneDir
+
+**Type: `string`**<br/>
+**Default: `'./node_modules/.cache/lunaria/history'`**
+
+Set the directory that Lunaria will use to store your temporary git history when using a shallow repository.
+
+The expected value is a relative path from the project's root.
+
+```json
+{
+  "cloneDir": "./lunaria/history"
+}
+```
+
+### renderer
+
+**Type: `string`**
+
+Set the file path to a `.(c/m)js` or `.(c/m)ts` file with your dashboard renderer configuration.
+
+The expected value is a relative path from the project's root.
+
+```json
+{
+  "renderer": "./renderer.config.ts"
+}
+```
+
+## Dashboard Options
+
+### dashboard.title
+
+**Type: `string`**<br/>
+**Default: `'Localization Status'`**
+
+Defines the title of your dashboard, used in the dashboard's heading and meta tags.
+
+```json
+{
+  "dashboard": {
+    "title": "My Project's Localization Status"
+  }
+}
+```
+
+### dashboard.description
+
+**Type: `string`**<br/>
+**Default: `'Online localization status dashboard of the project'`**
+
+Defines the description of your dashboard, used in the dashboard's meta tags.
+
+```json
+{
+  "dashboard": {
+    "description": "The localization status dashboard of my project"
+  }
+}
+```
+
+### dashboard.site
+
+**Type: `string`**
+
+Defines the deployed URL of your dashboard, used in the dashboard's meta tags.
+
+```json
+{
+  "dashboard": {
+    "site": "https://localization.lunaria.dev/"
+  }
+}
+```
+
+### dashboard.basesToHide
+
+**Type: `string`**
+
+Array of path bases to be omitted from the generated dashboard's links.
+
+In contexts where the links to tracked files are deep in the directory structure, e.g. `src/content/docs/file.mdx`, it might be interesting to show more simplified link labels, e.g. `file.mdx`.
+
+```json
+{
+  "dashboard": {
+    "basesToHide": ["src/content/docs/"]
+  }
+}
+```
+
+### dashboard.customCss
+
+**Type: `string`**
+
+Array of relative paths to external `.css` files to inline into the dashboard.
+
+```json
+{
+  "dashboard": {
+    "customCss": ["./lunaria/css/theme.css", "./lunaria/css/custom.css"]
+  }
+}
+```
+
+### dashboard.favicon
+
+**Type: [`Favicon`](#favicon)**
+
+Defines the favicon(s) of your generated dashboard.
+
+`external` accepts an array of external favicons, with the following properties:
+
+- `link` — the URL of the external favicon, e.g. `'https://lunaria.dev/favicon.svg'`.
+- `type` — the [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) of the external resource, e.g. `'image/svg+xml'`.
+
+`inline` accepts an relative path to a `.svg` file that will be inlined into the dashboard, e.g. `'./lunaria/favicon.svg'`.
+
+```json
+{
+  "dashboard": {
+    "favicon": {
+      "external": [
+        {
+          "link": "https://lunaria.dev/favicon.svg",
+          "type": "image/svg+xml"
+        }
+      ],
+      "inline": "./lunaria/favicon.svg"
+    }
+  }
+}
+```
+
+#### `Favicon`
+
+```ts
+type Favicon = {
+  external?: { link: string; type: string }[];
+  inline?: string;
+};
+```
+
+### dashboard.ui
+
+**Type: `Record<string, string>`**
+
+Defines the UI strings of the dashboard. Specifically, the `lang` and `dir` keys refer to the HTML attributes of the same name used in the generated dashboard, while the other keys directly change the UI of the page.
+
+The following code sample contains all the keys of `dashboard.ui` and its default values:
+
+```json
+{
+  "dir": "ltr",
+  "lang": "en",
+  "status.emojiDone": "✔️",
+  "status.emojiMissing": "❌",
+  "status.emojiOutdated": "🔄",
+  "status.done": "done",
+  "status.missing": "missing",
+  "status.outdated": "outdated",
+  "statusByFile.heading": "Localization status by file",
+  "statusByFile.tableRowFile": "File",
+  "statusByFile.tableSummaryFormat": "{missing_emoji} {missing_word} &nbsp; {outdated_emoji} {outdated_word} &nbsp; {done_emoji} {done_word}",
+  "statusByLocale.completeLocalization": "This localization is complete, amazing job! 🎉",
+  "statusByLocale.createFileLink": "Create file",
+  "statusByLocale.detailsSummaryFormat": "{done_amount} {done_word}, {outdated_amount} {outdated_word}, {missing_amount} {missing_word}",
+  "statusByLocale.detailsTitleFormat": "{locale_name} ({locale_tag})",
+  "statusByLocale.heading": "Localization progress by locale",
+  "statusByLocale.outdatedLocalizationLink": "outdated localization",
+  "statusByLocale.sourceChangeHistoryLink": "source change history",
+  "statusByLocale.incompleteLocalizationLink": "incomplete localization",
+  "statusByLocale.missingKeys": "Missing keys"
+}
+```
+
+:::caution
+These strings accept arbitrary HTML entities and elements, be sure these do not result in malformatted HTML.
+:::
+
+A few UI string keys are suffixed with `Format`, these contain dynamically inserted text (sometimes from other UI strings) in curly braces, e.g. `{locale_name}`. You can change the order or omit these, depending on your needs.
