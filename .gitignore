@@ -1,5 +1,6 @@
 .DS_Store
 .vscode
 dist
+cache
 node_modules
 tsconfig.tsbuildinfo
