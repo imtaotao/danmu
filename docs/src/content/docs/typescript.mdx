@@ -20,7 +20,7 @@ const manager = create<{ content: string; img: string }>({
 });
 ```
 
-### 给 statuses 传递类型
+### 给 `statuses` 传递类型
 
 由于 `manager.statuses` 不会在内核中有任何工作，他仅仅是提供一个普通对象给用户记录状态使用的，所以默认类型为 `Record<PropertyKey, unknown>`，你也可以传递范型来改变他，具体的实例可以参考我们的 Demo。
 
@@ -33,7 +33,7 @@ const manager = create<string, { background: string }>();
 manager.statuses;
 ```
 
-### Danmaku 导出的类型声明
+### 默认导出的类型声明
 
 Danmaku 默认导出的一些类型，可以帮助你在业务代码编写中或者插件编写中提供一些帮助，以下是我们导出的类型。
 

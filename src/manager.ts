@@ -167,14 +167,14 @@ export class Manager<
     }
     this._engine.box._mount(this._container);
     this.format();
-    this.pluginSystem.lifecycle.mount.emit();
+    this.pluginSystem.lifecycle.mount.emit(this._container);
     return this;
   }
 
   public unmount() {
     this.box._unmount();
+    this.pluginSystem.lifecycle.unmount.emit(this._container);
     this._container = null;
-    this.pluginSystem.lifecycle.unmount.emit();
     return this;
   }
 
