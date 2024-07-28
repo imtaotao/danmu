@@ -6,8 +6,11 @@ import starlightBlog from 'starlight-blog';
 // https://astro.build/config
 export default defineConfig({
   integrations: [
+    // https://starlight.astro.build/zh-cn/reference/configuration/
     starlight({
       title: 'Danmaku',
+      lastUpdated: true,
+      defaultLocale: 'zh-CN',
       logo: {
         light: './src/assets/logo-light.svg',
         dark: './src/assets/logo-dark.svg',
@@ -15,6 +18,7 @@ export default defineConfig({
       },
       social: {
         github: 'https://github.com/imtaotao/danmu',
+        mastodon: 'https://imtaotao.github.io/danmu',
       },
       sidebar: [
         {
@@ -40,7 +44,7 @@ export default defineConfig({
         },
       ],
       customCss: ['./src/styles/theme.css', './src/styles/landing.css'],
-      plugins: [starlightLinksValidator(), starlightBlog()],
+      plugins: [starlightLinksValidator(), starlightBlog({ title: '博客' })],
     }),
   ],
 });
