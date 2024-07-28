@@ -5,7 +5,6 @@ sidebar:
   order: 1
 ---
 
-import { Steps } from '@astrojs/starlight/components';
 
 Lunaria implements a unique localization tracking system powered by Git. This guide explains how it works, how to manipulate it, and all its associated features.
 
@@ -102,27 +101,6 @@ One way of doing so would be to exclude specific files with the [`ignore`](#igno
 
 Instead, you can use the [`localizableProperty`](/reference/configuration/#localizableproperty) available to files that accept frontmatter metadata (e.g. Markdown, MDX, YAML). Every file where the property is `true` will be added to the dashboard, and omitted otherwise:
 
-<Steps>
-1. Add the [`localizableProperty`](/reference/configuration/#localizableproperty) field to your `lunaria.config.json` file, with the name of the frontmatter property that will be used to enable localization:
-
-    ```json title="lunaria.config.json" add={2}
-    {
-      "localizableProperty": "isLocalizable"
-    }
-    ```
-
-2.  Add the frontmatter property to the files you want to enable for localization with the value `true`:
-
-        ```mdx title="my-page.mdx" mark={3}
-        ---
-        title: My page
-        isLocalizable: true
-        ---
-
-        # My MDX page
-        ```
-
-</Steps>
 
 ## Manipulating status changes
 
@@ -148,29 +126,6 @@ Add a new section on `getting-started.mdx` file
 
 Different `ignoreKeywords` can be added, overriding the default ones:
 
-<Steps>
-1. Add the `ignoreKeywords` field to your `lunaria.config.json` file, with an array of keywords to be ignored:
-
-    ```json title="lunaria.config.json" add={2}
-    {
-      "ignoreKeywords": ["@ignore", "[ci]", "[format]"]
-    }
-    ```
-
-</Steps>
-
-The `ignoreKeywords` feature can also be disabled completely:
-
-<Steps>
-1. Add the `ignoreKeywords` field to your `lunaria.config.json` file, with an empty array:
-
-    ```json title="lunaria.config.json" add={2}
-    {
-      "ignoreKeywords": []
-    }
-    ```
-
-</Steps>
 
 :::tip
 Noticing when a commit will be ignored can be tricky. To simplify this, it's recommended to use [squashed merged commits](/recommendations#prefer-squashed-merge-commits) so all commits in a pull request will be considered as one.
