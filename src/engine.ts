@@ -33,7 +33,7 @@ export interface EngineOptions {
   gap: number | string;
   trackHeight: number | string;
   times: [number, number];
-  direction: Omit<Direction, 'none'>;
+  direction: Exclude<Direction, 'none'>;
   limits: {
     view?: number;
     stash: number;

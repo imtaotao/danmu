@@ -333,7 +333,7 @@ export class Manager<
     return this;
   }
 
-  public setDirection(direction: Direction) {
+  public setDirection(direction: Exclude<Direction, 'none'>) {
     return this.updateOptions({ direction });
   }
 

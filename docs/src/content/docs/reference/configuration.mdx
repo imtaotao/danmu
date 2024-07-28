@@ -1,377 +1,159 @@
 ---
-title: 配置
+title: 配置介绍
 description: An reference of all available Lunaria configuration options.
 sidebar:
   order: 0
 ---
 
-在初始化 `manager` 的时候，允许传递 options，替换默认的配置
+在初始化 `manager` 的时候，允许传递 options，替换默认的配置。以下所有的配置都是**可选的**。
 
-```json title="lunaria.config.json"
-{
-  " $schema": "./node_modules/@lunariajs/core/config.schema.json"
+**示例：**
+
+```ts {16}
+interface CreateOption<T> {
+  rate: number;
+  gap: number | string;
+  interval: number;
+  direction: 'right' | 'left';
+  mode: 'none' | 'strict' | 'adaptive';
+  trackHeight: number | string;
+  times: [number, number];
+  limits: {
+    view: number;
+    stash: number;
+  };
+  plugin: ManagerPlugin<T>;
 }
+
+export declare function create<T, S>(options?: CreateOption<T>): Manager<T, S>;
 ```
 
-## Top-level Options
+除了 `plugin`，所有的参数都可以通过在**创建 `manager` 的时候设置**或者**通过 api 来更改**，例如调整 `rate` 参数。
 
-### repository (required)
-
-**Type: [`Repository`](#repository)**
-
-Configure your dashboard's displayed git hosting links. The expected properties are:
-
-- `name` — The unique name of your repository in the git hosting platform, e.g. `'yanthomasdev/lunaria'`.
-- `branch` — The name of your repository's branch tracked content, by default `'main'`.
-- `rootDir` — The root directory of the project if using a monorepo, e.g. `'docs'`.
-- `hosting` — The git hosting platform being used, e.g. `'github'` or `'gitlab'`.
-
-#### `Repository`
+**示例：**
 
 ```ts
-type Repository = {
-  name: string;
-  branch: string;
-  rootDir?: string;
-  hosting: 'github' | 'gitlab';
-};
+import { create } from 'danmu';
+
+// 1. 在初始化的时候设置
+const manager = create({ rate: 1 });
+
+// 2. 通过 api 来更改
+manager.setRate(1);
 ```
 
-### defaultLocale (required)
+## 配置详解
 
-**Type: `{ label: string; lang: string }`**
+### `mode`
 
-Set the default locale of your project, where the source content is from.
+**类型: `'none' | 'strict' | 'adaptive'`**<br/>
+**默认: `'strict'`**
 
-`label` is the display name of the locale (e.g. `"English"`), and `lang` is the [BCP-47 tag](https://datatracker.ietf.org/doc/html/rfc5646), or other identifying code of the locale used in the tracked file's path (e.g. `"en"`).
+用来确定内核的**碰撞检测算法**。
 
-```json
-{
-  "defaultLocale": {
-    "label": "English",
-    "lang": "en"
-  }
-}
-```
+- `none` 不会有任何碰撞检测，弹幕会立即渲染。
+- `strict` 会进行严格的碰撞检测，如果不满足条件则会推迟渲染。
+- `adaptive` 在满足立即渲染的前提下，会尽力进行碰撞检测（推荐）。
 
-### locales (required)
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-**Type: `{ label: string; lang: string }[]`**
+### `rate`
 
-Set all the locales for localization of your project. Its entries follow the same signature as [defaultLocale](#defaultlocale-required).
+**类型: `number`**<br/>
+**默认: `1`**
 
-```json
-{
-  "locales": [
-    {
-      "label": "Spanish",
-      "lang": "es"
-    },
-    {
-      "label": "Português",
-      "lang": "pt"
-    }
-  ]
-}
-```
+用来设置设置弹幕的运动速率，弹幕的原始运动速度会乘以 `rate` 这个系数。
 
-### files (required)
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-**Type: [`File[]`](#file)**
+### `gap`
 
-Configure your dashboard's tracked files.
+**类型: `number | string`**<br/>
+**默认: `0`**
 
-The order of the entries in `files` will be respected and displayed accordingly in the dashboard. Each entry must have the following properties:
+同一条轨道在碰撞检测的啥情况下，后一条弹幕与前一条弹幕最小相隔的距离。**不能设置一个小于 `0` 的值，如果传递的是 `string` 类型则代表是百分比，但是必须是 `10%` 这种语法**， 在 `mode` 为 `none` 的情况下，此参数无效。
 
-- `location` — a glob pattern of the file(s) to be tracked, e.g. `'src/content/docs/**/*.mdx'`.
-- `ignore` — an array of glob patterns to be ignored from being tracked, defaults to `['node_modules']`.
-- `pattern` — a [path-to-regexp pattern](https://github.com/pillarjs/path-to-regexp) of the file(s) paths, e.g. `'src/content/docs/@lang/@path'` (`@lang` and `@path` are custom syntax provided by Lunaria, in more complex cases can be changed for normal `:lang` and `:path` parameters).
-
-#### File types
-
-Each entry in `files` has to include a `type`, changing how the tracking system works, the way the files are displayed in the dashboard, and adding new properties:
-
-##### `universal`
-
-The `universal` file type makes Lunaria track the file's status by the git history alone, while also accepting any file extension.
-
-```json {6}
-{
-  "files": [
-    {
-      "location": "**/*.md",
-      "pattern": "@lang/@path",
-      "type": "universal"
-    }
-  ]
-}
-```
-
-##### `dictionary`
-
-Alongside the normal git history tracking, the `dictionary` file type makes Lunaria check for key completion: each key in a source dictionary has to be present in the localizations to be marked as done.
-
-The following file extensions are supported: `json`, `yml`, `md`, `markdown`, `mdx`, `mdoc`, `js`, `cjs`, `mjs`, `ts`, `cts`, `mts`.
-
-If any keys are missing in localizations, the dashboard's details for that locale will include a collapsible list of the missing keys for it to be considered done.
-
-You can make keys optional (they don't need to be included for a localization to be considered done) in the additional `optionalKeys` property. Each `optionalKeys` key is a shared path with an array of dictionary keys to be considered optional.
-
-```json {6-10}
-{
-  "files": [
-    {
-      "location": "ui/**/*.{json,yml}",
-      "pattern": "ui/@lang/@path",
-      "type": "dictionary",
-      "optionalKeys": {
-        "ui/nav.json": ["footer", "sidebar"],
-        "ui/ui.yml": ["search"]
-      }
-    }
-  ]
-}
-```
-
-#### `File`
+**示例：**
 
 ```ts
-type File = {
-  location: string;
-  ignore: string[];
-  pattern: string;
-} & (
-  | { type: 'universal' }
-  | { type: 'dictionary'; optionalKeys?: Record<string, string[]> }
-);
+manager.setGap(100); // 最小间距为 100px
+manager.setGap('10%'); // 最小间距为容器宽度的 10%
 ```
 
-### ignoreKeywords
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-**Type: `string[]`**<br/>
-**Default: `['lunaria-ignore', 'fix typo']`**
+### `interval`
 
-List of keywords in a commit's title for Lunaria to automatically ignore and don't trigger status changes. By default, any commits' title including `lunaria-ignore` or `fix typo` will be ignored.
+**类型: `number`**<br/>
+**默认: `500`**
 
-You can disable the feature by providing an empty array (`[]`), or override with your own keywords.
+内核轮询渲染的频率，默认为 `500ms` 一次，你可以根据业务现实情况调整为一个合适的值。其实就是 `setTimeout` 的时间。
 
-```json
-{
-  "ignoreKeywords": ["i18nIgnore", "en-only"]
-}
-```
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-### localizableProperty
+### `direction`
 
-**Type: `string`**
+**类型: `string`**<br/>
+**默认: `'right'`**
 
-Name of a frontmatter property with boolean value determining if a file can be localized or not.
+弹幕的运动方向，默认从右往左运动，**普通弹幕没有 `none` 值，高级弹幕可以设置 `none` 值**。
 
-Any files where the property is absent or found with a `false` will not be tracked, while the ones with `true` will, and in case a file was found with a non-boolean value, an error will be thrown.
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-For files that do not support frontmatter, this option will be ignored and the file assumed to be localizable.
+### `trackHeight`
 
-This option is recommended when you use a file format that supports frontmatter metadata (e.g. Markdown, MDX, YAML) and you want to gradually make files available for localization. If you expect a specific file to never be localized, consider not tracking it in the first place.
+**类型: `number | string`**<br/>
+**默认: `'20%'`**
 
-```json
-{
-  "localizableProperty": "readyForL10n"
-}
-```
+轨道高度，如果传入的值为 `number` 类型，则默认是 `px`，如果传递是 `string` 类型，必须是 `10%` 这种语法，代表基于容器的百分比高度。
 
-### outDir
-
-**Type: `string`**<br/>
-**Default: `'./dist/lunaria'`**
-
-Set the directory that `lunaria build` writes your final dashboard and status to.
-
-The expected value is a relative path from the project's root.
-
-```json
-{
-  "outDir": "./lunaria"
-}
-```
-
-### cloneDir
-
-**Type: `string`**<br/>
-**Default: `'./node_modules/.cache/lunaria/history'`**
-
-Set the directory that Lunaria will use to store your temporary git history when using a shallow repository.
-
-The expected value is a relative path from the project's root.
-
-```json
-{
-  "cloneDir": "./lunaria/history"
-}
-```
-
-### renderer
-
-**Type: `string`**
-
-Set the file path to a `.(c/m)js` or `.(c/m)ts` file with your dashboard renderer configuration.
-
-The expected value is a relative path from the project's root.
-
-```json
-{
-  "renderer": "./renderer.config.ts"
-}
-```
-
-## Dashboard Options
-
-### dashboard.title
-
-**Type: `string`**<br/>
-**Default: `'Localization Status'`**
-
-Defines the title of your dashboard, used in the dashboard's heading and meta tags.
-
-```json
-{
-  "dashboard": {
-    "title": "My Project's Localization Status"
-  }
-}
-```
-
-### dashboard.description
-
-**Type: `string`**<br/>
-**Default: `'Online localization status dashboard of the project'`**
-
-Defines the description of your dashboard, used in the dashboard's meta tags.
-
-```json
-{
-  "dashboard": {
-    "description": "The localization status dashboard of my project"
-  }
-}
-```
-
-### dashboard.site
-
-**Type: `string`**
-
-Defines the deployed URL of your dashboard, used in the dashboard's meta tags.
-
-```json
-{
-  "dashboard": {
-    "site": "https://localization.lunaria.dev/"
-  }
-}
-```
-
-### dashboard.basesToHide
-
-**Type: `string`**
-
-Array of path bases to be omitted from the generated dashboard's links.
-
-In contexts where the links to tracked files are deep in the directory structure, e.g. `src/content/docs/file.mdx`, it might be interesting to show more simplified link labels, e.g. `file.mdx`.
-
-```json
-{
-  "dashboard": {
-    "basesToHide": ["src/content/docs/"]
-  }
-}
-```
-
-### dashboard.customCss
-
-**Type: `string`**
-
-Array of relative paths to external `.css` files to inline into the dashboard.
-
-```json
-{
-  "dashboard": {
-    "customCss": ["./lunaria/css/theme.css", "./lunaria/css/custom.css"]
-  }
-}
-```
-
-### dashboard.favicon
-
-**Type: [`Favicon`](#favicon)**
-
-Defines the favicon(s) of your generated dashboard.
-
-`external` accepts an array of external favicons, with the following properties:
-
-- `link` — the URL of the external favicon, e.g. `'https://lunaria.dev/favicon.svg'`.
-- `type` — the [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) of the external resource, e.g. `'image/svg+xml'`.
-
-`inline` accepts an relative path to a `.svg` file that will be inlined into the dashboard, e.g. `'./lunaria/favicon.svg'`.
-
-```json
-{
-  "dashboard": {
-    "favicon": {
-      "external": [
-        {
-          "link": "https://lunaria.dev/favicon.svg",
-          "type": "image/svg+xml"
-        }
-      ],
-      "inline": "./lunaria/favicon.svg"
-    }
-  }
-}
-```
-
-#### `Favicon`
+**示例：**
 
 ```ts
-type Favicon = {
-  external?: { link: string; type: string }[];
-  inline?: string;
-};
+manager.setTrackHeight(100); // 高度为 100px
+manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 ```
 
-### dashboard.ui
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-**Type: `Record<string, string>`**
+### `times`
 
-Defines the UI strings of the dashboard. Specifically, the `lang` and `dir` keys refer to the HTML attributes of the same name used in the generated dashboard, while the other keys directly change the UI of the page.
+**类型: `[number, number]`**<br/>
+**默认: `[4000, 6000]`**
 
-The following code sample contains all the keys of `dashboard.ui` and its default values:
+普通弹幕的运动时间，这是一个范围值，**普通弹幕会在这个范围内随机选择一个时间作为运动时间**，如果你希望所有的弹幕运动时间都一致，你可以将两个数设置为同样的数。当发送高级弹幕的时候，如果没有指定运动时长，也会从这个范围随机取一个值。
 
-```json
-{
-  "dir": "ltr",
-  "lang": "en",
-  "status.emojiDone": "✔️",
-  "status.emojiMissing": "❌",
-  "status.emojiOutdated": "🔄",
-  "status.done": "done",
-  "status.missing": "missing",
-  "status.outdated": "outdated",
-  "statusByFile.heading": "Localization status by file",
-  "statusByFile.tableRowFile": "File",
-  "statusByFile.tableSummaryFormat": "{missing_emoji} {missing_word} &nbsp; {outdated_emoji} {outdated_word} &nbsp; {done_emoji} {done_word}",
-  "statusByLocale.completeLocalization": "This localization is complete, amazing job! 🎉",
-  "statusByLocale.createFileLink": "Create file",
-  "statusByLocale.detailsSummaryFormat": "{done_amount} {done_word}, {outdated_amount} {outdated_word}, {missing_amount} {missing_word}",
-  "statusByLocale.detailsTitleFormat": "{locale_name} ({locale_tag})",
-  "statusByLocale.heading": "Localization progress by locale",
-  "statusByLocale.outdatedLocalizationLink": "outdated localization",
-  "statusByLocale.sourceChangeHistoryLink": "source change history",
-  "statusByLocale.incompleteLocalizationLink": "incomplete localization",
-  "statusByLocale.missingKeys": "Missing keys"
-}
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `limits`
+
+**类型: `{ view?: number; stash?: number }`**<br/>
+**默认: `{ stash: 1024 }`**
+
+这个参数会限制弹幕渲染的数量。
+
+- `view` 限制渲染在容器中的弹幕数量，如果超过了此限制则会放弃渲染。
+- `stash` 限制存放在内存中的弹幕数量，如果超过此限制则会被丢弃并触发告警或调用插件钩子，你可以适当调整此参数。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `plugin`
+
+**类型: `ManagerPlugin<unknow>`**<br/>
+**默认: `undefined`**
+
+创建 `manager` 的时候的默认 `managerPlugin`，`manager` 如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [插件钩子介绍](../../reference/plugin-hooks/) 和 [编写插件](../../guides/plugins/) 这两小节。
+
+**示例：**
+
+```ts
+import { create } from 'danmu';
+
+const manager = create({
+  plugin: {
+    start() {},
+    stop() {},
+    ...
+  },
+})
 ```
-
-:::caution
-These strings accept arbitrary HTML entities and elements, be sure these do not result in malformatted HTML.
-:::
-
-A few UI string keys are suffixed with `Format`, these contain dynamically inserted text (sometimes from other UI strings) in curly braces, e.g. `{locale_name}`. You can change the order or omit these, depending on your needs.

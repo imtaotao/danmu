@@ -5,7 +5,6 @@ sidebar:
   order: 1
 ---
 
-
 Lunaria implements a unique localization tracking system powered by Git. This guide explains how it works, how to manipulate it, and all its associated features.
 
 ## How it works
@@ -101,7 +100,6 @@ One way of doing so would be to exclude specific files with the [`ignore`](#igno
 
 Instead, you can use the [`localizableProperty`](/reference/configuration/#localizableproperty) available to files that accept frontmatter metadata (e.g. Markdown, MDX, YAML). Every file where the property is `true` will be added to the dashboard, and omitted otherwise:
 
-
 ## Manipulating status changes
 
 In a few cases, it might be relevant to intervene in the tracking system to prevent undesired status changes from happening.
@@ -125,7 +123,6 @@ Add a new section on `getting-started.mdx` file
 ```
 
 Different `ignoreKeywords` can be added, overriding the default ones:
-
 
 :::tip
 Noticing when a commit will be ignored can be tricky. To simplify this, it's recommended to use [squashed merged commits](/recommendations#prefer-squashed-merge-commits) so all commits in a pull request will be considered as one.
