@@ -90,6 +90,10 @@ export class Manager<
     return this._engine.box;
   }
 
+  public get container() {
+    return this._container;
+  }
+
   public len() {
     return this._engine.len();
   }

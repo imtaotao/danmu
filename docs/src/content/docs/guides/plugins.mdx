@@ -14,26 +14,26 @@ By default, Lunaria will add a default title and description for your dashboard.
 <Steps>
 1. Add the [`dashboard.title`](/reference/configuration/#dashboardtitle) option to your Lunaria config. The defined title will also be shown in the dashboard's heading:
 
-    ```json title="lunaria.config.json" add={2-4}
-    {
-      "dashboard": {
-        "title": "Lunaria Localization Status"
-      }
-    }
-    ```
+```json title="lunaria.config.json" add={2-4}
+{
+  "dashboard": {
+    "title": "Lunaria Localization Status"
+  }
+}
+```
 
 2. Add the [`dashboard.description`](/reference/configuration/#dashboarddescription) option to your Lunaria config:
 
-   ```json title="lunaria.config.json" add={4}
-   {
-     "dashboard": {
-       "title": "Lunaria Localization Status",
-       "description": "Localization status dashboard for the Lunaria project."
-     }
-   }
-   ```
+```json title="lunaria.config.json" add={4}
+{
+  "dashboard": {
+    "title": "Lunaria Localization Status",
+    "description": "Localization status dashboard for the Lunaria project."
+  }
+}
+```
 
-   </Steps>
+</Steps>
 
 ## Canonical URL
 
@@ -90,21 +90,22 @@ An inline favicon is a local [`.svg` favicon appended to your dashboard through 
 1. Add your favicon SVG file to a directory in your project (e.g. `src/assets/`):
 
 {' '}
+
 <FileTree>- src/ - assets/ - **favicon.svg** - lunaria.config.json</FileTree>
 
 2.  Add the path to your favicon as the `inline` property of [`dashboard.favicon`](/reference/configuration/#dashboardfavicon) in your Lunaria config:
 
-        ```json title="lunaria.config.json" add={4}
-        {
-          "dashboard": {
-            "favicon": {
-              "inline": "./src/assets/favicon.svg"
-            }
-          }
-        }
-        ```
+```json title="lunaria.config.json" add={4}
+{
+  "dashboard": {
+    "favicon": {
+      "inline": "./src/assets/favicon.svg"
+    }
+  }
+}
+```
 
-    </Steps>
+</Steps>
 
 ## Hidden path bases
 
@@ -129,23 +130,23 @@ The dashboard can be further customized by adding your own custom CSS, allowing 
 <Steps>
 1. Add a CSS file to a directory in your project (e.g. `src/styles/`). For example, you can change the default body font family used:
 
-    ```css title="src/styles/lunaria.css"
-    :root {
-        --ln-font-body: Tahoma, sans-serif;
-    }
-    ```
+```css title="src/styles/lunaria.css"
+:root {
+  --ln-font-body: Tahoma, sans-serif;
+}
+```
 
 2.  Add the path to your CSS file to your Lunaria config's [`dashboard.customCss`](/reference/configuration/#dashboardcustomcss) array property:
 
-        ```json title="lunaria.config.json" add={3}
-        {
-          "dashboard": {
-            "customCss": ["./src/styles/lunaria.css"]
-          }
-        }
-        ```
+```json title="lunaria.config.json" add={3}
+{
+  "dashboard": {
+    "customCss": ["./src/styles/lunaria.css"]
+  }
+}
+```
 
-    </Steps>
+</Steps>
 
 :::tip
 Check out the Lunaria repository to see [all the available CSS custom properties set by Lunaria and its implementation](https://github.com/yanthomasdev/lunaria/blob/main/packages/core/src/dashboard/styles.ts).
@@ -230,13 +231,13 @@ Lunaria's dashboard was designed to be flexible and easily customizable through 
 
 2.  Add the path to your renderer file to your Lunaria config's [`renderer`](/reference/configuration/#renderer) configuration property:
 
-        ```json title="lunaria.config.json" add={2}
-        {
-          "renderer": "./renderer.config.ts"
-        }
-        ```
+```json title="lunaria.config.json" add={2}
+{
+  "renderer": "./renderer.config.ts"
+}
+```
 
-    </Steps>
+</Steps>
 
 ### Custom components
 
@@ -319,19 +320,19 @@ Elements can be slotted into the dashboard with the [renderer's `slots` property
 
 2.  Add the created component to one of the available slots in the [`slots` property](/reference/renderer/#slots). Here, the `head` slot will be used to insert the component into the dashboard's [`<head>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head):
 
-        ```ts title="renderer.config.ts" add={6-8}
-        import { defineRendererConfig, html } from '@lunariajs/core';
+```ts title="renderer.config.ts" add={6-8}
+import { defineRendererConfig, html } from '@lunariajs/core';
 
-        const NoIndex = () => html`<meta name="robots" content="noindex" />`;
+const NoIndex = () => html`<meta name="robots" content="noindex" />`;
 
-        export default defineRendererConfig({
-          slots: {
-            head: NoIndex,
-          }
-        });
-        ```
+export default defineRendererConfig({
+  slots: {
+    head: NoIndex,
+  },
+});
+```
 
-    </Steps>
+</Steps>
 
 ### Overriding elements
 
@@ -339,27 +340,33 @@ Elements can also be overridden in the dashboard with the [renderer's `overrides
 
 <Steps>
 1. Create a new component using the `html` tagged template. In this case, the component will override the dashboard's body and show the `sharedPath` for each localized content:
-    
-    ```ts title="renderer.config.ts" add={3}
-    import { defineRendererConfig, html } from '@lunariajs/core';
 
-    const NewBody = (config, status) => html`<ul>${status.map((s) => html`<li>${s.sharedPath}</li>`)}</ul>`;
+```ts title="renderer.config.ts" add={3}
+import { defineRendererConfig, html } from '@lunariajs/core';
 
-    export default defineRendererConfig({});
-    ```
+const NewBody = (config, status) =>
+  html`<ul>
+    ${status.map((s) => html`<li>${s.sharedPath}</li>`)}
+  </ul>`;
+
+export default defineRendererConfig({});
+```
 
 2.  Add the created component to one of the available overrides in the [`overrides` property](/reference/renderer/#overrides). Here, the `body` slot will be used to insert the component and override everything inside the dashboard's [`<body>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body):
 
-        ```ts title="renderer.config.ts" add={6-8}
-        import { defineRendererConfig, html } from '@lunariajs/core';
+```ts title="renderer.config.ts" add={6-8}
+import { defineRendererConfig, html } from '@lunariajs/core';
 
-        const NewBody = (config, status) => html`<ul>${status.map((s) => html`<li>${s.sharedPath}</li>`)}</ul>`;
+const NewBody = (config, status) =>
+  html`<ul>
+    ${status.map((s) => html`<li>${s.sharedPath}</li>`)}
+  </ul>`;
 
-        export default defineRendererConfig({
-          overrides: {
-            body: NewBody,
-          }
-        });
-        ```
+export default defineRendererConfig({
+  overrides: {
+    body: NewBody,
+  },
+});
+```
 
-    </Steps>
+</Steps>

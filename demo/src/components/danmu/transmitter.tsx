@@ -208,10 +208,10 @@ export const Transmitter = ({
                     {
                       duration,
                       direction: direction as Direction,
-                      position: (box, b) => {
+                      position: (d, box) => {
                         return {
-                          x: ((box.width - b.getWidth()) * x) / 100,
-                          y: ((box.height - b.getHeight()) * y) / 100,
+                          x: ((box.width - d.getWidth()) * x) / 100,
+                          y: ((box.height - d.getHeight()) * y) / 100,
                         };
                       },
                     },

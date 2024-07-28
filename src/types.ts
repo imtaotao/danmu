@@ -45,7 +45,7 @@ export interface PushFlexOptions<T> {
   plugin?: DanmakuPlugin<T>;
   duration?: number;
   direction?: Direction;
-  position: Position | ((box: Box, b: Danmaku<T>) => Position);
+  position: Position | ((b: Danmaku<T>, box: Box) => Position);
 }
 
 export interface Position {

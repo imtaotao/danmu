@@ -21,12 +21,12 @@ export default defineConfig({
           label: '从这里开始',
           items: [
             {
-              label: '入门',
-              link: 'getting-started',
+              label: '快速入门',
+              link: 'started',
             },
             {
-              label: '建议',
-              link: 'recommendations',
+              label: '在 TypeScript 中使用',
+              link: 'typescript',
             },
           ],
         },

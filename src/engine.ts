@@ -477,7 +477,7 @@ export class Engine<T> {
             typeof position === 'function',
             '"position" must be a function',
           );
-          d._updatePosition(position(this.box, d));
+          d._updatePosition(position(d, this.box));
         },
       });
     }
