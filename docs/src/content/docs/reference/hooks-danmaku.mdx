@@ -136,7 +136,7 @@ danmaku.use({
 // 例如，弹幕的组件是你用 react 写的，你就可以通过如下方式来渲染到弹幕实例的内置节点上
 manager.use({
   $createNode(danmaku) {
-    ReactDOM.createRoot(danmaku.node).render(<DanmakuBox danmaku={danmaku} />);
+    ReactDOM.createRoot(danmaku.node).render(<Danmaku danmaku={danmaku} />);
   },
 });
 ```

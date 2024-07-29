@@ -247,7 +247,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     this.pluginSystem.remove(pluginName);
   }
 
-  public use(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) {
+  public use(plugin: DanmakuPlugin<T> | ((d: this) => DanmakuPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
       (plugin as any).name = `__flexible_danmaku_plugin_${ids.danmu++}__`;

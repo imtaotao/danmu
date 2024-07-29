@@ -5,89 +5,193 @@ sidebar:
   order: 2
 ---
 
-Lunaria allows for slotting and overriding content into your generated dashboard. This reference covers all the available renderer options.
+弹幕实例有一些方法供你使用，你可用用他们来做一些行为，或者获取当前弹幕的一些状态数据。下面是一个实例。
 
-```ts title="renderer.config.ts"
-import { defineRendererConfig } from '@lunariajs/core';
+```tsx
+// 点击弹幕的时候会销毁弹幕
+function Danmaku({ danmaku }: { danmaku: Danmaku<unknown> }) {
+  return <div onClick={() => danmaku.destory()}>{danmaku.data.value}</div>;
+}
 
-export default defineRendererConfig({
-  // your configuration options go here...
-});
-```
-
-:::tip
-For your renderer configuration to be applied, don't forget to fill the [`renderer`](/reference/configuration/#renderer) field of your `lunaria.config.json` file.
-:::
-
-## Components
-
-Lunaria comes with a built-in `html` tagged template literal to allow for a better component authoring experience.
-
-```ts title="renderer.config.ts"
-import { defineRendererConfig, html } from '@lunariajs/core';
-
-export default defineRendererConfig({
-  slots: {
-    afterTitle: () => html`<p>This is a example component!</p>`,
+manager.use({
+  $createNode(danmaku) {
+    ReactDOM.createRoot(danmaku.node).render(<Danmaku danmaku={danmaku} />);
   },
 });
 ```
 
-Syntax highlighting and language support is available through the [lit-html VSCode extension](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) and the [vim-jsx-pretty plugin](https://github.com/MaxMEllon/vim-jsx-pretty).
+## 实例属性
 
-## Top-level Options
+### `data`
 
-### slots
+**类型: `PushData<T>`**
 
-**Type: [`Slots`](#slots-1)**
+`data` 是你在发送数据时传入的数据。
 
 ```ts
-export default defineRendererConfig({
-  slots: {
-    head: (config) => html`<meta name="robots" content="noindex" />`,
-    beforeTitle: (config) => html`<p>Example component</p>`,
-    afterTitle: (config) => html`<p>Example component</p>`,
-    afterStatusByLocale: (config) => html`<p>Example component</p>`,
-    afterStatusByFile: (config) => html`<p>Example component</p>`,
+manager.use({
+  $createNode(danmaku) {
+    console.log(danmaku.data); // { value: 1 }
   },
 });
+
+manager.push({ value: 1 });
 ```
 
-#### `Slots`
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `type`
+
+**类型: `facile' | 'flexible'`**
+
+弹幕的类型，分为普通弹幕和高级弹幕，普通弹幕的类型为 `facile`，你可以根据此属性来判断做不同的处理。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `node`
+
+**类型: `HTMLElement`**
+
+弹幕的内置节点，你可以往这个节点里面渲染真正的弹幕内容。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `duration`
+
+**类型: `number`**
+
+弹幕的运动时长。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `direction`
+
+**类型: `'right' | 'left' | 'none'`**
+
+弹幕的运动方向。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `pluginSystem`
+
+**类型: `PluginSystem<Danmaku<T>>`**
+
+弹幕的插件系统实例，其 api 可以见 [hooks-plugin](https://github.com/imtaotao/hooks-plugin?tab=readme-ov-file#apis) 的文档。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+## 实例方法
+
+### `setloop`
+
+**类型: `() => void;`**
+
+`setloop` 将弹幕实例设置为循环播放状态。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `unloop`
+
+**类型: `() => void;`**
+
+`unloop` 将弹幕实例从循环播放状态取消。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `getHeight`
+
+**类型: `() => number;`**
+
+`getHeight` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `getWidth`
+
+**类型: `() => number;`**
+
+`getHeight` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `pause`
+
+**类型: `() => void;`**
+
+将当前正在运动状态的弹幕实例暂停，会调用 `pause` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `resume`
+
+**类型: `() => void;`**
+
+将当前正在暂停状态的弹幕实例恢复运动，会调用 `resume` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `hide`
+
+**类型: `() => void;`**
+
+将当前弹幕实例设置为隐藏状态，实际上是设置 `visibility: hidden`，会调用 `hide` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `show`
+
+**类型: `() => void;`**
+
+将当前弹幕实例从隐藏状态恢复显示，会调用 `show` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `destroy`
+
+**类型: `() => void;`**
+
+将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setStyle`
+
+**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void;`**
+
+设置当前弹幕实例内置节点的 `CSS` 样式。
 
 ```ts
-type Slots = {
-  head?: (config: LunariaConfig) => string;
-  beforeTitle?: (config: LunariaConfig) => string;
-  afterTitle?: (config: LunariaConfig) => string;
-  afterStatusByLocale?: (config: LunariaConfig) => string;
-  afterStatusByFile?: (config: LunariaConfig) => string;
-};
+// 将内置弹幕节点的背景色改为红色
+danmaku.setStyle('background', 'red');
 ```
 
-### overrides
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-**Type: [`Overrides`](#overrides-1)**
+### `use`
+
+**类型: `(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T> & { name: string };`**
+
+给当前弹幕实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
 ```ts
-export default defineRendererConfig({
-  overrides: {
-    meta: (config) => html`<meta name="robots" content="noindex" />`,
-    body: (config, status) => html`<main>Example component</main>`,
-    statusByLocale: (config, status) => html`<p>Example component</p>`,
-    statusByFile: (config, status) => html`<p>Example component</p>`,
-  },
+// 如果传递了 name
+const plugin = danmaku.use({
+  name: 'test-plugin',
+  // ...
 });
+console.log(plugin.name); // 'test-plugin'
+
+// 如果不传 name
+const plugin = danmaku.use({
+  // ...
+});
+console.log(plugin.name); // uuid
 ```
 
-#### `Overrides`
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
-{/* prettier-ignore */}
-```ts
-type Overrides = {
-	meta?: (config: LunariaConfig) => string;
-	body?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
-	statusByLocale?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
-	statusByFile?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
-};
-```
+### `remove`
+
+**类型: `(pluginName: string) => void`**
+
+移除当前弹幕实例的某个插件，但是必须指定插件名字。
