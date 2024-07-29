@@ -1,31 +1,41 @@
 ---
 title: manager 实例
-description: An reference of all available Lunaria runtime functions.
+description: 学习 manager 实例上的 api
 sidebar:
   order: 4
 ---
 
-Lunaria can also be used outside of its build process, allowing for integrations and other use cases through its available runtime functions.
+## 属性
 
-:::caution
-Lunaria exports more runtime functions than currently documented. Their behavior, as well as support is not guaranteed during public beta.
-:::
+## 方法
 
-## `lunaria()`
+### `nextFrame()`
 
-The `lunaria()` function is a way to get Lunaria's localization status during runtime. It will validate the configuration, clone your git history (if used in a shallow repository), and return a Promise of your localization status array.
+**类型: `(fn: FrameRequestCallback) => void;`**
 
-```ts title="example-usage.ts"
-import { lunaria } from '@lunariajs/core';
+回调函数会在下一帧触发。
 
-const config = {
-  // your Lunaria configuration
+```ts
+manager.nextFrame(() => {
   // ...
-};
-
-const status = await lunaria(config);
+});
 ```
 
-:::tip
-You can see an example of how this function is used in the [Astro Docs' Translation Tuesday Bot](https://github.com/withastro/docs/blob/main/scripts/tuesday-bot.ts#L10).
-:::
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `len()`
+
+**类型: `() => { stash: number; flexible: number; view: number; all: number };`**
+
+返回当前渲染引擎的弹幕状态数量，这是实时变化的。
+
+- `all` 所有弹幕的数量，包括内存区，渲染中的弹幕。
+- `view` 当前正在渲染的弹幕数量，包含普通弹幕和高级弹幕。
+- `stash` 当前储存在内存区的普通弹幕数量。
+- `flexible` 当前高级弹幕的数量，包含正在渲染的和在内存区的。
+
+```ts
+const { stash, flexible, view, all } = manager.len();
+```
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
