@@ -19,7 +19,7 @@ export type StyleKey = keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>;
 export type FilterCallback<T> = EachCallback<T>;
 
 export type EachCallback<T> = (
-  b: FacileDanmaku<T> | FlexibleDanmaku<T>,
+  d: FacileDanmaku<T> | FlexibleDanmaku<T>,
 ) => boolean | void;
 
 export type ValueType<M extends Manager<any>> = Extract<
@@ -45,7 +45,7 @@ export interface PushFlexOptions<T> {
   plugin?: DanmakuPlugin<T>;
   duration?: number;
   direction?: Direction;
-  position: Position | ((b: Danmaku<T>, box: Box) => Position);
+  position: Position | ((d: Danmaku<T>, box: Box) => Position);
 }
 
 export interface Position {

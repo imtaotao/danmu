@@ -110,8 +110,8 @@ export class Manager<
     return this._renderTimer !== null;
   }
 
-  public isDanmaku(b: unknown): b is Danmaku<T> {
-    return b instanceof FacileDanmaku || b instanceof FlexibleDanmaku;
+  public isDanmaku(d: unknown): d is Danmaku<T> {
+    return d instanceof FacileDanmaku || d instanceof FlexibleDanmaku;
   }
 
   public each(fn: EachCallback<T>) {

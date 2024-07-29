@@ -74,7 +74,7 @@ manager.push({ value: 1 });
 
 ### `pluginSystem`
 
-**类型: `PluginSystem<Danmaku<T>>`**
+**类型: `PluginSystem`**
 
 弹幕的插件系统实例，其 api 可以见 [hooks-plugin](https://github.com/imtaotao/hooks-plugin?tab=readme-ov-file#apis) 的文档。
 
@@ -82,57 +82,9 @@ manager.push({ value: 1 });
 
 ## 方法
 
-### `setloop()`
-
-**类型: `() => void;`**
-
-`setloop` 将弹幕实例设置为循环播放状态。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `unloop()`
-
-**类型: `() => void;`**
-
-`unloop` 将弹幕实例从循环播放状态取消。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `getHeight()`
-
-**类型: `() => number;`**
-
-`getHeight` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `getWidth()`
-
-**类型: `() => number;`**
-
-`getHeight` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `pause()`
-
-**类型: `() => void;`**
-
-将当前正在运动状态的弹幕实例暂停，会调用 `pause` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `resume()`
-
-**类型: `() => void;`**
-
-将当前正在暂停状态的弹幕实例恢复运动，会调用 `resume` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
 ### `hide()`
 
-**类型: `() => void;`**
+**类型: `() => void`**
 
 将当前弹幕实例设置为隐藏状态，实际上是设置 `visibility: hidden`，会调用 `hide` 钩子。
 
@@ -140,15 +92,47 @@ manager.push({ value: 1 });
 
 ### `show()`
 
-**类型: `() => void;`**
+**类型: `() => void`**
 
 将当前弹幕实例从隐藏状态恢复显示，会调用 `show` 钩子。
 
 <div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
+### `pause()`
+
+**类型: `() => void`**
+
+将当前正在运动状态的弹幕实例暂停，会调用 `pause` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `resume()`
+
+**类型: `() => void`**
+
+将当前正在暂停状态的弹幕实例恢复运动，会调用 `resume` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setloop()`
+
+**类型: `() => void`**
+
+`setloop` 将弹幕实例设置为循环播放状态。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `unloop()`
+
+**类型: `() => void`**
+
+`unloop` 将弹幕实例从循环播放状态取消。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
 ### `destroy()`
 
-**类型: `() => void;`**
+**类型: `() => void`**
 
 将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子。
 
@@ -156,7 +140,7 @@ manager.push({ value: 1 });
 
 ### `setStyle()`
 
-**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void;`**
+**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void`**
 
 设置当前弹幕实例内置节点的 `CSS` 样式。
 
@@ -167,9 +151,25 @@ danmaku.setStyle('background', 'red');
 
 <div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
+### `getWidth()`
+
+**类型: `() => number`**
+
+`getHeight` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `getHeight()`
+
+**类型: `() => number`**
+
+`getHeight` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
 ### `use()`
 
-**类型: `(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T> & { name: string };`**
+**类型: `(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T> & { name: string }`**
 
 给当前弹幕实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
