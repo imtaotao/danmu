@@ -1,5 +1,5 @@
 ---
-title: Manager 配置
+title: 全局配置
 description: manager 的配置介绍
 sidebar:
   order: 2
@@ -9,30 +9,30 @@ sidebar:
 
 **示例：**
 
-```ts {16}
-interface CreateOption<T> {
-  rate: number;
-  gap: number | string;
-  interval: number;
-  direction: 'right' | 'left';
-  mode: 'none' | 'strict' | 'adaptive';
-  trackHeight: number | string;
-  times: [number, number];
-  limits: {
-    view: number;
-    stash: number;
+```ts title="init.ts" {16}
+interface CreateOption {
+  rate?: number;
+  interval?: number;
+  gap?: number | string;
+  times?: [number, number];
+  trackHeight?: number | string;
+  plugin?: ManagerPlugin;
+  limits?: {
+    view?: number;
+    stash?: number;
   };
-  plugin: ManagerPlugin<T>;
+  direction?: 'right' | 'left';
+  mode?: 'none' | 'strict' | 'adaptive';
 }
 
-export declare function create<T, S>(options?: CreateOption<T>): Manager<T, S>;
+export declare function create(options?: CreateOption): Manager;
 ```
 
 除了 `plugin`，所有的参数都可以通过在**创建 `manager` 的时候设置**或者**通过 api 来更改**，例如调整 `rate` 参数。
 
 **示例：**
 
-```ts
+```ts title="init.ts"
 import { create } from 'danmu';
 
 // 1. 在初始化的时候设置
@@ -146,7 +146,7 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 
 **示例：**
 
-```ts
+```ts title="init.ts"
 import { create } from 'danmu';
 
 const manager = create({

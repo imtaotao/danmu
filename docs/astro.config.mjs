@@ -2,6 +2,8 @@ import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
 import starlightBlog from 'starlight-blog';
+import starlightViewModes from 'starlight-view-modes';
+import starlightThemeRapide from 'starlight-theme-rapide';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +13,10 @@ export default defineConfig({
       title: 'Danmaku',
       lastUpdated: true,
       defaultLocale: 'zh-CN',
+      customCss: ['./src/styles/landing.css'],
+      editLink: {
+        baseUrl: 'https://github.com/imtaotao/danmu/edit/main/docs/',
+      },
       logo: {
         light: './src/assets/logo-light.svg',
         dark: './src/assets/logo-dark.svg',
@@ -43,8 +49,12 @@ export default defineConfig({
           autogenerate: { directory: 'reference' },
         },
       ],
-      customCss: ['./src/styles/theme.css', './src/styles/landing.css'],
-      plugins: [starlightLinksValidator(), starlightBlog({ title: '博客' })],
+      plugins: [
+        starlightViewModes(),
+        starlightThemeRapide(),
+        starlightLinksValidator(),
+        starlightBlog({ title: '博客' }),
+      ],
     }),
   ],
 });

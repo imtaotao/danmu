@@ -193,6 +193,12 @@ importers:
       starlight-links-validator:
         specifier: ^0.9.1
         version: 0.9.1(@astrojs/starlight@0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2)))(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2))
+      starlight-theme-rapide:
+        specifier: ^0.1.1
+        version: 0.1.1(@astrojs/starlight@0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2)))
+      starlight-view-modes:
+        specifier: ^0.6.0
+        version: 0.6.0(@astrojs/starlight@0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2)))(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2))
 
 packages:
 
@@ -3613,6 +3619,19 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       '@astrojs/starlight': '>=0.15.0'
+      astro: '>=4.0.0'
+
+  starlight-theme-rapide@0.1.1:
+    resolution: {integrity: sha512-jVACnhIAVcdnlgIC0VceECMLWxn5rpqg3Ei+YfYigrAzCHdulMma/DIO7X7mH8193kVIoSphUl1z6DJ00a0lUQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@astrojs/starlight': '>=0.23.0'
+
+  starlight-view-modes@0.6.0:
+    resolution: {integrity: sha512-mYMTE8Zsy9j8Yj+3ywl1FH0IW0uh66GSZLIuV+Hs4oeQRA8DYkfRcsKNKWic4bYGquBI9OMfHKDQl3XCwhCAMw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@astrojs/starlight': '>=0.16.0'
       astro: '>=4.0.0'
 
   stdin-discarder@0.2.2:
@@ -8367,6 +8386,15 @@ snapshots:
       mdast-util-to-string: 4.0.0
       picomatch: 4.0.2
       unist-util-visit: 5.0.0
+
+  starlight-theme-rapide@0.1.1(@astrojs/starlight@0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2))):
+    dependencies:
+      '@astrojs/starlight': 0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2))
+
+  starlight-view-modes@0.6.0(@astrojs/starlight@0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2)))(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2)):
+    dependencies:
+      '@astrojs/starlight': 0.25.2(astro@4.12.2(@types/node@18.19.34)(typescript@5.5.2))
+      astro: 4.12.2(@types/node@18.19.34)(typescript@5.5.2)
 
   stdin-discarder@0.2.2: {}
 

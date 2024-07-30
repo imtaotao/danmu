@@ -9,7 +9,7 @@ Danmaku 的 `TypeSsript` 类型声明很完整齐全，所以当你在 `TypeSsri
 
 当你在各种钩子里面拿到的 `Danmaku` 实例类型时，其内容的类型默认为 `unknow`，但是你可以在初始化的时候传入范型来约束。
 
-```ts
+```ts title="init.ts"
 import { create } from 'danmu';
 
 const manager = create<{ content: string; img: string }>({
@@ -24,7 +24,7 @@ const manager = create<{ content: string; img: string }>({
 
 由于 `manager.statuses` 不会在内核中有任何工作，他仅仅是提供一个普通对象给用户记录状态使用的，所以默认类型为 `Record<PropertyKey, unknown>`，你也可以传递范型来改变他，具体的实例可以参考我们的 Demo。
 
-```ts
+```ts title="init.ts"
 import { create } from 'danmu';
 
 const manager = create<string, { background: string }>();
@@ -37,7 +37,7 @@ manager.statuses;
 
 Danmaku 默认导出的一些类型，可以帮助你在业务代码编写中或者插件编写中提供一些帮助，以下是我们导出的类型。
 
-```ts
+```ts title="danmu/index.d.ts"
 // 以下这些类型你都可以使用
 import type {
   Mode,

@@ -1,5 +1,5 @@
 ---
-title: Manager API
+title: 全局 API
 description: 学习 manager 实例上的 api
 sidebar:
   order: 4
@@ -33,7 +33,9 @@ console.log(manager.options.times); // [number, number]
 
 一个记录状态的属性，在内核中没有使用，主要是提供给业务方记录一些状态使用的。默认类型为一个 `Record<PropertyKey, unknown>`，不过你可以在创建 `manager` 的时候传递范型。
 
-```ts {3}
+```ts title="init.ts" {3}
+import { create } from 'danmu';
+
 const manager = create<unknown, { background: string }>();
 
 manager.statuses; // 类型为 { background: string }
@@ -285,10 +287,10 @@ manager.push(
 
 :::note[高级弹幕说明]
 
-1. 高级弹幕的插件和普通弹幕的插件一样，你可以通过 `danmaku.type` 属性来区分。
-2. 高级弹幕如果不传 `duration` 则会从 `manager.options.times` 范围里面随机生成一个。
-3. 高级弹幕如果不传 `direction` 则会取 `manager.options.direaction`。
-4. 高级弹幕必须传递 `position` 来指定位置。
+1. 高级弹幕**必须传递 `position` 来指定位置**。
+2. 高级弹幕如果不传 `duration` 则会从 `manager.options.times` 范围里面**随机生成一个**。
+3. 高级弹幕的插件和普通弹幕的插件一样，你可以通过 `danmaku.type` 属性来区分。
+4. 高级弹幕如果不传 `direction` 则会取 **`manager.options.direaction`**。
 
 :::
 
@@ -467,15 +469,19 @@ manager.nextFrame(() => {
 
 给当前 `manager` 实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
+**如果传递了 `name`：**
+
 ```ts
-// 如果传递了 name
 const plugin = manager.use({
   name: 'test-plugin',
   // ...
 });
 console.log(plugin.name); // 'test-plugin'
+```
 
-// 如果不传 name
+**如果不传 `name`：**
+
+```ts
 const plugin = manager.use({
   // ...
 });

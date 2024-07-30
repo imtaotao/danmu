@@ -7,15 +7,22 @@ sidebar:
 
 弹幕实例有一些方法供你使用，你可用用他们来做一些行为，或者获取当前弹幕的一些状态数据。下面是一个实例。
 
-```tsx
+```tsx title="init.tsx"
 // 点击弹幕的时候会销毁弹幕
-function Danmaku({ danmaku }: { danmaku: Danmaku<unknown> }) {
-  return <div onClick={() => danmaku.destory()}>{danmaku.data.value}</div>;
+function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
+  return (
+    <div onClick={() => props.danmaku.destory()}>
+      {props.danmaku.data.value}
+    </div>
+  );
 }
 
+// 将组件渲染到弹幕的内置节点上
 manager.use({
   $createNode(danmaku) {
-    ReactDOM.createRoot(danmaku.node).render(<Danmaku danmaku={danmaku} />);
+    ReactDOM.createRoot(danmaku.node).render(
+      <DanmakuComponent danmaku={danmaku} />,
+    );
   },
 });
 ```
@@ -28,7 +35,7 @@ manager.use({
 
 `data` 是你在发送数据时传入的数据。
 
-```ts
+```ts title="init.tsx"
 manager.use({
   $createNode(danmaku) {
     console.log(danmaku.data); // { value: 1 }
@@ -181,15 +188,19 @@ danmaku.setStyle('background', 'red');
 
 给当前弹幕实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
+**如果传了 `name`：**
+
 ```ts
-// 如果传递了 name
 const plugin = danmaku.use({
   name: 'test-plugin',
   // ...
 });
 console.log(plugin.name); // 'test-plugin'
+```
 
-// 如果不传 name
+**如果不传 `name`：**
+
+```ts
 const plugin = danmaku.use({
   // ...
 });

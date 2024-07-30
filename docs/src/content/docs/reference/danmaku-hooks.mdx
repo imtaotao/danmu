@@ -15,7 +15,7 @@ sidebar:
 
 **示例：**
 
-```ts
+```ts title="init.ts"
 import { create } from 'danma';
 
 const manager = create({
@@ -121,11 +121,18 @@ danmaku.use({
 
 **示例：**
 
-```tsx
-// 例如，弹幕的组件是你用 react 写的，你就可以通过如下方式来渲染到弹幕实例的内置节点上
+```tsx title="init.tsx"
+// 组件
+function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
+  return <div>{props.danmaku.data.value}</div>;
+}
+
+// 将组件渲染到弹幕的内置节点上
 manager.use({
   $createNode(danmaku) {
-    ReactDOM.createRoot(danmaku.node).render(<Danmaku danmaku={danmaku} />);
+    ReactDOM.createRoot(danmaku.node).render(
+      <DanmakuComponent danmaku={danmaku} />,
+    );
   },
 });
 ```
