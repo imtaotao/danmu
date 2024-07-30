@@ -1,8 +1,8 @@
 ---
-title: 弹幕实例
+title: 弹幕 API
 description: 弹幕实例方法的介绍
 sidebar:
-  order: 2
+  order: 1
 ---
 
 弹幕实例有一些方法供你使用，你可用用他们来做一些行为，或者获取当前弹幕的一些状态数据。下面是一个实例。
@@ -24,7 +24,7 @@ manager.use({
 
 ### `data`
 
-**类型: `PushData<T>`**
+**类型：`PushData<T>`**
 
 `data` 是你在发送数据时传入的数据。
 
@@ -42,7 +42,7 @@ manager.push({ value: 1 });
 
 ### `type`
 
-**类型: `facile' | 'flexible'`**
+**类型：`facile' | 'flexible'`**
 
 弹幕的类型，分为普通弹幕和高级弹幕，普通弹幕的类型为 `facile`，你可以根据此属性来判断做不同的处理。
 
@@ -50,7 +50,7 @@ manager.push({ value: 1 });
 
 ### `node`
 
-**类型: `HTMLElement`**
+**类型：`HTMLElement`**
 
 弹幕的内置节点，你可以往这个节点里面渲染真正的弹幕内容。
 
@@ -58,7 +58,7 @@ manager.push({ value: 1 });
 
 ### `duration`
 
-**类型: `number`**
+**类型：`number`**
 
 弹幕的运动时长。
 
@@ -66,7 +66,7 @@ manager.push({ value: 1 });
 
 ### `direction`
 
-**类型: `'right' | 'left' | 'none'`**
+**类型：`'right' | 'left' | 'none'`**
 
 弹幕的运动方向。
 
@@ -74,7 +74,7 @@ manager.push({ value: 1 });
 
 ### `pluginSystem`
 
-**类型: `PluginSystem`**
+**类型：`PluginSystem`**
 
 弹幕的插件系统实例，其 api 可以见 [hooks-plugin](https://github.com/imtaotao/hooks-plugin?tab=readme-ov-file#apis) 的文档。
 
@@ -84,7 +84,7 @@ manager.push({ value: 1 });
 
 ### `hide()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 将当前弹幕实例设置为隐藏状态，实际上是设置 `visibility: hidden`，会调用 `hide` 钩子。
 
@@ -92,7 +92,7 @@ manager.push({ value: 1 });
 
 ### `show()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 将当前弹幕实例从隐藏状态恢复显示，会调用 `show` 钩子。
 
@@ -100,7 +100,7 @@ manager.push({ value: 1 });
 
 ### `pause()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 将当前正在运动状态的弹幕实例暂停，会调用 `pause` 钩子。
 
@@ -108,7 +108,7 @@ manager.push({ value: 1 });
 
 ### `resume()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 将当前正在暂停状态的弹幕实例恢复运动，会调用 `resume` 钩子。
 
@@ -116,7 +116,7 @@ manager.push({ value: 1 });
 
 ### `setloop()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 `setloop` 将弹幕实例设置为循环播放状态。
 
@@ -124,7 +124,7 @@ manager.push({ value: 1 });
 
 ### `unloop()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 `unloop` 将弹幕实例从循环播放状态取消。
 
@@ -132,7 +132,7 @@ manager.push({ value: 1 });
 
 ### `destroy()`
 
-**类型: `() => void`**
+**类型：`() => void`**
 
 将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子。
 
@@ -140,7 +140,7 @@ manager.push({ value: 1 });
 
 ### `setStyle()`
 
-**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void`**
+**类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void`**
 
 设置当前弹幕实例内置节点的 `CSS` 样式。
 
@@ -153,23 +153,31 @@ danmaku.setStyle('background', 'red');
 
 ### `getWidth()`
 
-**类型: `() => number`**
+**类型：`() => number`**
 
-`getHeight` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
+`getWidth()` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
 
 <div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
 ### `getHeight()`
 
-**类型: `() => number`**
+**类型：`() => number`**
 
-`getHeight` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
+`getHeight()` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `remove()`
+
+**类型：`(pluginName: string) => void`**
+
+移除当前弹幕实例的某个插件，但是必须指定插件名字。
 
 <div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
 ### `use()`
 
-**类型: `(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T> & { name: string }`**
+**类型：`(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T> & { name: string }`**
 
 给当前弹幕实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
@@ -187,11 +195,3 @@ const plugin = danmaku.use({
 });
 console.log(plugin.name); // uuid
 ```
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `remove()`
-
-**类型: `(pluginName: string) => void`**
-
-移除当前弹幕实例的某个插件，但是必须指定插件名字。

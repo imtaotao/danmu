@@ -1,5 +1,5 @@
 ---
-title: manager 实例
+title: Manager API
 description: 学习 manager 实例上的 api
 sidebar:
   order: 4
@@ -9,7 +9,7 @@ sidebar:
 
 ### `version`
 
-**类型: `string`**
+**类型：`string`**
 
 `danmu` npm 包的版本。
 
@@ -17,7 +17,7 @@ sidebar:
 
 ### `options`
 
-**类型: `ManagerOptions`**
+**类型：`ManagerOptions`**
 
 `manager` 的 options，你可以从这里取到一些值并使用。
 
@@ -29,7 +29,7 @@ console.log(manager.options.times); // [number, number]
 
 ### `statuses`
 
-**类型: `Record<PropertyKey, unknown>`**
+**类型：`Record<PropertyKey, unknown>`**
 
 一个记录状态的属性，在内核中没有使用，主要是提供给业务方记录一些状态使用的。默认类型为一个 `Record<PropertyKey, unknown>`，不过你可以在创建 `manager` 的时候传递范型。
 
@@ -43,7 +43,7 @@ manager.statuses; // 类型为 { background: string }
 
 ### `box`
 
-**类型: `Box`**
+**类型：`Box`**
 
 弹幕容器实例，其上面有如下公共方法供使用，当你在一些钩子里面获取到 box 实例时，可以参考本小节的知识。
 
@@ -67,7 +67,7 @@ manager.setStyle('background', 'red');
 
 ### `container`
 
-**类型: `HTMLElement | null`**
+**类型：`HTMLElement | null`**
 
 弹幕容器挂载到的节点上，这是你通过 `manager.mount()` 挂载的节点，一般在编写插件的时候会很有用。
 
@@ -75,7 +75,7 @@ manager.setStyle('background', 'red');
 
 ### `pluginSystem`
 
-**类型: `PluginSystem`**
+**类型：`PluginSystem`**
 
 `manager` 的插件系统实例，其 api 可以见 [hooks-plugin](https://github.com/imtaotao/hooks-plugin?tab=readme-ov-file#apis) 的文档。
 
@@ -83,23 +83,9 @@ manager.setStyle('background', 'red');
 
 ## 方法
 
-### `nextFrame()`
-
-**类型: `(fn: FrameRequestCallback) => void`**
-
-回调函数会在下一帧触发。
-
-```ts
-manager.nextFrame(() => {
-  // ...
-});
-```
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
 ### `isShow()`
 
-**类型: `() => boolean`**
+**类型：`() => boolean`**
 
 用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`;
 
@@ -107,7 +93,7 @@ manager.nextFrame(() => {
 
 ### `isFreeze()`
 
-**类型: `() => boolean`**
+**类型：`() => boolean`**
 
 用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`;
 
@@ -115,7 +101,7 @@ manager.nextFrame(() => {
 
 ### `isPlaying()`
 
-**类型: `() => boolean`**
+**类型：`() => boolean`**
 
 用来判断当前渲染引擎是否正在渲染播放状态，当你调用 `manager.stopPlaying()` 后，会返回 `false`。
 
@@ -123,7 +109,7 @@ manager.nextFrame(() => {
 
 ### `isDanmaku()`
 
-**类型: `(b: unknown) => b is Danmaku<T>`**
+**类型：`(b: unknown) => b is Danmaku<T>`**
 
 用来判断某个值是否是弹幕实例。
 
@@ -131,7 +117,7 @@ manager.nextFrame(() => {
 
 ### `setArea()`
 
-**类型: `(data: AreaOptions) => Manager`**
+**类型：`(data: AreaOptions) => Manager`**
 
 设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [demo](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/sidebarAreaY.tsx#L23-L28)。
 
@@ -152,7 +138,7 @@ interface AreaOptions {
 
 ### `setOpacity()`
 
-**类型: `(opacity: number | string) => Manager`**
+**类型：`(opacity: number | string) => Manager`**
 
 设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
 
@@ -160,7 +146,7 @@ interface AreaOptions {
 
 ### `setStyle()`
 
-**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
+**类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
 
 设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
 
@@ -168,7 +154,7 @@ interface AreaOptions {
 
 ### `setRate()`
 
-**类型: `(rate: number) => Manager`**
+**类型：`(rate: number) => Manager`**
 
 设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -176,7 +162,7 @@ interface AreaOptions {
 
 ### `setMode()`
 
-**类型: `(mode: 'none' | 'strict' | 'adaptive') => Manager`**
+**类型：`(mode: 'none' | 'strict' | 'adaptive') => Manager`**
 
 设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -184,7 +170,7 @@ interface AreaOptions {
 
 ### `setGap()`
 
-**类型: `(gap: number | string) => Manager`**
+**类型：`(gap: number | string) => Manager`**
 
 设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -192,7 +178,7 @@ interface AreaOptions {
 
 ### `setTimes()`
 
-**类型: `(times: [number, number]) => Manager`**
+**类型：`(times: [number, number]) => Manager`**
 
 设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -200,7 +186,7 @@ interface AreaOptions {
 
 ### `setLimits()`
 
-**类型: `(limits: { view?: number; stash?: number }) => Manager`**
+**类型：`(limits: { view?: number; stash?: number }) => Manager`**
 
 设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -208,7 +194,7 @@ interface AreaOptions {
 
 ### `setInterval()`
 
-**类型: `(interval: number) => Manager`**
+**类型：`(interval: number) => Manager`**
 
 设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -216,7 +202,7 @@ interface AreaOptions {
 
 ### `setDirection()`
 
-**类型: `(direction: 'left' | 'right') => Manager`**
+**类型：`(direction: 'left' | 'right') => Manager`**
 
 设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -224,11 +210,11 @@ interface AreaOptions {
 
 ### `setTrackHeight()`
 
-**类型: `(trackHeight: number | string) => Manager`**
+**类型：`(trackHeight: number | string) => Manager`**
 
 设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-:::tip[轨道高度的设置规则]
+:::note[轨道高度的设置规则]
 轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
 :::
 
@@ -244,7 +230,7 @@ manager.setTrackHeight(100);
 
 ### `canPush()`
 
-**类型: `(type: DanmakuType) => boolean`**
+**类型：`(type: DanmakuType) => boolean`**
 
 判断是否能够添加弹幕，超过内存限制阈值，渲染数量阈值会被阻止添加，你可以通过调用 `manager.setLimits()` 来更改。
 
@@ -260,7 +246,7 @@ manager.canPush('flexible');
 
 ### `push()`
 
-**类型: `(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
+**类型：`(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
 
 发送一条弹幕，这条弹幕会被放在内存数组中等待被渲染，这不一定是即时响应渲染的，要看你设置的渲染算法，你可以通过调用 `manager.setMode()` 来更改，会触发 `push` 钩子。
 
@@ -285,7 +271,7 @@ manager.push(
 
 ### `unshift()`
 
-**类型: `(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
+**类型：`(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
 
 `push` 方法是添加到内存数组后面，此方法会将弹幕**添加到内存数组前面**，当用户在输入了一条弹幕点击发送的时候，你应该使用此方法，以便于让弹幕在下次轮询的时候就渲染，用法和 `push` 方法一样，会触发 `push` 钩子。
 
@@ -293,17 +279,18 @@ manager.push(
 
 ### `pushFlexibleDanmaku()`
 
-**类型: `(data: PushData<T>, options?: PushFlexOptions<T>) => boolean`**
+**类型：`(data: PushData<T>, options?: PushFlexOptions<T>) => boolean`**
 
 发送一条高级弹幕，**高级弹幕会在下次轮询的时候渲染**，会触发 `push` 钩子。
 
-:::tip[高级弹幕说明]
+:::note[高级弹幕说明]
 
 1. 高级弹幕的插件和普通弹幕的插件一样，你可以通过 `danmaku.type` 属性来区分。
 2. 高级弹幕如果不传 `duration` 则会从 `manager.options.times` 范围里面随机生成一个。
 3. 高级弹幕如果不传 `direction` 则会取 `manager.options.direaction`。
 4. 高级弹幕必须传递 `position` 来指定位置。
-   :::
+
+:::
 
 ```ts
 // 普通弹幕没有 'none'
@@ -341,7 +328,7 @@ manager.pushFlexibleDanmaku(
 
 ### `len()`
 
-**类型: `() => { stash: number; flexible: number; view: number; all: number }`**
+**类型：`() => { stash: number; flexible: number; view: number; all: number }`**
 
 返回当前渲染引擎的弹幕状态数量，这是实时变化的。
 
@@ -358,7 +345,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `each()`
 
-**类型: `(fn: (d: Danmaku<T>) => boolean | void) => Manager`**
+**类型：`(fn: (d: Danmaku<T>) => boolean | void) => Manager`**
 
 对当前正在渲染的弹幕做**同步遍历**，回调函数返回 `false` 的时候会终止遍历。
 
@@ -366,7 +353,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `asyncEach()`
 
-**类型: `(fn: (d: Danmaku<T>) => boolean | void) => Promise<Manager>`**
+**类型：`(fn: (d: Danmaku<T>) => boolean | void) => Promise<Manager>`**
 
 对当前正在渲染的弹幕做**异步遍历**，回调函数返回 `false` 的时候会终止遍历。
 
@@ -378,7 +365,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `mount()`
 
-**类型: `(container?: HTMLElement | string, { clear?: boolean }) => Manager`**
+**类型：`(container?: HTMLElement | string, { clear?: boolean }) => Manager`**
 
 将内核的弹幕容器挂载到一个 HTML 节点上，可以是一个 `string` 类型的 `CSS` 选择器，`clear` 参数可以用来清除之前渲染的弹幕，默认为 `true`，如果你不想清除可以传 `false`，挂载之后你可以通过 `manager.container` 拿到这个节点。
 
@@ -394,7 +381,7 @@ manager.mount('#root', { clear: false });
 
 ### `unmount()`
 
-**类型: `() => Manager`**
+**类型：`() => Manager`**
 
 将内核的弹幕容器从当前挂载的节点中卸载，卸载之后当你通过 `manager.container` 获取时会得到 `null`。
 
@@ -406,7 +393,7 @@ manager.mount('#root', { clear: false });
 
 ### `clear()`
 
-**类型: `() => Manager`**
+**类型：`() => Manager`**
 
 清空当前渲染和内存中的弹幕，会触发 `clear` 钩子。
 
@@ -414,7 +401,7 @@ manager.mount('#root', { clear: false });
 
 ### `updateOptions()`
 
-**类型: `(newOptions: Partial<ManagerOptions>) => Manager`**
+**类型：`(newOptions: Partial<ManagerOptions>) => Manager`**
 
 更新 `manager.options`，如果涉及到一些间距和宽高的变化，会自动 format，会触发 `updateOptions` 钩子，你可以在这个钩子里面拿到需要更新的 `options`。
 
@@ -422,7 +409,7 @@ manager.mount('#root', { clear: false });
 
 ### `startPlaying()`
 
-**类型: `() => Manager`**
+**类型：`() => Manager`**
 
 启动渲染引擎，内核会启动一个定时器轮询渲染。会触发 `start` 钩子
 
@@ -430,7 +417,7 @@ manager.mount('#root', { clear: false });
 
 ### `stopPlaying()`
 
-**类型: `() => Manager`**
+**类型：`() => Manager`**
 
 关闭渲染引擎，内核的定时器也会被清除。会触发 `stop` 钩子。
 
@@ -438,7 +425,7 @@ manager.mount('#root', { clear: false });
 
 ### `hide()`
 
-**类型: `() => Promise<Manager>`**
+**类型：`() => Promise<Manager>`**
 
 将当前渲染的弹幕隐藏起来，并且新渲染的弹幕也会被隐藏。会触发 `hide` 钩子。
 
@@ -446,15 +433,29 @@ manager.mount('#root', { clear: false });
 
 ### `show()`
 
-**类型: `() => Promise<Manager>`**
+**类型：`() => Promise<Manager>`**
 
 将当前被隐藏的弹幕显示出来。会触发 `show` 钩子。
 
 <div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
+### `nextFrame()`
+
+**类型：`(fn: FrameRequestCallback) => void`**
+
+这是一个工具方法，回调函数会在下一帧触发。
+
+```ts
+manager.nextFrame(() => {
+  // ...
+});
+```
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
 ### `remove()`
 
-**类型: `(pluginName: string) => Manager`**
+**类型：`(pluginName: string) => Manager`**
 
 移除当前 `manager` 实例的某个插件，但是必须指定插件名字。
 
@@ -462,7 +463,7 @@ manager.mount('#root', { clear: false });
 
 ### `use()`
 
-**类型: `(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) => ManagerPlugin<T> & { name: string }`**
+**类型：`(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) => ManagerPlugin<T> & { name: string }`**
 
 给当前 `manager` 实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
@@ -485,10 +486,10 @@ console.log(plugin.name); // uuid
 
 ### `updateOccludedUrl()`
 
-**类型: `(url?: string, el?: HTMLElement) => Manager`**
+**类型：`(url?: string, el?: HTMLElement) => Manager`**
 
 给指定元素（默认是当前弹幕容器 `manager.box.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
 
-:::tip[注意事项]
+:::note[注意事项]
 放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
 :::

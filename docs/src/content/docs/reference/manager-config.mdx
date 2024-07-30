@@ -1,8 +1,8 @@
 ---
-title: 配置
+title: Manager 配置
 description: manager 的配置介绍
 sidebar:
-  order: 0
+  order: 2
 ---
 
 在初始化 `manager` 的时候，允许传递 options，替换默认的配置。以下所有的配置都是**可选的**。
@@ -46,8 +46,8 @@ manager.setRate(1);
 
 ### `mode`
 
-**类型: `'none' | 'strict' | 'adaptive'`**<br/>
-**默认: `'strict'`**
+**类型：`'none' | 'strict' | 'adaptive'`**<br/>
+**默认值：`'strict'`**
 
 用来确定内核的**碰撞检测算法**。
 
@@ -59,8 +59,8 @@ manager.setRate(1);
 
 ### `rate`
 
-**类型: `number`**<br/>
-**默认: `1`**
+**类型：`number`**<br/>
+**默认值：`1`**
 
 用来设置设置弹幕的运动速率，弹幕的原始运动速度会乘以 `rate` 这个系数。
 
@@ -68,8 +68,8 @@ manager.setRate(1);
 
 ### `gap`
 
-**类型: `number | string`**<br/>
-**默认: `0`**
+**类型：`number | string`**<br/>
+**默认值：`0`**
 
 同一条轨道在碰撞检测的啥情况下，后一条弹幕与前一条弹幕最小相隔的距离。**不能设置一个小于 `0` 的值，如果传递的是 `string` 类型则代表是百分比，但是必须是 `10%` 这种语法**， 在 `mode` 为 `none` 的情况下，此参数无效。
 
@@ -84,8 +84,8 @@ manager.setGap('10%'); // 最小间距为容器宽度的 10%
 
 ### `interval`
 
-**类型: `number`**<br/>
-**默认: `500`**
+**类型：`number`**<br/>
+**默认值：`500`**
 
 内核轮询渲染的频率，默认为 `500ms` 一次，你可以根据业务现实情况调整为一个合适的值。其实就是 `setTimeout` 的时间。
 
@@ -93,8 +93,8 @@ manager.setGap('10%'); // 最小间距为容器宽度的 10%
 
 ### `direction`
 
-**类型: `string`**<br/>
-**默认: `'right'`**
+**类型：`string`**<br/>
+**默认值：`'right'`**
 
 弹幕的运动方向，默认从右往左运动，**普通弹幕没有 `none` 值，高级弹幕可以设置 `none` 值**。
 
@@ -102,8 +102,8 @@ manager.setGap('10%'); // 最小间距为容器宽度的 10%
 
 ### `trackHeight`
 
-**类型: `number | string`**<br/>
-**默认: `'20%'`**
+**类型：`number | string`**<br/>
+**默认值：`'20%'`**
 
 轨道高度，如果传入的值为 `number` 类型，则默认是 `px`，如果传递是 `string` 类型，必须是 `10%` 这种语法，代表基于容器的百分比高度。
 
@@ -118,8 +118,8 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 
 ### `times`
 
-**类型: `[number, number]`**<br/>
-**默认: `[4000, 6000]`**
+**类型：`[number, number]`**<br/>
+**默认值：`[4000, 6000]`**
 
 普通弹幕的运动时间，这是一个范围值，**普通弹幕会在这个范围内随机选择一个时间作为运动时间**，如果你希望所有的弹幕运动时间都一致，你可以将两个数设置为同样的数。当发送高级弹幕的时候，如果没有指定运动时长，也会从这个范围随机取一个值。
 
@@ -127,8 +127,8 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 
 ### `limits`
 
-**类型: `{ view?: number; stash?: number }`**<br/>
-**默认: `{ stash: 1024 }`**
+**类型：`{ view?: number; stash?: number }`**<br/>
+**默认值：`{ stash: 1024 }`**
 
 这个参数会限制弹幕渲染的数量。
 
@@ -139,8 +139,8 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 
 ### `plugin`
 
-**类型: `ManagerPlugin<unknow>`**<br/>
-**默认: `undefined`**
+**类型：`ManagerPlugin<unknow>`**<br/>
+**默认值：`undefined`**
 
 创建 `manager` 的时候的默认 `managerPlugin`，`manager` 如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [插件钩子介绍](../../reference/plugin-hooks/) 和 [编写插件](../../guides/plugins/) 这两小节。
 
