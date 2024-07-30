@@ -129,6 +129,119 @@ manager.nextFrame(() => {
 
 <div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
 
+### `setArea()`
+
+**类型: `(data: AreaOptions) => Manager`**
+
+设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [demo](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/sidebarAreaY.tsx#L23-L28)。
+
+```ts
+interface AreaOptions {
+  x?: {
+    start?: string;
+    end?: string;
+  };
+  y?: {
+    start?: string;
+    end?: string;
+  };
+}
+```
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setOpacity()`
+
+**类型: `(opacity: number | string) => Manager`**
+
+设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setStyle()`
+
+**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
+
+设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setRate()`
+
+**类型: `(rate: number) => Manager`**
+
+设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setMode()`
+
+**类型: `(mode: 'none' | 'strict' | 'adaptive') => Manager`**
+
+设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setGap()`
+
+**类型: `(gap: number | string) => Manager`**
+
+设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setTimes()`
+
+**类型: `(times: [number, number]) => Manager`**
+
+设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setLimits()`
+
+**类型: `(limits: { view?: number; stash?: number }) => Manager`**
+
+设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setInterval()`
+
+**类型: `(interval: number) => Manager`**
+
+设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setDirection()`
+
+**类型: `(direction: 'left' | 'right') => Manager`**
+
+设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
+### `setTrackHeight()`
+
+**类型: `(trackHeight: number | string) => Manager`**
+
+设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+:::tip[轨道高度的设置规则]
+轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
+:::
+
+```ts
+// 这只会存在三条轨道
+manager.setTrackHeight('33%');
+
+// 轨道高度为 100px，轨道的数目为 `容器高度 / 100px`
+manager.setTrackHeight(100);
+```
+
+<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+
 ### `canPush()`
 
 **类型: `(type: DanmakuType) => boolean`**
@@ -379,116 +492,3 @@ console.log(plugin.name); // uuid
 :::tip[注意事项]
 放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
 :::
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setArea()`
-
-**类型: `(data: AreaOptions) => Manager`**
-
-设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [demo](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/sidebarAreaY.tsx#L23-L28)。
-
-```ts
-interface AreaOptions {
-  x?: {
-    start?: string;
-    end?: string;
-  };
-  y?: {
-    start?: string;
-    end?: string;
-  };
-}
-```
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setOpacity()`
-
-**类型: `(opacity: number | string) => Manager`**
-
-设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setStyle()`
-
-**类型: `(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
-
-设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setRate()`
-
-**类型: `(rate: number) => Manager`**
-
-设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setMode()`
-
-**类型: `(mode: 'none' | 'strict' | 'adaptive') => Manager`**
-
-设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setGap()`
-
-**类型: `(gap: number | string) => Manager`**
-
-设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setTimes()`
-
-**类型: `(times: [number, number]) => Manager`**
-
-设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setLimits()`
-
-**类型: `(limits: { view?: number; stash?: number }) => Manager`**
-
-设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setInterval()`
-
-**类型: `(interval: number) => Manager`**
-
-设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setDirection()`
-
-**类型: `(direction: 'left' | 'right') => Manager`**
-
-设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
-
-### `setTrackHeight()`
-
-**类型: `(trackHeight: number | string) => Manager`**
-
-设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-:::tip[轨道高度的设置规则]
-轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
-:::
-
-```ts
-// 这只会存在三条轨道
-manager.setTrackHeight('33%');
-
-// 轨道高度为 100px，轨道的数目为 `容器高度 / 100px`
-manager.setTrackHeight(100);
-```
