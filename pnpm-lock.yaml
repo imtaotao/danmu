@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.5.1
+        version: 1.5.1
       hooks-plugin:
         specifier: ^1.2.6
         version: 1.2.6
@@ -121,8 +121,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.5.1
+        version: 1.5.1
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1640,8 +1640,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  aidly@1.5.0:
-    resolution: {integrity: sha512-Dsr4WUvDqwyze0kRHkeaD/5LMRM14Mf86s6Xlsu0OhTbHxjvQoPsPPhgiTG/WvNiczc6o8FIuikPaS6+A7m1Iw==}
+  aidly@1.5.1:
+    resolution: {integrity: sha512-WA4UBbM2qKMSyQcmjReEw3zmGHhw/BKoFaqTcpKiCmClRuJR5Z78ye4CoEw6ssoS83zE9Ni8+tqS9WxicGj16Q==}
 
   ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
@@ -5681,7 +5681,7 @@ snapshots:
 
   acorn@8.12.1: {}
 
-  aidly@1.5.0:
+  aidly@1.5.1:
     dependencies:
       small-queue: 1.1.2
 
@@ -6596,7 +6596,7 @@ snapshots:
 
   hooks-plugin@1.2.6:
     dependencies:
-      aidly: 1.5.0
+      aidly: 1.5.1
 
   html-escaper@2.0.2: {}
 
