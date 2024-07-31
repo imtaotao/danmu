@@ -1,9 +1,15 @@
 ---
-import RapideThemeSelect from 'starlight-theme-rapide/overrides/ThemeSelect.astro'
+import RapideThemeSelect from 'starlight-theme-rapide/overrides/ThemeSelect.astro';
 ---
 
-{ Astro.props.locale === 'zh-cn' ? <div><a href="/blog/">博客</a></div> : null}
-<RapideThemeSelect {...(Astro.props as any)}><slot /></RapideThemeSelect>
+{
+  Astro.props.locale === 'zh-cn' ? (
+    <div>
+      <a href="/blog/">博客</a>
+    </div>
+  ) : null
+}
+<RapideThemeSelect {...Astro.props as any}><slot /></RapideThemeSelect>
 
 <style>
   div {
