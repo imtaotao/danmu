@@ -12,7 +12,7 @@ hero:
       link: /zh-cn/getting-started
     - theme: alt
       text: API 参考
-      link: /zh-cn/reference
+      link: /zh-cn/reference/index
 
 features:
   - title: 多种渲染算法
