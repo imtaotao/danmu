@@ -173,7 +173,7 @@ export const Transmitter = ({
                 </Label>
                 <Select
                   defaultValue={direction as string}
-                  onValueChange={(e) => setDirection(e)}
+                  onValueChange={(e) => setDirection(e as 'left' | 'right')}
                 >
                   <SelectTrigger className="w-[185px]">
                     <SelectValue placeholder="选择方向" />
