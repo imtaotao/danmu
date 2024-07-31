@@ -12,10 +12,20 @@ export default defineConfig({
     starlight({
       title: 'Danmaku',
       lastUpdated: true,
-      defaultLocale: 'zh-CN',
       customCss: ['./src/styles/landing.css'],
       editLink: {
         baseUrl: 'https://github.com/imtaotao/danmu/edit/main/docs/',
+      },
+      defaultLocale: 'zh-cn',
+      locales: {
+        en: {
+          label: 'English',
+          lang: 'en',
+        },
+        'zh-cn': {
+          label: '简体中文',
+          lang: 'zh-CN',
+        },
       },
       logo: {
         light: './src/assets/logo-light.svg',
@@ -53,7 +63,7 @@ export default defineConfig({
         starlightViewModes(),
         starlightThemeRapide(),
         starlightLinksValidator(),
-        starlightBlog({ title: '博客' }),
+        // starlightBlog({ title: '博客' }),
       ],
     }),
   ],

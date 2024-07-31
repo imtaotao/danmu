@@ -2,7 +2,7 @@
 title: 全局配置
 description: manager 的配置介绍
 sidebar:
-  order: 2
+  order: 1
 ---
 
 在初始化 `manager` 的时候，允许传递 options，替换默认的配置。以下所有的配置都是**可选的**。
@@ -142,7 +142,7 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 **类型：`ManagerPlugin<unknow>`**<br/>
 **默认值：`undefined`**
 
-创建 `manager` 的时候的默认 `managerPlugin`，`manager` 如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [插件钩子介绍](../../reference/plugin-hooks/) 和 [编写插件](../../guides/plugins/) 这两小节。
+创建 `manager` 的时候的默认 `managerPlugin`，`manager` 如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [**全局钩子**](../manager-hooks/) 和 [**编写插件**](../../guides/plugins/) 这两章。
 
 **示例：**
 
