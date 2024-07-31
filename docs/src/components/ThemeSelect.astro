@@ -1,0 +1,30 @@
+---
+import RapideThemeSelect from 'starlight-theme-rapide/overrides/ThemeSelect.astro'
+---
+
+{ Astro.props.locale === 'zh-cn' ? <div><a href="/blog/">博客</a></div> : null}
+<RapideThemeSelect {...(Astro.props as any)}><slot /></RapideThemeSelect>
+
+<style>
+  div {
+    border-inline-end: 1px solid var(--sl-color-gray-5);
+    display: none;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 50rem) {
+    div {
+      display: flex;
+    }
+  }
+
+  a {
+    color: var(--sl-color-text-accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  :global(.sl-markdown-content .posts) {
+    margin-top: 2rem;
+  }
+</style>

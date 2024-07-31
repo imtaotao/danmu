@@ -16,7 +16,6 @@
     "sharp": "^0.33.4",
     "starlight-blog": "^0.11.1",
     "starlight-links-validator": "^0.9.1",
-    "starlight-theme-rapide": "^0.1.1",
-    "starlight-view-modes": "^0.6.0"
+    "starlight-theme-rapide": "^0.1.1"
   }
 }

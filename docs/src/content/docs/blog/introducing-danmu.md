@@ -1,5 +1,5 @@
 ---
-title: 这可能是你见过的最强大的弹幕库
+title: 最强大的弹幕库
 excerpt: todo...
 date: 2024-07-31
 authors:

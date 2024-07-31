@@ -2,7 +2,6 @@ import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
 import starlightBlog from 'starlight-blog';
-import starlightViewModes from 'starlight-view-modes';
 import starlightThemeRapide from 'starlight-theme-rapide';
 
 // https://astro.build/config
@@ -10,7 +9,7 @@ export default defineConfig({
   integrations: [
     // https://starlight.astro.build/zh-cn/reference/configuration/
     starlight({
-      title: 'Danmaku',
+      title: 'danmu',
       lastUpdated: true,
       customCss: ['./src/styles/landing.css'],
       editLink: {
@@ -34,7 +33,6 @@ export default defineConfig({
       },
       social: {
         github: 'https://github.com/imtaotao/danmu',
-        mastodon: 'https://imtaotao.github.io/danmu',
       },
       sidebar: [
         {
@@ -42,7 +40,7 @@ export default defineConfig({
           items: [
             {
               label: '快速入门',
-              link: 'started',
+              link: 'getting-started',
             },
             {
               label: '在 TypeScript 中使用',
@@ -59,11 +57,13 @@ export default defineConfig({
           autogenerate: { directory: 'reference' },
         },
       ],
+      // components: {
+      //   ThemeSelect: "./src/components/ThemeSelect.astro",
+      // },
       plugins: [
-        starlightViewModes(),
+        // starlightBlog(),
         starlightThemeRapide(),
         starlightLinksValidator(),
-        // starlightBlog({ title: '博客' }),
       ],
     }),
   ],

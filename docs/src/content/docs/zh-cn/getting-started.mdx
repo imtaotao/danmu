@@ -53,7 +53,7 @@ import { Tabs, TabItem, Steps } from '@astrojs/starlight/components';
 
 `danmu` 核心包只暴露了一个 `create` 方法，用来创建一个 `manager` 实例，是的，我们所有的实现都是多实例的方式实现的，创建的时候传入的配置可以看[**配置**](./reference/manager-config)这一章节的介绍。
 
-```ts title="init.ts" {9-14}
+```ts title="init.ts" {9}
 import { create } from 'danma';
 
 // 在此处创建一个 manager 实例，如果不传递则会使用默认的配置
@@ -124,7 +124,7 @@ manager.push(
 
 普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`pushflexibledanmaku`**](./reference/manager-api/#pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
 
-```ts {13-14}
+```diff lang="ts"
 manager.pushFlexibleDanmaku(
   {
     id: 1, // 可选参数
@@ -137,8 +137,8 @@ manager.pushFlexibleDanmaku(
       // 单位为 px（不过你自己要将 % 换算成 px 也很简单，可以参考我们的 demo）
       // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
       return {
-        x: ((box.width - danmaku.getWidth()) * x) / 100,
-        y: ((box.height - danmaku.getHeight()) * y) / 100,
++       x: ((box.width - danmaku.getWidth()) * x) / 100,
++       y: ((box.height - danmaku.getHeight()) * y) / 100,
       };
     },
     plugin: {

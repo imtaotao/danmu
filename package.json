@@ -26,6 +26,7 @@
     "test": "jest",
     "prepare": "husky",
     "docs:dev": "cd docs && pnpm run dev",
+    "docs:build": "rimraf ./docs/dist && cd docs && pnpm run build",
     "demo:dev": "cd demo && pnpm run dev",
     "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
     "core:dev": "rollup --config --environment BUILD:development",
