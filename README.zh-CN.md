@@ -16,11 +16,20 @@
 一个高度可扩展的 danmaku 库，具有强大的插件系统，防遮挡和碰撞检测，自定义样式，基于 `CSS`，`DOM` 和 [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin) 实现
 
 > Demo 预览: https://imtaotao.github.io/danmu/
+> 文档: https://imtaotao.github.io/danmu/document/zh/
 
 
 ### Usage
 
 ```js
 import { create } from 'danmu';
-// ...
+
+const manager = create();
+
+// 初始化
+manager.mount(document.getElementById('root'));
+manager.startPlaying();
+
+// 发送弹幕
+manager.push({ value: 'danmaku content' });
 ```
