@@ -15,7 +15,7 @@ English | [简体中文](./README.zh-CN.md)
 
 A highly extensible danmaku library with a robust plugin system, occlusion prevention, and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
 
-- Demo preview: https://imtaotao.github.io/danmu/
+- Demo: https://imtaotao.github.io/danmu/
 - Document: https://imtaotao.github.io/danmu/document/zh/
 
 
