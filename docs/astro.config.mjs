@@ -5,6 +5,7 @@ import starlightThemeRapide from 'starlight-theme-rapide';
 
 // https://astro.build/config
 export default defineConfig({
+  base: '/danmu/document',
   integrations: [
     // https://starlight.astro.build/zh-cn/reference/configuration/
     starlight({
