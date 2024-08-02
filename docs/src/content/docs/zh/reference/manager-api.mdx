@@ -260,11 +260,22 @@ manager.canPush('flexible');
 
 发送一条弹幕，这条弹幕会被放在内存数组中等待被渲染，这不一定是即时响应渲染的，要看你设置的渲染算法，你可以通过调用 `manager.setMode()` 来更改，会触发 `push` 钩子。
 
-```ts
+:::note[注意]
+
+发送弹幕的时候，**数据格式必须是 `PushData`，其中 `id` 是可选的。也就是说必须是一个带有 `value` 的对象 `{ value: unknown }`**，至于 `value` 的类型由你自己来控制，只要你能在渲染的时候能正确拿到就可以了，具体见下面的示例。
+
+:::
+
+```ts {7, 11, 15-16}
+interface PushData<T = unknown> {
+  id?: any;
+  value: T;
+}
+
 // 发送一条弹幕
 manager.push({ value: '弹幕内容' });
 
-// 发送一条弹幕并添加插件处理，插件的作用域仅限当前 push 的这一条弹幕
+// 发送一条弹幕并添加插件处理，插件的作用域仅限当前 push 的这一条弹幕。
 manager.push(
   { value: '弹幕内容' },
   {
@@ -283,7 +294,7 @@ manager.push(
 
 **类型：`(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
 
-`push` 方法是添加到内存数组后面，此方法会将弹幕**添加到内存数组前面**，当用户在输入了一条弹幕点击发送的时候，你应该使用此方法，以便于让弹幕在下次轮询的时候就渲染，用法和 `push` 方法一样，会触发 `push` 钩子。
+`push` 方法是添加到内存数组后面，此方法会将弹幕**添加到内存数组前面**，当用户在输入了一条弹幕点击发送的时候，你应该使用此方法，以便于让弹幕在下次轮询的时候**立即渲染**，用法和 `push` 方法一样，会触发 `push` 钩子。
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
@@ -318,16 +329,16 @@ interface PushFlexOptions {
   position: Position | ((d: Danmaku<T>, box: Box) => Position);
 }
 
-// 发送一条弹幕，在容器居中的位置，静止 2s
+// 发送一条弹幕，在容器居中的位置，静止 5s
 manager.pushFlexibleDanmaku(
-  { value: '弹幕内容' },
+  { value: { content: '弹幕内容' } },
   {
-    duration: 2000,
+    duration: 5000,
     direction: 'none',
     position(danmaku, box) {
       return {
-        x: ((box.width - danmaku.getWidth()) * x) / 100,
-        y: ((box.height - danmaku.getHeight()) * y) / 100,
+        x: (box.width - danmaku.getWidth()) * 0.5,
+        y: (box.height - danmaku.getHeight()) * 0.5,
       };
     },
   },
@@ -342,20 +353,6 @@ manager.pushFlexibleDanmaku(
 
 用来获取某条轨道的位置信息，**单位为 `px`，为 Y 轴的数据**。**`i` 如果为正整数，则是取的是 `tarck[i]` 的位置信息，如果为负正整数则从后往前取。**
 
-:::note[提示]
-当你发送高级弹幕的时候如果需要将其发送到某条轨道上，此方法可能会很有用。普通弹幕的位置信息计算方式如下，会在轨道的居中的位置渲染，如果要保持和普通弹幕一样，或许也是一样的算法。
-
-```ts
-// 1. 弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
-// 2. 确保获取的轨道存在，可以通过 `manager.trackCount` 来判断。
-const { middle } = manager.getTrackLocation(0);
-const y = middle - danmaku.getHeight() / 2;
-
-danmaku.setStyle('top', `${y}px`);
-```
-
-:::
-
 **示例：**
 
 ```ts
@@ -364,6 +361,38 @@ const { start, middle, end } = manager.getTrackLocation(0);
 
 // 取最后一条轨道的位置信息
 const { start, middle, end } = manager.getTrackLocation(-1);
+```
+
+:::note[提示]
+
+当你发送高级弹幕的时候如果需要将其发送到某条轨道上，此方法可能会很有用。普通弹幕的位置信息计算方式如下，会在轨道的居中的位置渲染，如果要保持和普通弹幕一样，或许也是一样的算法。
+
+1. 对于弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
+2. 你确保获取的轨道存在，否则会报错，可以通过 `manager.trackCount` 来判断。
+3. 你可以在我们的在线 [**demo**](https://imtaotao.github.io/danmu/) 打开浏览器控制台输入这段代码查看效果，
+
+:::
+
+```ts {7, 10}
+// 打开控制台后，容器会由变化，需要先调用 `format` 方法重新继续
+manager.format();
+
+// 发送一个高级弹幕
+manager.pushFlexibleDanmaku(
+  { value: { content: '测试' } },
+  {
+    duration: 5000,
+    direction: 'none',
+    position(danmaku, box) {
+      // 渲染在第三条轨道中
+      const { middle } = manager.getTrackLocation(3);
+      return {
+        x: (box.width - danmaku.getWidth()) * 0.5,
+        y: middle - danmaku.getHeight() / 2,
+      };
+    },
+  },
+);
 ```
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
