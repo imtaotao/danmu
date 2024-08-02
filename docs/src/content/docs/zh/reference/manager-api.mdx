@@ -13,7 +13,7 @@ sidebar:
 
 `danmu` npm 包的版本。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `options`
 
@@ -25,7 +25,7 @@ sidebar:
 console.log(manager.options.times); // [number, number]
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `statuses`
 
@@ -41,7 +41,7 @@ const manager = create<unknown, { background: string }>();
 manager.statuses; // 类型为 { background: string }
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `box`
 
@@ -65,7 +65,7 @@ declare class Box {
 manager.setStyle('background', 'red');
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `container`
 
@@ -73,7 +73,7 @@ manager.setStyle('background', 'red');
 
 弹幕容器挂载到的节点上，这是你通过 `manager.mount()` 挂载的节点，一般在编写插件的时候会很有用。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `pluginSystem`
 
@@ -81,7 +81,7 @@ manager.setStyle('background', 'red');
 
 `manager` 的插件系统实例，其 api 可以见 [**hooks-plugin**](https://github.com/imtaotao/hooks-plugin?tab=readme-ov-file#apis) 的文档。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ## 方法
 
@@ -91,7 +91,7 @@ manager.setStyle('background', 'red');
 
 用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`;
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `isFreeze()`
 
@@ -99,7 +99,7 @@ manager.setStyle('background', 'red');
 
 用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`;
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `isPlaying()`
 
@@ -107,7 +107,7 @@ manager.setStyle('background', 'red');
 
 用来判断当前渲染引擎是否正在渲染播放状态，当你调用 `manager.stopPlaying()` 后，会返回 `false`。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `isDanmaku()`
 
@@ -115,7 +115,7 @@ manager.setStyle('background', 'red');
 
 用来判断某个值是否是弹幕实例。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setArea()`
 
@@ -136,7 +136,7 @@ interface AreaOptions {
 }
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setOpacity()`
 
@@ -144,7 +144,7 @@ interface AreaOptions {
 
 设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setStyle()`
 
@@ -152,7 +152,7 @@ interface AreaOptions {
 
 设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setRate()`
 
@@ -160,7 +160,7 @@ interface AreaOptions {
 
 设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setMode()`
 
@@ -168,7 +168,7 @@ interface AreaOptions {
 
 设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setGap()`
 
@@ -176,7 +176,7 @@ interface AreaOptions {
 
 设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setTimes()`
 
@@ -184,7 +184,7 @@ interface AreaOptions {
 
 设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setLimits()`
 
@@ -192,7 +192,7 @@ interface AreaOptions {
 
 设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setInterval()`
 
@@ -200,7 +200,7 @@ interface AreaOptions {
 
 设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setDirection()`
 
@@ -208,7 +208,7 @@ interface AreaOptions {
 
 设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setTrackHeight()`
 
@@ -228,7 +228,7 @@ manager.setTrackHeight('33%');
 manager.setTrackHeight(100);
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `canPush()`
 
@@ -244,7 +244,7 @@ manager.canPush('facile');
 manager.canPush('flexible');
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `push()`
 
@@ -269,7 +269,7 @@ manager.push(
 );
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `unshift()`
 
@@ -277,7 +277,7 @@ manager.push(
 
 `push` 方法是添加到内存数组后面，此方法会将弹幕**添加到内存数组前面**，当用户在输入了一条弹幕点击发送的时候，你应该使用此方法，以便于让弹幕在下次轮询的时候就渲染，用法和 `push` 方法一样，会触发 `push` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `pushFlexibleDanmaku()`
 
@@ -326,7 +326,7 @@ manager.pushFlexibleDanmaku(
 );
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `len()`
 
@@ -343,7 +343,7 @@ manager.pushFlexibleDanmaku(
 const { stash, flexible, view, all } = manager.len();
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `each()`
 
@@ -351,7 +351,7 @@ const { stash, flexible, view, all } = manager.len();
 
 对当前正在渲染的弹幕做**同步遍历**，回调函数返回 `false` 的时候会终止遍历。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `asyncEach()`
 
@@ -363,7 +363,7 @@ const { stash, flexible, view, all } = manager.len();
 `asyncEach` 方法会做时间切片，也就是说当你渲染的弹幕过多时，在遍历的时候由于代码运行时间过长，可能会对主线程造成一定阻塞，所以当有切片之后，则可以缓解这一现象。
 :::
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `mount()`
 
@@ -379,7 +379,7 @@ const { stash, flexible, view, all } = manager.len();
 manager.mount('#root', { clear: false });
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `unmount()`
 
@@ -391,7 +391,7 @@ manager.mount('#root', { clear: false });
 manager.mount('#root', { clear: false });
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `clear()`
 
@@ -399,7 +399,7 @@ manager.mount('#root', { clear: false });
 
 清空当前渲染和内存中的弹幕，会触发 `clear` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `updateOptions()`
 
@@ -407,7 +407,7 @@ manager.mount('#root', { clear: false });
 
 更新 `manager.options`，如果涉及到一些间距和宽高的变化，会自动 format，会触发 `updateOptions` 钩子，你可以在这个钩子里面拿到需要更新的 `options`。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `startPlaying()`
 
@@ -415,7 +415,7 @@ manager.mount('#root', { clear: false });
 
 启动渲染引擎，内核会启动一个定时器轮询渲染。会触发 `start` 钩子
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `stopPlaying()`
 
@@ -423,7 +423,7 @@ manager.mount('#root', { clear: false });
 
 关闭渲染引擎，内核的定时器也会被清除。会触发 `stop` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `hide()`
 
@@ -431,7 +431,7 @@ manager.mount('#root', { clear: false });
 
 将当前渲染的弹幕隐藏起来，并且新渲染的弹幕也会被隐藏。会触发 `hide` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `show()`
 
@@ -439,7 +439,7 @@ manager.mount('#root', { clear: false });
 
 将当前被隐藏的弹幕显示出来。会触发 `show` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `nextFrame()`
 
@@ -453,7 +453,7 @@ manager.nextFrame(() => {
 });
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `remove()`
 
@@ -461,7 +461,7 @@ manager.nextFrame(() => {
 
 移除当前 `manager` 实例的某个插件，但是必须指定插件名字。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `use()`
 
@@ -488,7 +488,7 @@ const plugin = manager.use({
 console.log(plugin.name); // uuid
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `updateOccludedUrl()`
 

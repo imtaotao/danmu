@@ -45,7 +45,7 @@ manager.use({
 manager.push({ value: 1 });
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `type`
 
@@ -53,7 +53,7 @@ manager.push({ value: 1 });
 
 弹幕的类型，分为普通弹幕和高级弹幕，普通弹幕的类型为 `facile`，你可以根据此属性来判断做不同的处理。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `node`
 
@@ -61,7 +61,7 @@ manager.push({ value: 1 });
 
 弹幕的内置节点，你可以往这个节点里面渲染真正的弹幕内容。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `duration`
 
@@ -69,7 +69,7 @@ manager.push({ value: 1 });
 
 弹幕的运动时长。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `direction`
 
@@ -77,7 +77,7 @@ manager.push({ value: 1 });
 
 弹幕的运动方向。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `pluginSystem`
 
@@ -85,7 +85,7 @@ manager.push({ value: 1 });
 
 弹幕的插件系统实例，其 api 可以见 [**hooks-plugin**](https://github.com/imtaotao/hooks-plugin?tab=readme-ov-file#apis) 的文档。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ## 方法
 
@@ -95,7 +95,7 @@ manager.push({ value: 1 });
 
 将当前弹幕实例设置为隐藏状态，实际上是设置 `visibility: hidden`，会调用 `hide` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `show()`
 
@@ -103,7 +103,7 @@ manager.push({ value: 1 });
 
 将当前弹幕实例从隐藏状态恢复显示，会调用 `show` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `pause()`
 
@@ -111,7 +111,7 @@ manager.push({ value: 1 });
 
 将当前正在运动状态的弹幕实例暂停，会调用 `pause` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `resume()`
 
@@ -119,7 +119,7 @@ manager.push({ value: 1 });
 
 将当前正在暂停状态的弹幕实例恢复运动，会调用 `resume` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setloop()`
 
@@ -127,7 +127,7 @@ manager.push({ value: 1 });
 
 `setloop` 将弹幕实例设置为循环播放状态。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `unloop()`
 
@@ -135,7 +135,7 @@ manager.push({ value: 1 });
 
 `unloop` 将弹幕实例从循环播放状态取消。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `destroy()`
 
@@ -143,7 +143,7 @@ manager.push({ value: 1 });
 
 将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `setStyle()`
 
@@ -156,7 +156,7 @@ manager.push({ value: 1 });
 danmaku.setStyle('background', 'red');
 ```
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `getWidth()`
 
@@ -164,7 +164,7 @@ danmaku.setStyle('background', 'red');
 
 `getWidth()` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `getHeight()`
 
@@ -172,7 +172,7 @@ danmaku.setStyle('background', 'red');
 
 `getHeight()` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `remove()`
 
@@ -180,7 +180,7 @@ danmaku.setStyle('background', 'red');
 
 移除当前弹幕实例的某个插件，但是必须指定插件名字。
 
-<div style="border-bottom: 0.5px solid #e2e2e3; padding: 10px 0" />
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `use()`
 
