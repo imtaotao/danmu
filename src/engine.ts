@@ -43,8 +43,8 @@ export interface EngineOptions {
 export class Engine<T> {
   public rows = 0;
   public box = new Box();
+  public tracks = [] as Array<TrackData<T>>;
   private _fx = new Queue();
-  private _tracks = [] as Array<TrackData<T>>;
   private _sets = {
     view: new Set<FacileDanmaku<T>>(),
     flexible: new Set<FlexibleDanmaku<T>>(),
@@ -71,6 +71,15 @@ export class Engine<T> {
     if (n > this.box[attr]) n = this.box[attr];
     assert(!Number.isNaN(n), `Invalid "${n}: ${val}"`);
     return n;
+  }
+
+  // We have to make a copy.
+  // During the loop, there are too many factors that change danmaku,
+  // which makes it impossible to guarantee the stability of the list.
+  public clearTarck(i: number) {
+    for (const d of Array.from(this.tracks[i].list)) {
+      d.destroy();
+    }
   }
 
   public len() {
@@ -106,8 +115,8 @@ export class Engine<T> {
     this._sets.view.clear();
     this._sets.flexible.clear();
     this._sets.stash.length = 0;
-    for (let i = 0; i < this._tracks.length; i++) {
-      this._clearTarck(i);
+    for (let i = 0; i < this.tracks.length; i++) {
+      this.clearTarck(i);
     }
   }
 
@@ -166,15 +175,15 @@ export class Engine<T> {
     const h = this.n('height', trackHeight);
 
     if (h <= 0) {
-      for (let i = 0; i < this._tracks.length; i++) {
-        this._clearTarck(i);
+      for (let i = 0; i < this.tracks.length; i++) {
+        this.clearTarck(i);
       }
       return;
     }
     const rows = (this.rows = +(this.box.height / h).toFixed(0));
 
     for (let i = 0; i < rows; i++) {
-      const track = this._tracks[i];
+      const track = this.tracks[i];
       const start = h * i;
       const end = h * (i + 1) - 1;
       const mid = (end - start) / 2 + start;
@@ -183,14 +192,14 @@ export class Engine<T> {
       if (end > this.box.height) {
         this.rows--;
         if (track) {
-          this._clearTarck(i);
-          this._tracks.splice(i, 1);
+          this.clearTarck(i);
+          this.tracks.splice(i, 1);
         }
       } else if (track) {
         // If the reused track is larger than the container height,
         // the overflow needs to be deleted.
         if (track.location[2] > this.box.height) {
-          this._clearTarck(i);
+          this.clearTarck(i);
         } else {
           Array.from(track.list).forEach((d) =>
             d._format(width, height, track),
@@ -198,18 +207,18 @@ export class Engine<T> {
         }
         track.location = location;
       } else {
-        this._tracks.push({
+        this.tracks.push({
           location,
           list: [],
         });
       }
     }
     // Delete the extra tracks and the danmaku inside
-    if (this._tracks.length > this.rows) {
-      for (let i = this.rows; i < this._tracks.length; i++) {
-        this._clearTarck(i);
+    if (this.tracks.length > this.rows) {
+      for (let i = this.rows; i < this.tracks.length; i++) {
+        this.clearTarck(i);
       }
-      this._tracks.splice(this.rows, this._tracks.length - this.rows);
+      this.tracks.splice(this.rows, this.tracks.length - this.rows);
     }
     // If `flexible` danmaku is also outside the view, it also needs to be deleted
     for (const d of this._sets.flexible) {
@@ -500,26 +509,17 @@ export class Engine<T> {
     return null;
   }
 
-  // We have to make a copy.
-  // During the loop, there are too many factors that change danmaku,
-  // which makes it impossible to guarantee the stability of the list.
-  private _clearTarck(i: number) {
-    for (const d of Array.from(this._tracks[i].list)) {
-      d.destroy();
-    }
-  }
-
   private _getTrackData(
     founds = new Set<number>(),
     prev?: TrackData<T>,
   ): TrackData<T> | null {
     if (this.rows === 0) return null;
     const { gap, mode } = this._options;
-    if (founds.size === this._tracks.length) {
+    if (founds.size === this.tracks.length) {
       return mode === 'adaptive' ? prev! : null;
     }
     const i = randomIdx(founds, this.rows);
-    const trackData = this._tracks[i];
+    const trackData = this.tracks[i];
     if (mode === 'none') {
       return trackData;
     }

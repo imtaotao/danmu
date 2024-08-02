@@ -94,6 +94,10 @@ export class Manager<
     return this._container;
   }
 
+  public get trackCount() {
+    return this._engine.tracks.length;
+  }
+
   public len() {
     return this._engine.len();
   }
@@ -121,6 +125,18 @@ export class Manager<
 
   public asyncEach(fn: EachCallback<T>) {
     return this._engine.asyncEach(fn).then(() => this);
+  }
+
+  public clearTarck(i: number) {
+    i = i >= 0 ? i : this.trackCount + i;
+    this._engine.clearTarck(i);
+    return this;
+  }
+
+  public getTrackLocation(i: number) {
+    i = i >= 0 ? i : this.trackCount + i;
+    const [start, middle, end] = this._engine.tracks[i].location;
+    return { start, middle, end };
   }
 
   public freeze({ preventEvents = [] }: FreezeOptions = {}) {
@@ -179,8 +195,6 @@ export class Manager<
   }
 
   public clear(_flag?: Symbol) {
-    // No need to use `destroy` to save loop times
-    this.each((b) => b._removeNode());
     this._engine.clear();
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.clear.emit();
