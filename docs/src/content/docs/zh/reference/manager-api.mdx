@@ -75,6 +75,14 @@ manager.setStyle('background', 'red');
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
+### `trackCount`
+
+**类型：`number`**
+
+当前容器内部轨道的数量。当容器的大小改变后，并且 `format` 之后（你手动调用 `format()` 方法或者调用 `setArea()` 方法），`trackCount` 也会随之改变。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
 ### `pluginSystem`
 
 **类型：`PluginSystem`**
@@ -287,10 +295,10 @@ manager.push(
 
 :::note[高级弹幕说明]
 
-1. 高级弹幕**必须传递 `position` 来指定位置**。
-2. 高级弹幕如果不传 `duration` 则会从 `manager.options.times` 范围里面**随机生成一个**。
-3. 高级弹幕的插件和普通弹幕的插件一样，你可以通过 `danmaku.type` 属性来区分。
-4. 高级弹幕如果不传 `direction` 则会取 **`manager.options.direaction`**。
+1. 高级弹幕的插件和普通弹幕的插件行为一样，你可以通过 `danmaku.type` 属性来区分。
+2. 高级弹幕如果不传 `duration` 则**会从 `manager.options.times` 范围里面随机生成一个**。
+3. 高级弹幕如果不传 `direction` 则**会取 `manager.options.direaction`**。
+4. 高级弹幕**必须传递 `position` 来指定位置**，如果需要指定在某个轨道渲染，可以借助 [**`getTrackLocation()`**](./#gettracklocation) 来做到。
 
 :::
 
@@ -324,6 +332,56 @@ manager.pushFlexibleDanmaku(
     },
   },
 );
+```
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `getTrackLocation()`
+
+**类型：`(i: number) => { start: number, middle: number, end: number }`**
+
+用来获取某条轨道的位置信息，**单位为 `px`，为 Y 轴的数据**。**`i` 如果为正整数，则是取的是 `tarck[i]` 的位置信息，如果为负正整数则从后往前取。**
+
+:::note[提示]
+当你发送高级弹幕的时候如果需要将其发送到某条轨道上，此方法可能会很有用。普通弹幕的位置信息计算方式如下，会在轨道的居中的位置渲染，如果要保持和普通弹幕一样，或许也是一样的算法。
+
+```ts
+// 1. 弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
+// 2. 确保获取的轨道存在，可以通过 `manager.trackCount` 来判断。
+const { middle } = manager.getTrackLocation(0);
+const y = middle - danmaku.getHeight() / 2;
+
+danmaku.setStyle('top', `${y}px`);
+```
+
+:::
+
+**示例：**
+
+```ts
+// 取第一条轨道的位置信息
+const { start, middle, end } = manager.getTrackLocation(0);
+
+// 取最后一条轨道的位置信息
+const { start, middle, end } = manager.getTrackLocation(-1);
+```
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `clearTarck()`
+
+**类型：`(i: number) => Manager`**
+
+用来清除某条轨道上渲染的弹幕。**`i` 如果为正整数，则是清除 `tarck[i]` 上的弹幕，如果为负正整数则从后往前取。**
+
+**示例：**
+
+```ts
+// 清除第一条轨道上的弹幕
+manager.clearTarck(0);
+
+// 清除最后一条轨道上的弹幕
+manager.clearTarck(-1);
 ```
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
@@ -455,6 +513,18 @@ manager.nextFrame(() => {
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
+### `updateOccludedUrl()`
+
+**类型：`(url?: string, el?: HTMLElement) => Manager`**
+
+给指定元素（默认是当前弹幕容器 `manager.box.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
+
+:::note[注意事项]
+放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
+:::
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
 ### `remove()`
 
 **类型：`(pluginName: string) => Manager`**
@@ -487,15 +557,3 @@ const plugin = manager.use({
 });
 console.log(plugin.name); // uuid
 ```
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `updateOccludedUrl()`
-
-**类型：`(url?: string, el?: HTMLElement) => Manager`**
-
-给指定元素（默认是当前弹幕容器 `manager.box.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
-
-:::note[注意事项]
-放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
-:::
