@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { uuid, random, randomColor } from 'aidly';
 import { Send, Pickaxe, CircleAlert } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
@@ -37,6 +38,7 @@ export const Transmitter = ({
   manager: Manager<DanmakuValue>;
 }) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState('');
   const [x, setX] = useState(50);
@@ -58,7 +60,7 @@ export const Transmitter = ({
     toast({
       duration: 800,
       variant: 'destructive',
-      description: msg || '弹幕值不能为空',
+      description: msg || t('notEmpityValue'),
     });
   };
 
@@ -67,11 +69,11 @@ export const Transmitter = ({
       <Textarea
         value={content}
         className="mb-4"
-        placeholder="输入你的弹幕内容。"
+        placeholder={t('inputDanmaku')}
         onChange={(e) => setContent(e.target.value)}
       />
       <div className="flex items-center justify-end">
-        <Button onClick={() => manager.clear()}>清空弹幕</Button>
+        <Button onClick={() => manager.clear()}>{t('clearDanmaku')}</Button>
         <Button
           className="ml-4"
           onClick={() => {
@@ -80,7 +82,7 @@ export const Transmitter = ({
             manager.asyncEach((b) => b.setStyle('background', color));
           }}
         >
-          随机颜色
+          {t('randomColor')}
         </Button>
         <Button
           className="ml-4"
@@ -113,23 +115,20 @@ export const Transmitter = ({
         <SheetContent>
           <SheetHeader>
             <SheetTitle className="flex items-center">
-              <span className="mr-2">设置高级弹幕的位置信息</span>
+              <span className="mr-2">{t('setFlexiblePosition')}</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <CircleAlert size={18} className="cursor-pointer" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    由于弹幕库默认只支持 position 的单位为 px, 虽然这里是 %
-                    的含义，是因为在组件内部通过计算会转换成了 px。
-                  </TooltipContent>
+                  <TooltipContent>{t('setFlexibleDescription')}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </SheetTitle>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-x" className="text-right font-bold">
-                  位置 (x%)
+                  {t('position')} (x%)
                 </Label>
                 <Input
                   id="postion-x"
@@ -143,7 +142,7 @@ export const Transmitter = ({
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-y" className="text-right font-bold">
-                  位置 (y%)
+                  {t('position')} (y%)
                 </Label>
                 <Input
                   id="postion-y"
@@ -157,7 +156,7 @@ export const Transmitter = ({
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-y" className="text-right font-bold">
-                  时间 (ms)
+                  {t('time')} (ms)
                 </Label>
                 <Input
                   id="postion-y"
@@ -169,14 +168,14 @@ export const Transmitter = ({
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="d-direction" className="text-right font-bold">
-                  移动方向
+                  {t('direction')}
                 </Label>
                 <Select
                   defaultValue={direction as string}
                   onValueChange={(e) => setDirection(e as 'left' | 'right')}
                 >
                   <SelectTrigger className="w-[185px]">
-                    <SelectValue placeholder="选择方向" />
+                    <SelectValue placeholder={t('selectDirection')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -192,7 +191,7 @@ export const Transmitter = ({
               <Button
                 onClick={() => {
                   if (manager.isFreeze()) {
-                    return tip('当前处于冻结状态');
+                    return tip(t('currentlyFrozen'));
                   }
                   setOpen(false);
                   setContent('');

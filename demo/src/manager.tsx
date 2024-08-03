@@ -1,4 +1,5 @@
 import { uuid } from 'aidly';
+import { t } from 'i18next';
 import ReactDOM from 'react-dom/client';
 import { type Manager, create } from 'danmu';
 import type { Statuses, DanmakuValue } from '@/types';
@@ -26,27 +27,15 @@ export const initManager = () => {
 };
 
 export const mock = (manager: Manager<DanmakuValue>) => {
-  const list = [
-    '哇塞！',
-    '不可思议！',
-    '这也太厉害了吧！',
-    '惊呆了！',
-    '太神奇了！',
-    '这是什么操作？',
-    '我看到了什么？',
-    '这是什么原理？',
-    '我有点看不懂了。',
-    '这是什么操作？',
-  ];
   setInterval(() => {
-    for (const content of list) {
+    for (let i = 0; i < 10; i++) {
       manager.push({
         id: uuid(),
         value: {
-          content,
           isSelf: false,
+          content: t(`mockDanmuContent${i}`),
         },
       });
     }
-  }, 1200);
+  }, 1000);
 };

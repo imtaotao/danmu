@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { throttle } from 'aidly';
+import { useTranslation } from 'react-i18next';
 import { Rabbit, CircleAlert } from 'lucide-react';
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
@@ -14,20 +15,20 @@ import {
 
 export const SidebarMoveTimes = memo(
   ({ manager }: { manager: Manager<DanmakuValue> }) => {
+    const { t } = useTranslation();
+
     return (
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
           <div className="flex items-center">
             <Rabbit />
-            <span className="ml-3 mr-1">运动时长 (ms)</span>
+            <span className="ml-3 mr-1">{t('setTimes')} (ms)</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <CircleAlert size={16} className="cursor-pointer" />
                 </TooltipTrigger>
-                <TooltipContent>
-                  普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间
-                </TooltipContent>
+                <TooltipContent>{t('setTimesTip')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>

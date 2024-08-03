@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ThumbsUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Danmaku, Manager } from 'danmu';
 import type { Statuses, DanmakuValue } from '@/types';
 import { cn } from '@/lib/utils';
@@ -11,7 +12,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-// 弹幕的渲染文件：demo/src/manager.tsx
+// Render file：demo/src/manager.tsx
 export const DanmakuBox = ({
   manager,
   danmaku,
@@ -20,6 +21,7 @@ export const DanmakuBox = ({
   manager: Manager<DanmakuValue, Statuses>;
 }) => {
   const { content, isSelf } = danmaku.data.value;
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   danmaku.use({
@@ -64,16 +66,20 @@ export const DanmakuBox = ({
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <span className="mr-1">
-              {danmaku.type === 'flexible' ? `高级弹幕 -- ${content}` : content}
+              {danmaku.type === 'flexible'
+                ? `${t('flexibleDanmaku')} -- ${content}`
+                : content}
             </span>
             <ThumbsUp />
           </div>
         </PopoverTrigger>
         <PopoverContent className="w-60 p-2 text-xs text-gray-500 text-center">
-          这个是一个
+          {t('thisIsA')}
           <span className="font-bold text-green-600">
-            {danmaku.type === 'flexible' ? '高级' : '普通'}弹幕
-            {danmaku.isFixed ? ' (被修正过运动时间)' : ''}
+            {danmaku.type === 'flexible'
+              ? t('flexibleDanmaku')
+              : t('facileDanmaku')}
+            {danmaku.isFixed ? ` (${t('fixedDuration')})` : ''}
           </span>
         </PopoverContent>
       </Popover>

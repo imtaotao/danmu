@@ -1,19 +1,19 @@
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
-import { SidebarGap } from '@/components/sidebar/sidebarGap';
-import { SidebarRate } from '@/components/sidebar/sidebarRate';
-import { SidebarAreaX } from '@/components/sidebar/sidebarAreaX';
-import { SidebarAreaY } from '@/components/sidebar/sidebarAreaY';
-import { SidebarFreeze } from '@/components/sidebar/sidebarFreeze';
-import { SidebarOpacity } from '@/components/sidebar/sidebarOpacity';
-import { SidebarNumbers } from '@/components/sidebar/sidebarNumbers';
-import { SidebarDirection } from '@/components/sidebar/sidebarDirection';
-import { SidebarFrequency } from '@/components/sidebar/sidebarFrequency';
-import { SidebarMoveTimes } from '@/components/sidebar/sidebarMoveTimes';
-import { SidebarOcclusion } from '@/components/sidebar/sidebarOcclusion';
-import { SidebarModeSelect } from '@/components/sidebar/sidebarModeSelect';
-import { SidebarShowAndHide } from '@/components/sidebar/sidebarShowAndHide';
-import { SidebarStartAndStop } from '@/components/sidebar/sidebarStartAndStop';
+import { SidebarGap } from '@/components/sidebar/SidebarGap';
+import { SidebarRate } from '@/components/sidebar/SidebarRate';
+import { SidebarAreaX } from '@/components/sidebar/SidebarAreaX';
+import { SidebarAreaY } from '@/components/sidebar/SidebarAreaY';
+import { SidebarFreeze } from '@/components/sidebar/SidebarFreeze';
+import { SidebarOpacity } from '@/components/sidebar/SidebarOpacity';
+import { SidebarNumbers } from '@/components/sidebar/SidebarNumbers';
+import { SidebarDirection } from '@/components/sidebar/SidebarDirection';
+import { SidebarFrequency } from '@/components/sidebar/SidebarFrequency';
+import { SidebarMoveTimes } from '@/components/sidebar/SidebarMoveTimes';
+import { SidebarOcclusion } from '@/components/sidebar/SidebarOcclusion';
+import { SidebarModeSelect } from '@/components/sidebar/SidebarModeSelect';
+import { SidebarShowAndHide } from '@/components/sidebar/SidebarShowAndHide';
+import { SidebarStartAndStop } from '@/components/sidebar/SidebarStartAndStop';
 
 export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
   return (

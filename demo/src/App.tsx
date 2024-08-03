@@ -1,9 +1,10 @@
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
-import { Area } from '@/components/danmu/area';
 import { Toaster } from '@/components/ui/toaster';
-import { Sidebar } from '@/components/sidebar/index';
-import { Transmitter } from '@/components/danmu/transmitter';
+import { TopBar } from '@/components/danmu/TopBar';
+import { Container } from '@/components/danmu/Container';
+import { Transmitter } from '@/components/danmu/Transmitter';
+import { Sidebar } from '@/components/sidebar';
 
 export function App({ manager }: { manager: Manager<DanmakuValue> }) {
   return (
@@ -14,7 +15,8 @@ export function App({ manager }: { manager: Manager<DanmakuValue> }) {
         </div>
         <div className="w-full flex flex-col">
           <div className="h-5/6 p-3 border-slate-400 border-indigo-500/50 rounded bg-slate-100">
-            <Area manager={manager} />
+            <TopBar />
+            <Container manager={manager} />
           </div>
           <div className="flex-1 p-3 mt-2 border-slate-400 border-indigo-500/50 rounded-sm bg-slate-300">
             <Transmitter manager={manager} />

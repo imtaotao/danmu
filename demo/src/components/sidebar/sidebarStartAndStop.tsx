@@ -1,5 +1,6 @@
 import { memo, useState, useEffect } from 'react';
 import { Bird } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
 import { Label } from '@/components/ui/label';
@@ -7,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 
 export const SidebarStartAndStop = memo(
   ({ manager }: { manager: Manager<DanmakuValue> }) => {
+    const { t } = useTranslation();
     const [checked, setChecked] = useState(manager.isPlaying());
 
     useEffect(() => {
@@ -23,7 +25,7 @@ export const SidebarStartAndStop = memo(
           className="shrink-0 mr-3 h-full text-base font-bold leading-8 flex items-center"
         >
           <Bird />
-          <span className="ml-3">停止/启动</span>
+          <span className="ml-3">{t('setStart')}</span>
         </Label>
         <Switch
           id="start-stop"

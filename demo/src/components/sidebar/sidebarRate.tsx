@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { throttle } from 'aidly';
+import { useTranslation } from 'react-i18next';
 import { Squirrel, CircleAlert } from 'lucide-react';
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
@@ -14,20 +15,20 @@ import {
 
 export const SidebarRate = memo(
   ({ manager }: { manager: Manager<DanmakuValue> }) => {
+    const { t } = useTranslation();
+
     return (
       <div className="flex h-8 mb-4 items-center justify-between">
         <Label className="shrink-0 mr-3 h-full text-base font-bold leading-8">
           <div className="flex items-center">
             <Squirrel />
-            <span className="ml-3 mr-1">设置速率</span>
+            <span className="ml-3 mr-1">{t('setRate')}</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <CircleAlert size={16} className="cursor-pointer" />
                 </TooltipTrigger>
-                <TooltipContent>
-                  速率默认为 1，弹幕的运动速度等于原始速度 * 速率
-                </TooltipContent>
+                <TooltipContent>{t('setRateTip')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -35,7 +36,7 @@ export const SidebarRate = memo(
         <Input
           className="h-4/5"
           type="number"
-          placeholder="弹幕间距"
+          placeholder={t('setRate')}
           defaultValue={manager.options.rate}
           onChange={throttle(500, (e) => {
             manager.setRate(Number(e.target.value));
