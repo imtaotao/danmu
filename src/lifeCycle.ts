@@ -1,7 +1,7 @@
 import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
 import { ids } from './utils';
 import type { Manager, ManagerOptions } from './manager';
-import type { PushData, Danmaku, DanmakuType, DanmakuPlugin } from './types';
+import type { Danmaku, DanmakuType, DanmakuPlugin } from './types';
 
 export function createDanmakuLifeCycle<T extends Danmaku<any>>() {
   return new PluginSystem({
@@ -47,7 +47,7 @@ export function createManagerLifeCycle<T>() {
     init: new SyncHook<[manager: Manager<T>]>(),
     limitWarning: new SyncHook<[DanmakuType, number]>(),
     updateOptions: new SyncHook<[Partial<ManagerOptions>]>(),
-    push: new SyncHook<[PushData<T> | Danmaku<T>, DanmakuType, boolean]>(),
+    push: new SyncHook<[T | Danmaku<T>, DanmakuType, boolean]>(),
     render: new SyncHook<[DanmakuType]>(),
     willRender: new SyncWaterfallHook<{
       prevent: boolean;

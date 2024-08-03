@@ -29,13 +29,13 @@ export const initManager = () => {
 export const mock = (manager: Manager<DanmakuValue>) => {
   setInterval(() => {
     for (let i = 0; i < 10; i++) {
-      manager.push({
-        id: uuid(),
-        value: {
+      manager.push(
+        {
           isSelf: false,
           content: t(`mockDanmuContent${i}`),
         },
-      });
+        { id: uuid() },
+      );
     }
   }, 1000);
 };

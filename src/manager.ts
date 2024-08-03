@@ -1,4 +1,4 @@
-import { assert, hasOwn, isEmptyObject } from 'aidly';
+import { assert, hasOwn, random, isEmptyObject } from 'aidly';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
 import { Engine, type EngineOptions } from './engine';
@@ -8,15 +8,14 @@ import type {
   Mode,
   Danmaku,
   DanmakuType,
-  DanmakuPlugin,
   StyleKey,
-  PushData,
   Direction,
   AreaOptions,
   EachCallback,
   FreezeOptions,
   FilterCallback,
   ManagerPlugin,
+  PushOptions,
   PushFlexOptions,
   InternalStatuses,
 } from './types';
@@ -47,20 +46,28 @@ export class Manager<
     this.pluginSystem.lifecycle.init.emit(this);
   }
 
-  private _render() {
-    if (!this.isPlaying()) return this;
-    this._engine.renderFacileDanmaku({
-      statuses: this._internalStatuses,
-      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
-      hooks: {
-        finished: () => this.pluginSystem.lifecycle.finished.emit(),
-        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
-        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
-      },
-    });
-    return this;
+  /**
+   * @internal
+   */
+  private _mergeOptions<U>(pushOptions?: U) {
+    const options = pushOptions ? pushOptions : Object.create(null);
+    if (!('rate' in options)) {
+      options.rate = this.options.rate;
+    }
+    if (!('direction' in options)) {
+      options.direction = this.options.direction;
+    }
+    if (!('duration' in options)) {
+      const duration = random(...this.options.times);
+      assert(duration > 0, `Invalid move time "${duration}"`);
+      options.duration = duration;
+    }
+    return options as Required<U>;
   }
 
+  /**
+   * @internal
+   */
   private _setViewStatus(
     status: InternalStatuses['viewStatus'],
     filter?: FilterCallback<T>,
@@ -221,7 +228,7 @@ export class Manager<
     }
     const cycle = () => {
       this._renderTimer = setTimeout(cycle, this.options.interval);
-      this._render();
+      this.render();
     };
     cycle();
     return this;
@@ -261,16 +268,13 @@ export class Manager<
     return res;
   }
 
-  public unshift(
-    data: PushData<T> | FacileDanmaku<T>,
-    plugin?: DanmakuPlugin<T>,
-  ) {
-    return this.push(data, plugin, INTERNAL_FLAG);
+  public unshift(data: T | FacileDanmaku<T>, options?: PushOptions<T>) {
+    return this.push(data, options, INTERNAL_FLAG);
   }
 
   public push(
-    data: PushData<T> | FacileDanmaku<T>,
-    plugin?: DanmakuPlugin<T>,
+    data: T | FacileDanmaku<T>,
+    options?: PushOptions<T>,
     _unshift?: Symbol,
   ) {
     if (!this.canPush('facile')) {
@@ -283,15 +287,19 @@ export class Manager<
           );
       return false;
     }
-    if (this.isDanmaku(data) && plugin) {
-      console.warn('When you add a danmaku, the second parameter is invalid.');
+    if (!this.isDanmaku(data)) {
+      options = this._mergeOptions(options);
     }
-    this._engine.add(data, plugin, _unshift === INTERNAL_FLAG);
+    this._engine.add(
+      data,
+      options as Required<PushOptions<T>>,
+      _unshift === INTERNAL_FLAG,
+    );
     this.pluginSystem.lifecycle.push.emit(data, 'facile', true);
     return true;
   }
 
-  public pushFlexibleDanmaku(data: PushData<T>, options: PushFlexOptions<T>) {
+  public pushFlexibleDanmaku(data: T, options: PushFlexOptions<T>) {
     if (!this.isPlaying()) return false;
     if (typeof options.duration === 'number' && options.duration < 0) {
       return false;
@@ -306,16 +314,19 @@ export class Manager<
           );
       return false;
     }
-    const res = this._engine.renderFlexibleDanmaku(data, {
-      ...options,
-      statuses: this._internalStatuses,
-      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
-      hooks: {
-        finished: () => this.pluginSystem.lifecycle.finished.emit(),
-        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
-        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
+    const res = this._engine.renderFlexibleDanmaku(
+      data,
+      this._mergeOptions(options),
+      {
+        statuses: this._internalStatuses,
+        danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
+        hooks: {
+          finished: () => this.pluginSystem.lifecycle.finished.emit(),
+          render: (val) => this.pluginSystem.lifecycle.render.emit(val),
+          willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
+        },
       },
-    });
+    );
     if (res) {
       this.pluginSystem.lifecycle.push.emit(data, 'flexible', true);
       return true;
@@ -344,6 +355,20 @@ export class Manager<
       set('maskImage', 'none');
       set('webkitMaskImage', 'none');
     }
+    return this;
+  }
+
+  public render() {
+    if (!this.isPlaying()) return this;
+    this._engine.renderFacileDanmaku({
+      statuses: this._internalStatuses,
+      danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
+      hooks: {
+        finished: () => this.pluginSystem.lifecycle.finished.emit(),
+        render: (val) => this.pluginSystem.lifecycle.render.emit(val),
+        willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
+      },
+    });
     return this;
   }
 

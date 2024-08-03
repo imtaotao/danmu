@@ -18,7 +18,7 @@ const formatOptions = <T>(options?: CreateOption<T>) => {
   );
   assert(newOptions.gap >= 0, 'The "gap" must be >= 0');
   if (typeof newOptions.limits.stash !== 'number') {
-    newOptions.limits.stash = 1024;
+    newOptions.limits.stash = Infinity;
   }
   return newOptions;
 };
@@ -42,7 +42,8 @@ export type {
   Mode,
   StyleKey,
   Position,
-  PushData,
+  PushOptions,
+  PushFlexOptions,
   ValueType,
   Direction,
   CreateOption,

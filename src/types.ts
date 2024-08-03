@@ -22,10 +22,10 @@ export type EachCallback<T> = (
   d: FacileDanmaku<T> | FlexibleDanmaku<T>,
 ) => boolean | void;
 
-export type ValueType<M extends Manager<any>> = Extract<
+export type ValueType<M extends Manager<any>> = Exclude<
   Parameters<M['push']>[0],
-  PushData<unknown>
->['value'];
+  FacileDanmaku<any>
+>;
 
 export type ManagerPlugin<T> = RefinePlugin<
   Manager<T>['pluginSystem']['lifecycle']
@@ -41,11 +41,17 @@ export type InternalStatuses = {
   styles: Record<StyleKey, CSSStyleDeclaration[StyleKey]>;
 };
 
-export interface PushFlexOptions<T> {
-  plugin?: DanmakuPlugin<T>;
-  duration?: number;
+export type PushFlexOptions<T> = Omit<PushOptions<T>, 'direction'> & {
   direction?: Direction;
   position: Position | ((d: Danmaku<T>, box: Box) => Position);
+};
+
+export interface PushOptions<T> {
+  id?: number | string;
+  duration?: number;
+  plugin?: DanmakuPlugin<T>;
+  rate?: ManagerOptions['rate'];
+  direction?: ManagerOptions['direction'];
 }
 
 export interface Position {
@@ -72,14 +78,9 @@ export interface TrackData<T> {
   location: [number, number, number];
 }
 
-export interface PushData<T> {
-  value: T;
-  id?: string | number;
-}
-
 export interface StashData<T> {
-  data: PushData<T>;
-  plugin?: DanmakuPlugin<T>;
+  data: T;
+  options: Required<PushOptions<T>>;
 }
 
 export interface InfoRecord {

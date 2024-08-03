@@ -43,8 +43,10 @@ export const Transmitter = ({
   const [content, setContent] = useState('');
   const [x, setX] = useState(50);
   const [y, setY] = useState(50);
-  const [direction, setDirection] = useState(manager.options.direction);
   const [duration, setDuration] = useState(random(...manager.options.times));
+  const [direction, setDirection] = useState<Direction>(
+    manager.options.direction,
+  );
 
   useEffect(() => {
     manager.use({
@@ -97,13 +99,13 @@ export const Transmitter = ({
           className="ml-4"
           onClick={() => {
             if (!content) return tip();
-            manager.unshift({
-              id: uuid(),
-              value: {
+            manager.unshift(
+              {
                 content,
                 isSelf: true,
               },
-            });
+              { id: uuid() },
+            );
             setContent('');
           }}
         >
@@ -198,15 +200,13 @@ export const Transmitter = ({
                   setDuration(random(...manager.options.times));
                   manager.pushFlexibleDanmaku(
                     {
-                      id: uuid(),
-                      value: {
-                        content,
-                        isSelf: true,
-                      },
+                      content,
+                      isSelf: true,
                     },
                     {
+                      id: uuid(),
                       duration,
-                      direction: direction as Direction,
+                      direction,
                       position: (d, box) => {
                         return {
                           x: ((box.width - d.getWidth()) * x) / 100,

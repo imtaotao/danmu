@@ -4,7 +4,6 @@ import { createDanmakuLifeCycle } from '../lifeCycle';
 import { ids, nextFrame, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
   StyleKey,
-  PushData,
   Position,
   MoveTimer,
   TrackData,
@@ -23,16 +22,17 @@ export type PluginSystem<D extends Danmaku<any>> = ReturnType<
 >;
 
 export interface FacileOptions<T> {
+  data: T;
   box: Box;
   rate: number;
   duration: number;
-  data: PushData<T>;
   direction: Direction;
   internalStatuses: InternalStatuses;
   delInTrack: (b: Danmaku<T>) => void;
 }
 
 export class FacileDanmaku<T> {
+  public data: T;
   public loops = 0;
   public isLoop = false;
   public paused = false;
@@ -41,7 +41,6 @@ export class FacileDanmaku<T> {
   public isFixed = false;
   public rate: number;
   public duration: number;
-  public data: PushData<T>;
   public recorder: InfoRecord;
   public nextFrame = nextFrame;
   public type: DanmakuType = 'facile';

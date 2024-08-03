@@ -20,7 +20,7 @@ export const DanmakuComponent = ({
   danmaku: Danmaku<DanmakuValue>;
   manager: Manager<DanmakuValue, Statuses>;
 }) => {
-  const { content, isSelf } = danmaku.data.value;
+  const { content, isSelf } = danmaku.data;
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 

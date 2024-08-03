@@ -14,16 +14,16 @@ import { FlexibleDanmaku } from './danmaku/flexible';
 import { toNumber, randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
   Mode,
-  PushData,
   TrackData,
   StashData,
   Direction,
   EachCallback,
   Danmaku,
+  PushOptions,
+  PushFlexOptions,
   DanmakuType,
   DanmakuPlugin,
   RenderOptions,
-  PushFlexOptions,
   InternalStatuses,
 } from './types';
 
@@ -93,11 +93,11 @@ export class Engine<T> {
   }
 
   public add(
-    data: PushData<T> | FacileDanmaku<T>,
-    plugin?: DanmakuPlugin<T>,
+    data: T | FacileDanmaku<T>,
+    options: Required<PushOptions<T>>,
     isUnshift?: boolean,
   ) {
-    const val = data instanceof FacileDanmaku ? data : { data, plugin };
+    const val = data instanceof FacileDanmaku ? data : { data, options };
     this._sets.stash[isUnshift ? 'unshift' : 'push'](val);
   }
 
@@ -231,28 +231,17 @@ export class Engine<T> {
   }
 
   public renderFlexibleDanmaku(
-    data: PushData<T>,
-    {
-      hooks,
-      position,
-      duration,
-      direction,
-      statuses,
-      plugin,
-      danmakuPlugin,
-    }: RenderOptions<T> & PushFlexOptions<T>,
+    data: T,
+    options: Required<PushFlexOptions<T>>,
+    { hooks, statuses, danmakuPlugin }: RenderOptions<T>,
   ) {
     assert(this.box, 'Container not formatted');
     hooks.render.call(null, 'flexible');
 
-    const d = this._create('flexible', data, statuses, {
-      position,
-      duration,
-      direction,
-    });
+    const d = this._create('flexible', data, options, statuses);
     if (d.position.x > this.box.width) return false;
     if (d.position.y > this.box.height) return false;
-    if (plugin) d.use(plugin);
+    if (options.plugin) d.use(options.plugin);
     d.use(danmakuPlugin);
 
     const { prevent } = hooks.willRender.call(null, {
@@ -310,7 +299,9 @@ export class Engine<T> {
       }
       if (l <= 0) return;
       hooks.render.call(null, 'facile');
-      return loopSlice(l, () => this._consume(statuses, danmakuPlugin, hooks));
+      return loopSlice(l, () =>
+        this._consumeFacileDanmaku(statuses, danmakuPlugin, hooks),
+      );
     };
 
     if (mode === 'strict') {
@@ -323,7 +314,7 @@ export class Engine<T> {
     }
   }
 
-  private _consume(
+  private _consumeFacileDanmaku(
     statuses: InternalStatuses,
     danmakuPlugin: DanmakuPlugin<T>,
     hooks: RenderOptions<T>['hooks'],
@@ -341,8 +332,10 @@ export class Engine<T> {
     if (layer instanceof FacileDanmaku) {
       d = layer;
     } else {
-      d = this._create('facile', layer.data, statuses);
-      if (layer.plugin) d.use(layer.plugin);
+      d = this._create('facile', layer.data, layer.options, statuses);
+      if (layer.options.plugin) {
+        d.use(layer.options.plugin);
+      }
       d.use(danmakuPlugin);
     }
 
@@ -443,18 +436,18 @@ export class Engine<T> {
 
   private _create(
     type: DanmakuType,
-    data: PushData<T>,
+    data: T,
+    options: Required<PushOptions<T> | PushFlexOptions<T>>,
     internalStatuses: InternalStatuses,
-    options?: Omit<PushFlexOptions<T>, 'plugin'>,
   ): Danmaku<T> {
     assert(this.box, 'Container not formatted');
     const config = {
       data,
-      duration: 0,
       box: this.box,
       internalStatuses,
-      rate: this._options.rate,
-      direction: this._options.direction as Direction,
+      rate: options.rate,
+      duration: options.duration,
+      direction: options.direction,
       delInTrack: (b: Danmaku<T>) => {
         remove(this._sets.view, b);
         type === 'facile'
@@ -462,18 +455,13 @@ export class Engine<T> {
           : remove(this._sets.flexible, b);
       },
     };
-
     // Create FacileDanmaku
     if (type === 'facile') {
-      config.duration = this._randomDuration();
       return new FacileDanmaku(config);
     }
     // Create FlexibleDanmaku
-    assert(options, 'Unexpected Error');
-    const { direction, position, duration = this._randomDuration() } = options;
-    config.duration = duration;
-    direction && (config.direction = direction);
     const d = new FlexibleDanmaku(config);
+    const { position } = options as PushFlexOptions<T>;
 
     // If it is a function, the postion will be updated after the node is created,
     // so that the function can get accurate bullet comment data.
@@ -491,12 +479,6 @@ export class Engine<T> {
       });
     }
     return d;
-  }
-
-  private _randomDuration() {
-    const t = random(...this._options.times);
-    assert(t > 0, `Invalid move time "${t}"`);
-    return t;
   }
 
   private _last(ls: Array<FacileDanmaku<T>>, li: number) {
