@@ -14,7 +14,7 @@ export const zhMap = {
     '由于弹幕库默认只支持 position 的单位为 px, 虽然这里是 % 的含义，是因为在组件内部通过计算会转换成了 px。',
   facileDanmaku: '普通弹幕',
   flexibleDanmaku: '高级弹幕',
-  fixedDuration: '被修正过运动时间',
+  correctedDuration: '被修正过运动时间',
   thisIsA: '这个是一个',
   danmakaGap: '弹幕间距',
   opacity: '透明度',

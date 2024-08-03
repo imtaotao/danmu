@@ -1,3 +1,61 @@
 export const enMap = {
+  time: 'Time',
+  position: 'Position',
   language: 'English',
+  direction: 'Direction',
+  selectDirection: 'Select direction',
+  randomColor: 'Random color',
+  clearDanmaku: 'Clear danmaku',
+  currentlyFrozen: 'Currently frozen',
+  notEmpityValue: 'Danmaku value cannot be empty',
+  inputDanmaku: 'Enter your danmaku content.',
+  setFlexiblePosition: 'Set flexible danmaku position information',
+  setFlexibleDescription:
+    'Since the danmaku library only supports position units in px by default, although it is in % here, it is because it will be converted to px through calculation within the component.',
+  facileDanmaku: 'Facile danmaku',
+  flexibleDanmaku: 'Advanced danmaku',
+  correctedDuration: 'Corrected duration',
+  thisIsA: 'This is a ',
+  danmakaGap: 'Danmaku gap',
+  opacity: 'Opacity',
+  setArea: 'Rendering area',
+  setDirection: 'Direction (left/right)',
+  setFreeze: 'Unfreeze/Freeze',
+  setInterval: 'Rendering frequency',
+  setIntervalTip:
+    'The manager will have a timer to poll and push normal danmaku, please set an appropriate value',
+  setGap: 'Gap between danmaku',
+  setGapTip:
+    'In the case of collision detection on the same track, the minimum distance between the following danmaku and the previous danmaku',
+  setMode: 'Mode',
+  setModeTipTitle:
+    'The rendering mode determines the collision detection rules and the timing of danmaku rendering',
+  setModeTipOne:
+    'When set to `none` mode, there will be no collision detection, and the danmaku will be rendered immediately',
+  setModeTipTwo:
+    'When set to `strict` mode, strict collision detection will be performed, and if the conditions are not met, rendering will be delayed',
+  setModeTipThree:
+    'When set to `adaptive` mode, collision detection will be performed as much as possible under the premise of immediate rendering (recommended)',
+  setTimes: 'Times',
+  setTimesTip:
+    'Normal danmaku will randomly take a value between these two values as the movement duration',
+  setNumbersTitle: 'Real-time rendering danmaku',
+  stashNumber: 'Stashed danmaku',
+  allNumber: 'Total danmaku',
+  preventOcclusion: 'Cancel/Prevent occlusion',
+  setRate: 'Rate',
+  setRateTip:
+    'The default rate is 1, and the movement speed of the danmaku is equal to the original speed * rate',
+  setShow: 'Hide/Show',
+  setStart: 'Stop/Start',
+  mockDanmuContent0: 'Wow!',
+  mockDanmuContent1: 'Unbelievable!',
+  mockDanmuContent2: 'This is amazing!',
+  mockDanmuContent3: 'Stunned!',
+  mockDanmuContent4: 'So magical!',
+  mockDanmuContent5: 'What is this operation?',
+  mockDanmuContent6: 'What did I just see?',
+  mockDanmuContent7: 'What is the principle behind this?',
+  mockDanmuContent8: 'I don’t quite understand.',
+  mockDanmuContent9: 'What is this operation?',
 };

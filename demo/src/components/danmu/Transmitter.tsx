@@ -112,7 +112,7 @@ export const Transmitter = ({
       </div>
       <Sheet open={open} onOpenChange={setOpen} aria-describedb>
         <SheetDescription />
-        <SheetContent>
+        <SheetContent side="bottom">
           <SheetHeader>
             <SheetTitle className="flex items-center">
               <span className="mr-2">{t('setFlexiblePosition')}</span>
@@ -128,7 +128,7 @@ export const Transmitter = ({
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-x" className="text-right font-bold">
-                  {t('position')} (x%)
+                  {t('position')} X (%)
                 </Label>
                 <Input
                   id="postion-x"
@@ -142,7 +142,7 @@ export const Transmitter = ({
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="postion-y" className="text-right font-bold">
-                  {t('position')} (y%)
+                  {t('position')} Y (%)
                 </Label>
                 <Input
                   id="postion-y"
@@ -174,7 +174,7 @@ export const Transmitter = ({
                   defaultValue={direction as string}
                   onValueChange={(e) => setDirection(e as 'left' | 'right')}
                 >
-                  <SelectTrigger className="w-[185px]">
+                  <SelectTrigger>
                     <SelectValue placeholder={t('selectDirection')} />
                   </SelectTrigger>
                   <SelectContent>

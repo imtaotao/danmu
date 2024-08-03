@@ -3,7 +3,7 @@ import { t } from 'i18next';
 import ReactDOM from 'react-dom/client';
 import { type Manager, create } from 'danmu';
 import type { Statuses, DanmakuValue } from '@/types';
-import { DanmakuBox } from '@/components/danmu/danmaku';
+import { DanmakuComponent } from '@/components/danmu/Danmaku';
 
 export const initManager = () => {
   const manager = create<DanmakuValue, Statuses>({
@@ -18,7 +18,7 @@ export const initManager = () => {
       $createNode(d) {
         if (!d.node) return;
         ReactDOM.createRoot(d.node).render(
-          <DanmakuBox manager={manager} danmaku={d} />,
+          <DanmakuComponent manager={manager} danmaku={d} />,
         );
       },
     },

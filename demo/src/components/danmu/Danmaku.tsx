@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/popover';
 
 // Render file：demo/src/manager.tsx
-export const DanmakuBox = ({
+export const DanmakuComponent = ({
   manager,
   danmaku,
 }: {
@@ -79,7 +79,7 @@ export const DanmakuBox = ({
             {danmaku.type === 'flexible'
               ? t('flexibleDanmaku')
               : t('facileDanmaku')}
-            {danmaku.isFixed ? ` (${t('fixedDuration')})` : ''}
+            {danmaku.isFixed ? ` (${t('correctedDuration')})` : ''}
           </span>
         </PopoverContent>
       </Popover>
