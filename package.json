@@ -46,7 +46,9 @@
   "author": "imtaotao",
   "keywords": [
     "danmu",
-    "danmuku"
+    "danmuku",
+    "弹幕",
+    "弹幕库"
   ],
   "license": "MIT",
   "publishConfig": {
