@@ -52,10 +52,15 @@ import { Steps } from '@astrojs/starlight/components';
 
     你需要通过 `mananger.use()` 来注册插件。
 
-    ```ts title="init.ts" {6-9}
+    ```ts title="init.ts" {12-13}
     import { create } from 'danmu';
 
-    const manager = create();
+    interface ValueType {
+      userId: number;
+      content: string;
+    }
+
+    const manager = create<ValueType>();
 
     manager.use(
       filter({

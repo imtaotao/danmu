@@ -94,20 +94,15 @@ manager.mount(container).startPlaying();
 当前面的一些工作准备完成之后，就可以发送弹幕了。
 
 ```ts
-manager.push({
-  id: 1, // id 是可选的
-  value: '弹幕内容', // value 的类型可以在创建 manager 的时候通过范型来约定，可以看后面的小节
-});
+// value 的类型可以在创建 manager 的时候通过范型来约定，可以看后面的小节
+manager.push('弹幕内容');
 ```
 
 但是通过 [**`push`**](../../reference/manager-api/#push) 方法来发送的弹幕可能会受到弹幕算法的影响，不会立即渲染，想象一些往一个数组里面 push 一个数据，但是消费是从数组最前端拿出数据消费的。我们可以换一个 [**`unshift`**](../../reference/manager-api/#unshift) 方法来发送弹幕。
 
 ```ts
 // 在下一次渲染轮询中，立即渲染
-manager.unshift({
-  id: 1,
-  value: '弹幕内容',
-});
+manager.unshift('弹幕内容');
 ```
 
 我们在初始化 `manager` 的时候，可以通过 `plugin` 属性来传递默认全局插件，他的作用域是对所有的弹幕都生效，而且包含[**全局**](../../reference/manager-hooks)和[**弹幕**](../../reference/danmaku-hooks)两种类型的钩子。
@@ -115,15 +110,16 @@ manager.unshift({
 不过我们在发送弹幕的时候，也可以传递弹幕自己的插件，他不包含全局钩子，**作用域只对当前渲染的弹幕生效**，如果你需要的话，这会让你更好的来控制当前要渲染的这个弹幕。
 
 ```ts
-manager.push(
-  { value: '弹幕内容' },
-  {
+manager.push('弹幕内容', {
+  // ... 其他属性，详情见 push api 文档
+  id: 1, // 可选参数
+  plugin: {
     moveStart(danmaku) {
       // moveStart 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
       danmaku.setStyle(csskey, cssValue);
     },
   },
-);
+});
 ```
 
 ### 5. 发送高级弹幕
@@ -132,11 +128,9 @@ manager.push(
 
 ```diff lang="ts"
 manager.pushFlexibleDanmaku(
+  '弹幕内容',
   {
     id: 1, // 可选参数
-    value: '弹幕内容',
-  },
-  {
     duration: 1000, // 默认从 manager.options.times 中随机取一个值
     direction: 'none', // 默认取 manager.options.direction 的值
     position: (danmaku, box) => {

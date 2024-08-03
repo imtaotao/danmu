@@ -256,34 +256,42 @@ manager.canPush('flexible');
 
 ### `push()`
 
-**类型：`(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
+**类型：`(data: T, options?: PushOptions<T>) => boolean`**
 
 发送一条弹幕，这条弹幕会被放在内存数组中等待被渲染，这不一定是即时响应渲染的，要看你设置的渲染算法，你可以通过调用 `manager.setMode()` 来更改，会触发 `push` 钩子。
 
 :::note[注意]
 
-发送弹幕的时候，**数据格式必须是 `PushData`，其中 `id` 是可选的。也就是说必须是一个带有 `value` 的对象 `{ value: unknown }`**，至于 `value` 的类型由你自己来控制，只要你能在渲染的时候能正确拿到就可以了，具体见下面的示例。
+1. 发送弹幕的时候，**数据格式必须是 `T`**，至于 `T` 的类型由你自己来控制，只要你能在渲染的时候能正确拿到就可以了，具体见下面的示例。
+2. 当第二个参数没有传递时，或者其中某些参数没有传递时，则会从 `manager.options` 里面取默认的值。
 
 :::
 
-```ts {7, 11, 15-16}
-interface PushData<T = unknown> {
-  id?: any;
-  value: T;
+```ts {12, 16, 21}
+export interface PushOptions<T> {
+  id?: number | string;
+  rate?: number;
+  duration?: number;
+  plugin?: DanmakuPlugin<T>;
+  direction?: 'right' | 'left';
 }
 
+const manager = create<{ content: string }>();
+
 // 发送一条弹幕
-manager.push({ value: '弹幕内容' });
+manager.push({ '弹幕内容' });
 
 // 发送一条弹幕并添加插件处理，插件的作用域仅限当前 push 的这一条弹幕。
 manager.push(
-  { value: '弹幕内容' },
+  { content: '弹幕内容' },
   {
-    createNode(danmaku) {
-      const div = document.createElement('div');
-      div.innerHTML = danmaku.data.value; // 弹幕内容
-      danmaku.node.appendChild(div);
-    },
+    plugin: {
+      createNode(danmaku) {
+          const div = document.createElement('div');
+          div.innerHTML = danmaku.data.content; // 弹幕内容
+          danmaku.node.appendChild(div);
+        },
+    }
   },
 );
 ```
@@ -292,7 +300,7 @@ manager.push(
 
 ### `unshift()`
 
-**类型：`(data: PushData<T>, plugin?: DanmakuPlugin<T>) => boolean`**
+**类型：`(data: T, options?: PushOptions<T>) => boolean`**
 
 `push` 方法是添加到内存数组后面，此方法会将弹幕**添加到内存数组前面**，当用户在输入了一条弹幕点击发送的时候，你应该使用此方法，以便于让弹幕在下次轮询的时候**立即渲染**，用法和 `push` 方法一样，会触发 `push` 钩子。
 
@@ -300,38 +308,35 @@ manager.push(
 
 ### `pushFlexibleDanmaku()`
 
-**类型：`(data: PushData<T>, options?: PushFlexOptions<T>) => boolean`**
+**类型：`(data: T, options?: PushFlexOptions<T>) => boolean`**
 
 发送一条高级弹幕，**高级弹幕会在下次轮询的时候渲染**，会触发 `push` 钩子。
 
 :::note[高级弹幕说明]
 
-1. 高级弹幕的插件和普通弹幕的插件行为一样，你可以通过 `danmaku.type` 属性来区分。
-2. 高级弹幕如果不传 `duration` 则**会从 `manager.options.times` 范围里面随机生成一个**。
-3. 高级弹幕如果不传 `direction` 则**会取 `manager.options.direaction`**。
-4. 高级弹幕**必须传递 `position` 来指定位置**，如果需要指定在某个轨道渲染，可以借助 [**`getTrackLocation()`**](./#gettracklocation) 来做到。
+1. 高级弹幕的 `options` 和普通弹幕的 `options` 行为一样，如果不传会默认从 `manager.options` 里面取默认值。
+2. 高级弹幕**必须传递 `position` 来指定位置**，如果需要指定在某个轨道渲染，可以借助 [**`getTrackLocation()`**](./#gettracklocation) 来做到。
 
 :::
 
 ```ts
-// 普通弹幕没有 'none'
-type Direction = 'left' | 'right' | 'none';
-
 interface Position {
   x: number;
   y: number;
 }
 
 interface PushFlexOptions {
-  plugin?: DanmakuPlugin<T>;
+  id?: number | string;
+  rate?: number;
   duration?: number;
-  direction?: Direction;
+  plugin?: DanmakuPlugin<T>;
+  direction?: 'left' | 'right' | 'none'; // 普通弹幕没有 'none'
   position: Position | ((d: Danmaku<T>, box: Box) => Position);
 }
 
 // 发送一条弹幕，在容器居中的位置，静止 5s
 manager.pushFlexibleDanmaku(
-  { value: { content: '弹幕内容' } },
+  { content: '弹幕内容' },
   {
     duration: 5000,
     direction: 'none',
@@ -373,13 +378,13 @@ const { start, middle, end } = manager.getTrackLocation(-1);
 
 :::
 
-```ts {7, 10}
+```ts {12, 15}
 // 打开控制台后，容器会由变化，需要先调用 `format` 方法重新继续
 manager.format();
 
 // 发送一个高级弹幕
 manager.pushFlexibleDanmaku(
-  { value: { content: '测试' } },
+  { content: '测试' },
   {
     duration: 5000,
     direction: 'none',
@@ -551,6 +556,21 @@ manager.nextFrame(() => {
 :::note[注意事项]
 放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
 :::
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `render()`
+
+**类型：`() => Manager`**
+
+跳过等到下次轮询，立即进行渲染，如果你发送了一个弹幕，不想等待下次轮询，想立即渲染，则可以使用此方法。
+
+```ts
+manager.unshift('弹幕内容');
+
+// 立即渲染
+manager.render();
+```
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
