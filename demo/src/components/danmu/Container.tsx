@@ -12,7 +12,8 @@ export const Container = memo(
         manager.nextFrame(() => manager.format());
       };
       if (ref.current) {
-        manager.mount(ref.current).startPlaying();
+        manager.mount(ref.current);
+        manager.startPlaying();
         document.addEventListener('fullscreenchange', format);
       }
       return () => {

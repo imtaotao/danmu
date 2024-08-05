@@ -272,7 +272,7 @@ manager.pushFlexibleDanmaku(
 
 ### `clearTarck()`
 
-**类型：`(i: number) => Manager`**
+**类型：`(i: number) => void`**
 
 用来清除某条轨道上渲染的弹幕。**`i` 如果为正整数，则是清除 `tarck[i]` 上的弹幕，如果为负正整数则从后往前取。**
 
@@ -307,7 +307,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `each()`
 
-**类型：`(fn: (d: Danmaku<T>) => boolean | void) => Manager`**
+**类型：`(fn: (d: Danmaku<T>) => boolean | void) => void`**
 
 对当前正在渲染的弹幕做**同步遍历**，回调函数返回 `false` 的时候会终止遍历。
 
@@ -315,7 +315,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `asyncEach()`
 
-**类型：`(fn: (d: Danmaku<T>) => boolean | void) => Promise<Manager>`**
+**类型：`(fn: (d: Danmaku<T>) => boolean | void) => Promise<void>`**
 
 对当前正在渲染的弹幕做**异步遍历**，回调函数返回 `false` 的时候会终止遍历。
 
@@ -327,7 +327,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `mount()`
 
-**类型：`(container?: HTMLElement | string, { clear?: boolean }) => Manager`**
+**类型：`(container?: HTMLElement | string, { clear?: boolean }) => void`**
 
 将内核的弹幕容器挂载到一个 HTML 节点上，可以是一个 `string` 类型的 `CSS` 选择器，`clear` 参数可以用来清除之前渲染的弹幕，默认为 `true`，如果你不想清除可以传 `false`，挂载之后你可以通过 `manager.container` 拿到这个节点。
 
@@ -343,7 +343,7 @@ manager.mount('#root', { clear: false });
 
 ### `unmount()`
 
-**类型：`() => Manager`**
+**类型：`() => void`**
 
 将内核的弹幕容器从当前挂载的节点中卸载，卸载之后当你通过 `manager.container` 获取时会得到 `null`。
 
@@ -355,7 +355,7 @@ manager.mount('#root', { clear: false });
 
 ### `clear()`
 
-**类型：`() => Manager`**
+**类型：`() => void`**
 
 清空当前渲染和内存中的弹幕，会触发 `clear` 钩子。
 
@@ -363,7 +363,7 @@ manager.mount('#root', { clear: false });
 
 ### `updateOptions()`
 
-**类型：`(newOptions: Partial<ManagerOptions>) => Manager`**
+**类型：`(newOptions: Partial<ManagerOptions>) => void`**
 
 更新 `manager.options`，如果涉及到一些间距和宽高的变化，会自动 format，会触发 `updateOptions` 钩子，你可以在这个钩子里面拿到需要更新的 `options`。
 
@@ -371,7 +371,7 @@ manager.mount('#root', { clear: false });
 
 ### `startPlaying()`
 
-**类型：`() => Manager`**
+**类型：`() => void`**
 
 启动渲染引擎，内核会启动一个定时器轮询渲染。会触发 `start` 钩子
 
@@ -379,7 +379,7 @@ manager.mount('#root', { clear: false });
 
 ### `stopPlaying()`
 
-**类型：`() => Manager`**
+**类型：`() => void`**
 
 关闭渲染引擎，内核的定时器也会被清除。会触发 `stop` 钩子。
 
@@ -417,7 +417,7 @@ manager.nextFrame(() => {
 
 ### `updateOccludedUrl()`
 
-**类型：`(url?: string, el?: HTMLElement) => Manager`**
+**类型：`(url?: string, el?: HTMLElement) => void`**
 
 给指定元素（默认是当前弹幕容器 `manager.box.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
 
@@ -429,7 +429,7 @@ manager.nextFrame(() => {
 
 ### `render()`
 
-**类型：`() => Manager`**
+**类型：`() => void`**
 
 跳过等到下次轮询，立即进行渲染，如果你发送了一个弹幕，不想等待下次轮询，想立即渲染，则可以使用此方法。
 
@@ -444,7 +444,7 @@ manager.render();
 
 ### `remove()`
 
-**类型：`(pluginName: string) => Manager`**
+**类型：`(pluginName: string) => void`**
 
 移除当前 `manager` 实例的某个插件，但是必须指定插件名字。
 
@@ -511,7 +511,7 @@ console.log(plugin.name); // uuid
 
 ### `setArea()`
 
-**类型：`(data: AreaOptions) => Manager`**
+**类型：`(data: AreaOptions) => void`**
 
 设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
 
@@ -532,7 +532,7 @@ interface AreaOptions {
 
 ### `setOpacity()`
 
-**类型：`(opacity: number | string) => Manager`**
+**类型：`(opacity: number | string) => void`**
 
 设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
 
@@ -540,7 +540,7 @@ interface AreaOptions {
 
 ### `setStyle()`
 
-**类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
+**类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void`**
 
 设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
 
@@ -548,7 +548,7 @@ interface AreaOptions {
 
 ### `setRate()`
 
-**类型：`(rate: number) => Manager`**
+**类型：`(rate: number) => void`**
 
 设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -556,7 +556,7 @@ interface AreaOptions {
 
 ### `setMode()`
 
-**类型：`(mode: 'none' | 'strict' | 'adaptive') => Manager`**
+**类型：`(mode: 'none' | 'strict' | 'adaptive') => void`**
 
 设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -564,7 +564,7 @@ interface AreaOptions {
 
 ### `setGap()`
 
-**类型：`(gap: number | string) => Manager`**
+**类型：`(gap: number | string) => void`**
 
 设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -572,7 +572,7 @@ interface AreaOptions {
 
 ### `setTimes()`
 
-**类型：`(times: [number, number]) => Manager`**
+**类型：`(times: [number, number]) => void`**
 
 设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -580,7 +580,7 @@ interface AreaOptions {
 
 ### `setLimits()`
 
-**类型：`(limits: { view?: number; stash?: number }) => Manager`**
+**类型：`(limits: { view?: number; stash?: number }) => void`**
 
 设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -588,7 +588,7 @@ interface AreaOptions {
 
 ### `setInterval()`
 
-**类型：`(interval: number) => Manager`**
+**类型：`(interval: number) => void`**
 
 设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -596,7 +596,7 @@ interface AreaOptions {
 
 ### `setDirection()`
 
-**类型：`(direction: 'left' | 'right') => Manager`**
+**类型：`(direction: 'left' | 'right') => void`**
 
 设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
@@ -604,7 +604,7 @@ interface AreaOptions {
 
 ### `setTrackHeight()`
 
-**类型：`(trackHeight: number | string) => Manager`**
+**类型：`(trackHeight: number | string) => void`**
 
 设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 

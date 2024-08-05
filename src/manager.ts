@@ -127,17 +127,15 @@ export class Manager<
 
   public each(fn: EachCallback<T>) {
     this._engine.each(fn);
-    return this;
   }
 
   public asyncEach(fn: EachCallback<T>) {
-    return this._engine.asyncEach(fn).then(() => this);
+    return this._engine.asyncEach(fn);
   }
 
   public clearTarck(i: number) {
     i = i >= 0 ? i : this.trackCount + i;
     this._engine.clearTarck(i);
-    return this;
   }
 
   public getTrackLocation(i: number) {
@@ -171,14 +169,13 @@ export class Manager<
   public format() {
     this._engine.format();
     this.pluginSystem.lifecycle.format.emit();
-    return this;
   }
 
   public mount(
     container?: HTMLElement | string,
     { clear = true }: { clear?: boolean } = {},
   ) {
-    if (!container) return this;
+    if (!container) return;
     if (typeof container === 'string') {
       this._container = document.querySelector(container);
     } else {
@@ -191,14 +188,12 @@ export class Manager<
     this._engine.box._mount(this._container);
     this.format();
     this.pluginSystem.lifecycle.mount.emit(this._container);
-    return this;
   }
 
   public unmount() {
     this.box._unmount();
     this.pluginSystem.lifecycle.unmount.emit(this._container);
     this._container = null;
-    return this;
   }
 
   public clear(_flag?: Symbol) {
@@ -206,7 +201,6 @@ export class Manager<
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.clear.emit();
     }
-    return this;
   }
 
   public updateOptions(newOptions: Partial<ManagerOptions>) {
@@ -218,11 +212,10 @@ export class Manager<
       this.startPlaying(INTERNAL_FLAG);
     }
     this.pluginSystem.lifecycle.updateOptions.emit(newOptions);
-    return this;
   }
 
   public startPlaying(_flag?: Symbol) {
-    if (this.isPlaying()) return this;
+    if (this.isPlaying()) return;
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.start.emit();
     }
@@ -231,11 +224,10 @@ export class Manager<
       this.render();
     };
     cycle();
-    return this;
   }
 
   public stopPlaying(_flag?: Symbol) {
-    if (!this.isPlaying()) return this;
+    if (!this.isPlaying()) return;
     if (this._renderTimer) {
       clearTimeout(this._renderTimer);
     }
@@ -243,15 +235,14 @@ export class Manager<
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.stop.emit();
     }
-    return this;
   }
 
   public show(filter?: FilterCallback<T>) {
-    return this._setViewStatus('show', filter).then(() => this);
+    return this._setViewStatus('show', filter);
   }
 
   public hide(filter?: FilterCallback<T>) {
-    return this._setViewStatus('hide', filter).then(() => this);
+    return this._setViewStatus('hide', filter);
   }
 
   public canPush(type: DanmakuType) {
@@ -355,11 +346,10 @@ export class Manager<
       set('maskImage', 'none');
       set('webkitMaskImage', 'none');
     }
-    return this;
   }
 
   public render() {
-    if (!this.isPlaying()) return this;
+    if (!this.isPlaying()) return;
     this._engine.renderFacileDanmaku({
       statuses: this._internalStatuses,
       danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
@@ -369,38 +359,36 @@ export class Manager<
         willRender: (val) => this.pluginSystem.lifecycle.willRender.emit(val),
       },
     });
-    return this;
   }
 
   public setDirection(direction: Exclude<Direction, 'none'>) {
-    return this.updateOptions({ direction });
+    this.updateOptions({ direction });
   }
 
   public setMode(mode: Mode) {
-    return this.updateOptions({ mode });
+    this.updateOptions({ mode });
   }
 
   public setGap(gap: number | string) {
-    return this.updateOptions({ gap });
+    this.updateOptions({ gap });
   }
 
   public setTrackHeight(trackHeight: number | string) {
-    return this.updateOptions({ trackHeight });
+    this.updateOptions({ trackHeight });
   }
 
   public setInterval(interval: number) {
-    return this.updateOptions({ interval });
+    this.updateOptions({ interval });
   }
 
   public setTimes(times: [number, number]) {
-    return this.updateOptions({ times });
+    this.updateOptions({ times });
   }
 
   public setRate(rate: number) {
     if (rate !== this.options.rate) {
       this.updateOptions({ rate });
     }
-    return this;
   }
 
   public setStyle<T extends StyleKey>(key: T, val: CSSStyleDeclaration[T]) {
@@ -413,7 +401,6 @@ export class Manager<
         }
       });
     }
-    return this;
   }
 
   public setOpacity(opacity: number | string) {
@@ -425,7 +412,7 @@ export class Manager<
     } else if (opacity > 1) {
       opacity = 1;
     }
-    return this.setStyle('opacity', String(opacity));
+    this.setStyle('opacity', String(opacity));
   }
 
   public setLimits({ view, stash }: { view?: number; stash?: number }) {
@@ -442,7 +429,6 @@ export class Manager<
     if (needUpdate) {
       this.updateOptions({ limits });
     }
-    return this;
   }
 
   public setArea({ x, y }: AreaOptions) {
@@ -461,12 +447,10 @@ export class Manager<
       this._engine.box._updateSize(size);
       this.format();
     }
-    return this;
   }
 
   public remove(pluginName: string) {
     this.pluginSystem.remove(pluginName);
-    return this;
   }
 
   public use(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) {
