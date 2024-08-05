@@ -31,6 +31,6 @@ manager.mount(document.getElementById('root'));
 manager.startPlaying();
 
 // Send danmuku
-manager.push({ value: 'danmaku content' });
+manager.push('danmaku content');
 ```
 

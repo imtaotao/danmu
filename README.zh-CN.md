@@ -31,5 +31,5 @@ manager.mount(document.getElementById('root'));
 manager.startPlaying();
 
 // 发送弹幕
-manager.push({ value: 'danmaku content' });
+manager.push('弹幕内容');
 ```
