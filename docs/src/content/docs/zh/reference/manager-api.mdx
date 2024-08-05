@@ -93,151 +93,6 @@ manager.setStyle('background', 'red');
 
 ## 方法
 
-### `isShow()`
-
-**类型：`() => boolean`**
-
-用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`;
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `isFreeze()`
-
-**类型：`() => boolean`**
-
-用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`;
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `isPlaying()`
-
-**类型：`() => boolean`**
-
-用来判断当前渲染引擎是否正在渲染播放状态，当你调用 `manager.stopPlaying()` 后，会返回 `false`。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `isDanmaku()`
-
-**类型：`(b: unknown) => b is Danmaku<T>`**
-
-用来判断某个值是否是弹幕实例。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setArea()`
-
-**类型：`(data: AreaOptions) => Manager`**
-
-设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
-
-```ts
-interface AreaOptions {
-  x?: {
-    start?: string;
-    end?: string;
-  };
-  y?: {
-    start?: string;
-    end?: string;
-  };
-}
-```
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setOpacity()`
-
-**类型：`(opacity: number | string) => Manager`**
-
-设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setStyle()`
-
-**类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
-
-设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setRate()`
-
-**类型：`(rate: number) => Manager`**
-
-设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setMode()`
-
-**类型：`(mode: 'none' | 'strict' | 'adaptive') => Manager`**
-
-设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setGap()`
-
-**类型：`(gap: number | string) => Manager`**
-
-设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setTimes()`
-
-**类型：`(times: [number, number]) => Manager`**
-
-设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setLimits()`
-
-**类型：`(limits: { view?: number; stash?: number }) => Manager`**
-
-设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setInterval()`
-
-**类型：`(interval: number) => Manager`**
-
-设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setDirection()`
-
-**类型：`(direction: 'left' | 'right') => Manager`**
-
-设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `setTrackHeight()`
-
-**类型：`(trackHeight: number | string) => Manager`**
-
-设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
-:::note[轨道高度的设置规则]
-轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
-:::
-
-```ts
-// 这只会存在三条轨道
-manager.setTrackHeight('33%');
-
-// 轨道高度为 100px，轨道的数目为 `容器高度 / 100px`
-manager.setTrackHeight(100);
-```
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
 ### `canPush()`
 
 **类型：`(type: DanmakuType) => boolean`**
@@ -267,7 +122,7 @@ manager.canPush('flexible');
 
 :::
 
-```ts {12, 16, 21}
+```ts
 export interface PushOptions<T> {
   id?: number | string;
   rate?: number;
@@ -275,23 +130,36 @@ export interface PushOptions<T> {
   plugin?: DanmakuPlugin<T>;
   direction?: 'right' | 'left';
 }
+```
 
+**简单 case：**
+
+```ts
 const manager = create<{ content: string }>();
 
 // 发送一条弹幕
+// 时间，速率，方向等配置复用全局的也就是 create() 时传递的参数。
 manager.push({ '弹幕内容' });
+```
 
+**完整 case：**
+
+```ts
 // 发送一条弹幕并添加插件处理，插件的作用域仅限当前 push 的这一条弹幕。
 manager.push(
   { content: '弹幕内容' },
   {
+    id: 1, // 如果你的弹幕有 id，可以添加到这里
+    rate: 1.5,
+    duration: 1000,
+    direction: 'left',
     plugin: {
       createNode(danmaku) {
-          const div = document.createElement('div');
-          div.innerHTML = danmaku.data.content; // 弹幕内容
-          danmaku.node.appendChild(div);
-        },
-    }
+        const div = document.createElement('div');
+        div.innerHTML = danmaku.data.content; // 弹幕内容
+        danmaku.node.appendChild(div);
+      },
+    },
   },
 );
 ```
@@ -606,3 +474,150 @@ const plugin = manager.use({
 });
 console.log(plugin.name); // uuid
 ```
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `isShow()`
+
+**类型：`() => boolean`**
+
+用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`;
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `isFreeze()`
+
+**类型：`() => boolean`**
+
+用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`;
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `isPlaying()`
+
+**类型：`() => boolean`**
+
+用来判断当前渲染引擎是否正在渲染播放状态，当你调用 `manager.stopPlaying()` 后，会返回 `false`。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `isDanmaku()`
+
+**类型：`(b: unknown) => b is Danmaku<T>`**
+
+用来判断某个值是否是弹幕实例。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setArea()`
+
+**类型：`(data: AreaOptions) => Manager`**
+
+设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
+
+```ts
+interface AreaOptions {
+  x?: {
+    start?: string;
+    end?: string;
+  };
+  y?: {
+    start?: string;
+    end?: string;
+  };
+}
+```
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setOpacity()`
+
+**类型：`(opacity: number | string) => Manager`**
+
+设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setStyle()`
+
+**类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => Manager`**
+
+设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setRate()`
+
+**类型：`(rate: number) => Manager`**
+
+设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setMode()`
+
+**类型：`(mode: 'none' | 'strict' | 'adaptive') => Manager`**
+
+设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setGap()`
+
+**类型：`(gap: number | string) => Manager`**
+
+设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setTimes()`
+
+**类型：`(times: [number, number]) => Manager`**
+
+设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setLimits()`
+
+**类型：`(limits: { view?: number; stash?: number }) => Manager`**
+
+设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setInterval()`
+
+**类型：`(interval: number) => Manager`**
+
+设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setDirection()`
+
+**类型：`(direction: 'left' | 'right') => Manager`**
+
+设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `setTrackHeight()`
+
+**类型：`(trackHeight: number | string) => Manager`**
+
+设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+
+:::note[轨道高度的设置规则]
+轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
+:::
+
+```ts
+// 这只会存在三条轨道
+manager.setTrackHeight('33%');
+
+// 轨道高度为 100px，轨道的数目为 `容器高度 / 100px`
+manager.setTrackHeight(100);
+```
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
