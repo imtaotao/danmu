@@ -80,7 +80,7 @@ const manager = create({
 
 ### 3. 挂载并渲染
 
-当我们创建好了一个 `manager` 的时候就可以挂载到某个具体的节点上并渲染，实际上 `manager` 内部会启动一个定时器来轮询将内存区的弹幕来渲染出来，而轮询的时间是交由你来控制的（如果没有通过配置传递，会有一个默认的值 **`500ms`**）。
+当我们创建好了一个 `manager` 的时候就可以挂载到某个具体的节点上并渲染，实际上 `manager` 内部会启动一个定时器来轮询将内存区的弹幕来渲染出来，而轮询的时间是交由你来控制的（如果没有通过配置传递，会有一个默认的值 **`500ms`**，详见配置章节）。
 
 ```ts
 const container = document.getElementById('container');
@@ -112,7 +112,6 @@ manager.unshift('弹幕内容');
 ```ts
 manager.push('弹幕内容', {
   // ... 其他属性，详情见 push api 文档
-  id: 1, // 可选参数
   plugin: {
     moveStart(danmaku) {
       // moveStart 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
@@ -124,7 +123,7 @@ manager.push('弹幕内容', {
 
 ### 5. 发送高级弹幕
 
-普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`pushflexibledanmaku`**](../../reference/manager-api/#pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
+普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`pushFlexibleDanmaku`**](../../reference/manager-api/#pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
 
 ```diff lang="ts"
 manager.pushFlexibleDanmaku(
