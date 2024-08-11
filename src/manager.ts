@@ -435,13 +435,13 @@ export class Manager<
     const size = Object.create(null);
     if (x) {
       if (!size.x) size.x = Object.create(null);
-      if (x.end) size.x.end = toNumber(x.end) / 100;
-      if (x.start) size.x.start = toNumber(x.start) / 100;
+      if (x.end) size.x.end = toNumber(x.end, 1);
+      if (x.start) size.x.start = toNumber(x.start, 1);
     }
     if (y) {
       if (!size.y) size.y = Object.create(null);
-      if (y.end) size.y.end = toNumber(y.end) / 100;
-      if (y.start) size.y.start = toNumber(y.start) / 100;
+      if (y.end) size.y.end = toNumber(y.end, 1);
+      if (y.start) size.y.start = toNumber(y.start, 1);
     }
     if (!isEmptyObject(size)) {
       this._engine.box._updateSize(size);

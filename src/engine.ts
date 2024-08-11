@@ -58,16 +58,16 @@ export class Engine<T> {
 
   public constructor(private _options: EngineOptions) {}
 
-  public n(attr: 'height' | 'width', val: number | string) {
-    let n =
-      typeof val === 'number'
-        ? val
-        : typeof val === 'string'
-          ? val.endsWith('%')
-            ? this.box[attr] * (toNumber(val) / 100)
-            : toNumber(val)
-          : NaN;
-    if (n > this.box[attr]) n = this.box[attr];
+  public toNumber(p: 'height' | 'width', val: number | string) {
+    let n: number;
+    if (typeof val === 'number') {
+      n = val;
+    } else {
+      n = toNumber(val, this.box[p]);
+    }
+    if (n > this.box[p]) {
+      n = this.box[p];
+    }
     assert(!Number.isNaN(n), `Invalid "${n}: ${val}"`);
     return n;
   }
@@ -103,7 +103,7 @@ export class Engine<T> {
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this._options = Object.assign(this._options, newOptions);
     if (hasOwn(newOptions, 'gap')) {
-      this._options.gap = this.n('width', this._options.gap);
+      this._options.gap = this.toNumber('width', this._options.gap);
     }
     if (hasOwn(newOptions, 'trackHeight')) {
       this.format();
@@ -170,8 +170,8 @@ export class Engine<T> {
     // Need to format the container first
     this.box._format();
     const { gap, trackHeight } = this._options;
-    this._options.gap = this.n('width', gap);
-    const h = this.n('height', trackHeight);
+    this._options.gap = this.toNumber('width', gap);
+    const h = this.toNumber('height', trackHeight);
 
     if (h <= 0) {
       for (let i = 0; i < this.tracks.length; i++) {

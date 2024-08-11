@@ -76,7 +76,7 @@ export class Box {
     this.setStyle('left', `${_size.x.start * 100}%`);
     this.setStyle('top', `${_size.y.start * 100}%`);
     const styles = getComputedStyle(node);
-    this.width = toNumber(styles.width);
-    this.height = toNumber(styles.height);
+    this.width = toNumber(styles.width, 0);
+    this.height = toNumber(styles.height, 0);
   }
 }

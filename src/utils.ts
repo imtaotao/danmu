@@ -1,4 +1,4 @@
-import { raf, once } from 'aidly';
+import { raf, once, execMathExpression } from 'aidly';
 
 export const INTERNAL_FLAG = Symbol();
 
@@ -15,15 +15,16 @@ export const randomIdx = (founds: Set<number>, rows: number): number => {
   return founds.has(idx) ? randomIdx(founds, rows) : idx;
 };
 
-export const toNumber = (val: number | string) => {
-  if (typeof val === 'number') return val;
-  if (typeof val === 'string') {
-    return Number(val.replace(/^(\d+(\.\d+)?)(px|%)$/, (_, $1) => $1));
-  }
-  return NaN;
+export const toNumber = (val: string, all: number) => {
+  return execMathExpression(val, {
+    units: {
+      px: (n) => n,
+      '%': (n) => (Number(n) / 100) * all,
+    },
+  });
 };
 
-export function whenTransitionEnds(node: HTMLElement) {
+export const whenTransitionEnds = (node: HTMLElement) => {
   return new Promise<void>((resolve) => {
     const onEnd = once(() => {
       node.removeEventListener('transitionend', onEnd);
@@ -31,4 +32,4 @@ export function whenTransitionEnds(node: HTMLElement) {
     });
     node.addEventListener('transitionend', onEnd);
   });
-}
+};
