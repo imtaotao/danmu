@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.5.1
-        version: 1.5.1
+        specifier: ^1.6.0
+        version: 1.6.0
       hooks-plugin:
-        specifier: ^1.2.7
-        version: 1.2.7
+        specifier: ^1.2.8
+        version: 1.2.8
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -121,8 +121,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.5.1
-        version: 1.5.1
+        specifier: ^1.6.0
+        version: 1.6.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1653,8 +1653,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  aidly@1.5.1:
-    resolution: {integrity: sha512-WA4UBbM2qKMSyQcmjReEw3zmGHhw/BKoFaqTcpKiCmClRuJR5Z78ye4CoEw6ssoS83zE9Ni8+tqS9WxicGj16Q==}
+  aidly@1.6.0:
+    resolution: {integrity: sha512-3V/Yc2ynXEpCrYcI1qYZXbqwXMCpU56xNC/ZGCdZefJrjPxMzYvMaG8533xeZ7Fz5JjaNjVpAq0ejodF8APqrA==}
 
   ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
@@ -2375,8 +2375,8 @@ packages:
   hastscript@9.0.0:
     resolution: {integrity: sha512-jzaLBGavEDKHrc5EfFImKN7nZKKBdSLIdGvCwDZ9TfzbF2ffXiov8CKE445L2Z1Ek2t/m4SKQ2j6Ipv7NyUolw==}
 
-  hooks-plugin@1.2.7:
-    resolution: {integrity: sha512-8I7JAEiPsODu8RcomkUeMLU8fMH+7P4nm+q7rMbzsXYnzWENx6aNUoI9RMnXdNBCrUX1ca4a3z0vWqh1pzVQfg==}
+  hooks-plugin@1.2.8:
+    resolution: {integrity: sha512-kz9EX/Tmnka8i+xh2nng/evX82xkgh3TFDarda0toI43MkJLrVhla4GHAk+TIqhh6wUWAbcj8W6fVIvZQ16r0w==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -5715,7 +5715,7 @@ snapshots:
 
   acorn@8.12.1: {}
 
-  aidly@1.5.1:
+  aidly@1.6.0:
     dependencies:
       small-queue: 1.1.2
 
@@ -6628,9 +6628,9 @@ snapshots:
       property-information: 6.5.0
       space-separated-tokens: 2.0.2
 
-  hooks-plugin@1.2.7:
+  hooks-plugin@1.2.8:
     dependencies:
-      aidly: 1.5.1
+      aidly: 1.6.0
 
   html-escaper@2.0.2: {}
 
