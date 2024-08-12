@@ -207,10 +207,10 @@ export const Transmitter = ({
                       id: uuid(),
                       duration,
                       direction,
-                      position: (d, box) => {
+                      position: (d, _box) => {
                         return {
-                          x: ((box.width - d.getWidth()) * x) / 100,
-                          y: ((box.height - d.getHeight()) * y) / 100,
+                          x: `${x}% - ${d.getWidth() / 2}`,
+                          y: `${y}% - ${d.getHeight() / 2}`,
                         };
                       },
                     },

@@ -433,6 +433,7 @@ export class Manager<
 
   public setArea({ x, y }: AreaOptions) {
     const size = Object.create(null);
+    console.log(x, y);
     if (x) {
       if (!size.x) size.x = Object.create(null);
       if (x.end) size.x.end = toNumber(x.end, 1);

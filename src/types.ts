@@ -43,7 +43,9 @@ export type InternalStatuses = {
 
 export type PushFlexOptions<T> = Omit<PushOptions<T>, 'direction'> & {
   direction?: Direction;
-  position: Position | ((d: Danmaku<T>, box: Box) => Position);
+  position:
+    | Position<number | string>
+    | ((d: Danmaku<T>, box: Box) => Position<number | string>);
 };
 
 export interface PushOptions<T> {
@@ -54,9 +56,9 @@ export interface PushOptions<T> {
   direction?: ManagerOptions['direction'];
 }
 
-export interface Position {
-  x: number;
-  y: number;
+export interface Position<T = number> {
+  x: T;
+  y: T;
 }
 
 export interface MoveTimer {

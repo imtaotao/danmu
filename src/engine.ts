@@ -59,15 +59,8 @@ export class Engine<T> {
   public constructor(private _options: EngineOptions) {}
 
   public toNumber(p: 'height' | 'width', val: number | string) {
-    let n: number;
-    if (typeof val === 'number') {
-      n = val;
-    } else {
-      n = toNumber(val, this.box[p]);
-    }
-    if (n > this.box[p]) {
-      n = this.box[p];
-    }
+    let n = typeof val === 'number' ? val : toNumber(val, this.box[p]);
+    if (n > this.box[p]) n = this.box[p];
     assert(!Number.isNaN(n), `Invalid "${n}: ${val}"`);
     return n;
   }
@@ -465,15 +458,18 @@ export class Engine<T> {
     // If it is a function, the postion will be updated after the node is created,
     // so that the function can get accurate bullet comment data.
     if (typeof position !== 'function') {
-      d._updatePosition(position);
+      d._updatePosition({
+        x: this.toNumber('width', position.x),
+        y: this.toNumber('height', position.y),
+      });
     } else {
       d.use({
         appendNode: () => {
-          assert(
-            typeof position === 'function',
-            '"position" must be a function',
-          );
-          d._updatePosition(position(d, this.box));
+          const { x, y } = position(d, this.box);
+          d._updatePosition({
+            x: this.toNumber('width', x),
+            y: this.toNumber('height', y),
+          });
         },
       });
     }
