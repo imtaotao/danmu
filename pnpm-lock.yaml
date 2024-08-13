@@ -12,8 +12,8 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       hooks-plugin:
-        specifier: ^1.2.8
-        version: 1.2.8
+        specifier: ^1.2.9
+        version: 1.2.9
     devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^26.0.1
@@ -2375,8 +2375,8 @@ packages:
   hastscript@9.0.0:
     resolution: {integrity: sha512-jzaLBGavEDKHrc5EfFImKN7nZKKBdSLIdGvCwDZ9TfzbF2ffXiov8CKE445L2Z1Ek2t/m4SKQ2j6Ipv7NyUolw==}
 
-  hooks-plugin@1.2.8:
-    resolution: {integrity: sha512-kz9EX/Tmnka8i+xh2nng/evX82xkgh3TFDarda0toI43MkJLrVhla4GHAk+TIqhh6wUWAbcj8W6fVIvZQ16r0w==}
+  hooks-plugin@1.2.9:
+    resolution: {integrity: sha512-3dsaMMOj28iL1qxKNBoMFQ4CGKWW6UbyakEcig+OGcZAuocNarORXl0LCWHwgNxd8qIT/CbPTLMkYocuIb8qfA==}
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
@@ -6628,7 +6628,7 @@ snapshots:
       property-information: 6.5.0
       space-separated-tokens: 2.0.2
 
-  hooks-plugin@1.2.8:
+  hooks-plugin@1.2.9:
     dependencies:
       aidly: 1.6.1
 

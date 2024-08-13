@@ -449,12 +449,7 @@ export class Engine<T> {
 
     // If it is a function, the postion will be updated after the node is created,
     // so that the function can get accurate bullet comment data.
-    if (typeof position !== 'function') {
-      d._updatePosition({
-        x: this._toNumber('width', position.x),
-        y: this._toNumber('height', position.y),
-      });
-    } else {
+    if (typeof position === 'function') {
       d.use({
         appendNode: () => {
           const { x, y } = position(d, this.container);
@@ -463,6 +458,11 @@ export class Engine<T> {
             y: this._toNumber('height', y),
           });
         },
+      });
+    } else {
+      d._updatePosition({
+        x: this._toNumber('width', position.x),
+        y: this._toNumber('height', position.y),
       });
     }
     return d;

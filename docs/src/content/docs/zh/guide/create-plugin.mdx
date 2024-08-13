@@ -17,7 +17,7 @@ import { Steps } from '@astrojs/starlight/components';
 1. **编写一个插件**
 
     :::note[编写插件注意事项]
-     - 你编写的插件应当取一个 `name`，以便于调试定位问题。
+     - 你编写的插件应当取一个 `name`，以便于调试定位问题（注意不要和其他插件冲突了）。
      - 插件可以选择性的声明一个 `version`，这在你的插件作为独立包发到 `npm` 上时很有用。
     :::
 
@@ -55,12 +55,10 @@ import { Steps } from '@astrojs/starlight/components';
     ```ts title="init.ts" {12-13}
     import { create } from 'danmu';
 
-    interface ValueType {
+    const manager = create<{
       userId: number;
       content: string;
-    }
-
-    const manager = create<ValueType>();
+    }>();
 
     manager.use(
       filter({
