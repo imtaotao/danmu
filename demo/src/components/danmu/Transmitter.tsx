@@ -193,10 +193,10 @@ export const Transmitter = ({
                       id: uuid(),
                       duration,
                       direction,
-                      position: (d, _box) => {
+                      position: (danmaku, _container) => {
                         return {
-                          x: `${x}% - ${d.getWidth() / 2}`,
-                          y: `${y}% - ${d.getHeight() / 2}`,
+                          x: `${x}% - ${danmaku.getWidth() / 2}`,
+                          y: `${y}% - ${danmaku.getHeight() / 2}`,
                         };
                       },
                     },

@@ -2,11 +2,11 @@ import { map } from 'aidly';
 import { ids, toNumber } from './utils';
 import type { StyleKey, SizeArea, AreaOptions } from './types';
 
-export class Box {
+export class Container {
   public width = 0;
   public height = 0;
   public node: HTMLDivElement;
-  public container: HTMLElement | null = null;
+  public parentNode: HTMLElement | null = null;
   private _parentWidth = 0;
   private _parentHeight = 0;
   private _size = {
@@ -46,18 +46,18 @@ export class Box {
   /**
    * @internal
    */
-  public _mount(container: HTMLElement) {
+  public _mount(node: HTMLElement) {
     this._unmount();
-    this.container = container;
+    this.parentNode = node;
     this._format();
-    this.container.appendChild(this.node);
+    this.parentNode.appendChild(this.node);
   }
 
   /**
    * @internal
    */
   public _unmount() {
-    this.container = null;
+    this.parentNode = null;
     if (this.node.parentNode) {
       this.node.parentNode.removeChild(this.node);
     }
@@ -84,8 +84,8 @@ export class Box {
    * @internal
    */
   public _format() {
-    if (this.container) {
-      const styles = getComputedStyle(this.container);
+    if (this.parentNode) {
+      const styles = getComputedStyle(this.parentNode);
       this._parentWidth = Number(styles.width.replace('px', ''));
       this._parentHeight = Number(styles.height.replace('px', ''));
     }

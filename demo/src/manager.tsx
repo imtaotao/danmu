@@ -12,7 +12,7 @@ export const initManager = () => {
     plugin: {
       init(manager) {
         'shadow shadow-slate-200 bg-slate-100'.split(' ').forEach((c) => {
-          manager.box.node.classList.add(c);
+          manager.container.node.classList.add(c);
         });
       },
       $createNode(d) {

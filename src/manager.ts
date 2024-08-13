@@ -92,12 +92,8 @@ export class Manager<
     });
   }
 
-  public get box() {
-    return this._engine.box;
-  }
-
   public get container() {
-    return this.box.container;
+    return this._engine.container;
   }
 
   public get trackCount() {
@@ -171,28 +167,28 @@ export class Manager<
   }
 
   public mount(
-    container?: HTMLElement | string,
+    parentNode?: HTMLElement | string,
     { clear = true }: { clear?: boolean } = {},
   ) {
-    if (container) {
-      if (typeof container === 'string') {
-        const res = document.querySelector(container);
-        assert(res, `Invalid "${container}"`);
-        container = res as HTMLElement;
+    if (parentNode) {
+      if (typeof parentNode === 'string') {
+        const res = document.querySelector(parentNode);
+        assert(res, `Invalid "${parentNode}"`);
+        parentNode = res as HTMLElement;
       }
       if (this.isPlaying()) {
         clear && this.clear(INTERNAL_FLAG);
       }
-      this._engine.box._mount(container);
+      this._engine.container._mount(parentNode);
       this.format();
-      this.pluginSystem.lifecycle.mount.emit(container);
+      this.pluginSystem.lifecycle.mount.emit(parentNode);
     }
   }
 
   public unmount() {
-    const node = this.box.container;
-    this.box._unmount();
-    this.pluginSystem.lifecycle.unmount.emit(node);
+    const { parentNode } = this.container;
+    this.container._unmount();
+    this.pluginSystem.lifecycle.unmount.emit(parentNode);
   }
 
   public clear(_flag?: Symbol) {
@@ -332,7 +328,7 @@ export class Manager<
       if (el) {
         el.style[key] = val;
       } else {
-        this.box.setStyle(key, val);
+        this.container.setStyle(key, val);
       }
     };
     if (url) {
@@ -431,7 +427,7 @@ export class Manager<
 
   public setArea(size: AreaOptions) {
     if (!isEmptyObject(size)) {
-      this._engine.box._updateSize(size);
+      this._engine.container._updateSize(size);
       this.format();
     }
   }

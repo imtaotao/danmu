@@ -1,5 +1,5 @@
 import type { HooksOn, RefinePlugin } from 'hooks-plugin';
-import type { Box } from './box';
+import type { Container } from './container';
 import type { FacileDanmaku } from './danmaku/facile';
 import type { FlexibleDanmaku } from './danmaku/flexible';
 import type { Manager, ManagerOptions } from './manager';
@@ -45,7 +45,10 @@ export type PushFlexOptions<T> = Omit<PushOptions<T>, 'direction'> & {
   direction?: Direction;
   position:
     | Position<number | string>
-    | ((d: Danmaku<T>, box: Box) => Position<number | string>);
+    | ((
+        danmaku: Danmaku<T>,
+        container: Container,
+      ) => Position<number | string>);
 };
 
 export interface PushOptions<T> {

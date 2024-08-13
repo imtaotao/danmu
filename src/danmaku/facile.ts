@@ -1,5 +1,5 @@
 import { now, remove } from 'aidly';
-import type { Box } from '../box';
+import type { Container } from '../container';
 import { createDanmakuLifeCycle } from '../lifeCycle';
 import { ids, nextFrame, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
@@ -23,10 +23,10 @@ export type PluginSystem<D extends Danmaku<any>> = ReturnType<
 
 export interface FacileOptions<T> {
   data: T;
-  box: Box;
   rate: number;
   duration: number;
   direction: Direction;
+  container: Container;
   internalStatuses: InternalStatuses;
   delInTrack: (b: Danmaku<T>) => void;
 }
@@ -59,8 +59,8 @@ export class FacileDanmaku<T> {
     this.duration = _options.duration;
     this._internalStatuses = _options.internalStatuses;
     this._initData = {
-      width: _options.box.width,
       duration: _options.duration,
+      width: _options.container.width,
     };
     this.recorder = {
       pauseTime: 0,
@@ -73,7 +73,7 @@ export class FacileDanmaku<T> {
    * @internal
    */
   protected _summaryWidth() {
-    return this._options.box.width + this.getWidth();
+    return this._options.container.width + this.getWidth();
   }
 
   /**
@@ -160,7 +160,7 @@ export class FacileDanmaku<T> {
         this.setStyle(key as StyleKey, this._internalStatuses.styles[key]);
       }
       const w = this.getWidth();
-      const cw = this._options.box.width + w;
+      const cw = this._options.container.width + w;
       const negative = this.direction === 'left' ? 1 : -1;
 
       this._internalStatuses.viewStatus === 'hide'
@@ -246,14 +246,14 @@ export class FacileDanmaku<T> {
     }
     // Don't let the rendering of danmaku exceed the container
     if (
-      this._options.box.height !== oldHeight &&
-      this.getHeight() + newTrack.location[2] > this._options.box.height
+      this._options.container.height !== oldHeight &&
+      this.getHeight() + newTrack.location[2] > this._options.container.height
     ) {
       this.destroy();
       return;
     }
     // As the x-axis varies, the motion area of danmu also changes
-    if (this._options.box.width !== oldWidth) {
+    if (this._options.container.width !== oldWidth) {
       const { width, duration } = this._initData;
       const speed = (width + this.getWidth()) / duration;
       this._fixDuration(this._summaryWidth() / speed, false);

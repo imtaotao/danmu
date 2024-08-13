@@ -10,7 +10,7 @@ sidebar:
 `danmu` 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
 
 1. `number`: 默认单位为 `px`。
-2. `string`: 表达式计算。支持（`+`, `-`, `*`, `/`, `%`）数学计算，暂时只支持 `%` 和 `px` 两种单位。
+2. `string`: 表达式计算。支持（`+`, `-`, `*`, `/`）数学计算，只支持 `%` 和 `px` 两种单位。
 
 ```ts
 manager.setGap('(100% - 10px) / 5');
@@ -56,35 +56,37 @@ manager.statuses; // 类型为 { background: string }
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
-### `box`
+### `container`
 
-**类型：`Box`**
+**类型：`Container`**
 
-弹幕容器实例，其上面有如下公共方法供使用，当你在一些钩子里面获取到 box 实例时，可以参考本小节的知识。
+弹幕容器实例，其上面有如下公共方法供使用，当你在一些钩子里面获取到 container 实例时，可以参考本小节的知识。
 
 :::note[注意事项]
-如果你需要对容器的宽高做更改，建议使用 `manager.setArea()` 方法，而不要通过 `manager.box.setStyle()` 来更改，否则你需要手动调用 `manager.format()`。
+如果你需要对容器的宽高做更改，建议使用 `manager.setArea()` 方法，而不要通过 `manager.container.setStyle()` 来更改，否则你需要手动调用 `manager.format()`。
 :::
 
 ```ts
-declare class Box {
+declare class Container {
+  // 容器的宽度
   width: number;
+
+  // 容器的高度
   height: number;
+
+  // 容器的节点
   node: HTMLDivElement;
+
+  // 容器的父节点，通过 manager.mount() 设置
+  parentNode: HTMLElement | null;
+
+  // 设置容器节点的样式
   setStyle<T extends StyleKey>(key: T, val: CSSStyleDeclaration[T]): void;
 }
 
 // 所以你可以以下方式来给容器设置一些样式
 manager.setStyle('background', 'red');
 ```
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
-
-### `container`
-
-**类型：`HTMLElement | null`**
-
-弹幕容器挂载到的节点上，这是你通过 `manager.mount()` 挂载的节点，一般在编写插件的时候会很有用。
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
@@ -211,7 +213,9 @@ interface PushFlexOptions {
   duration?: number;
   plugin?: DanmakuPlugin<T>;
   direction?: 'left' | 'right' | 'none'; // 普通弹幕没有 'none'
-  position: Position | ((d: Danmaku<T>, box: Box) => Position);
+  position:
+    | Position
+    | ((danmaku: Danmaku<T>, container: Container) => Position);
 }
 
 // 发送一条弹幕，在容器居中的位置，静止 5s
@@ -220,10 +224,11 @@ manager.pushFlexibleDanmaku(
   {
     duration: 5000,
     direction: 'none',
-    position(danmaku, box) {
+    position(danmaku, container) {
+      // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
       return {
-        x: (box.width - danmaku.getWidth()) * 0.5,
-        y: (box.height - danmaku.getHeight()) * 0.5,
+        x: (container.width - danmaku.getWidth()) * 0.5,
+        y: (container.height - danmaku.getHeight()) * 0.5,
       };
     },
   },
@@ -268,11 +273,11 @@ manager.pushFlexibleDanmaku(
   {
     duration: 5000,
     direction: 'none',
-    position(danmaku, box) {
+    position(danmaku, container) {
       // 渲染在第三条轨道中
       const { middle } = manager.getTrackLocation(3);
       return {
-        x: (box.width - danmaku.getWidth()) * 0.5,
+        x: (container.width - danmaku.getWidth()) * 0.5,
         y: middle - danmaku.getHeight() / 2,
       };
     },
@@ -339,7 +344,7 @@ const { stash, flexible, view, all } = manager.len();
 
 ### `mount()`
 
-**类型：`(container?: HTMLElement | string, { clear?: boolean }) => void`**
+**类型：`(node?: HTMLElement | string, { clear?: boolean }) => void`**
 
 将内核的弹幕容器挂载到一个 HTML 节点上，可以是一个 `string` 类型的 `CSS` 选择器，`clear` 参数可以用来清除之前渲染的弹幕，默认为 `true`，如果你不想清除可以传 `false`，挂载之后你可以通过 `manager.container` 拿到这个节点。
 
@@ -431,7 +436,7 @@ manager.nextFrame(() => {
 
 **类型：`(url?: string, el?: HTMLElement) => void`**
 
-给指定元素（默认是当前弹幕容器 `manager.box.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
+给指定元素（默认是当前弹幕容器 `manager.container.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
 
 :::note[注意事项]
 放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
@@ -525,7 +530,7 @@ console.log(plugin.name); // uuid
 
 **类型：`(data: AreaOptions) => void`**
 
-设置当前容器（`manager.box.node`）的大小，会自动 format，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
+设置当前容器（`manager.container.node`）的大小，会自动 format，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
 
 ```ts
 interface AreaOptions {

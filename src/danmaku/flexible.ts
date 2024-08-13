@@ -69,7 +69,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       } else {
         const ex =
           this.direction === 'left'
-            ? this._options.box.width
+            ? this._options.container.width
             : -this.getWidth();
         this.setStyle(
           'transition',
@@ -144,7 +144,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     if (!this.moving) return 0;
     let d;
     let { x } = this.position;
-    const diff = this._initData.width - this._options.box.width;
+    const diff = this._initData.width - this._options.container.width;
 
     if (this.direction === 'none') {
       d = x - diff;
@@ -153,7 +153,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       if (this.direction === 'left') {
         // When the container changes and the direction of movement is to the right,
         // there is no need for any changes
-        d = x + (this._options.box.width - x) * percent;
+        d = x + (this._options.container.width - x) * percent;
       } else {
         d = x - (x + this.getWidth()) * percent - diff;
       }
@@ -175,7 +175,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       );
       return;
     }
-    const diff = this._initData.width - this._options.box.width;
+    const diff = this._initData.width - this._options.container.width;
     const cw = this.position.x + this.getWidth();
     this._fixDuration((cw - diff) / this._getSpeed(), false);
 
@@ -230,7 +230,9 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       }
     } else {
       const ex =
-        this.direction === 'left' ? this._options.box.width : -this.getWidth();
+        this.direction === 'left'
+          ? this._options.container.width
+          : -this.getWidth();
       this.setStyle('zIndex', '1');
       this.setStyle('transitionDuration', `${remainingTime}ms`);
       this.setStyle(

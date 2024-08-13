@@ -7,7 +7,7 @@ import {
   isInBounds,
   batchProcess,
 } from 'aidly';
-import { Box } from './box';
+import { Container } from './container';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
 import { toNumber, randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
@@ -41,7 +41,7 @@ export interface EngineOptions {
 
 export class Engine<T> {
   public rows = 0;
-  public box = new Box();
+  public container = new Container();
   public tracks = [] as Array<TrackData<T>>;
   private _fx = new Queue();
   private _sets = {
@@ -57,13 +57,6 @@ export class Engine<T> {
   });
 
   public constructor(private _options: EngineOptions) {}
-
-  public toNumber(p: 'height' | 'width', val: number | string) {
-    let n = typeof val === 'number' ? val : toNumber(val, this.box[p]);
-    if (n > this.box[p]) n = this.box[p];
-    assert(!Number.isNaN(n), `Invalid "${n}: ${val}"`);
-    return n;
-  }
 
   // We have to make a copy.
   // During the loop, there are too many factors that change danmaku,
@@ -96,7 +89,7 @@ export class Engine<T> {
   public updateOptions(newOptions: Partial<EngineOptions>) {
     this._options = Object.assign(this._options, newOptions);
     if (hasOwn(newOptions, 'gap')) {
-      this._options.gap = this.toNumber('width', this._options.gap);
+      this._options.gap = this._toNumber('width', this._options.gap);
     }
     if (hasOwn(newOptions, 'trackHeight')) {
       this.format();
@@ -159,11 +152,11 @@ export class Engine<T> {
   }
 
   public format() {
-    this.box._format();
-    const { width, height } = this.box;
+    this.container._format();
+    const { width, height } = this.container;
     const { gap, trackHeight } = this._options;
-    this._options.gap = this.toNumber('width', gap);
-    const h = this.toNumber('height', trackHeight);
+    this._options.gap = this._toNumber('width', gap);
+    const h = this._toNumber('height', trackHeight);
 
     if (h <= 0) {
       for (let i = 0; i < this.tracks.length; i++) {
@@ -171,7 +164,7 @@ export class Engine<T> {
       }
       return;
     }
-    const rows = (this.rows = +(this.box.height / h).toFixed(0));
+    const rows = (this.rows = +(this.container.height / h).toFixed(0));
 
     for (let i = 0; i < rows; i++) {
       const track = this.tracks[i];
@@ -180,7 +173,7 @@ export class Engine<T> {
       const mid = (end - start) / 2 + start;
       const location = [start, mid, end] as [number, number, number];
 
-      if (end > this.box.height) {
+      if (end > this.container.height) {
         this.rows--;
         if (track) {
           this.clearTarck(i);
@@ -189,7 +182,7 @@ export class Engine<T> {
       } else if (track) {
         // If the reused track is larger than the container height,
         // the overflow needs to be deleted.
-        if (track.location[2] > this.box.height) {
+        if (track.location[2] > this.container.height) {
           this.clearTarck(i);
         } else {
           Array.from(track.list).forEach((d) =>
@@ -213,9 +206,9 @@ export class Engine<T> {
     }
     // If `flexible` danmaku is also outside the view, it also needs to be deleted
     for (const d of this._sets.flexible) {
-      if (d.position.y > this.box.height) {
+      if (d.position.y > this.container.height) {
         d.destroy();
-      } else if (width !== this.box.width) {
+      } else if (width !== this.container.width) {
         d._format();
       }
     }
@@ -226,12 +219,12 @@ export class Engine<T> {
     options: Required<PushFlexOptions<T>>,
     { hooks, statuses, danmakuPlugin }: RenderOptions<T>,
   ) {
-    assert(this.box, 'Container not formatted');
+    assert(this.container, 'Container not formatted');
     hooks.render.call(null, 'flexible');
 
     const d = this._create('flexible', data, options, statuses);
-    if (d.position.x > this.box.width) return false;
-    if (d.position.y > this.box.height) return false;
+    if (d.position.x > this.container.width) return false;
+    if (d.position.y > this.container.height) return false;
     if (options.plugin) d.use(options.plugin);
     d.use(danmakuPlugin);
 
@@ -342,7 +335,7 @@ export class Engine<T> {
     if (this._options.rate > 0 && prevent !== true) {
       // First createNode, users may add styles
       d._createNode();
-      d._appendNode(this.box.node);
+      d._appendNode(this.container.node);
       d._updateTrackData(trackData);
 
       const setup = () => {
@@ -376,7 +369,7 @@ export class Engine<T> {
             triggerSetup();
           } else {
             const y = trackData.location[1] - height / 2;
-            if (y + height > this.box.height) return;
+            if (y + height > this.container.height) return;
             d._updatePosition({ y });
             setup();
           }
@@ -412,7 +405,7 @@ export class Engine<T> {
             }
           }
         }
-        cur._appendNode(this.box.node);
+        cur._appendNode(this.container.node);
         nextFrame(() => {
           if (internalStatuses.freeze === true) {
             cur._removeNode(INTERNAL_FLAG);
@@ -431,12 +424,12 @@ export class Engine<T> {
     options: Required<PushOptions<T> | PushFlexOptions<T>>,
     internalStatuses: InternalStatuses,
   ): Danmaku<T> {
-    assert(this.box, 'Container not formatted');
+    assert(this.container, 'Container not formatted');
     const config = {
       data,
-      box: this.box,
       internalStatuses,
       rate: options.rate,
+      container: this.container,
       duration: options.duration,
       direction: options.direction,
       delInTrack: (b: Danmaku<T>) => {
@@ -458,16 +451,16 @@ export class Engine<T> {
     // so that the function can get accurate bullet comment data.
     if (typeof position !== 'function') {
       d._updatePosition({
-        x: this.toNumber('width', position.x),
-        y: this.toNumber('height', position.y),
+        x: this._toNumber('width', position.x),
+        y: this._toNumber('height', position.y),
       });
     } else {
       d.use({
         appendNode: () => {
-          const { x, y } = position(d, this.box);
+          const { x, y } = position(d, this.container);
           d._updatePosition({
-            x: this.toNumber('width', x),
-            y: this.toNumber('height', y),
+            x: this._toNumber('width', x),
+            y: this._toNumber('height', y),
           });
         },
       });
@@ -527,10 +520,19 @@ export class Engine<T> {
     const collisionTime = distance / acceleration;
     if (collisionTime >= cur.duration) return null;
 
-    assert(this.box, 'Container not formatted');
+    assert(this.container, 'Container not formatted');
     const remainingTime = (1 - prv._getMovePercent()) * prv.duration;
     const currentFixTime =
-      ((cw + (gap as number)) * remainingTime) / this.box.width;
+      ((cw + (gap as number)) * remainingTime) / this.container.width;
     return remainingTime + currentFixTime;
+  }
+
+  private _toNumber(p: 'height' | 'width', val: number | string) {
+    let n = typeof val === 'number' ? val : toNumber(val, this.container[p]);
+    if (n > this.container[p]) {
+      n = this.container[p];
+    }
+    assert(!Number.isNaN(n), `Invalid "${val}", result is NaN`);
+    return n;
   }
 }
