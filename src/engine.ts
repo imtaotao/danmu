@@ -159,9 +159,8 @@ export class Engine<T> {
   }
 
   public format() {
-    const { width, height } = this.box;
-    // Need to format the container first
     this.box._format();
+    const { width, height } = this.box;
     const { gap, trackHeight } = this._options;
     this._options.gap = this.toNumber('width', gap);
     const h = this.toNumber('height', trackHeight);

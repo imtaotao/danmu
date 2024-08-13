@@ -66,9 +66,14 @@ export interface MoveTimer {
   clear: () => void;
 }
 
+export interface SizeArea<T> {
+  start: T;
+  end: T;
+}
+
 export interface AreaOptions {
-  x?: { start?: string; end?: string };
-  y?: { start?: string; end?: string };
+  x?: Partial<SizeArea<number | string>>;
+  y?: Partial<SizeArea<number | string>>;
 }
 
 export interface FreezeOptions {

@@ -2,7 +2,7 @@ import { assert, hasOwn, random, isEmptyObject } from 'aidly';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
 import { Engine, type EngineOptions } from './engine';
-import { ids, toNumber, nextFrame, INTERNAL_FLAG } from './utils';
+import { ids, nextFrame, INTERNAL_FLAG } from './utils';
 import { createDanmakuPlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
   Mode,
@@ -34,7 +34,6 @@ export class Manager<
   public pluginSystem = createManagerLifeCycle<T>();
   private _engine: Engine<T>;
   private _renderTimer: number | null = null;
-  private _container: HTMLElement | null = null;
   private _internalStatuses: InternalStatuses = Object.create(null);
 
   public constructor(public options: ManagerOptions) {
@@ -98,7 +97,7 @@ export class Manager<
   }
 
   public get container() {
-    return this._container;
+    return this.box.container;
   }
 
   public get trackCount() {
@@ -175,25 +174,25 @@ export class Manager<
     container?: HTMLElement | string,
     { clear = true }: { clear?: boolean } = {},
   ) {
-    if (!container) return;
-    if (typeof container === 'string') {
-      this._container = document.querySelector(container);
-    } else {
-      this._container = container;
+    if (container) {
+      if (typeof container === 'string') {
+        const res = document.querySelector(container);
+        assert(res, `Invalid "${container}"`);
+        container = res as HTMLElement;
+      }
+      if (this.isPlaying()) {
+        clear && this.clear(INTERNAL_FLAG);
+      }
+      this._engine.box._mount(container);
+      this.format();
+      this.pluginSystem.lifecycle.mount.emit(container);
     }
-    assert(this._container, `Invalid "${container}"`);
-    if (this.isPlaying()) {
-      clear && this.clear(INTERNAL_FLAG);
-    }
-    this._engine.box._mount(this._container);
-    this.format();
-    this.pluginSystem.lifecycle.mount.emit(this._container);
   }
 
   public unmount() {
+    const node = this.box.container;
     this.box._unmount();
-    this.pluginSystem.lifecycle.unmount.emit(this._container);
-    this._container = null;
+    this.pluginSystem.lifecycle.unmount.emit(node);
   }
 
   public clear(_flag?: Symbol) {
@@ -349,7 +348,6 @@ export class Manager<
   }
 
   public render() {
-    if (!this.isPlaying()) return;
     this._engine.renderFacileDanmaku({
       statuses: this._internalStatuses,
       danmakuPlugin: createDanmakuPlugin(this.pluginSystem),
@@ -431,19 +429,7 @@ export class Manager<
     }
   }
 
-  public setArea({ x, y }: AreaOptions) {
-    const size = Object.create(null);
-    console.log(x, y);
-    if (x) {
-      if (!size.x) size.x = Object.create(null);
-      if (x.end) size.x.end = toNumber(x.end, 1);
-      if (x.start) size.x.start = toNumber(x.start, 1);
-    }
-    if (y) {
-      if (!size.y) size.y = Object.create(null);
-      if (y.end) size.y.end = toNumber(y.end, 1);
-      if (y.start) size.y.start = toNumber(y.start, 1);
-    }
+  public setArea(size: AreaOptions) {
     if (!isEmptyObject(size)) {
       this._engine.box._updateSize(size);
       this.format();
