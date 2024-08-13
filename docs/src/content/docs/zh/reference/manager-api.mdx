@@ -5,6 +5,19 @@ sidebar:
   order: 3
 ---
 
+:::note[单位提示]
+
+`danmu` 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
+
+1. `number`: 默认单位为 `px`。
+2. `string`: 表达式计算。支持（`+`, `-`, `*`, `/`, `%`）数学计算，暂时只支持 `%` 和 `px` 两种单位。
+
+```ts
+manager.setGap('(100% - 10px) / 5');
+```
+
+:::
+
 ## 属性
 
 ### `version`
@@ -184,8 +197,7 @@ manager.push(
 
 1. 高级弹幕的 `options` 和普通弹幕的 `options` 行为一样，如果不传会默认从 `manager.options` 里面取默认值。
 2. 高级弹幕**必须传递 `position` 来指定位置**，如果需要指定在某个轨道渲染，可以借助 [**`getTrackLocation()`**](./#gettracklocation) 来做到。
-
-:::
+   :::
 
 ```ts
 interface Position {
@@ -513,17 +525,17 @@ console.log(plugin.name); // uuid
 
 **类型：`(data: AreaOptions) => void`**
 
-设置当前容器（`manager.box.node`）的大小，会自动 format，`x` 和 `y` 单位是 `%`，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
+设置当前容器（`manager.box.node`）的大小，会自动 format，使用方法可以参见 [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/components/sidebar/SidebarAreaY.tsx#L26-L31)。
 
 ```ts
 interface AreaOptions {
   x?: {
-    start?: string;
-    end?: string;
+    start?: string | number;
+    end?: string | number;
   };
   y?: {
-    start?: string;
-    end?: string;
+    start?: string | number;
+    end?: string | number;
   };
 }
 ```
@@ -606,7 +618,7 @@ interface AreaOptions {
 
 **类型：`(trackHeight: number | string) => void`**
 
-设置**轨道高度**，轨道高度单位可以是 `px`，也可以是 `%`。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+设置**轨道高度**。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
 :::note[轨道高度的设置规则]
 轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
@@ -619,5 +631,3 @@ manager.setTrackHeight('33%');
 // 轨道高度为 100px，轨道的数目为 `容器高度 / 100px`
 manager.setTrackHeight(100);
 ```
-
-<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />

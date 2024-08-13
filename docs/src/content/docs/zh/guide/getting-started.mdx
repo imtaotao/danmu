@@ -133,11 +133,10 @@ manager.pushFlexibleDanmaku(
     duration: 1000, // 默认从 manager.options.times 中随机取一个值
     direction: 'none', // 默认取 manager.options.direction 的值
     position: (danmaku, box) => {
-      // 单位为 px（不过你自己要将 % 换算成 px 也很简单，可以参考我们的 demo）
       // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
       return {
-+       x: ((box.width - danmaku.getWidth()) * x) / 100,
-+       y: ((box.height - danmaku.getHeight()) * y) / 100,
++       x: `${x}% - ${danmaku.getWidth() / 2}`,
++       y: `${y}% - ${danmaku.getHeight() / 2}`,
       };
     },
     plugin: {
