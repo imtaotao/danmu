@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { uuid, random, randomColor } from 'aidly';
-import { Send, Pickaxe, CircleAlert } from 'lucide-react';
+import { Send, Pickaxe } from 'lucide-react';
 import type { Manager, Direction } from 'danmu';
 import type { DanmakuValue } from '@/types';
 import { Label } from '@/components/ui/label';
@@ -118,14 +118,6 @@ export const Transmitter = ({
           <SheetHeader>
             <SheetTitle className="flex items-center">
               <span className="mr-2">{t('setFlexiblePosition')}</span>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <CircleAlert size={18} className="cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>{t('setFlexibleDescription')}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             </SheetTitle>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">

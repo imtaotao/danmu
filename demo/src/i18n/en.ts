@@ -10,8 +10,6 @@ export const enMap = {
   notEmpityValue: 'Danmaku value cannot be empty',
   inputDanmaku: 'Enter your danmaku content.',
   setFlexiblePosition: 'Set flexible danmaku position information',
-  setFlexibleDescription:
-    'Since the danmaku library only supports position units in px by default, although it is in % here, it is because it will be converted to px through calculation within the component.',
   facileDanmaku: 'Facile danmaku',
   flexibleDanmaku: 'Advanced danmaku',
   correctedDuration: 'Corrected duration',

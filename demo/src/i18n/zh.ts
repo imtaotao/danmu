@@ -10,8 +10,6 @@ export const zhMap = {
   notEmpityValue: '弹幕值不能为空',
   inputDanmaku: '输入你的弹幕内容。',
   setFlexiblePosition: '设置高级弹幕的位置信息',
-  setFlexibleDescription:
-    '由于弹幕库默认只支持 position 的单位为 px, 虽然这里是 % 的含义，是因为在组件内部通过计算会转换成了 px。',
   facileDanmaku: '普通弹幕',
   flexibleDanmaku: '高级弹幕',
   correctedDuration: '被修正过运动时间',
