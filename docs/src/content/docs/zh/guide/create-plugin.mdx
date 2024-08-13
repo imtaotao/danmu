@@ -52,7 +52,7 @@ import { Steps } from '@astrojs/starlight/components';
 
     你需要通过 `mananger.use()` 来注册插件。
 
-    ```ts title="init.ts" {12-13}
+    ```ts title="init.ts" {8-13}
     import { create } from 'danmu';
 
     const manager = create<{
@@ -70,28 +70,36 @@ import { Steps } from '@astrojs/starlight/components';
 
 3.  **发送弹幕**
 
-    下面是一些发送弹幕的 case。
+    - **会**被插件阻止渲染
 
-    ```ts {3, 9, 16, 22}
-    // 会被插件阻止渲染
+    ```ts {2}
     manager.push({
       userId: 1,
       content: '',
     });
+    ```
 
-    // 不会被插件阻止渲染
-    manager.push({
-      userId: 2,
-      content: '',
-    });
+    - **会**被插件阻止渲染
 
-    // 会被插件阻止渲染
+    ```ts {3}
     manager.push({
       userId: 2,
       content: '你真菜',
     });
+    ```
 
-    // 不会被插件阻止渲染
+    - **不会**被插件阻止渲染
+
+    ```ts {2}
+    manager.push({
+      userId: 2,
+      content: '',
+    });
+    ```
+
+    - **不会**被插件阻止渲染
+
+    ```ts {3}
     manager.push({
       userId: 2,
       content: '你真棒',
