@@ -152,8 +152,8 @@ export class Engine<T> {
   }
 
   public format() {
-    this.container._format();
     const { width, height } = this.container;
+    this.container._format();
     const { gap, trackHeight } = this._options;
     this._options.gap = this._toNumber('width', gap);
     const h = this._toNumber('height', trackHeight);
