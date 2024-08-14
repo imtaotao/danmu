@@ -79,7 +79,7 @@ export const DanmakuComponent = ({
             {danmaku.type === 'flexible'
               ? t('flexibleDanmaku')
               : t('facileDanmaku')}
-            {danmaku.isFixed ? ` (${t('correctedDuration')})` : ''}
+            {danmaku.isFixedDuration ? ` (${t('correctedDuration')})` : ''}
           </span>
         </PopoverContent>
       </Popover>

@@ -77,6 +77,12 @@ manager.push({ value: 1 });
 
 弹幕的运动方向。
 
+### `isFixedDuration`
+
+**类型：`boolean`**
+
+用于判断当前弹幕实例是否被修正过运动时间。
+
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `pluginSystem`
@@ -171,6 +177,14 @@ danmaku.setStyle('background', 'red');
 **类型：`() => number`**
 
 `getHeight()` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
+
+<div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
+
+### `updateDuration()`
+
+**类型：`(duration: number) => void`**
+
+`updateDuration()` 用于更新弹幕实例的运动时间，一般情况下这个方法供内部的渲染引擎使用。
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 

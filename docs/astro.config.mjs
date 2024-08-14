@@ -1,7 +1,6 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightThemeRapide from 'starlight-theme-rapide';
-// import starlightBlog from 'starlight-blog';
 
 // https://astro.build/config
 export default defineConfig({
@@ -39,13 +38,7 @@ export default defineConfig({
           autogenerate: { directory: 'reference' },
         },
       ],
-      // components: {
-      //   ThemeSelect: "./src/components/ThemeSelect.astro",
-      // },
-      plugins: [
-        // starlightBlog(),
-        starlightThemeRapide(),
-      ],
+      plugins: [starlightThemeRapide()],
     }),
   ],
 });

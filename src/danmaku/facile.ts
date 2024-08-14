@@ -38,7 +38,7 @@ export class FacileDanmaku<T> {
   public paused = false;
   public moving = false;
   public isEnded = false;
-  public isFixed = false;
+  public isFixedDuration = false;
   public rate: number;
   public duration: number;
   public recorder: InfoRecord;
@@ -207,17 +207,6 @@ export class FacileDanmaku<T> {
   /**
    * @internal
    */
-  public _fixDuration(duration: number, updateInitData: boolean) {
-    this.isFixed = true;
-    this.duration = duration;
-    if (updateInitData) {
-      this._initData.duration = duration;
-    }
-  }
-
-  /**
-   * @internal
-   */
   public _updatePosition(p: Partial<Position>) {
     if (typeof p.x === 'number') {
       this.position.x = p.x;
@@ -256,7 +245,7 @@ export class FacileDanmaku<T> {
     if (this._options.container.width !== oldWidth) {
       const { width, duration } = this._initData;
       const speed = (width + this.getWidth()) / duration;
-      this._fixDuration(this._summaryWidth() / speed, false);
+      this.updateDuration(this._summaryWidth() / speed, false);
       if (!this.paused) {
         this.pause(INTERNAL_FLAG);
         this.resume(INTERNAL_FLAG);
@@ -372,6 +361,14 @@ export class FacileDanmaku<T> {
     }
     this.pluginSystem.lifecycle.destroy.emit(this);
     this.node = null;
+  }
+
+  public updateDuration(duration: number, updateInitData = true) {
+    this.isFixedDuration = true;
+    this.duration = duration;
+    if (updateInitData) {
+      this._initData.duration = duration;
+    }
   }
 
   public setStyle<T extends StyleKey>(key: T, val: CSSStyleDeclaration[T]) {

@@ -177,7 +177,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
     }
     const diff = this._initData.width - this._options.container.width;
     const cw = this.position.x + this.getWidth();
-    this._fixDuration((cw - diff) / this._getSpeed(), false);
+    this.updateDuration((cw - diff) / this._getSpeed(), false);
 
     if (this.paused) {
       this.resume(INTERNAL_FLAG);

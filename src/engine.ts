@@ -397,7 +397,7 @@ export class Engine<T> {
             );
             if (fixTime !== null) {
               if (isInBounds(times, fixTime)) {
-                cur._fixDuration(fixTime, true);
+                cur.updateDuration(fixTime, true);
               } else if (mode === 'strict') {
                 resolve(true);
                 return;

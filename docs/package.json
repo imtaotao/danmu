@@ -14,7 +14,6 @@
     "@astrojs/starlight": "^0.25.2",
     "astro": "^4.12.2",
     "sharp": "^0.33.4",
-    "starlight-blog": "^0.11.1",
     "starlight-theme-rapide": "^0.1.1"
   }
 }
