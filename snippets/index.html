@@ -11,17 +11,32 @@
         margin: 5vh 5vw;
         border: 1px solid #ddd;
       }
+
+      .danmaku {
+        border: 1px solid #ddd;
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://unpkg.com/aidly/dist/aidly.umd.js"></script>
     <script src="https://unpkg.com/danmu/dist/danmu.umd.js"></script>
     <script>
       const name = new URLSearchParams(location.search).get('name')
-      import(`./${name || 'cd'}.js`).then(module => {
-        module.run(Danmu.create());
-      })
+      import(`./${name || 'cd'}.js`).then(({ run }) => {
+        const manager = window.manager = Danmu.create({
+          plugin: {
+            $createNode(danmaku) {
+              danmaku.node.classList.add('danmaku');
+              danmaku.node.textContent = danmaku.data;
+            },
+          },
+        });
+
+        manager.mount('#root');
+        manager.startPlaying();
+        run(manager);
+        console.log('Init done.');
+      });
     </script>
   </body>
 </html>
