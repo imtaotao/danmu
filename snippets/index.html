@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snippet</title>
+    <style>
+      #root {
+        width: 90vw;
+        height: 90vh;
+        margin: 5vh 5vw;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/aidly/dist/aidly.umd.js"></script>
+    <script src="https://unpkg.com/danmu/dist/danmu.umd.js"></script>
+    <script>
+      const name = new URLSearchParams(location.search).get('name')
+      import(`./${name || 'cd'}.js`).then(module => {
+        module.run(Danmu.create());
+      })
+    </script>
+  </body>
+</html>
