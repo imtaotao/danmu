@@ -33,7 +33,7 @@
     "core:build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
     "format": "pnpm run format:es && pnpm run format:docs",
     "format:docs": "prettier --write --plugin prettier-plugin-astro ./docs",
-    "format:es": "prettier --write --ignore-path=.prettierignore --parser typescript \"(src|demo|dist|snippets)/**/*.((m)?js|ts?(x))\""
+    "format:es": "prettier --write --ignore-path=.prettierignore --parser typescript \"(src|demo|dist)/**/*.((m)?js|ts?(x))\""
   },
   "lint-staged": {
     "*.js": [

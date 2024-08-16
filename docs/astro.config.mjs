@@ -37,6 +37,10 @@ export default defineConfig({
           label: '参考',
           autogenerate: { directory: 'reference' },
         },
+        {
+          label: '常见场景',
+          autogenerate: { directory: 'case' },
+        },
       ],
       plugins: [starlightThemeRapide()],
     }),
