@@ -109,5 +109,5 @@ export interface RenderOptions<T> {
 }
 
 export interface CreateOption<T> extends Partial<ManagerOptions> {
-  plugin?: ManagerPlugin<T>;
+  plugin?: ManagerPlugin<T> | Array<ManagerPlugin<T>>;
 }

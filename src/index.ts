@@ -30,7 +30,10 @@ export function create<
   const opts = formatOptions<T>(options);
   const manager = new Manager<T, S>(opts);
   if (opts.plugin) {
-    manager.use(opts.plugin);
+    const plugins = Array.isArray(opts.plugin) ? opts.plugin : [opts.plugin];
+    for (const plugin of plugins) {
+      manager.use(plugin);
+    }
     manager.pluginSystem.lifecycle.init.emit(manager);
   }
   return manager;
