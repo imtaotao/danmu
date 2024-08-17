@@ -77,7 +77,7 @@ declare class Container {
   // 容器的节点
   node: HTMLDivElement;
 
-  // 容器的父节点，通过 manager.mount() 设置
+  // 容器的父节点，通过 manager.mount() 设置后，可以通过此属性拿到
   parentNode: HTMLElement | null;
 
   // 设置容器节点的样式
@@ -85,7 +85,7 @@ declare class Container {
 }
 
 // 所以你可以以下方式来给容器设置一些样式
-manager.setStyle('background', 'red');
+manager.container.setStyle('background', 'red');
 ```
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
@@ -559,7 +559,7 @@ interface AreaOptions {
 
 **类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void`**
 
-设置当前弹幕和后续渲染的弹幕的**CSS 样式**，如果参数是 `string`，会默认转为 `number`。
+设置当前弹幕和后续渲染的弹幕的 **CSS 样式**。
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 

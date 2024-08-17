@@ -24,7 +24,14 @@
 ```js
 import { create } from 'danmu';
 
-const manager = create();
+const manager = create({
+  plugin: {
+    $createNode({ node, data }) {
+      // 将弹幕内容渲染到 DOM 上
+      node.textContent = data;
+    },
+  },
+});
 
 // 初始化
 manager.mount(document.getElementById('root'));

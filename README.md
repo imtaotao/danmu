@@ -24,7 +24,14 @@ A highly extensible danmaku library with a robust plugin system, occlusion preve
 ```js
 import { create } from 'danmu';
 
-const manager = create();
+const manager = create(
+  plugin: {
+    $createNode({ node, data }) {
+      // Render danmaku content to the DOM
+      node.textContent = data;
+    },
+  },
+);
 
 // Initialize
 manager.mount(document.getElementById('root'));

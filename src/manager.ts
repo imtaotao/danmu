@@ -145,7 +145,7 @@ export class Manager<
     if (preventEvents.includes('stop')) stopFlag = INTERNAL_FLAG;
     if (preventEvents.includes('pause')) pauseFlag = INTERNAL_FLAG;
     this.stopPlaying(stopFlag);
-    this.each((b) => b.pause(pauseFlag));
+    this.each((d) => d.pause(pauseFlag));
     this._internalStatuses.freeze = true;
     this.pluginSystem.lifecycle.freeze.emit();
   }
@@ -155,7 +155,7 @@ export class Manager<
     let resumeFlag: Symbol | undefined;
     if (preventEvents.includes('start')) startFlag = INTERNAL_FLAG;
     if (preventEvents.includes('resume')) resumeFlag = INTERNAL_FLAG;
-    this.each((b) => b.resume(resumeFlag));
+    this.each((d) => d.resume(resumeFlag));
     this.startPlaying(startFlag);
     this._internalStatuses.freeze = false;
     this.pluginSystem.lifecycle.unfreeze.emit();
@@ -389,9 +389,9 @@ export class Manager<
     const { styles } = this._internalStatuses;
     if (styles[key] !== val) {
       styles[key] = val;
-      this._engine.asyncEach((b) => {
-        if (b.moving) {
-          b.setStyle(key, val);
+      this._engine.asyncEach((d) => {
+        if (d.moving) {
+          d.setStyle(key, val);
         }
       });
     }
