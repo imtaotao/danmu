@@ -145,7 +145,7 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 
 ### `plugin`
 
-**类型：`ManagerPlugin<unknow>`**<br/>
+**类型：`ManagerPlugin<unknow> | Array<ManagerPlugin<unknow>>`**<br/>
 **默认值：`undefined`**
 
 创建 `manager` 的时候的默认 `managerPlugin`，`manager` 如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [**全局钩子**](../manager-hooks) 和 [**编写插件**](../../guide/create-plugin) 这两章。
@@ -157,9 +157,26 @@ import { create } from 'danmu';
 
 const manager = create({
   plugin: {
+    // 其他钩子
     start() {},
     stop() {},
-    ...
   },
+});
+```
+
+**以数组类型传递：**
+
+```ts
+// 你也可以传递为一个数组，方便你添加其他插件时控制顺序
+const manager = create({
+  plugin: [
+    // 其他插件
+    ...,
+    {
+      // 其他钩子
+      start() {},
+      stop() {},
+    },
+  ],
 })
 ```

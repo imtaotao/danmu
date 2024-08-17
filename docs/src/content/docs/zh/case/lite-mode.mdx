@@ -14,7 +14,7 @@ sidebar:
 和实现弹幕冷却时间的功能一样，弹幕精简模式的实现也是依赖 [**`willRender`**](../../reference/manager-hooks/#willrender) 这个钩子来实现。
 :::
 
-## 1. 弹幕精简模式
+## 1. 以弹幕精简模式来实现
 
 ```ts {10}
 import { random } from 'aidly';
@@ -35,7 +35,7 @@ const manager = create<string>({
 });
 ```
 
-## 2. 设置 `limits.view`
+## 2. 设置 `limits.view` 来实现
 
 ```ts {7}
 import { create } from 'danmu';
