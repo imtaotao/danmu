@@ -36,7 +36,7 @@ for (const key in styles) {
 
 在这种实现中，真实的业务场景里面你可能需要借用 [**`manager.statuses`**](../../reference/manager-api/#statuses) 来简化实现。
 
-```ts {16, 25}
+```ts {16, 27}
 import { create } from 'danmu';
 
 // 需要添加的样式
@@ -54,6 +54,8 @@ const manager = create({
       for (const key in styles) {
         danmaku.setStyle(key, styles[key]);
       }
+      // 你也可以在这里给弹幕 DOM 添加 className
+      danmaku.node.classList.add('className');
     },
   },
 });

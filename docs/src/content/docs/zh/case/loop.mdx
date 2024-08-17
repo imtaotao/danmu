@@ -1,0 +1,78 @@
+---
+title: 发送循环弹幕
+description: 学习如何发送循环弹幕
+sidebar:
+  order: 8
+---
+
+本章节将举例介绍如何发送一个循环播放的弹幕。普通弹幕的循环有两种不同的模式。
+
+:::note[介绍]
+1. 通过 [**`setloop`**](../../reference/danmaku-api/#setloop) 来实现，这种模式在除第一次之外的循环播放次数中，**不会参与碰撞计算。**
+2. 通过 [**`destroy`**](../../reference/danmaku-hooks/#destroy) 钩子来递归实现，这种方式会让弹幕的循环播放**参与碰撞计算，但是循环播放的运动时间可能会不一致。**
+:::
+
+### 1. 通过 `setloop` 来实现
+
+```ts {8, 14, 25, 31}
+import { create } from 'danmu';
+
+// 添加全局钩子这会对所有的弹幕生效
+const manager = create<string>({
+  plugin: {
+    $moveStart(danmaku) {
+      // 设置循环
+      danmaku.setloop();
+    },
+
+    $moveEnd(danmaku) {
+      // 循环播放 3 次后，终止循环播放
+      if (danmaku.loops === 3) {
+        danmaku.unloop();
+      }
+    },
+  },
+});
+
+// 通过添加弹幕自身的插件可以只对某一个弹幕生效
+manager.push('弹幕内容', {
+  plugin: {
+    moveStart(danmaku) {
+      // 设置循环
+      danmaku.setloop();
+    },
+
+    moveEnd(danmaku) {
+      // 循环播放 3 次后，终止循环播放
+      if (danmaku.loops === 3) {
+        danmaku.unloop();
+      }
+    },
+  },
+})
+```
+
+### 2. 通过递归来实现循环播放
+
+上面一种实现方式是借助官方提供的 api 来实现的，不过你也可以自己来递归实现。
+
+:::tip
+**高级弹幕不会参与碰撞计算，所以如果是高级弹幕的场景，不要通过这种方式来实现。**
+:::
+
+```ts
+let loops = 0;
+
+manager.push('弹幕内容', {
+  plugin: {
+    // 如果你是手动调用的 danmaku.destory() 触发的销毁，可能需要判断一下是否需要继续循环
+    destroy(danmaku) {
+      // 循环播放 3 次后，终止循环播放
+      if (++loops < 3) {
+        // 此时可能会因为内存和视图的限制添加失败，可以调用 manager.canPush('facile') 来判断
+        manager.unshift(danmaku);
+      }
+    },
+  },
+})
+```

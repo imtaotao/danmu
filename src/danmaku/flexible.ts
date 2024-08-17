@@ -41,6 +41,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
         return;
       }
       const onEnd = () => {
+        this.loops++;
         this.moving = false;
         this.isEnded = true;
         if (this.moveTimer) {

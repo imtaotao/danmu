@@ -13,12 +13,11 @@ sidebar:
 
 ## 1. 弹幕组件
 
-```tsx title="Danmaku.tsx"
+```tsx title="Danmaku.tsx" {23}
 import { useState } from 'react';
 import { Tool } from './Tool';
 
 export function Danmaku({ danmaku }) {
-  const content = danmaku.data.value;
   const [visible, setVisible] = useState(false);
 
   return (
@@ -36,7 +35,7 @@ export function Danmaku({ danmaku }) {
         setVisible(false);
       }}
     >
-      {value}
+      {danmaku.data}
       {visible ? <Tool /> : null}
     </div>
   );
@@ -45,11 +44,11 @@ export function Danmaku({ danmaku }) {
 
 ## 2. 工具栏组件
 
-```tsx title="Tool.tsx"
+```tsx title="Tool.tsx" {9, 10}
 export function Tool() {
   // 发送点赞/点踩的请求，将结果存储在数据库
   const send = (type: string) => {
-    fetch('http://xx', { method: 'POST', body: JSON.stringify({ type })});
+    fetch('http://abc/like', { method: 'POST', body: JSON.stringify({ type })});
   }
 
   return (
@@ -63,12 +62,12 @@ export function Tool() {
 
 ## 3. 渲染弹幕
 
-```tsx title="init.tsx"
+```tsx title="init.tsx" {9}
 import ReactDOM from 'react-dom/client';
 import { create } from 'danmu';
 import { Danmaku } from './Danmaku';
 
-const manager = create({
+const manager = create<string>({
   plugin: {
     // 将组件渲染到弹幕的内置节点上
     $createNode(danmaku) {

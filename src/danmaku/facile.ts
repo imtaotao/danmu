@@ -178,6 +178,7 @@ export class FacileDanmaku<T> {
       this.recorder.startTime = now();
       this.pluginSystem.lifecycle.moveStart.emit(this);
       whenTransitionEnds(this.node).then(() => {
+        this.loops++;
         this.moving = false;
         this.isEnded = true;
         this.pluginSystem.lifecycle.moveEnd.emit(this);
@@ -257,6 +258,7 @@ export class FacileDanmaku<T> {
    * @internal
    */
   public _reset() {
+    this.loops = 0;
     this.paused = false;
     this.moving = false;
     this.position = { x: 0, y: 0 };
@@ -273,6 +275,10 @@ export class FacileDanmaku<T> {
       pauseTime: 0,
       startTime: 0,
       prevPauseTime: 0,
+    };
+    this._initData = {
+      duration: this._options.duration,
+      width: this._options.container.width,
     };
   }
 

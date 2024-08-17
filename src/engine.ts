@@ -246,7 +246,6 @@ export class Engine<T> {
             return;
           }
           if (d.isLoop) {
-            d.loops++;
             d._setStartStatus();
             setup();
             return;
@@ -348,7 +347,6 @@ export class Engine<T> {
             return;
           }
           if (d.isLoop) {
-            d.loops++;
             d._setStartStatus();
             setup();
             return;
