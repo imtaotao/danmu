@@ -13,17 +13,14 @@ sidebar:
 
 ## 1. 根据弹幕内容来实现
 
-```ts {16-26}
+```ts {13-23}
 import { create } from 'danmu';
+
+const cd = 3000; 
+const map = Object.create(null);
 
 // 创建 manager，定义发送弹幕的类型为 string
 const manager = create<string>({ ... });
-
-// 弹幕的 cd 时间为 3s
-const cd = 3000;
-
-// 记录弹幕上次发送的时间
-const map = Object.create(null);
 
 // 写一个插件来专门处理弹幕 cd 的事情
 manager.use({
