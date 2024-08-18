@@ -18,9 +18,7 @@ sidebar:
 
 添加全局钩子这会对所有的弹幕生效
 
-```ts {7, 1}
-import { create } from 'danmu';
-
+```ts {5, 11}
 const manager = create<string>({
   plugin: {
     $moveStart(danmaku) {
@@ -66,21 +64,23 @@ manager.push('弹幕内容', {
 **高级弹幕不会参与碰撞计算，所以如果是高级弹幕的场景，不要通过这种方式来实现，使用 `setloop` 即可。**
 :::
 
-```ts
+```ts {15}
 let loops = 0;
 
 manager.push('弹幕内容', {
   plugin: {
     destroy(danmaku, mark) {
+      // 循环播放 3 次后，终止循环播放
+      if (++loops >= 3) return;
+
       // 如果你是通过手动调用 destroy 方法来触发的钩子
       // 可以通过 danmaku.destroy('mark') 传递 mark 来判断一下
       if (mark === 'mark') return;
-      // 循环播放 3 次后，终止循环播放
-      if (++loops < 3) {
-        // 此时可能会因为内存和视图的限制添加失败，可以调用 manager.canPush('facile') 来判断
-        manager.unshift(danmaku);
-      }
+
+      // 如果你有对内存和视图做限，可能会导致发送失败
+      // 你可以调用 manager.canPush('facile') 来判断
+      manager.unshift(danmaku);
     },
   },
-});
+}),
 ```

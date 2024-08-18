@@ -150,16 +150,22 @@ export interface PushOptions<T> {
 **简单 case：**
 
 ```ts
-const manager = create<{ content: string }>();
+import { create } from 'danmu';
+
+const manager = create<string>();
 
 // 发送一条弹幕
 // 时间，速率，方向等配置复用全局的也就是 create() 时传递的参数。
-manager.push({ '弹幕内容' });
+manager.push('弹幕内容');
 ```
 
 **完整 case：**
 
 ```ts
+import { create } from 'danmu';
+
+const manager = create<{ content: string }>();
+
 // 发送一条弹幕并添加插件处理，插件的作用域仅限当前 push 的这一条弹幕。
 manager.push(
   { content: '弹幕内容' },
@@ -202,6 +208,8 @@ manager.push(
    :::
 
 ```ts
+import { create } from 'danmu';
+
 interface Position {
   x: number;
   y: number;
@@ -218,9 +226,11 @@ interface PushFlexOptions {
     | ((danmaku: Danmaku<T>, container: Container) => Position);
 }
 
+const manager = create<string>();
+
 // 发送一条弹幕，在容器居中的位置，静止 5s
 manager.pushFlexibleDanmaku(
-  { content: '弹幕内容' },
+  '弹幕内容',
   {
     duration: 5000,
     direction: 'none',
@@ -242,6 +252,10 @@ manager.pushFlexibleDanmaku(
 **类型：`(i: number) => { start: number, middle: number, end: number }`**
 
 用来获取某条轨道的位置信息，**单位为 `px`，为 Y 轴的数据**。**`i` 如果为正整数，则是取的是 `tarck[i]` 的位置信息，如果为负正整数则从后往前取。**
+
+:::note
+下标默认从 **`0`** 开始，也就是你传递为 0 时，取的是第一条轨道的数据。
+:::
 
 **示例：**
 
@@ -274,7 +288,7 @@ manager.pushFlexibleDanmaku(
     duration: 5000,
     direction: 'none',
     position(danmaku, container) {
-      // 渲染在第三条轨道中
+      // 渲染在第 4 条轨道中
       const { middle } = manager.getTrackLocation(3);
       return {
         x: (container.width - danmaku.getWidth()) * 0.5,
