@@ -229,20 +229,17 @@ interface PushFlexOptions {
 const manager = create<string>();
 
 // 发送一条弹幕，在容器居中的位置，静止 5s
-manager.pushFlexibleDanmaku(
-  '弹幕内容',
-  {
-    duration: 5000,
-    direction: 'none',
-    position(danmaku, container) {
-      // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
-      return {
-        x: (container.width - danmaku.getWidth()) * 0.5,
-        y: (container.height - danmaku.getHeight()) * 0.5,
-      };
-    },
+manager.pushFlexibleDanmaku('弹幕内容', {
+  duration: 5000,
+  direction: 'none',
+  position(danmaku, container) {
+    // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
+    return {
+      x: (container.width - danmaku.getWidth()) * 0.5,
+      y: (container.height - danmaku.getHeight()) * 0.5,
+    };
   },
-);
+});
 ```
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
@@ -448,12 +445,12 @@ manager.nextFrame(() => {
 
 ### `updateOccludedUrl()`
 
-**类型：`(url?: string, el?: HTMLElement) => void`**
+**类型：`(url?: string, el?: string | HTMLElement) => void`**
 
 给指定元素（默认是当前弹幕容器 `manager.container.node`）添加蒙版，**用来实现防遮挡功能**，如果不传 `url`，代表取消蒙层，你可以通过传递第二参数指定到你需要的 DOM 节点上。
 
 :::note[注意事项]
-放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际清空还是要根据业务情况来实现）。
+放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际情况还是要根据业务情况来实现）。
 :::
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />

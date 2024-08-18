@@ -84,6 +84,7 @@ export interface FreezeOptions {
 }
 
 export interface TrackData<T> {
+  i: number;
   list: Array<FacileDanmaku<T>>;
   location: [number, number, number];
 }

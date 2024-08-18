@@ -320,17 +320,23 @@ export class Manager<
     return false;
   }
 
-  public updateOccludedUrl(url?: string | null, el?: HTMLElement | null) {
-    const set = (
-      key: 'maskSize' | 'maskImage' | 'webkitMaskSize' | 'webkitMaskImage',
-      val: string,
-    ) => {
-      if (el) {
-        el.style[key] = val;
-      } else {
-        this.container.setStyle(key, val);
+  public updateOccludedUrl(
+    url?: string | null,
+    el?: HTMLElement | string | null,
+  ) {
+    let set;
+    if (el) {
+      if (typeof el === 'string') {
+        const res = document.querySelector(el);
+        assert(res, `Invalid "${el}"`);
+        el = res as HTMLElement;
       }
-    };
+      set = (key: string, val: string) =>
+        ((el as HTMLElement).style[key as 'maskImage'] = val);
+    } else {
+      set = (key: string, val: string) =>
+        this.container.setStyle(key as 'maskImage', val);
+    }
     if (url) {
       assert(typeof url === 'string', 'The url must be a string');
       set('maskImage', `url("${url}")`);

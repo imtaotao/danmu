@@ -150,9 +150,18 @@ manager.use({
 
 ### `willRender`
 
-**类型：`SyncWaterfallHook<{ prevent: boolean; type: DanmakuType; danmaku: Danmaku<T>}>`**
+**类型：`SyncWaterfallHook<RenderData>`**
 
-`willRender` 钩子会在弹幕即将要进入渲染队列的时候触发，你可以在此钩子阻止弹幕渲染，这对于通过关键字（或者其他条件）来过滤弹幕的功能实现很有用。
+```ts
+interface RenderData {
+  type: DanmakuType;
+  prevent: boolean;
+  danmaku: Danmaku<T>;
+  trackIndex: null | number;
+}
+```
+
+`willRender` 钩子会在弹幕即将要进入渲染队列的时候触发，你可以在此钩子阻止弹幕渲染，这对于通过**关键字**或者**轨道 index** 来过滤弹幕的功能实现很有用。
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 

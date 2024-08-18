@@ -25,10 +25,7 @@ export const SidebarOcclusion = memo(
           onCheckedChange={(v) => {
             // The second parameter is optional, If not passed, the default is the built-in bullet container.
             // But it should be noted that the bullet container will change with the display area, so the second parameter may be required.
-            manager.updateOccludedUrl(
-              v ? maskPath : '',
-              document.getElementById('RenderContainer'),
-            );
+            manager.updateOccludedUrl(v ? maskPath : '', '#RenderContainer');
           }}
         />
       </div>

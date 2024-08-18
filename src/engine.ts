@@ -192,6 +192,7 @@ export class Engine<T> {
         track.location = location;
       } else {
         this.tracks.push({
+          i,
           location,
           list: [],
         });
@@ -229,9 +230,10 @@ export class Engine<T> {
     d.use(danmakuPlugin);
 
     const { prevent } = hooks.willRender.call(null, {
+      type: 'flexible',
       danmaku: d,
       prevent: false,
-      type: 'flexible',
+      trackIndex: null,
     });
 
     if (this._options.rate > 0 && prevent !== true) {
@@ -323,9 +325,10 @@ export class Engine<T> {
     }
 
     const { prevent } = hooks.willRender.call(null, {
+      type: 'facile',
       danmaku: d,
       prevent: false,
-      type: 'facile',
+      trackIndex: trackData.i,
     });
 
     // When the rate is less than or equal to 0,
