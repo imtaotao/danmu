@@ -11,7 +11,7 @@ sidebar:
 // 点击弹幕的时候会销毁弹幕
 function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
   return (
-    <div onClick={() => props.danmaku.destory()}>
+    <div onClick={() => props.danmaku.destroy()}>
       {props.danmaku.data.value}
     </div>
   );
@@ -154,9 +154,25 @@ manager.push({ value: 1 });
 
 ### `destroy()`
 
-**类型：`() => void`**
+**类型：`(mark?: unknown) => void`**
 
-将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子。
+将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子，你也可以尝试传递 `mark` 标识符，引擎内置的 destroy 行为是不会传递标识符的。
+
+```ts {4, 8}
+const manager = create({
+  plugin: {
+    $moveEnd(danmaku) {
+      danmaku.destroy('mark');
+    },
+
+    $destroy(danmaku, mark) {
+      if (mark === 'mark') {
+        // ...
+      }
+    },
+  },
+});
+```
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 

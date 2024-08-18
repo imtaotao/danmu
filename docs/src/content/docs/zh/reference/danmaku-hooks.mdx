@@ -43,7 +43,7 @@ danmaku.use({
 
 ### `hide`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `hide` 钩子会在弹幕隐藏的时候触发。
 
@@ -51,7 +51,7 @@ danmaku.use({
 
 ### `show`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `show` 钩子会在弹幕从隐藏到显示的时候触发。
 
@@ -59,7 +59,7 @@ danmaku.use({
 
 ### `pause`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `pause` 钩子会在弹幕暂停的时候触发。
 
@@ -67,7 +67,7 @@ danmaku.use({
 
 ### `resume`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `resume` 钩子会在弹幕从暂停恢复的时候触发。
 
@@ -75,15 +75,15 @@ danmaku.use({
 
 ### `destroy`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>, unknown]>`**
 
-`destroy` 钩子会在弹幕销毁的时候触发。
+`destroy` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`destory`**](../../reference/danmaku-api/#destroy) 方法，可以尝试传递 `mark`。
 
 <div style="border-bottom: 0.5px solid var(--sl-color-gray-5); padding: 10px 0" />
 
 ### `moveStart`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `moveStart` 钩子会在弹幕即将运动的时候触发，你可以在此时对弹幕做一些样式变更操作。
 
@@ -91,7 +91,7 @@ danmaku.use({
 
 ### `moveEnd`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `moveEnd` 钩子会在弹幕运动结束的时候触发，运动结束不代表会立即销毁，为了性能考虑，内核引擎会批量收集统一销毁。
 
@@ -99,7 +99,7 @@ danmaku.use({
 
 ### `appendNode`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `appendNode` 钩子会在弹幕的节点添加到容器时候触发，他在 `createNode` 节点之后。
 
@@ -107,7 +107,7 @@ danmaku.use({
 
 ### `removeNode`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `removeNode` 钩子会在弹幕从容器胡总移除的时候触发。
 
@@ -115,7 +115,7 @@ danmaku.use({
 
 ### `createNode`
 
-**类型：`SyncHook<Danmaku<T>>`**
+**类型：`SyncHook<[Danmaku<T>]>`**
 
 `createNode` 钩子会在弹幕的内置 HTML 节点创建后时候触发，你可以在这个钩子里面通过 `danmaku.node` 拿到这个节点，**进行一些样式和节点的渲染操作，这本框架扩展性很重要的一步操作，很重要**。
 

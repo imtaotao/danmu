@@ -9,7 +9,7 @@ export function createDanmakuLifeCycle<T extends Danmaku<any>>() {
     show: new SyncHook<[T]>(),
     pause: new SyncHook<[T]>(),
     resume: new SyncHook<[T]>(),
-    destroy: new SyncHook<[T]>(),
+    destroy: new SyncHook<[T, unknown]>(),
     moveEnd: new SyncHook<[T]>(),
     moveStart: new SyncHook<[T]>(),
     createNode: new SyncHook<[T]>(),

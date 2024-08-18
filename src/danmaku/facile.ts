@@ -357,7 +357,7 @@ export class FacileDanmaku<T> {
     }
   }
 
-  public destroy() {
+  public destroy(mark?: unknown) {
     this.moving = false;
     this._delInTrack();
     this._removeNode();
@@ -365,7 +365,7 @@ export class FacileDanmaku<T> {
       this.moveTimer.clear();
       this.moveTimer = null;
     }
-    this.pluginSystem.lifecycle.destroy.emit(this);
+    this.pluginSystem.lifecycle.destroy.emit(this, mark);
     this.node = null;
   }
 

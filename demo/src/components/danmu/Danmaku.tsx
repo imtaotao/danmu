@@ -20,9 +20,17 @@ export const DanmakuComponent = ({
   danmaku: Danmaku<DanmakuValue>;
   manager: Manager<DanmakuValue, Statuses>;
 }) => {
-  const { content, isSelf } = danmaku.data;
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  let isSelf;
+  let content;
+  if (typeof danmaku.data === 'string') {
+    isSelf = true;
+    content = danmaku.data;
+  } else {
+    isSelf = danmaku.data.isSelf;
+    content = danmaku.data.content;
+  }
 
   danmaku.use({
     pause() {
@@ -54,7 +62,7 @@ export const DanmakuComponent = ({
             }}
             onClick={() => {
               setOpen(false);
-              setTimeout(() => danmaku.destroy(), 100);
+              setTimeout(() => danmaku.destroy('mark'), 100);
             }}
             className={cn(
               isSelf ? 'border-2 border-solid border-teal-500' : '',
