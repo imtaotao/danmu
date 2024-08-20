@@ -66,12 +66,6 @@ importers:
       typescript:
         specifier: ^4.5.5
         version: 4.9.5
-      vitepress:
-        specifier: ^1.3.3
-        version: 1.3.3(@algolia/client-search@4.24.0)(@types/node@18.19.34)(@types/react@18.3.3)(postcss@8.4.41)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.16.3)(typescript@4.9.5)
-      vitepress-plugin-mermaid:
-        specifier: ^2.0.16
-        version: 2.0.16(mermaid@10.9.1)(vitepress@1.3.3(@algolia/client-search@4.24.0)(@types/node@18.19.34)(@types/react@18.3.3)(postcss@8.4.41)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.16.3)(typescript@4.9.5))
 
   demo:
     dependencies:
@@ -205,6 +199,18 @@ importers:
       starlight-theme-rapide:
         specifier: ^0.1.1
         version: 0.1.1(@astrojs/starlight@0.25.2(astro@4.14.2(@types/node@18.19.34)(rollup@4.18.0)(typescript@5.5.2)))
+
+  online-book:
+    dependencies:
+      typescript:
+        specifier: ^4.5.5
+        version: 4.9.5
+      vitepress:
+        specifier: ^1.3.3
+        version: 1.3.3(@algolia/client-search@4.24.0)(@types/node@18.19.34)(@types/react@18.3.3)(postcss@8.4.41)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.16.3)(typescript@4.9.5)
+      vitepress-plugin-mermaid:
+        specifier: ^2.0.16
+        version: 2.0.16(mermaid@10.9.1)(vitepress@1.3.3(@algolia/client-search@4.24.0)(@types/node@18.19.34)(@types/react@18.3.3)(postcss@8.4.41)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.16.3)(typescript@4.9.5))
 
 packages:
 
