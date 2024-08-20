@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "Danmaku"
-  text: "强大可扩展的弹幕库"
+  name: 'Danmaku'
+  text: '强大可扩展的弹幕库'
   tagline: Danmu 是一个用来管理，渲染，发送弹幕的库，覆盖了很多业务场景并且提供了好用的扩展方式。
   image: /logo.svg
   actions:

@@ -12,7 +12,7 @@
 ```ts {13-23}
 import { create } from 'danmu';
 
-const cd = 3000; 
+const cd = 3000;
 const map = Object.create(null);
 
 // 创建 manager，定义发送弹幕的类型为 string

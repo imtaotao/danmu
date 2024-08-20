@@ -19,7 +19,6 @@ https://imtaotao.github.io/danmu
 
 你可以使用您喜欢的包管理器在项目的依赖项中安装 `danmu`，从而将 Danmaku 添加到您现有的项目当中：
 
-
 ::: code-group
 
 ```sh [npm]
@@ -35,7 +34,6 @@ $ yarn add danamu
 ```
 
 :::
-
 
 我们也提供了 `CDN` 供你来开发调试，**不要在生产环境使用此 `CDN`**：
 
@@ -85,7 +83,7 @@ manager.mount(container).startPlaying();
 manager.push('弹幕内容');
 ```
 
-但是通过 [**`push`**](../reference/manager-api/#push) 方法来发送的弹幕可能会受到弹幕算法的影响，不会立即渲染，想象一些往一个数组里面 push 一个数据，但是消费是从数组最前端拿出数据消费的。我们可以换一个 [**`unshift`**](../reference/manager-api/#unshift) 方法来发送弹幕。
+但是通过 [**`manager.push`**](../reference/manager-methods/#manager-push) 方法来发送的弹幕可能会受到弹幕算法的影响，不会立即渲染，想象一些往一个数组里面 push 一个数据，但是消费是从数组最前端拿出数据消费的。我们可以换一个 [**`manager.unshift`**](../reference/manager-methods/#manager-unshift) 方法来发送弹幕。
 
 ```ts
 // 这会在下一次渲染轮询中，立即渲染
@@ -110,25 +108,22 @@ manager.push('弹幕内容', {
 
 ### 发送高级弹幕
 
-普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`pushFlexibleDanmaku`**](../reference/manager-methods/#manager-pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
+普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`manager.pushFlexibleDanmaku`**](../reference/manager-methods/#manager-pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
 
 ```ts
-manager.pushFlexibleDanmaku(
-  '弹幕内容',
-  {
-    id: 1, // 可选参数
-    duration: 1000, // 默认从 manager.options.times 中随机取一个值
-    direction: 'none', // 默认取 manager.options.direction 的值
-    position: (danmaku, container) => {
-      // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
-      return {
-        x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
-        y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
-      };
-    },
-    plugin: {
-      // plugin 参数是可选的，具体可以参考普通弹幕的钩子，这里是一样的
-    },
+manager.pushFlexibleDanmaku('弹幕内容', {
+  id: 1, // 可选参数
+  duration: 1000, // 默认从 manager.options.times 中随机取一个值
+  direction: 'none', // 默认取 manager.options.direction 的值
+  position: (danmaku, container) => {
+    // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
+    return {
+      x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
+      y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
+    };
   },
-);
+  plugin: {
+    // plugin 参数是可选的，具体可以参考普通弹幕的钩子，这里是一样的
+  },
+});
 ```

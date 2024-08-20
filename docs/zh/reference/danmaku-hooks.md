@@ -33,13 +33,11 @@ danmaku.use({
 
 `hide` 钩子会在弹幕隐藏的时候触发。
 
-
 ## `hooks.show`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
 `show` 钩子会在弹幕从隐藏到显示的时候触发。
-
 
 ## `hooks.pause`
 
@@ -47,13 +45,11 @@ danmaku.use({
 
 `pause` 钩子会在弹幕暂停的时候触发。
 
-
 ## `hooks.resume`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
 `resume` 钩子会在弹幕从暂停恢复的时候触发。
-
 
 ## `hooks.destroy`
 
@@ -61,13 +57,11 @@ danmaku.use({
 
 `destroy` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destory`**](../reference/danmaku-methods/#danmaku-destroy) 方法，可以尝试传递 `mark`。
 
-
 ## `hooks.moveStart`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
 `moveStart` 钩子会在弹幕即将运动的时候触发，你可以在此时对弹幕做一些样式变更操作。
-
 
 ## `hooks.moveEnd`
 
@@ -75,20 +69,17 @@ danmaku.use({
 
 `moveEnd` 钩子会在弹幕运动结束的时候触发，运动结束不代表会立即销毁，为了性能考虑，内核引擎会批量收集统一销毁。
 
-
 ## `hooks.appendNode`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
 `appendNode` 钩子会在弹幕的节点添加到容器时候触发，他在 `createNode` 节点之后。
 
-
 ## `hooks.removeNode`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
 `removeNode` 钩子会在弹幕从容器胡总移除的时候触发。
-
 
 ## `hooks.createNode`
 

@@ -8,7 +8,7 @@ function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
   return (
     <div
       onClick={() => {
-        props.danmaku.destroy()
+        props.danmaku.destroy();
       }}
     >
       {props.danmaku.data.value}
@@ -26,13 +26,11 @@ manager.use({
 });
 ```
 
-
 ## `danmaku.hide()`
 
 **类型：`() => void`**
 
 将当前弹幕实例设置为隐藏状态，实际上是设置 `visibility: hidden`，会调用 `hide` 钩子。
-
 
 ## `danmaku.show()`
 
@@ -40,13 +38,11 @@ manager.use({
 
 将当前弹幕实例从隐藏状态恢复显示，会调用 `show` 钩子。
 
-
 ## `danmaku.pause()`
 
 **类型：`() => void`**
 
 将当前正在运动状态的弹幕实例暂停，会调用 `pause` 钩子。
-
 
 ## `danmaku.resume()`
 
@@ -54,20 +50,17 @@ manager.use({
 
 将当前正在暂停状态的弹幕实例恢复运动，会调用 `resume` 钩子。
 
-
 ## `danmaku.setloop()`
 
 **类型：`() => void`**
 
 将弹幕实例设置为循环播放状态。
 
-
 ## `danmaku.unloop()`
 
 **类型：`() => void`**
 
 将弹幕实例从循环播放状态取消。
-
 
 ## `danmaku.destroy()`
 
@@ -91,7 +84,6 @@ const manager = create({
 });
 ```
 
-
 ## `danmaku.setStyle()`
 
 **类型：`(key: StyleKey, val: CSSStyleDeclaration[StyleKey]) => void`**
@@ -103,13 +95,11 @@ const manager = create({
 danmaku.setStyle('background', 'red');
 ```
 
-
 ## `danmaku.getWidth()`
 
 **类型：`() => number`**
 
 `getWidth()` 将返回弹幕实例自身的宽度，同样的在你发送高级弹幕的时候会很有用。
-
 
 ## `danmaku.getHeight()`
 
@@ -117,20 +107,17 @@ danmaku.setStyle('background', 'red');
 
 `getHeight()` 将返回弹幕实例自身的高度，这在你发送高级弹幕的时候计算 `position` 的时候会很有用。
 
-
 ## `danmaku.updateDuration()`
 
 **类型：`(duration: number) => void`**
 
 `updateDuration()` 用于更新弹幕实例的运动时间，一般情况下这个方法供内部的渲染引擎使用。
 
-
 ## `danmaku.remove()`
 
 **类型：`(pluginName: string) => void`**
 
 移除当前弹幕实例的某个插件，但是必须指定插件名字。
-
 
 ## `danmaku.use()`
 

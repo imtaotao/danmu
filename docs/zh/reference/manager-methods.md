@@ -2,12 +2,13 @@
 
 > [!NOTE] 单位提示
 > `danmu` 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
+>
 > 1. `number`: 默认单位为 `px`。
 > 2. `string`: 表达式计算。支持（`+`, `-`, `*`, `/`）数学计算，只支持 `%` 和 `px` 两种单位。
+>
 > ```ts
 > manager.setGap('(100% - 10px) / 5');
 > ```
-
 
 ## `manager.canPush()`
 
@@ -23,7 +24,6 @@ manager.canPush('facile');
 manager.canPush('flexible');
 ```
 
-
 ## `manager.push()`
 
 **类型：`(data: T, options?: PushOptions<T>) => boolean`**
@@ -31,9 +31,9 @@ manager.canPush('flexible');
 发送一条弹幕，这条弹幕会被放在内存数组中等待被渲染，这不一定是即时响应渲染的，要看你设置的渲染算法，你可以通过调用 `manager.setMode()` 来更改，会触发 `push` 钩子。
 
 > [!NOTE] 注意
+>
 > 1. 发送弹幕的时候，**数据格式必须是 `T`**，至于 `T` 的类型由你自己来控制，只要你能在渲染的时候能正确拿到就可以了，具体见下面的示例。
 > 2. 当第二个参数没有传递时，或者其中某些参数没有传递时，则会从 `manager.options` 里面取默认的值。
-
 
 ```ts
 export interface PushOptions<T> {
@@ -83,13 +83,11 @@ manager.push(
 );
 ```
 
-
 ## `manager.unshift()`
 
 **类型：`(data: T, options?: PushOptions<T>) => boolean`**
 
 `push` 方法是添加到内存数组后面，此方法会将弹幕**添加到内存数组前面**，当用户在输入了一条弹幕点击发送的时候，你应该使用此方法，以便于让弹幕在下次轮询的时候**立即渲染**，用法和 `push` 方法一样，会触发 `push` 钩子。
-
 
 ## `manager.pushFlexibleDanmaku()`
 
@@ -98,6 +96,7 @@ manager.push(
 发送一条高级弹幕，**高级弹幕会在下次轮询的时候渲染**，会触发 `push` 钩子。
 
 > [!NOTE] 高级弹幕说明
+>
 > 1. 高级弹幕的 `options` 和普通弹幕的 `options` 行为一样，如果不传会默认从 `manager.options` 里面取默认值。
 > 2. 高级弹幕**必须传递 `position` 来指定位置**，如果需要指定在某个轨道渲染，可以借助 [**`getTrackLocation()`**](#manager-gettracklocation) 来做到。
 
@@ -136,7 +135,6 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 });
 ```
 
-
 ## `manager.getTrackLocation()`
 
 **类型：`(i: number) => { start: number, middle: number, end: number }`**
@@ -158,10 +156,10 @@ const { start, middle, end } = manager.getTrackLocation(-1);
 
 > [!NOTE] 提示
 > 当你发送高级弹幕的时候如果需要将其发送到某条轨道上，此方法可能会很有用。普通弹幕的位置信息计算方式如下，会在轨道的居中的位置渲染，如果要保持和普通弹幕一样，或许也是一样的算法。
->> 1. 对于弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
->> 2. 你确保获取的轨道存在，否则会报错，可以通过 `manager.trackCount` 来判断。
->> 3. 你可以在我们的在线 [**demo**](https://imtaotao.github.io/danmu/) 打开浏览器控制台输入这段代码查看效果，
-
+>
+> > 1.  对于弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
+> > 2.  你确保获取的轨道存在，否则会报错，可以通过 `manager.trackCount` 来判断。
+> > 3.  你可以在我们的在线 [**demo**](https://imtaotao.github.io/danmu/) 打开浏览器控制台输入这段代码查看效果，
 
 ```ts {12,15}
 // 打开控制台后，容器会由变化，需要先调用 `format` 方法重新继续
@@ -185,7 +183,6 @@ manager.pushFlexibleDanmaku(
 );
 ```
 
-
 ## `manager.clearTarck()`
 
 **类型：`(i: number) => void`**
@@ -202,7 +199,6 @@ manager.clearTarck(0);
 manager.clearTarck(-1);
 ```
 
-
 ## `manager.len()`
 
 **类型：`() => { stash: number; flexible: number; view: number; all: number }`**
@@ -218,13 +214,11 @@ manager.clearTarck(-1);
 const { stash, flexible, view, all } = manager.len();
 ```
 
-
 ## `manager.each()`
 
 **类型：`(fn: (d: Danmaku<T>) => boolean | void) => void`**
 
 对当前正在渲染的弹幕做**同步遍历**，回调函数返回 `false` 的时候会终止遍历。
-
 
 ## `manager.asyncEach()`
 
@@ -234,7 +228,6 @@ const { stash, flexible, view, all } = manager.len();
 
 > [!NOTE] 与 `each` 的不同
 > `asyncEach` 方法会做时间切片，也就是说当你渲染的弹幕过多时，在遍历的时候由于代码运行时间过长，可能会对主线程造成一定阻塞，所以当有切片之后，则可以缓解这一现象。
-
 
 ## `manager.mount()`
 
@@ -249,7 +242,6 @@ const { stash, flexible, view, all } = manager.len();
 manager.mount('#root', { clear: false });
 ```
 
-
 ## `manager.unmount()`
 
 **类型：`() => void`**
@@ -260,13 +252,11 @@ manager.mount('#root', { clear: false });
 manager.mount('#root', { clear: false });
 ```
 
-
 ## `manager.clear()`
 
 **类型：`() => void`**
 
 清空当前渲染和内存中的弹幕，会触发 `clear` 钩子。
-
 
 ## `manager.updateOptions()`
 
@@ -274,13 +264,11 @@ manager.mount('#root', { clear: false });
 
 更新 `manager.options`，如果涉及到一些间距和宽高的变化，会自动 format，会触发 `updateOptions` 钩子，你可以在这个钩子里面拿到需要更新的 `options`。
 
-
 ## `manager.startPlaying()`
 
 **类型：`() => void`**
 
 启动渲染引擎，内核会启动一个定时器轮询渲染。会触发 `start` 钩子
-
 
 ## `manager.stopPlaying()`
 
@@ -288,20 +276,17 @@ manager.mount('#root', { clear: false });
 
 关闭渲染引擎，内核的定时器也会被清除。会触发 `stop` 钩子。
 
-
 ## `manager.hide()`
 
 **类型：`() => Promise<Manager>`**
 
 将当前渲染的弹幕隐藏起来，并且新渲染的弹幕也会被隐藏。会触发 `hide` 钩子。
 
-
 ## `manager.show()`
 
 **类型：`() => Promise<Manager>`**
 
 将当前被隐藏的弹幕显示出来。会触发 `show` 钩子。
-
 
 ## `manager.nextFrame()`
 
@@ -315,7 +300,6 @@ manager.nextFrame(() => {
 });
 ```
 
-
 ## `manager.updateOccludedUrl()`
 
 **类型：`(url?: string, el?: string | HTMLElement) => void`**
@@ -324,7 +308,6 @@ manager.nextFrame(() => {
 
 > [!NOTE] 注意事项
 > 放遮挡功能需要你不停的调用 `manager.updateOccludedUrl('url')` 来实现蒙层的更新，蒙层照片一般基于业务后端返回（可能是通过 AI 技术来计算当前视频需要防遮挡的区域，实际情况还是要根据业务情况来实现）。
-
 
 ## `manager.render()`
 
@@ -339,13 +322,11 @@ manager.unshift('弹幕内容');
 manager.render();
 ```
 
-
 ## `manager.remove()`
 
 **类型：`(pluginName: string) => void`**
 
 移除当前 `manager` 实例的某个插件，但是必须指定插件名字。
-
 
 ## `manager.use()`
 
@@ -372,13 +353,11 @@ const plugin = manager.use({
 console.log(plugin.name); // uuid
 ```
 
-
 ## `manager.isShow()`
 
 **类型：`() => boolean`**
 
 用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`;
-
 
 ## `manager.isFreeze()`
 
@@ -386,20 +365,17 @@ console.log(plugin.name); // uuid
 
 用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`;
 
-
 ## `manager.isPlaying()`
 
 **类型：`() => boolean`**
 
 用来判断当前渲染引擎是否正在渲染播放状态，当你调用 `manager.stopPlaying()` 后，会返回 `false`。
 
-
 ## `manager.isDanmaku()`
 
 **类型：`(b: unknown) => b is Danmaku<T>`**
 
 用来判断某个值是否是弹幕实例。
-
 
 ## `manager.setArea()`
 
@@ -420,13 +396,11 @@ interface AreaOptions {
 }
 ```
 
-
 ## `manager.setOpacity()`
 
 **类型：`(opacity: number | string) => void`**
 
 设置当前弹幕和后续渲染的弹幕的**透明度**，如果参数是 `string`，会默认转为 `number`。
-
 
 ## `manager.setStyle()`
 
@@ -434,13 +408,11 @@ interface AreaOptions {
 
 设置当前弹幕和后续渲染的弹幕的 **CSS 样式**。
 
-
 ## `manager.setRate()`
 
 **类型：`(rate: number) => void`**
 
 设置后续渲染的弹幕**速率**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
 
 ## `manager.setMode()`
 
@@ -448,13 +420,11 @@ interface AreaOptions {
 
 设置后续渲染的弹幕的**碰撞检测算法**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-
 ## `manager.setGap()`
 
 **类型：`(gap: number | string) => void`**
 
 设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
 
 ## `manager.setTimes()`
 
@@ -462,13 +432,11 @@ interface AreaOptions {
 
 设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-
 ## `manager.setLimits()`
 
 **类型：`(limits: { view?: number; stash?: number }) => void`**
 
 设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
 
 ## `manager.setInterval()`
 
@@ -476,13 +444,11 @@ interface AreaOptions {
 
 设置渲染引擎的**轮询时间**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-
 ## `manager.setDirection()`
 
 **类型：`(direction: 'left' | 'right') => void`**
 
 设置后续渲染的**方向**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
-
 
 ## `manager.setTrackHeight()`
 
@@ -491,7 +457,7 @@ interface AreaOptions {
 设置**轨道高度**。是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
 > [!NOTE] 轨道高度的设置规则
-轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
+> 轨道高度一般要设置为**大于等于弹幕高度**，否则会有弹幕上下重叠的情况出现。
 
 ```ts
 // 这只会存在三条轨道

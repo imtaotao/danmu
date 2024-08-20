@@ -17,7 +17,7 @@ const styles = {
   color: 'red',
   fontSize: '15px',
   // .
-}
+};
 
 const manager = create();
 
@@ -39,7 +39,7 @@ const styles = {
   color: 'red',
   fontSize: '15px',
   // .
-}
+};
 
 // 初始化的时候添加钩子处理，这样当有新的弹幕渲染时会自动添加上这些样式
 const manager = create({
@@ -55,9 +55,9 @@ const manager = create({
 });
 
 // 对当前正在渲染的弹幕添加样式
-manager.asyncEach(danmaku => {
+manager.asyncEach((danmaku) => {
   for (const key in styles) {
     danmaku.setStyle(key, styles[key]);
   }
-})
+});
 ```

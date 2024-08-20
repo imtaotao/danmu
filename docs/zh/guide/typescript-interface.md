@@ -6,7 +6,7 @@ Danmaku 的 `TypeSsript` 类型声明很完整齐全，所以当你在 `TypeSsri
 
 ## 声明弹幕内容类型
 
-当你在各种钩子里面拿到的 `Danmaku` 实例类型时，其**弹幕内容**的类型默认为 `unknow`，但是你可以在初始化的时候传入范型来约束。
+当你在各种钩子里面拿到的 `danmaku` 实例类型时，其**弹幕内容**的类型默认为 `unknow`，但是你可以在初始化的时候传入范型来约束。
 
 ```ts
 import { create } from 'danmu';
