@@ -25,11 +25,11 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         items: [
           {
             text: '全局配置',
-            link: '/10-minimum-example/050-minimum-component',
+            link: '/10-minimum-example/manager-config',
           },
           {
             text: '全局钩子',
-            link: '/10-minimum-example/060-minimum-template-compiler',
+            link: '/10-minimum-example/manager-hooks',
           },
           {
             text: '全局 api',
