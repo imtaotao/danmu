@@ -1,11 +1,11 @@
 import { defineConfig } from 'vitepress';
 
 export const sharedConfig = defineConfig({
-  title: 'The chibivue Book',
+  title: 'The danmu docs',
   appearance: 'dark',
   description:
-    'Writing Vue.js: Step by Step, from just one line of "Hello, World".',
-  lang: 'ja',
+    'Danmu 🌘 Collision detection, highly customized danmu screen styles, you deserve it',
+  lang: 'zh',
   srcDir: 'src',
   srcExclude: ['__wip'],
   head: [
@@ -16,51 +16,6 @@ export const sharedConfig = defineConfig({
         href: 'https://github.com/Ubugeeei/chibivue/blob/main/book/images/logo/logo.png?raw=true',
       },
     ],
-
-    // og
-    ['meta', { property: 'og:site_name', content: 'chibivue' }],
-    [
-      'meta',
-      { property: 'og:url', content: 'https://ubugeeei.github.io/chibivue' },
-    ],
-    ['meta', { property: 'og:title', content: 'chibivue' }],
-    [
-      'meta',
-      {
-        property: 'og:description',
-        content:
-          'Writing Vue.js: Step by Step, from just one line of "Hello, World".',
-      },
-    ],
-    [
-      'meta',
-      {
-        property: 'og:image',
-        content:
-          'https://github.com/Ubugeeei/chibivue/blob/main/book/images/logo/chibivue-img.png?raw=true',
-      },
-    ],
-    ['meta', { property: 'og:image:alt', content: 'chibivue' }],
-    ['meta', { name: 'twitter:site', content: 'chibivue' }],
-    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'chibivue' }],
-    [
-      'meta',
-      {
-        name: 'twitter:description',
-        content:
-          'Writing Vue.js: Step by Step, from just one line of "Hello, World".',
-      },
-    ],
-    [
-      'meta',
-      {
-        name: 'twitter:image',
-        content:
-          'https://github.com/Ubugeeei/chibivue/blob/main/book/images/logo/chibivue-img.png?raw=true',
-      },
-    ],
-    ['meta', { name: 'twitter:image:alt', content: 'chibivue' }],
   ],
   themeConfig: {
     logo: 'https://github.com/Ubugeeei/chibivue/blob/main/book/images/logo/logo.png?raw=true',
@@ -72,12 +27,11 @@ export const sharedConfig = defineConfig({
       { icon: 'discord', link: 'https://discord.gg/aVHvmbmSRy' },
     ],
     editLink: {
-      pattern:
-        'https://github.com/Ubugeeei/chibivue/blob/main/book/online-book/src/:path',
+      pattern: 'https://github.com/imtaotao/danmu/blob/master/docs/:path',
       text: 'Suggest changes to this page',
     },
     footer: {
-      copyright: `Copyright © 2023-${new Date().getFullYear()} ubugeeei`,
+      copyright: `Copyright © 2023-${new Date().getFullYear()} imtaotao`,
       message: 'Released under the MIT License.',
     },
   },

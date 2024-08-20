@@ -1,5 +1,5 @@
 import { sharedConfig } from './shared.js';
-import { jaConfig } from './ja';
+import { zhConfig } from './zh';
 import { withMermaid } from 'vitepress-plugin-mermaid';
 import { defineConfig } from 'vitepress';
 
@@ -8,6 +8,6 @@ export default (process.env.NODE_ENV === 'production'
   : defineConfig)({
   ...sharedConfig,
   locales: {
-    root: { label: 'Japanese', lang: 'ja', link: '/', ...jaConfig },
+    root: { label: '简体中文', lang: 'zh', link: '/', ...zhConfig },
   },
 });

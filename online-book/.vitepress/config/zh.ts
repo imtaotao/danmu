@@ -1,76 +1,52 @@
 import { DefaultTheme, LocaleSpecificConfig } from 'vitepress';
 
-export const jaConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
+export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
   themeConfig: {
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Start Learning', link: '/00-introduction/010-about' },
+      { text: '主页', link: '/' },
+      { text: '快速开始', link: '/00-introduction/getting-started' },
     ],
     sidebar: [
       {
-        text: 'Getting Started',
+        text: '指南',
         collapsed: false,
         items: [
-          { text: '初めに', link: '/00-introduction/010-about' },
-          { text: 'Vue.jsとは', link: '/00-introduction/020-what-is-vue' },
+          { text: '快速开始', link: '/00-introduction/getting-started' },
+          { text: '编写插件', link: '/00-introduction/create-plugin' },
           {
-            text: 'Vue.jsを構成する主要な要素',
-            link: '/00-introduction/030-vue-core-components',
-          },
-          {
-            text: '本書の進め方と環境構築',
-            link: '/00-introduction/040-setup-project',
+            text: 'Typescript 类型',
+            link: '/00-introduction/typescript-interface',
           },
         ],
       },
       {
-        text: 'Minimum Example',
+        text: '参考',
         collapsed: false,
         items: [
           {
-            text: '初めてのレンダリングと createApp API',
-            link: '/10-minimum-example/010-create-app-api',
-          },
-          {
-            text: 'HTML要素をレンダリングできるようにしよう',
-            link: '/10-minimum-example/020-simple-h-function',
-          },
-          {
-            text: '小さい Reactivity System ',
-            link: '/10-minimum-example/030-minimum-reactive',
-          },
-          {
-            text: '小さい Virtual DOM',
-            link: '/10-minimum-example/040-minimum-virtual-dom',
-          },
-          {
-            text: 'コンポーネント指向で開発したい',
+            text: '全局配置',
             link: '/10-minimum-example/050-minimum-component',
           },
           {
-            text: '小さいテンプレートコンパイラ',
+            text: '全局钩子',
             link: '/10-minimum-example/060-minimum-template-compiler',
           },
           {
-            text: 'もっと複雑な HTML を書きたい',
+            text: '全局 api',
             link: '/10-minimum-example/070-more-complex-parser',
           },
           {
-            text: 'データバインディング',
+            text: '弹幕钩子',
             link: '/10-minimum-example/080-template-binding',
           },
           {
-            text: 'SFC で開発したい',
+            text: '弹幕 api',
             link: '/10-minimum-example/090-minimum-sfc',
-          },
-          {
-            text: 'ちょっと一息',
-            link: '/10-minimum-example/100-break',
           },
         ],
       },
       {
-        text: 'Basic Virtual DOM',
+        text: '常见 case',
         collapsed: false,
         items: [
           {
