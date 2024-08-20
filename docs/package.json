@@ -1,19 +1,15 @@
 {
-  "name": "danmu-docs",
-  "private": true,
+  "name": "docs",
+  "private": "true",
   "type": "module",
-  "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.25.2",
-    "astro": "^4.14.2",
-    "sharp": "^0.33.4",
-    "starlight-theme-rapide": "^0.1.1"
+    "vitepress": "^1.3.3",
+    "vitepress-plugin-mermaid": "^2.0.16",
+    "typescript": "^4.5.5"
   }
 }

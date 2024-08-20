@@ -1,0 +1,19 @@
+{
+  "name": "danmu-docs",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.25.2",
+    "astro": "^4.14.2",
+    "sharp": "^0.33.4",
+    "starlight-theme-rapide": "^0.1.1"
+  }
+}
