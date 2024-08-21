@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { cn, isMobile } from '@/lib/utils';
 import githubLogo from '@/assets/github.svg';
 import {
   Select,
@@ -12,7 +13,7 @@ export function TopBar() {
   const { t, i18n } = useTranslation();
 
   return (
-    <div className="relative">
+    <div className={cn(isMobile ? 'top-[5px]' : '', 'relative')}>
       <a
         className="block w-[30px]"
         target="_blank"

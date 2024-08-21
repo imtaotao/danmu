@@ -1,7 +1,9 @@
 import { defineConfig } from 'vitepress';
 
+const base = 'danmu/document';
+
 export const sharedConfig = defineConfig({
-  base: '/danmu/document',
+  base,
   title: 'The danmu Book',
   appearance: 'dark',
   description:
@@ -15,10 +17,7 @@ export const sharedConfig = defineConfig({
   head: [
     [
       'link',
-      {
-        rel: 'icon',
-        href: '/favicon.svg',
-      },
+      { rel: 'icon', type: 'image/x-icon', href: `/${base}/favicon.svg` },
     ],
   ],
   themeConfig: {
@@ -33,7 +32,7 @@ export const sharedConfig = defineConfig({
       text: '在 GitHub 上编辑此页面',
     },
     footer: {
-      copyright: `Copyright © 2023-${new Date().getFullYear()} imtaotao`,
+      copyright: `Copyright © 2019-${new Date().getFullYear()} imtaotao`,
       message: 'Released under the MIT License.',
     },
   },

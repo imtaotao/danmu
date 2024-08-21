@@ -9,17 +9,21 @@ export const Container = memo(
 
     useEffect(() => {
       const format = () => {
-        manager.nextFrame(() => manager.format());
+        manager.nextFrame(() => {
+          if (ref.current) {
+            manager.mount(ref.current);
+          }
+        });
       };
+
       if (ref.current) {
         manager.mount(ref.current);
         manager.startPlaying();
         document.addEventListener('fullscreenchange', format);
       }
+
       return () => {
-        if (ref.current) {
-          ref.current.removeEventListener('fullscreenchange', format);
-        }
+        document.removeEventListener('fullscreenchange', format);
       };
     }, []);
 
@@ -27,17 +31,21 @@ export const Container = memo(
       <div
         ref={ref}
         id="RenderContainer"
-        style={{ height: 'calc(100% - 40px)' }}
         className="w-full relative top-[40px]"
+        style={{ height: 'calc(100% - 40px)' }}
       >
         <Maximize
           color="#000"
           strokeWidth={3}
-          className="absolute z-10 bottom-2 right-2 cursor-pointer"
+          className="absolute z-[100] bottom-2 right-2 cursor-pointer"
           onClick={() => {
-            if (!ref.current) return;
-            ref.current.requestFullscreen();
-            manager.asyncEach((b) => b.destroy());
+            if (!document.fullscreenElement) {
+              if (ref.current) {
+                ref.current.requestFullscreen();
+              }
+            } else {
+              document.exitFullscreen();
+            }
           }}
         />
       </div>
