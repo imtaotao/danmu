@@ -11,18 +11,16 @@
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://imtaotao.github.io/danmu/document/zh/">Documentation</a>
 
-A highly extensible danmaku library with a robust plugin system, occlusion prevention, and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
+A powerful and flexible danmaku library based on [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
 
 </div>
 
 <h1></h1>
 
-### Usage
-
-```js
+```ts
 import { create } from 'danmu';
 
-const manager = create(
+const manager = create<string>(
   plugin: {
     $createNode({ node, data }) {
       // Render danmaku content to the DOM
