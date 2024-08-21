@@ -17,6 +17,8 @@ A powerful and flexible danmaku library based on [`hooks-plugin`](https://github
 
 <h1></h1>
 
+### 🚀 Getting Started
+
 ```ts
 import { create } from 'danmu';
 
