@@ -6,7 +6,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { enMap } from '@/i18n/en';
 import { zhMap } from '@/i18n/zh';
 import { App } from '@/App';
-import { mock, initManager } from '@/manager';
+import { mock, autoFormat, initManager } from '@/manager';
 import '@/globals.css';
 
 // https://github.com/i18next/i18next-browser-languageDetector
@@ -39,3 +39,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 
 mock(manager);
+autoFormat(manager);

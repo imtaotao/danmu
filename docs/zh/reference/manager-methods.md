@@ -161,10 +161,7 @@ const { start, middle, end } = manager.getTrackLocation(-1);
 > > 2.  你确保获取的轨道存在，否则会报错，可以通过 `manager.trackCount` 来判断。
 > > 3.  你可以在我们的在线 [**demo**](https://imtaotao.github.io/danmu/) 打开浏览器控制台输入这段代码查看效果，
 
-```ts {12,15}
-// 打开控制台后，容器会由变化，需要先调用 `format` 方法重新继续
-manager.format();
-
+```ts {9,12}
 // 发送一个高级弹幕
 manager.pushFlexibleDanmaku(
   { content: '测试' },

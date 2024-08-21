@@ -39,3 +39,8 @@ export const mock = (manager: Manager<DanmakuValue>) => {
     }
   }, 1000);
 };
+
+export const autoFormat = (manager: Manager<DanmakuValue>) => {
+  const resizeObserver = new ResizeObserver(() => manager.format());
+  resizeObserver.observe(document.body);
+};
