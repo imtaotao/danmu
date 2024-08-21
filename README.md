@@ -7,17 +7,15 @@
 
 <div align="center">
 
-English | [简体中文](./README.zh-CN.md)
+<a href="https://imtaotao.github.io/danmu/">Online Demo</a>
+&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://imtaotao.github.io/danmu/document/zh/">Documentation</a>
+
+A highly extensible danmaku library with a robust plugin system, occlusion prevention, and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
 
 </div>
 
 <h1></h1>
-
-A highly extensible danmaku library with a robust plugin system, occlusion prevention, and collision detection, implemented based on `CSS`, `DOM`, and [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
-
-- Demo: https://imtaotao.github.io/danmu/
-- Document: https://imtaotao.github.io/danmu/document/zh/
-
 
 ### Usage
 
@@ -40,4 +38,3 @@ manager.startPlaying();
 // Send danmuku
 manager.push('danmaku content');
 ```
-
