@@ -11,9 +11,6 @@ export const sharedConfig = defineConfig({
   lang: 'zh',
   lastUpdated: true,
   ignoreDeadLinks: true,
-  rewrites: {
-    'en/:rest*': ':rest*',
-  },
   head: [
     [
       'link',
@@ -29,7 +26,7 @@ export const sharedConfig = defineConfig({
     ],
     editLink: {
       pattern: 'https://github.com/imtaotao/danmu/blob/master/docs/:path',
-      text: '在 GitHub 上编辑此页面',
+      text: 'Suggest changes to this page',
     },
     footer: {
       copyright: `Copyright © 2019-${new Date().getFullYear()} imtaotao`,

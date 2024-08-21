@@ -40,7 +40,7 @@ export function filter({ userIds, keywords }) {
 }
 ```
 
-## 🛠️ 注册使用插件
+## 🛠️ 注册插件
 
 你需要通过 `mananger.use()` 来注册插件。
 

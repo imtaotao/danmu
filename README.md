@@ -9,7 +9,7 @@
 
 A powerful and flexible danmaku library based on [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
 
-<a href="https://imtaotao.github.io/danmu/">Online Demo</a>
+<a href="https://imtaotao.github.io/danmu/">Online Examples</a>
 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://imtaotao.github.io/danmu/document/zh/">Documentation</a>
 

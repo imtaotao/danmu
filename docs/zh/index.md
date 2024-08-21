@@ -12,7 +12,7 @@ hero:
       text: 快速开始 ->
       link: /zh/guide/getting-started
     - theme: alt
-      text: 在线案例
+      text: 在线示例
       link: https://imtaotao.github.io/danmu/
 
 features:
