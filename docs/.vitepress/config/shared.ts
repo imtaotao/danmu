@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress';
 
-const base = 'danmu/document';
+const base = '/danmu/document';
 
 export const sharedConfig = defineConfig({
   base,
@@ -17,7 +17,7 @@ export const sharedConfig = defineConfig({
   head: [
     [
       'link',
-      { rel: 'icon', type: 'image/x-icon', href: `/${base}/favicon.svg` },
+      { rel: 'icon', type: 'image/x-icon', href: `${base}/favicon.svg` },
     ],
   ],
   themeConfig: {
