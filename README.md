@@ -5,9 +5,9 @@
 
 </div>
 
-Welcome to the Danmu project! 🎉 This repository is dedicated to providing a robust and user-friendly danmu solution. Whether you are building an interactive video streaming platform or want to enhance live interactions during events, Danmu got you covered!
+Welcome to the Danmu project! 🎉 This repository is dedicated to providing a robust and user-friendly danmaku solution. Whether you are building an interactive video streaming platform or want to enhance live interactions during events, Danmu got you covered!
 
-- **GitHub Repository**: https://imtaotao.github.io/danmu/
+- **Example Project**: https://imtaotao.github.io/danmu/
 
 - **Official Documentation**: https://imtaotao.github.io/danmu/document/en/
 
