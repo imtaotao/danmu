@@ -1,6 +1,6 @@
 {
   "name": "danmu",
-  "version": "0.6.8-beta-1724315401768.0",
+  "version": "0.6.8-beta-1724316027386.0",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "main": "./dist/danmu.cjs.js",
   "unpkg": "./dist/danmu.umd.js",
@@ -25,7 +25,7 @@
   "scripts": {
     "test": "jest",
     "prepare": "husky",
-    "release": "tsx ./scripts/release.ts",
+    "release": "tsx ./release.ts",
     "docs:dev": "cd docs && pnpm run dev",
     "docs:preview": "cd docs && pnpm run preview",
     "docs:build": "rimraf ./docs/.vitepress/dist && cd docs && pnpm run build",
@@ -35,7 +35,7 @@
     "core:build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__ && pnpm run format:es",
     "format": "pnpm run format:es && pnpm run format:docs",
     "format:docs": "prettier --write ./docs",
-    "format:es": "prettier --write --ignore-path=.prettierignore --parser typescript \"(src|demo|dist|scripts)/**/*.((m)?js|ts?(x))\""
+    "format:es": "prettier --write --ignore-path=.prettierignore --parser typescript \"(src|demo|dist)/**/*.((m)?js|ts?(x))\""
   },
   "lint-staged": {
     "*.js": [
