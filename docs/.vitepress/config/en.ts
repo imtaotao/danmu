@@ -64,12 +64,16 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
         collapsed: false,
         items: [
           {
-            text: 'Cooldown Time',
+            text: 'Track Settings',
+            link: '/en/cases/track-settings',
+          },
+          {
+            text: 'Cooldown',
             link: '/en/cases/cooldown',
           },
           {
             text: 'Simplified Mode',
-            link: '/en/cases/lite-mode',
+            link: '/en/cases/simplified-mode',
           },
           {
             text: 'Filter Keywords',
@@ -80,20 +84,20 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
             link: '/en/cases/like',
           },
           {
-            text: 'Custom Danmaku Styles',
-            link: '/en/cases/style-danmaku',
-          },
-          {
-            text: 'Custom Container Styles',
-            link: '/en/cases/style-container',
+            text: 'Send Looping Danmaku',
+            link: '/en/cases/loop',
           },
           {
             text: 'Send Danmaku with Images',
             link: '/en/cases/image',
           },
           {
-            text: 'Send Looping Danmaku',
-            link: '/en/cases/loop',
+            text: 'Custom Danmaku Styles',
+            link: '/en/cases/custom-danmaku',
+          },
+          {
+            text: 'Custom Container Styles',
+            link: '/en/cases/custom-container',
           },
           {
             text: 'Pin Danmaku to the Top',
@@ -102,10 +106,6 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
           {
             text: 'Anti-Blocking Feature',
             link: '/en/cases/anti-occlusion',
-          },
-          {
-            text: 'Control Track Quantity',
-            link: '/en/cases/track',
           },
           {
             text: 'Live Streaming and Video',

@@ -1,4 +1,4 @@
-# 发送循环弹幕
+# Send Looping Danmaku
 
 ## Description
 

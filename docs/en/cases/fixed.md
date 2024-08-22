@@ -1,4 +1,4 @@
-# 固定弹幕在容器顶部
+# Pin Danmaku to the Top
 
 ## Description
 

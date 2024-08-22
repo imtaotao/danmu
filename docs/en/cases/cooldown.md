@@ -1,4 +1,4 @@
-# Cooldown Time
+# Cooldown
 
 ## Description
 

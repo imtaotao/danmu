@@ -1,4 +1,4 @@
-# 自定义弹幕样式
+# Custom Danmaku Styles
 
 ## Description
 

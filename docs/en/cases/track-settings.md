@@ -1,4 +1,4 @@
-# 控制轨道数量和渲染
+# Track Settings
 
 ## Description
 

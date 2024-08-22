@@ -1,4 +1,4 @@
-# 发送带图片的弹幕
+# Send Danmaku with Images
 
 ## Description
 

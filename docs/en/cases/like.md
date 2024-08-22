@@ -1,4 +1,4 @@
-# 点赞/点踩
+# Like/Dislike
 
 ## Description
 

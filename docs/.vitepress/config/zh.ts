@@ -61,12 +61,16 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
         collapsed: false,
         items: [
           {
+            text: '轨道设置',
+            link: '/zh/cases/track-settings',
+          },
+          {
             text: '弹幕冷却时间',
             link: '/zh/cases/cooldown',
           },
           {
             text: '弹幕精简模式',
-            link: '/zh/cases/lite-mode',
+            link: '/zh/cases/simplified-mode',
           },
           {
             text: '过滤关键字',
@@ -77,20 +81,21 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
             link: '/zh/cases/like',
           },
           {
-            text: '自定义弹幕样式',
-            link: '/zh/cases/style-danmaku',
-          },
-          {
-            text: '自定义容器样式',
-            link: '/zh/cases/style-container',
+            text: '发送循环弹幕',
+            link: '/zh/cases/loop',
           },
           {
             text: '发送带图片的弹幕',
             link: '/zh/cases/image',
           },
+
           {
-            text: '发送循环弹幕',
-            link: '/zh/cases/loop',
+            text: '自定义弹幕样式',
+            link: '/zh/cases/custom-danmaku',
+          },
+          {
+            text: '自定义容器样式',
+            link: '/zh/cases/custom-container',
           },
           {
             text: '固定弹幕在容器顶部',
@@ -99,10 +104,6 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
           {
             text: '防遮挡功能的实现',
             link: '/zh/cases/anti-occlusion',
-          },
-          {
-            text: '控制轨道数量和渲染',
-            link: '/zh/cases/track',
           },
           {
             text: '直播和视频场景的建议',
