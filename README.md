@@ -1,40 +1,27 @@
 <div align="center">
-<h2>danmu</h2>
+<h1>danmu</h1>
 
 [![build status](https://github.com/imtaotao/danmu/actions/workflows/deploy.yml/badge.svg?branch=master)](https://github.com/imtaotao/danmu/actions/workflows/deploy.yml) [![NPM version](https://img.shields.io/npm/v/danmu.svg?color=a1b858&label=)](https://www.npmjs.com/package/danmu)
 
 </div>
 
-<div align="center">
+Welcome to the Danmu project! 🎉 This repository is dedicated to providing a robust and user-friendly danmu solution. Whether you are building an interactive video streaming platform or want to enhance live interactions during events, Danmu got you covered!
 
-A powerful and flexible danmaku library based on [`hooks-plugin`](https://github.com/imtaotao/hooks-plugin).
+- **GitHub Repository**: https://imtaotao.github.io/danmu/
 
-<a href="https://imtaotao.github.io/danmu/">Online Examples</a>
-&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://imtaotao.github.io/danmu/document/zh/">Documentation</a>
-
-</div>
+- **Official Documentation**: https://imtaotao.github.io/danmu/document/en/
 
 <h1></h1>
 
-### 🚀 Getting Started
+## Why Choose Danmu? 💭
 
-```ts
-import { create } from 'danmu';
+- 🍃 **Lightweight**: Danmu is designed to be minimal yet powerful.
+- 🧩 **Customizable**: Tailor the functionality to fit your specific needs with extensive customization options.
+- 🌺 **User Friendly**: Easy to integrate and use, elevating user experience on your platform.
+- 🎯 **Full-Featured**: Provides APIs that meet a variety of business needs.
 
-const manager = create<string>(
-  plugin: {
-    $createNode({ node, data }) {
-      // Render danmaku content to the DOM
-      node.textContent = data;
-    },
-  },
-);
+## Getting Started 🌟
 
-// Initialize
-manager.mount(document.getElementById('root'));
-manager.startPlaying();
+To get started with Danmu, please refer to our [**official documentation**](https://imtaotao.github.io/danmu/document/en/guide/getting-started.html), which provides detailed instructions on installation and configurations.
 
-// Send danmuku
-manager.push('danmaku content');
-```
+Thank you for considering Danmu for your project! We are excited to see what you will build with it 😁.
