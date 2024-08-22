@@ -1,6 +1,6 @@
 {
   "name": "danmu",
-  "version": "0.6.7",
+  "version": "0.6.8-beta-1724315401768.0",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "main": "./dist/danmu.cjs.js",
   "unpkg": "./dist/danmu.umd.js",
@@ -25,16 +25,17 @@
   "scripts": {
     "test": "jest",
     "prepare": "husky",
+    "release": "tsx ./scripts/release.ts",
     "docs:dev": "cd docs && pnpm run dev",
     "docs:preview": "cd docs && pnpm run preview",
     "docs:build": "rimraf ./docs/.vitepress/dist && cd docs && pnpm run build",
     "demo:dev": "cd demo && pnpm run dev",
     "demo:build": "rimraf ./demo/dist && cd demo && pnpm run build",
     "core:dev": "rollup --config --environment BUILD:development",
-    "core:build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__",
+    "core:build": "rimraf ./dist && rollup --config && rimraf ./dist/__tests__ && pnpm run format:es",
     "format": "pnpm run format:es && pnpm run format:docs",
     "format:docs": "prettier --write ./docs",
-    "format:es": "prettier --write --ignore-path=.prettierignore --parser typescript \"(src|demo|dist)/**/*.((m)?js|ts?(x))\""
+    "format:es": "prettier --write --ignore-path=.prettierignore --parser typescript \"(src|demo|dist|scripts)/**/*.((m)?js|ts?(x))\""
   },
   "lint-staged": {
     "*.js": [
@@ -67,20 +68,27 @@
     "node": "^20"
   },
   "devDependencies": {
+    "@jsdevtools/version-bump-prompt": "^6.1.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@types/jest": "^29.5.12",
+    "@types/node": "^22.5.0",
+    "chalk": "^5.3.0",
+    "execa": "^9.3.1",
     "husky": "^9.0.11",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.5",
+    "minimist": "^1.2.8",
     "prettier": "^3.3.3",
     "rimraf": "^5.0.7",
     "rollup": "^4.18.0",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-typescript2": "^0.36.0",
+    "semver": "^7.6.3",
     "ts-jest": "^29.1.4",
+    "tsx": "^4.17.0",
     "typescript": "^4.5.5"
   },
   "dependencies": {

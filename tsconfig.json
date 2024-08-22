@@ -10,7 +10,7 @@
     "declaration": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
-    "lib": ["es2018", "dom"],
+    "lib": ["dom", "esnext"],
     "moduleResolution": "node"
   },
   "include": ["src"]

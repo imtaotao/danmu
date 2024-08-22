@@ -59,7 +59,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       this.pluginSystem.lifecycle.moveStart.emit(this);
 
       if (this.direction === 'none') {
-        let timer: number | null = setTimeout(onEnd, this.actualDuration());
+        let timer: unknown | null = setTimeout(onEnd, this.actualDuration());
         this.moveTimer = {
           cb: onEnd,
           clear() {
@@ -220,7 +220,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
 
     if (this.direction === 'none') {
       if (this.moveTimer) {
-        let timer: number | null = setTimeout(
+        let timer: unknown | null = setTimeout(
           this.moveTimer.cb || (() => {}),
           remainingTime,
         );

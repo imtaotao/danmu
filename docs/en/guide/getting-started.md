@@ -13,7 +13,6 @@ Modern video websites often incorporate danmaku, which can enhance the viewing e
 
 The `danmu` uses `CSS + DOM` to render danmaku, which means the movement of danmaku can leverage the browser's native animation capabilities. `CSS + DOM` offers extensive possibilities, allowing for various forms of danmaku (imagine a danmaku embedding a webpage). Additionally, we provide collision detection for danmaku, ensuring that even if the movement speed of danmaku is not fixed, they will not collide with each other.
 
-
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
@@ -45,7 +44,6 @@ We also provide a `CDN` for development and debugging purposes. **Do not use thi
 ### 2. Create Manager
 
 The `danmu` core package exposes only a `create` method, which is used to create a `manager` instance. Yes, all our implementations are multi-instance. For the configuration options that can be passed during creation, please refer to the [**Configuration**](../reference/manager-config) section.
-
 
 ```ts
 import { create } from 'danmu';
@@ -103,19 +101,16 @@ When initializing the `manager`, you can pass default global plugins through the
 However, when sending danmaku, you can also pass plugins specific to the danmaku. These do not include global hooks and **are only effective for the currently rendered danmaku**. If needed, this allows you to better control the danmaku being rendered.
 
 ```ts
-manager.push(
-  'danmaku content',
-  { 
-    plugin: {
-      moveStart(danmaku) {
-        // The moveStart hook is triggered just before the danmaku starts moving.
-        // You can change the danmaku's style here.
-        danmaku.setStyle(csskey, cssValue);
-      },
+manager.push('danmaku content', {
+  plugin: {
+    moveStart(danmaku) {
+      // The moveStart hook is triggered just before the danmaku starts moving.
+      // You can change the danmaku's style here.
+      danmaku.setStyle(csskey, cssValue);
     },
-    // .
   },
-);
+  // .
+});
 ```
 
 ### 5. Send Flexible Danmaku
@@ -123,25 +118,22 @@ manager.push(
 Facile Danmaku are subject to collision and rendering algorithm constraints. For danmaku that require special handling, such as top-positioned comments or comments at specific positions, you should use the [**`manager.pushFlexibleDanmaku`**](../reference/manager-methods/#manager-pushflexibledanmaku) API to send flexible danmaku. Flexible danmaku are not constrained by the collision algorithm.
 
 ```ts
-manager.pushFlexibleDanmaku(
-  'danmaku content',
-  {
-    id: 1, // Optional parameters
-    duration: 1000, // Defaults to a random value from `manager.options.times`
-    direction: 'none', // Defaults to the value of `manager.options.direction`
-    position: (danmaku, container) => {
-      // This will make the danmaku appear in the center of the container.
-      // Since the `direction` is set to `none`, it will remain stationary for `1s`
-      return {
-        x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
-        y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
-      };
-    },
-    plugin: {
-      // The plugin parameter is optional.
-      // For details, refer to the hooks for regular danmaku,
-      // as they are the same here.
-    },
+manager.pushFlexibleDanmaku('danmaku content', {
+  id: 1, // Optional parameters
+  duration: 1000, // Defaults to a random value from `manager.options.times`
+  direction: 'none', // Defaults to the value of `manager.options.direction`
+  position: (danmaku, container) => {
+    // This will make the danmaku appear in the center of the container.
+    // Since the `direction` is set to `none`, it will remain stationary for `1s`
+    return {
+      x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
+      y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
+    };
   },
-);
+  plugin: {
+    // The plugin parameter is optional.
+    // For details, refer to the hooks for regular danmaku,
+    // as they are the same here.
+  },
+});
 ```

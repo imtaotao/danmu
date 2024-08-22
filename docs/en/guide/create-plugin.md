@@ -77,7 +77,7 @@ manager.push({
 ```ts {3}
 manager.push({
   userId: 2,
-  content: 'You\'re really bad',
+  content: "You're really bad",
 });
 ```
 
@@ -95,6 +95,6 @@ manager.push({
 ```ts {3}
 manager.push({
   userId: 2,
-  content: 'You\'re awesome',
+  content: "You're awesome",
 });
 ```

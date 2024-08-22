@@ -33,7 +33,7 @@ export class Manager<
   public statuses: S = Object.create(null);
   public pluginSystem = createManagerLifeCycle<T>();
   private _engine: Engine<T>;
-  private _renderTimer: number | null = null;
+  private _renderTimer: unknown | null = null;
   private _internalStatuses: InternalStatuses = Object.create(null);
 
   public constructor(public options: ManagerOptions) {
@@ -224,7 +224,7 @@ export class Manager<
   public stopPlaying(_flag?: Symbol) {
     if (!this.isPlaying()) return;
     if (this._renderTimer) {
-      clearTimeout(this._renderTimer);
+      clearTimeout(this._renderTimer as number);
     }
     this._renderTimer = null;
     if (_flag !== INTERNAL_FLAG) {
