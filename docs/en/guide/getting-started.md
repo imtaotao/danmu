@@ -101,19 +101,16 @@ When initializing the `manager`, you can pass default global plugins through the
 However, when sending danmaku, you can also pass plugins specific to the danmaku. These do not include global hooks and **are only effective for the currently rendered danmaku**. If needed, this allows you to better control the danmaku being rendered.
 
 ```ts
-manager.push(
-  'content',
-  {
-    plugin: {
-      moveStart(danmaku) {
-        // The moveStart hook is triggered just before the danmaku starts moving.
-        // You can change the danmaku's style here.
-        danmaku.setStyle(csskey, cssValue);
-      },
+manager.push('content', {
+  plugin: {
+    moveStart(danmaku) {
+      // The moveStart hook is triggered just before the danmaku starts moving.
+      // You can change the danmaku's style here.
+      danmaku.setStyle(csskey, cssValue);
     },
-    // .
   },
-);
+  // .
+});
 ```
 
 ### 5. Send Flexible Danmaku
@@ -121,25 +118,22 @@ manager.push(
 Facile Danmaku are subject to collision and rendering algorithm constraints. For danmaku that require special handling, such as top-positioned comments or comments at specific positions, you should use the [**`manager.pushFlexibleDanmaku`**](../reference/manager-api/#manager-pushflexibledanmaku) API to send flexible danmaku. Flexible danmaku are not constrained by the collision algorithm.
 
 ```ts
-manager.pushFlexibleDanmaku(
-  'content',
-  {
-    id: 1, // Optional parameters
-    duration: 1000, // Defaults to a random value from `manager.options.times`
-    direction: 'none', // Defaults to the value of `manager.options.direction`
-    position: (danmaku, container) => {
-      // This will make the danmaku appear in the center of the container.
-      // Since the `direction` is set to `none`, it will remain stationary for `1s`
-      return {
-        x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
-        y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
-      };
-    },
-    plugin: {
-      // The plugin parameter is optional.
-      // For details, refer to the hooks for regular danmaku,
-      // as they are the same here.
-    },
+manager.pushFlexibleDanmaku('content', {
+  id: 1, // Optional parameters
+  duration: 1000, // Defaults to a random value from `manager.options.times`
+  direction: 'none', // Defaults to the value of `manager.options.direction`
+  position: (danmaku, container) => {
+    // This will make the danmaku appear in the center of the container.
+    // Since the `direction` is set to `none`, it will remain stationary for `1s`
+    return {
+      x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
+      y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
+    };
   },
-);
+  plugin: {
+    // The plugin parameter is optional.
+    // For details, refer to the hooks for regular danmaku,
+    // as they are the same here.
+  },
+});
 ```

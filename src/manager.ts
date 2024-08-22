@@ -26,11 +26,11 @@ export interface ManagerOptions extends EngineOptions {
 
 export class Manager<
   T extends unknown,
-  S extends Record<any, unknown> = Record<PropertyKey, unknown>,
+  U extends Record<any, unknown> = Record<PropertyKey, unknown>,
 > {
   public version = __VERSION__;
   public nextFrame = nextFrame;
-  public statuses: S = Object.create(null);
+  public statuses: U = Object.create(null);
   public pluginSystem = createManagerLifeCycle<T>();
   private _engine: Engine<T>;
   private _renderTimer: unknown | null = null;

@@ -1,4 +1,4 @@
-// pnpm release --patch -> 1.0.1
+// pnpm release --patch -> 1.0.1 (default)
 // pnpm release --minor -> 1.1.0
 // pnpm release --major -> 2.0.0
 // pnpm release --beta  -> 1.0.1-beta-1645598740512.0
@@ -17,7 +17,7 @@ const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
 const log = (msg: string) => console.log(chalk.cyan(msg));
 
-let type: ReleaseType = 'patch'; // default
+let type: ReleaseType = 'patch';
 
 async function run(bin: string, args: Array<string>, opts = {}) {
   const { execa } = await import('execa');

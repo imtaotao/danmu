@@ -177,6 +177,7 @@ export class FacileDanmaku<T> {
       this.moving = true;
       this.recorder.startTime = now();
       this.pluginSystem.lifecycle.moveStart.emit(this);
+
       whenTransitionEnds(this.node).then(() => {
         this.loops++;
         this.moving = false;

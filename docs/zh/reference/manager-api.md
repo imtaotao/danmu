@@ -122,20 +122,17 @@ interface PushFlexOptions {
 const manager = create<string>();
 
 // 发送一条弹幕，在容器居中的位置，静止 5s
-manager.pushFlexibleDanmaku(
-  '弹幕内容',
-  {
-    duration: 5000,
-    direction: 'none',
-    position(danmaku, container) {
-      // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
-      return {
-        x: (container.width - danmaku.getWidth()) * 0.5,
-        y: (container.height - danmaku.getHeight()) * 0.5,
-      };
-    },
+manager.pushFlexibleDanmaku('弹幕内容', {
+  duration: 5000,
+  direction: 'none',
+  position(danmaku, container) {
+    // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
+    return {
+      x: (container.width - danmaku.getWidth()) * 0.5,
+      y: (container.height - danmaku.getHeight()) * 0.5,
+    };
   },
-);
+});
 ```
 
 ## `manager.getTrackLocation()`

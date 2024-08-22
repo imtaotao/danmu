@@ -122,20 +122,17 @@ interface PushFlexOptions {
 const manager = create<string>();
 
 // Send a danmaku, positioned at the center of the container, stationary for 5s
-manager.pushFlexibleDanmaku(
-  'content',
-  {
-    duration: 5000,
-    direction: 'none',
-    position(danmaku, container) {
-      // Or use the string expression `50% - (${danmaku.getWidth()} / 2)`
-      return {
-        x: (container.width - danmaku.getWidth()) * 0.5,
-        y: (container.height - danmaku.getHeight()) * 0.5,
-      };
-    },
+manager.pushFlexibleDanmaku('content', {
+  duration: 5000,
+  direction: 'none',
+  position(danmaku, container) {
+    // Or use the string expression `50% - (${danmaku.getWidth()} / 2)`
+    return {
+      x: (container.width - danmaku.getWidth()) * 0.5,
+      y: (container.height - danmaku.getHeight()) * 0.5,
+    };
   },
-);
+});
 ```
 
 ## `manager.getTrackLocation()`

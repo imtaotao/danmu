@@ -10,8 +10,8 @@
     "declaration": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
-    "lib": ["dom", "esnext"],
-    "moduleResolution": "node"
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "Node"
   },
   "include": ["src"]
 }

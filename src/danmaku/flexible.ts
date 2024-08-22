@@ -51,6 +51,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
         this.pluginSystem.lifecycle.moveEnd.emit(this);
         resolve();
       };
+
       for (const key in this._internalStatuses.styles) {
         this.setStyle(key as StyleKey, this._internalStatuses.styles[key]);
       }
