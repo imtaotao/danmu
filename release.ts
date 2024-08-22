@@ -50,7 +50,8 @@ async function release(releaseType: ReleaseType) {
   await publish(data.newVersion);
 
   log('\nPush to GitHub...');
-  await run('git', ['push', '--follow-tags']);
+  await run('git', ['push']);
+  await run('git', ['push', '--tags']);
 
   log(`\nUpdated: "${data.oldVersion}" -> "${data.newVersion}"`);
 }
@@ -77,7 +78,7 @@ async function publish(version: string) {
 }
 
 async function commit(version: string) {
-  await run('git', ['add', '-A']);
+  await run('git', ['add', '--all']);
   await run('git', ['commit', '-m', `release: v${version}`]);
   await run('git', ['tag', `v${version}`]);
 }
