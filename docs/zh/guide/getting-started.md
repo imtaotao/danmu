@@ -43,7 +43,7 @@ $ yarn add danamu
 
 ### 2. 创建 `manager`
 
-`danmu` 核心包只暴露了一个 `create` 方法，用来创建一个 `manager` 实例，是的，我们所有的实现都是多实例的方式实现的，创建的时候传入的配置可以看[**配置**](../reference/manager-config)这一章节的介绍。
+`danmu` 核心包只暴露了一个 `create` 方法，用来创建一个 `manager` 实例，是的，我们所有的实现都是多实例的方式实现的，创建的时候传入的配置可以看[**配置**](../reference/manager-configuration)这一章节的介绍。
 
 ```ts
 import { create } from 'danmu';
@@ -83,7 +83,7 @@ manager.mount(container).startPlaying();
 manager.push('弹幕内容');
 ```
 
-但是通过 [**`manager.push`**](../reference/manager-methods/#manager-push) 方法来发送的弹幕可能会受到弹幕算法的影响，不会立即渲染，想象一些往一个数组里面 push 一个数据，但是消费是从数组最前端拿出数据消费的。我们可以换一个 [**`manager.unshift`**](../reference/manager-methods/#manager-unshift) 方法来发送弹幕。
+但是通过 [**`manager.push`**](../reference/manager-api/#manager-push) 方法来发送的弹幕可能会受到弹幕算法的影响，不会立即渲染，想象一些往一个数组里面 push 一个数据，但是消费是从数组最前端拿出数据消费的。我们可以换一个 [**`manager.unshift`**](../reference/manager-api/#manager-unshift) 方法来发送弹幕。
 
 ```ts
 // 这会在下一次渲染轮询中，立即渲染
@@ -95,35 +95,41 @@ manager.unshift('弹幕内容');
 不过我们在发送弹幕的时候，也可以传递弹幕自己的插件，他不包含全局钩子，**作用域只对当前渲染的弹幕生效**，如果你需要的话，这会让你更好的来控制当前要渲染的这个弹幕。
 
 ```ts
-manager.push('弹幕内容', {
-  plugin: {
-    moveStart(danmaku) {
-      // moveStart 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
-      danmaku.setStyle(csskey, cssValue);
+manager.push(
+  '弹幕内容',
+  {
+    plugin: {
+      moveStart(danmaku) {
+        // moveStart 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
+        danmaku.setStyle(csskey, cssValue);
+      },
     },
+    // .
   },
-  // .
-});
+);
 ```
 
 ### 5. 发送高级弹幕
 
-普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`manager.pushFlexibleDanmaku`**](../reference/manager-methods/#manager-pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
+普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`manager.pushFlexibleDanmaku`**](../reference/manager-api/#manager-pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
 
 ```ts
-manager.pushFlexibleDanmaku('弹幕内容', {
-  id: 1, // 可选参数
-  duration: 1000, // 默认从 manager.options.times 中随机取一个值
-  direction: 'none', // 默认取 manager.options.direction 的值
-  position: (danmaku, container) => {
-    // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
-    return {
-      x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
-      y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
-    };
+manager.pushFlexibleDanmaku(
+  '弹幕内容',
+  {
+    id: 1, // 可选参数
+    duration: 1000, // 默认从 manager.options.times 中随机取一个值
+    direction: 'none', // 默认取 manager.options.direction 的值
+    position: (danmaku, container) => {
+      // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
+      return {
+        x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
+        y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]
+      };
+    },
+    plugin: {
+      // plugin 参数是可选的，具体可以参考普通弹幕的钩子，这里是一样的
+    },
   },
-  plugin: {
-    // plugin 参数是可选的，具体可以参考普通弹幕的钩子，这里是一样的
-  },
-});
+);
 ```

@@ -25,19 +25,19 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
         items: [
           {
             text: 'Manager Configuration',
-            link: '/en/reference/manager-config',
-          },
-          {
-            text: 'Manager Properties',
-            link: '/en/reference/manager-props',
-          },
-          {
-            text: 'Manager Methods',
-            link: '/en/reference/manager-methods',
+            link: '/en/reference/manager-configuration',
           },
           {
             text: 'Manager Hooks',
             link: '/en/reference/manager-hooks',
+          },
+          {
+            text: 'Manager Properties',
+            link: '/en/reference/manager-properties',
+          },
+          {
+            text: 'Manager API',
+            link: '/en/reference/manager-api',
           },
         ],
       },
@@ -46,16 +46,16 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
         collapsed: false,
         items: [
           {
-            text: 'Danmaku Properties',
-            link: '/en/reference/danmaku-props',
-          },
-          {
-            text: 'Danmaku Methods',
-            link: '/en/reference/danmaku-methods',
-          },
-          {
             text: 'Danmaku Hooks',
             link: '/en/reference/danmaku-hooks',
+          },
+          {
+            text: 'Danmaku Properties',
+            link: '/en/reference/danmaku-properties',
+          },
+          {
+            text: 'Danmaku API',
+            link: '/en/reference/danmaku-api',
           },
         ],
       },
@@ -64,11 +64,11 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
         collapsed: false,
         items: [
           {
-            text: 'Danmaku Cooldown Time',
+            text: 'Cooldown Time',
             link: '/en/cases/cooldown',
           },
           {
-            text: 'Danmaku Simplified Mode',
+            text: 'Simplified Mode',
             link: '/en/cases/lite-mode',
           },
           {

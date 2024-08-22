@@ -1,10 +1,10 @@
 # manager 属性
 
 > [!NOTE] 单位提示
-> `danmu` 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
+> 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
 >
-> 1. `number`: 默认单位为 `px`。
-> 2. `string`: 表达式计算。支持（`+`, `-`, `*`, `/`）数学计算，只支持 `%` 和 `px` 两种单位。
+> 1. **`number`**：默认单位为 `px`。
+> 2. **`string`**：表达式计算。支持（`+`, `-`, `*`, `/`）数学计算，只支持 `%` 和 `px` 两种单位。
 >
 > ```ts
 > manager.setGap('(100% - 10px) / 5');
@@ -20,7 +20,7 @@
 
 **类型：`ManagerOptions`**
 
-[**`manager.options`**](./manager-config)，你可以从这里取到一些初始值并使用。
+[**`manager.options`**](./manager-configuration)，你可以从这里取到一些初始值并使用。
 
 ```ts
 console.log(manager.options.times); // [number, number]

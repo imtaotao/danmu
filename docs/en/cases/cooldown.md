@@ -1,13 +1,13 @@
-# 弹幕冷却时间
+# Cooldown Time
 
-## 描述
+## Description
 
-在直播的场景中，当用户在短时间内高频率的发送弹幕时，会有刷屏的嫌疑，本章节会对这种场景给出一个简单的实现，你可以参考其原理和思想自行根据你的业务场景进行扩展。
+In live streaming scenarios, when users send danmaku at a high frequency within a short period, it may appear as spamming. This section provides a simple implementation for such scenarios. You can refer to its principles and ideas to extend it according to your business needs.
 
-> [!NOTE] 提示
-> 我们主要依赖 [**`willRender`**](../reference/manager-hooks/#hooks-willrender) 这个钩子来实现。
+> [!NOTE] Hint
+> We mainly rely on the [**`willRender`**](../reference/manager-hooks/#hooks-willrender) hook to achieve this.
 
-## 根据弹幕内容来实现
+## Implementation Based on Danmaku Content
 
 ```ts {13-23}
 import { create } from 'danmu';
@@ -15,10 +15,10 @@ import { create } from 'danmu';
 const cd = 3000;
 const map = Object.create(null);
 
-// 创建 manager，定义发送弹幕的类型为 string
+// Create manager, define the type of danmaku to be sent as string
 const manager = create<string>({ ... });
 
-// 写一个插件来专门处理弹幕 cd 的事情
+// Write a plugin specifically to handle danmaku cooldown (CD)
 manager.use({
   name: 'cd',
   willRender(ref) {
@@ -36,21 +36,25 @@ manager.use({
   },
 });
 
-// 发送弹幕的行为
-manager.push('弹幕内容'); // 顺利发送
-manager.push('弹幕内容'); // 被阻止
+// ✔️ Successfully
+manager.push('content'); // [!code hl]
 
+// ❌ Blocked
+manager.push('content'); // [!code error]
+
+// ✔️ Successfully
 setTimeout(() => {
-  manager.push('弹幕内容'); // 顺利发送
+  manager.push('content'); // [!code hl]
 }, 3000)
 ```
 
-## 根据用户 ID 来实现
+## Implementation Based on User ID
 
-```ts {12-22}
+```ts {13-23}
 import { create } from 'danmu';
 
-// 创建 manager，定义发送弹幕的类型为 { userId: number, content: string }
+// Create manager,
+// define the type of danmaku to be sent as `{ userId: number, content: string }`
 const manager = create<{ userId: number, content: string }>({ ... });
 
 const cd = 3000;
@@ -73,11 +77,14 @@ manager.use({
   },
 });
 
-// 发送弹幕的行为
-manager.push({ useId: 1, content: '弹幕内容1' }); // 顺利发送
-manager.push({ useId: 1, content: '弹幕内容2' }); // 被阻止
+// ✔️ Successfully
+manager.push({ useId: 1, content: 'content1' }); // [!code hl]
 
+// ❌ Blocked
+manager.push({ useId: 1, content: 'content2' }); // [!code error]
+
+// ✔️ Successfully
 setTimeout(() => {
-  manager.push({ useId: 1, content: '弹幕内容3' }); // 顺利发送
+  manager.push({ useId: 1, content: 'content3' }); // [!code hl]
 }, 3000)
 ```

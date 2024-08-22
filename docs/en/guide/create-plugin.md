@@ -1,14 +1,14 @@
 # Writing Plugins
 
-Writing a plugin is very simple, but with the hooks and APIs exposed by the core, you can easily achieve powerful and customized requirements.
+Writing a plugin is very simple, but with the hooks and APIs exposed by the kernel, you can easily achieve powerful and customized requirements.
 
 ## Description
 
-Since the core does not expose the functionality to **filter danmaku based on conditions**, the reason being that the core does not know the data structure of the danmaku content, which is highly related to business requirements, we will demonstrate the **simplified danmaku** functionality through a plugin.
+Since the kernel does not expose the functionality to **filter danmaku based on conditions**, the reason being that the kernel does not know the data structure of the danmaku content, which is highly related to business requirements, we will demonstrate the **simplified danmaku** functionality through a plugin.
 
 ## 💻 Writing a Plugin
 
-> [!NOTE] note
+> [!NOTE] Tip
 >
 > - Your plugin should have a `name` for debugging and troubleshooting purposes (make sure it does not conflict with other plugins).
 > - A plugin can optionally declare a `version`, which is useful if you publish your plugin as a standalone package on `npm`.

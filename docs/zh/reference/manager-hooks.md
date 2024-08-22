@@ -24,7 +24,7 @@ const manager = create({
 
 ## 2. 通过 `manager.use` 来注册
 
-[**`manager.use()`**](./manager-methods/#manager-use) 是用来注册插件的 api，如果你有外部插件，也可以通过此方法来注册。
+[**`manager.use()`**](./manager-api/#manager-use) 是用来注册插件的 api，如果你有外部插件，也可以通过此方法来注册。
 
 **示例：**
 

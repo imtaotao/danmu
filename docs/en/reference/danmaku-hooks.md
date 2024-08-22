@@ -1,11 +1,11 @@
-# 弹幕钩子
+# Danmaku Hooks
 
-弹幕的钩子只会在弹幕自身的行为发生改变的时候进行进行触发。
+Danmaku hooks are only triggered when the behavior of the danmaku itself changes.
 
-**1. 通过 `manager` 注册**
+**1. Register through `manager`**
 
 ```ts
-// 通过 `manager` 来注册需要加上 `$` 前缀
+// When registering through `manager`, you need to add the `$` prefix
 import { create } from 'danmu';
 
 const manager = create({
@@ -16,9 +16,9 @@ const manager = create({
 });
 ```
 
-**2. 通过弹幕实例来注册**
+**2. Register through danmaku instance**
 
-如果你在其他全局钩子里面拿到了弹幕实例，则可以通过这种方式注册，这在插件的编写中会很有用。
+If you obtain a danmaku instance in other global hooks, you can register it this way. This can be very useful when writing plugins.
 
 ```ts
 danmaku.use({
@@ -29,75 +29,74 @@ danmaku.use({
 
 ## `hooks.hide`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`hide` 钩子会在弹幕隐藏的时候触发。
+The `hide` hook is triggered when the danmaku is hidden.
 
 ## `hooks.show`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`show` 钩子会在弹幕从隐藏到显示的时候触发。
+The `show` hook is triggered when the danmaku changes from hidden to visible.
 
 ## `hooks.pause`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`pause` 钩子会在弹幕暂停的时候触发。
+The `pause` hook is triggered when the danmaku is paused.
 
 ## `hooks.resume`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`resume` 钩子会在弹幕从暂停恢复的时候触发。
+The `resume` hook is triggered when the danmaku resumes from being paused.
 
 ## `hooks.destroy`
 
-**类型：`SyncHook<[Danmaku<T>, unknown]>`**
+**Type: `SyncHook<[Danmaku<T>, unknown]>`**
 
-`destroy` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destory`**](../reference/danmaku-methods/#danmaku-destroy) 方法，可以尝试传递 `mark`。
+The `destroy` hook is triggered when the danmaku is destroyed. If you need to manually call the [**`danmaku.destroy`**](../reference/danmaku-methods/#danmaku-destroy) method, you can try passing a `mark`.
 
 ## `hooks.moveStart`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`moveStart` 钩子会在弹幕即将运动的时候触发，你可以在此时对弹幕做一些样式变更操作。
+The `moveStart` hook is triggered just before the danmaku starts moving. You can make some style changes to the danmaku at this time.
 
 ## `hooks.moveEnd`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`moveEnd` 钩子会在弹幕运动结束的时候触发，运动结束不代表会立即销毁，为了性能考虑，内核引擎会批量收集统一销毁。
+The `moveEnd` hook is triggered when the danmaku finishes moving. Finishing the movement does not mean it will be destroyed immediately. For performance reasons, the kernel will batch collect and destroy them together.
 
 ## `hooks.appendNode`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`appendNode` 钩子会在弹幕的节点添加到容器时候触发，他在 `createNode` 节点之后。
+The `appendNode` hook is triggered when the danmaku node is added to the container. It occurs after the `createNode` hook.
 
 ## `hooks.removeNode`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`removeNode` 钩子会在弹幕从容器胡总移除的时候触发。
+The `removeNode` hook is triggered when the danmaku is removed from the container.
 
 ## `hooks.createNode`
 
-**类型：`SyncHook<[Danmaku<T>]>`**
+**Type: `SyncHook<[Danmaku<T>]>`**
 
-`createNode` 钩子会在弹幕的内置 HTML 节点创建后时候触发，你可以在这个钩子里面通过 `danmaku.node` 拿到这个节点，**进行一些样式和节点的渲染操作，这本框架扩展性很重要的一步操作，很重要**。
+The `createNode` hook is triggered after the built-in HTML node of the danmaku is created. You can access this node through `danmaku.node` within this hook. **This is a crucial step for performing style and node rendering operations, and it is very important for the framework's extensibility.**
 
-**示例：**
+**Example:**
 
 ```tsx
-// 组件
 function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
   return <div>{props.danmaku.data.value}</div>;
 }
 
-// 将组件渲染到弹幕的内置节点上
 manager.use({
   $createNode(danmaku) {
+    // Render the component onto the built-in node of the danmaku
     ReactDOM.createRoot(danmaku.node).render(
       <DanmakuComponent danmaku={danmaku} />,
     );

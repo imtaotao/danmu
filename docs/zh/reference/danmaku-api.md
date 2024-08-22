@@ -1,4 +1,4 @@
-# 弹幕 API
+# 弹幕方法
 
 弹幕实例有一些方法供你使用，你可用用他们来做一些行为，或者获取当前弹幕的一些状态数据。下面是一个示例：
 
@@ -121,7 +121,7 @@ danmaku.setStyle('background', 'red');
 
 ## `danmaku.use()`
 
-**类型：`(plugin: DanmakuPlugin<T> | ((b: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T> & { name: string }`**
+**类型：`(plugin: DanmakuPlugin<T> | ((d: this) => DanmakuPlugin<T>)) => DanmakuPlugin<T>`**
 
 给当前弹幕实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 

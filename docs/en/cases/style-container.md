@@ -1,11 +1,11 @@
 # 自定义容器样式
 
-## 描述
+## Description
 
-我们主要是通过 [**`manager.container.setStyle`**](../reference/manager-props/#manager-container-setstyle) 这个 api 来实现。
+我们主要是通过 [**`manager.container.setStyle`**](../reference/manager-properties/#manager-container-setstyle) 这个 api 来实现。
 
 > [!NOTE] 提示
-> 通过官方提供的 api 设置的样式，只会作用于容器的根节点上，也就是 [**`manager.container.node`**](../reference/manager-props/#manager-container-node)。
+> 通过官方提供的 api 设置的样式，只会作用于容器的根节点上，也就是 [**`manager.container.node`**](../reference/manager-properties/#manager-container-node)。
 
 ## 示例
 

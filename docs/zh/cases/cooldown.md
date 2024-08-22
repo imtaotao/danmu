@@ -36,12 +36,15 @@ manager.use({
   },
 });
 
-// 发送弹幕的行为
-manager.push('弹幕内容'); // 顺利发送
-manager.push('弹幕内容'); // 被阻止
+// ✔️ 成功
+manager.push('弹幕内容'); // [!code hl]
 
+// ❌ 被阻止
+manager.push('弹幕内容'); // [!code error]
+
+// ✔️ 成功
 setTimeout(() => {
-  manager.push('弹幕内容'); // 顺利发送
+  manager.push('弹幕内容'); // [!code hl]
 }, 3000)
 ```
 
@@ -73,11 +76,14 @@ manager.use({
   },
 });
 
-// 发送弹幕的行为
-manager.push({ useId: 1, content: '弹幕内容1' }); // 顺利发送
-manager.push({ useId: 1, content: '弹幕内容2' }); // 被阻止
+// ✔️ 成功
+manager.push({ useId: 1, content: 'content1' }); // [!code hl]
 
+// ❌ 被阻止
+manager.push({ useId: 1, content: 'content2' }); // [!code error]
+
+// ✔️ 成功
 setTimeout(() => {
-  manager.push({ useId: 1, content: '弹幕内容3' }); // 顺利发送
+  manager.push({ useId: 1, content: 'content3' }); // [!code hl]
 }, 3000)
 ```

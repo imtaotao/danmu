@@ -21,7 +21,7 @@ const manager = create<{ content: string; img: string }>({
 
 ## Pass a type to `statuses`
 
-Since `manager.statuses` does not perform any work within the core, it simply provides a plain object for users to record states. Therefore, its default type is `Record<PropertyKey, unknown>`. You can also pass a generic type to change it. For a specific example, refer to our [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/manager.tsx#L9).
+Since `manager.statuses` does not perform any work within the kernel, it simply provides a plain object for users to record states. Therefore, its default type is `Record<PropertyKey, unknown>`. You can also pass a generic type to change it. For a specific example, refer to our [**demo**](https://github.com/imtaotao/danmu/blob/master/demo/src/manager.tsx#L9).
 
 ```ts
 import { create } from 'danmu';

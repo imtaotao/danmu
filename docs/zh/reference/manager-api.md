@@ -1,10 +1,10 @@
 # manager 方法
 
 > [!NOTE] 单位提示
-> `danmu` 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
+> 所有参与计算的单位都允许通过表达式来计算，类似 CSS 的 `calc`。
 >
-> 1. `number`: 默认单位为 `px`。
-> 2. `string`: 表达式计算。支持（`+`, `-`, `*`, `/`）数学计算，只支持 `%` 和 `px` 两种单位。
+> 1. **`number`**：默认单位为 `px`。
+> 2. **`string`**：表达式计算。支持（`+`, `-`, `*`, `/`）数学计算，只支持 `%` 和 `px` 两种单位。
 >
 > ```ts
 > manager.setGap('(100% - 10px) / 5');
@@ -122,17 +122,20 @@ interface PushFlexOptions {
 const manager = create<string>();
 
 // 发送一条弹幕，在容器居中的位置，静止 5s
-manager.pushFlexibleDanmaku('弹幕内容', {
-  duration: 5000,
-  direction: 'none',
-  position(danmaku, container) {
-    // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
-    return {
-      x: (container.width - danmaku.getWidth()) * 0.5,
-      y: (container.height - danmaku.getHeight()) * 0.5,
-    };
+manager.pushFlexibleDanmaku(
+  '弹幕内容',
+  {
+    duration: 5000,
+    direction: 'none',
+    position(danmaku, container) {
+      // 也可以通过字符串表达式来设置 `50% - (${danmaku.getWidth()} / 2)`
+      return {
+        x: (container.width - danmaku.getWidth()) * 0.5,
+        y: (container.height - danmaku.getHeight()) * 0.5,
+      };
+    },
   },
-});
+);
 ```
 
 ## `manager.getTrackLocation()`
@@ -157,14 +160,14 @@ const { start, middle, end } = manager.getTrackLocation(-1);
 > [!NOTE] 提示
 > 当你发送高级弹幕的时候如果需要将其发送到某条轨道上，此方法可能会很有用。普通弹幕的位置信息计算方式如下，会在轨道的居中的位置渲染，如果要保持和普通弹幕一样，或许也是一样的算法。
 >
-> > 1.  对于弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
-> > 2.  你确保获取的轨道存在，否则会报错，可以通过 `manager.trackCount` 来判断。
-> > 3.  你可以在我们的在线 [**demo**](https://imtaotao.github.io/danmu/) 打开浏览器控制台输入这段代码查看效果，
+> > 1. 对于弹幕的高度，如果你不需要通过计算就可以得到，则不需要通过 `getHeight()` 方法。
+> > 2. 你确保获取的轨道存在，否则会报错，可以通过 `manager.trackCount` 来判断。
+> > 3. 你可以在我们的在线 [**demo**](https://imtaotao.github.io/danmu/) 打开浏览器控制台输入这段代码查看效果，
 
 ```ts {9,12}
 // 发送一个高级弹幕
 manager.pushFlexibleDanmaku(
-  { content: '测试' },
+  { content: '弹幕内容' },
   {
     duration: 5000,
     direction: 'none',
@@ -232,8 +235,8 @@ const { stash, flexible, view, all } = manager.len();
 
 将内核的弹幕容器挂载到一个 HTML 节点上，可以是一个 `string` 类型的 `CSS` 选择器，`clear` 参数可以用来清除之前渲染的弹幕，默认为 `true`，如果你不想清除可以传 `false`，挂载之后你可以通过 `manager.container` 拿到这个节点。
 
-> [!NOTE] 和内核的容器节点的区分
-> 内核的容器节点是所有弹幕渲染的节点，包括我们通过 `manager.setArea()` 来调整的时候也是更改的容器节点，但是容器节点**需要挂载到一个具体的 DOM 上**，所以这是他们之间的区分，容器节点的宽高都是 `100%`。
+> [!NOTE] 和内核的容器节点的区别
+> 内核的容器节点是所有弹幕渲染的节点，包括我们通过 `manager.setArea()` 来调整的时候也是更改的容器节点，但是容器节点**需要挂载到一个具体的 DOM 上**，所以这是他们之间的区别，容器节点的宽高都是 `100%`。
 
 ```ts
 manager.mount('#root', { clear: false });
@@ -265,7 +268,7 @@ manager.mount('#root', { clear: false });
 
 **类型：`() => void`**
 
-启动渲染引擎，内核会启动一个定时器轮询渲染。会触发 `start` 钩子
+启动渲染引擎，内核会启动一个定时器轮询渲染。会触发 `start` 钩子。
 
 ## `manager.stopPlaying()`
 
@@ -327,7 +330,7 @@ manager.render();
 
 ## `manager.use()`
 
-**类型：`(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) => ManagerPlugin<T> & { name: string }`**
+**类型：`(plugin: ManagerPlugin<T> | ((m: this) => ManagerPlugin<T>)) => ManagerPlugin<T>`**
 
 给当前 `manager` 实例注册一个插件，返回插件实例，如果你在后续需要移除插件，可以保存插件的 `name`，如果不传会默认分别一个 `uuid` 形式的 `name`。
 
@@ -354,13 +357,13 @@ console.log(plugin.name); // uuid
 
 **类型：`() => boolean`**
 
-用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`;
+用来判断当前弹幕是否是在 `显示` 状态，通常当你调用 `manager.show()` 之后，调用此方法将会返回 `true`。
 
 ## `manager.isFreeze()`
 
 **类型：`() => boolean`**
 
-用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`;
+用来判断当前弹幕是否是在 `冻结` 状态，通常当你调用 `manager.freeze()` 之后，调用此方法将会返回 `true`。
 
 ## `manager.isPlaying()`
 

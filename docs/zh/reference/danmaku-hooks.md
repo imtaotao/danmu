@@ -90,14 +90,13 @@ danmaku.use({
 **示例：**
 
 ```tsx
-// 组件
 function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
   return <div>{props.danmaku.data.value}</div>;
 }
 
-// 将组件渲染到弹幕的内置节点上
 manager.use({
   $createNode(danmaku) {
+    // 将组件渲染到弹幕的内置节点上
     ReactDOM.createRoot(danmaku.node).render(
       <DanmakuComponent danmaku={danmaku} />,
     );

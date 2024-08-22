@@ -11,52 +11,61 @@
 
 **1. 固定在最顶部的位置：**
 
-```ts {7-8}
+```ts {9-10}
 // 这条弹幕将会居中距离顶部 10px 的位置悬停 5s
-manager.pushFlexibleDanmaku('弹幕内容', {
-  duration: 5000,
-  direction: 'none',
-  position(danmaku, container) {
-    return {
-      x: `50% - ${danmaku.getWidth() / 2}`,
-      y: 10, // 具体容器顶部的距离为 10px
-    };
+manager.pushFlexibleDanmaku(
+  '弹幕内容',
+  {
+    duration: 5000,
+    direction: 'none',
+    position(danmaku, container) {
+      return {
+        x: `50% - ${danmaku.getWidth() / 2}`,
+        y: 10, // 具体容器顶部的距离为 10px
+      };
+    },
   },
-});
+);
 ```
 
 **2. 固定在顶部第 2 条轨道上：**
 
-```ts {9-10}
+```ts {11-12}
 // 这条弹幕将会在第二条轨道居中的位置悬停 5s
-manager.pushFlexibleDanmaku('弹幕内容', {
-  duration: 5000,
-  direction: 'none',
-  position(danmaku, container) {
-    // 渲染在第 3 条轨道中
-    const { middle } = manager.getTrackLocation(2);
-    return {
-      x: `50% - ${danmaku.getWidth() / 2}`,
-      y: middle - danmaku.getHeight() / 2,
-    };
+manager.pushFlexibleDanmaku(
+  '弹幕内容',
+  {
+    duration: 5000,
+    direction: 'none',
+    position(danmaku, container) {
+      // 渲染在第 3 条轨道中
+      const { middle } = manager.getTrackLocation(2);
+      return {
+        x: `50% - ${danmaku.getWidth() / 2}`,
+        y: middle - danmaku.getHeight() / 2,
+      };
+    },
   },
-});
+);
 ```
 
 ## 将弹幕固定在左边
 
-```ts {7,9-10}
+```ts {9,11-12}
 // 这条弹幕将会在容器中间距离左边 10px 的地方停留 5s
-manager.pushFlexibleDanmaku('弹幕内容', {
-  duration: 5000,
-  direction: 'none',
-  position(danmaku, container) {
-    // 渲染在第 3 条轨道中
-    const { middle } = manager.getTrackLocation(2);
-    return {
-      x: 10,
-      y: `50% - ${danmaku.getHeight() / 2}`,
-    };
+manager.pushFlexibleDanmaku(
+  '弹幕内容',
+  {
+    duration: 5000,
+    direction: 'none',
+    position(danmaku, container) {
+      // 渲染在第 3 条轨道中
+      const { middle } = manager.getTrackLocation(2);
+      return {
+        x: 10,
+        y: `50% - ${danmaku.getHeight() / 2}`,
+      };
+    },
   },
-});
+);
 ```

@@ -22,19 +22,19 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
         items: [
           {
             text: 'manager 配置',
-            link: '/zh/reference/manager-config',
-          },
-          {
-            text: 'manager 属性',
-            link: '/zh/reference/manager-props',
-          },
-          {
-            text: 'manager 方法',
-            link: '/zh/reference/manager-methods',
+            link: '/zh/reference/manager-configuration',
           },
           {
             text: 'manager 钩子',
             link: '/zh/reference/manager-hooks',
+          },
+          {
+            text: 'manager 属性',
+            link: '/zh/reference/manager-properties',
+          },
+          {
+            text: 'manager 方法',
+            link: '/zh/reference/manager-api',
           },
         ],
       },
@@ -43,16 +43,16 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
         collapsed: false,
         items: [
           {
+            text: '弹幕钩子',
+            link: '/zh/reference/danmaku-hooks',
+          },
+          {
             text: '弹幕属性',
-            link: '/zh/reference/danmaku-props',
+            link: '/zh/reference/danmaku-properties',
           },
           {
             text: '弹幕方法',
-            link: '/zh/reference/danmaku-methods',
-          },
-          {
-            text: '弹幕钩子',
-            link: '/zh/reference/danmaku-hooks',
+            link: '/zh/reference/danmaku-api',
           },
         ],
       },

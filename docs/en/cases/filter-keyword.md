@@ -1,6 +1,6 @@
-# 过滤关键字
+# Filter Keywords
 
-## 描述
+## Description
 
 过滤关键字的功能实现我们在[**编写插件**](../guide/create-plugin)那一章节已经学习过。
 
