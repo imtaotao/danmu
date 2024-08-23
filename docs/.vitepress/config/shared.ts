@@ -29,7 +29,7 @@ export const sharedConfig = defineConfig({
       text: 'Suggest changes to this page',
     },
     footer: {
-      copyright: `Copyright © 2019-${new Date().getFullYear()} imtaotao`,
+      copyright: `Copyright © 2024-${new Date().getFullYear()} imtaotao`,
       message: 'Released under the MIT License.',
     },
   },
