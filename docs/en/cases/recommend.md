@@ -2,24 +2,24 @@
 
 ## Description
 
-由于在直播和视频直播中，弹幕的实时性要求比较高，而默认的[**碰撞算法配置为**](../reference/manager-configuration/#config-mode) `strict`，当不满足渲染条件的时候会延迟到满足渲染条件后才渲染，**所以你应当设置为 `adaptive`**，这会让引擎会先尝试进行碰撞检测，如果不满足条件会忽略碰撞算法而立即渲染。
+In live streaming and video streaming, the real-time requirement for danmaku is relatively high. The default [**collision algorithm configuration**](../reference/manager-configuration/#config-mode) is `strict`, which delays rendering until the rendering conditions are met. **Therefore, you should set it to `adaptive`**. This will make the engine attempt collision detection first, and if the conditions are not met, it will ignore the collision algorithm and render immediately.
 
-## 示例
+## Example
 
 ```ts {4,8}
-// 在初始化的时候设置
+// Set it during initialization
 const manager = create({
-  // ... 其他配置
+  // .
   mode: 'adaptive',
 });
 
-// 或者使用 setMode api
+// Or use the `setMode()` API
 manager.setMode('adaptive');
 ```
 
-如果你想设置一条轨道内弹幕之间最小间距（仅当弹幕命中了碰撞检测的时候才会生效）
+If you want to set the minimum spacing between danmaku within a single track (only effective when danmaku hit collision detection)
 
 ```ts
-// 同一条轨道内弹幕的间距最小为 10px
+The minimum spacing between danmaku within the same track is `10px`
 manager.setGap(10);
 ```

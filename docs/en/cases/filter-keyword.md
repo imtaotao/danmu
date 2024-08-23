@@ -2,20 +2,20 @@
 
 ## Description
 
-过滤关键字的功能实现我们在[**编写插件**](../guide/create-plugin)那一章节已经学习过。
+The implementation of the keyword filtering feature has already been covered in the [**Writing Plugins**](../guide/create-plugin) chapter.
 
-> [!NOTE] 提示
-> 过滤关键字的实现也是依赖 [**`willRender`**](../reference/manager-hooks/#hooks-willrender) 这个钩子来实现。
+> [!NOTE] Hint
+> The implementation of keyword filtering also relies on the [**`willRender`**](../reference/manager-hooks/#hooks-willrender) hook.
 
-## 示例
+## Example
 
 ```ts {4,12}
 import { create } from 'danmu';
 
-// 定义关键字列表
+// Define the keyword list
 const keywords = ['a', 'c', 'e'];
 
-// 创建 manager，定义发送弹幕的类型为 string
+// Create `manager`, define the type of danmaku to be sent as `string`
 const manager = create<string>({
   plugin: {
     willRender(ref) {
@@ -30,9 +30,9 @@ const manager = create<string>({
   },
 });
 
-// 会被过滤
-manager.push('ab');
+// ❌ Will be filtered
+manager.push('ab'); // [!code error]
 
-// 不会被过滤
-manager.push('bd');
+// ✔️ Will not be filtered
+manager.push('bd'); // [!code hl]
 ```

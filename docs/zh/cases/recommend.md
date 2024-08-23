@@ -9,11 +9,11 @@
 ```ts {4,8}
 // 在初始化的时候设置
 const manager = create({
-  // ... 其他配置
+  // .
   mode: 'adaptive',
 });
 
-// 或者使用 setMode api
+// 或者使用 `setMode()` api
 manager.setMode('adaptive');
 ```
 

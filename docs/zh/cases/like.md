@@ -9,7 +9,7 @@
 
 ## 开发弹幕组件
 
-```tsx {23}
+```tsx {22-23}
 import { useState } from 'react';
 import { Tool } from './Tool';
 

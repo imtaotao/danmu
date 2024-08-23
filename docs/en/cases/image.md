@@ -2,12 +2,12 @@
 
 ## Description
 
-要让弹幕里面能够携带图片，这和前面的实现[**点赞/点踩**](./like)的功能类似，都是要在弹幕的节点内部添加自定义的内容，实际上不止图片，你可以往弹幕的节点里面**添加任何的内容。**
+To allow danmaku to carry images, similar to the implementation of the [**like/dislike**](./like) feature, you need to add custom content inside the danmaku node. In fact, it's not just images; you can **add any content** inside the danmaku node.
 
-> [!NOTE] 提示
-> 本章节的组件以 **React** 来实现演示。
+> [!NOTE] Hint
+> The components in this section are demonstrated using **React**.
 
-## 开发弹幕组件
+## Developing the Danmaku Component
 
 ```tsx {4-5}
 export function Danmaku({ danmaku }) {
@@ -20,7 +20,7 @@ export function Danmaku({ danmaku }) {
 }
 ```
 
-## 渲染弹幕
+## Render Danmaku
 
 ```tsx title="init.tsx" {9}
 import ReactDOM from 'react-dom/client';
@@ -29,7 +29,7 @@ import { Danmaku } from './Danmaku';
 
 const manager = create<string>({
   plugin: {
-    // 将组件渲染到弹幕的内置节点上
+    // Render the component onto the built-in node of the danmaku
     $createNode(danmaku) {
       ReactDOM.createRoot(danmaku.node).render(<Danmaku danmaku={danmaku} />);
     },

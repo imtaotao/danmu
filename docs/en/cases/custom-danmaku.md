@@ -2,17 +2,17 @@
 
 ## Description
 
-由于我们可以拿到弹幕的 DOM 节点，所以可以很方便的自定义 CSS 样式，主要是通过 [**`manager.setStyle`**](../reference/manager-api/#manager-setstyle) 和 [**`danmaku.setStyle`**](../reference/danmaku-methods/#danmaku-setstyle) 这两个 api 来实现。
+Since we can access the DOM node of the danmaku, it is very convenient to customize CSS styles. This is mainly achieved through the [**`manager.setStyle`**](../reference/manager-api/#manager-setstyle) and [**`danmaku.setStyle`**](../reference/danmaku-methods/#danmaku-setstyle) APIs.
 
-> [!NOTE] 提示
-> 通过官方提供的 api 设置的样式，只会作用于弹幕的根节点上，也就是 [**`danmaku.node`**](../reference/danmaku-props/#danmaku-node)。
+> [!NOTE] Hint
+> The styles set through the official API will only apply to the root node of the danmaku, which is [**`danmaku.node`**](../reference/danmaku-props/#danmaku-node).
 
-## 通过 `manager.setStyle` 来设置
+## Setting Styles via `manager.setStyle`
 
 ```ts {14}
 import { create } from 'danmu';
 
-// 需要添加的样式
+// Styles to be added
 const styles = {
   color: 'red',
   fontSize: '15px',
@@ -21,40 +21,40 @@ const styles = {
 
 const manager = create();
 
-// 后续渲染的弹幕和当前已经渲染的弹幕会设置上这些样式。
+// Subsequent rendered danmaku and currently rendered danmaku will have these styles applied.
 for (const key in styles) {
   manager.setStyle(key, styles[key]);
 }
 ```
 
-## 通过 `danamaku.setStyle` 来设置
+## Setting Styles via `danmaku.setStyle`
 
-在这种实现中，真实的业务场景里面你可能需要借用 [**`manager.statuses`**](../reference/manager-properties/#manager-statuses) 来简化实现。
+In this implementation, you might need to leverage [**`manager.statuses`**](../reference/manager-properties/#manager-statuses) to simplify the implementation in real business scenarios.
 
 ```ts {15,26}
 import { create } from 'danmu';
 
-// 需要添加的样式
+// Styles to be added
 const styles = {
   color: 'red',
   fontSize: '15px',
   // .
 };
 
-// 初始化的时候添加钩子处理，这样当有新的弹幕渲染时会自动添加上这些样式
+// Add hooks during initialization so that new danmaku will automatically have these styles applied when rendered
 const manager = create({
   plugin: {
     $moveStart(danmaku) {
       for (const key in styles) {
         danmaku.setStyle(key, styles[key]);
       }
-      // 你也可以在这里给弹幕 DOM 添加 className
+      // You can also add a `className` to the container DOM here
       danmaku.node.classList.add('className');
     },
   },
 });
 
-// 对当前正在渲染的弹幕添加样式
+// Add styles to the currently rendered danmaku
 manager.asyncEach((danmaku) => {
   for (const key in styles) {
     danmaku.setStyle(key, styles[key]);

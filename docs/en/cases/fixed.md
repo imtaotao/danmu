@@ -2,38 +2,38 @@
 
 ## Description
 
-本章节将介绍如何将弹幕固定在某一位置，以 **`top`** 和 **`left`** 这两个位置举例。由于我们需要自定义位置，所以我们需要使用高级弹幕的能力。
+This section will introduce how to fix danmaku at a specific position, using **`top`** and **`left`** as examples. Since we need to customize the position, we will use the capabilities of flexible danmaku.
 
-> [!NOTE] 提示
-> 以下这些代码你都可以复制，然后粘贴在在线 [**demo**](https://imtaotao.github.io/danmu/) 的控制台上查看效果。
+> [!NOTE] Hint
+> You can copy and paste the following code into the console of the online [**demo**](https://imtaotao.github.io/danmu/) to see the effect.
 
-## 将弹幕固定在顶部
+## Fixing Danmaku at the Top
 
-**1. 固定在最顶部的位置：**
+**1. Fixed at the very top:**
 
 ```ts {7-8}
-// 这条弹幕将会居中距离顶部 10px 的位置悬停 5s
+// This danmaku will hover 10px from the top, centered, for 5 seconds
 manager.pushFlexibleDanmaku('弹幕内容', {
   duration: 5000,
   direction: 'none',
   position(danmaku, container) {
     return {
       x: `50% - ${danmaku.getWidth() / 2}`,
-      y: 10, // 具体容器顶部的距离为 10px
+      y: 10, // `10px` from the top of the container
     };
   },
 });
 ```
 
-**2. 固定在顶部第 2 条轨道上：**
+**2. Fixed on the 2nd track from the top:**
 
 ```ts {9-10}
-// 这条弹幕将会在第二条轨道居中的位置悬停 5s
-manager.pushFlexibleDanmaku('弹幕内容', {
+// This danmaku will hover in the center of the second track for 5s
+manager.pushFlexibleDanmaku('content', {
   duration: 5000,
   direction: 'none',
   position(danmaku, container) {
-    // 渲染在第 3 条轨道中
+    // Render in the 3rd track
     const { middle } = manager.getTrackLocation(2);
     return {
       x: `50% - ${danmaku.getWidth() / 2}`,
@@ -43,15 +43,15 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 });
 ```
 
-## 将弹幕固定在左边
+## Fixing Danmaku on the Left
 
 ```ts {7,9-10}
-// 这条弹幕将会在容器中间距离左边 10px 的地方停留 5s
+// This danmaku will stay `10px` from the left in the middle of the container for 5s.
 manager.pushFlexibleDanmaku('弹幕内容', {
   duration: 5000,
   direction: 'none',
   position(danmaku, container) {
-    // 渲染在第 3 条轨道中
+    // Render in the 3rd track
     const { middle } = manager.getTrackLocation(2);
     return {
       x: 10,

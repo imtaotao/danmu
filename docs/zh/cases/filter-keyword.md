@@ -30,9 +30,9 @@ const manager = create<string>({
   },
 });
 
-// 会被过滤
-manager.push('ab');
+// ❌ 会被过滤
+manager.push('ab'); // [!code error]
 
-// 不会被过滤
-manager.push('bd');
+// ✔️ 不会被过滤
+manager.push('bd'); // [!code hl]
 ```

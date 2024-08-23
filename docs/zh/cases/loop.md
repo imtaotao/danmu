@@ -9,7 +9,7 @@
 > 1. 通过 [**`setloop`**](../reference/danmaku-methods/#danmaku-setloop) 来实现，这种模式在除第一次之外的循环播放次数中，**不会参与碰撞计算。**
 > 2. 通过 [**`destroy`**](../reference/danmaku-hooks/#hooks-destroy) 钩子来递归实现，这种方式会让弹幕的循环播放**参与碰撞计算，但是循环播放的运动时间可能会不一致。**
 
-### 通过 `setloop` 来实现
+### 通过 `setloop()` 来实现
 
 添加全局钩子这会对所有的弹幕生效
 

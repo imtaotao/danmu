@@ -2,14 +2,14 @@
 
 ## Description
 
-当我们停留在弹幕上时，可能会需要做一些操作，本章节会带你实现一个鼠标停留在弹幕上时弹出一个工具栏，拥有**点赞**和**点踩**这两个功能。
+When we hover over a danmaku, we might need to perform some actions. This section will guide you through implementing a toolbar that pops up when the mouse hovers over the danmaku, featuring **like** and **dislike** functionalities.
 
-> [!NOTE] 提示
-> 本章节的组件以 **React** 来实现演示。
+> [!NOTE] Hint
+> The components in this section are demonstrated using **React**.
 
-## 开发弹幕组件
+## Developing the Danmaku Component
 
-```tsx {23}
+```tsx {23-24}
 import { useState } from 'react';
 import { Tool } from './Tool';
 
@@ -18,14 +18,15 @@ export function Danmaku({ danmaku }) {
 
   return (
     <div
-      // 鼠标进入弹幕时，暂停弹幕的运动
+      // Pause the danmaku's movement when the mouse enters
       onMouseEnter={() => {
         danmaku.pause();
         setVisible(true);
       }}
-      // 鼠标离开弹幕时，恢复运动
+      // Resume the danmaku's movement when the mouse leaves
       onMouseLeave={() => {
-        // 当处于冻结状态时，不要给恢复运动了（不过也视你的业务情况而定）
+        // When in a frozen state, do not resume movement
+        //  tip: (but this depends on your business requirements)
         if (manager.isFreeze()) return;
         danmaku.resume();
         setVisible(false);
@@ -38,11 +39,11 @@ export function Danmaku({ danmaku }) {
 }
 ```
 
-## 开发工具栏组件
+## Developing the Toolbar Component
 
 ```tsx {14-15}
 export function Tool() {
-  // 发送 `点赞/点踩` 的请求，将结果存储在数据库
+  // Send `like/dislike` request and store the result in the database
   const send = (type: string) => {
     fetch(
       'http://abc.com/like',
@@ -54,14 +55,14 @@ export function Tool() {
   }
   return (
     <div>
-      <botton onClick={() => send('good')}>点赞</button>
-      <botton onClick={() => send('not-good')}>点踩</button>
+      <botton onClick={() => send('good')}>like</button>
+      <botton onClick={() => send('not-good')}>dislike</button>
     </div>
   );
 }
 ```
 
-## 渲染弹幕
+## Render Danmaku
 
 ```tsx {9}
 import ReactDOM from 'react-dom/client';
@@ -70,7 +71,7 @@ import { Danmaku } from './Danmaku';
 
 const manager = create<string>({
   plugin: {
-    // 将组件渲染到弹幕的内置节点上
+    // Render the component onto the built-in node of the danmaku
     $createNode(danmaku) {
       ReactDOM.createRoot(danmaku.node).render(<Danmaku danmaku={danmaku} />);
     },

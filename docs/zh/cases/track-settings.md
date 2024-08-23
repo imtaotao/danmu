@@ -11,7 +11,7 @@
 
 **限制为顶部 3 条弹幕：**
 
-```ts {2,8-9}
+```ts {2,8-10}
 // 如果我们希望轨道高度为 50px
 manager.setTrackHeight('100% / 3');
 
@@ -20,23 +20,21 @@ manager.setTrackHeight('100% / 3');
 manager.setArea({
   y: {
     start: 0,
-    end: 150, // 3 条轨道的总高度为 150px
+    // 3 条轨道的总高度为 150px
+    end: 150,
   },
 });
 ```
 
 **限制为中间 3 条弹幕：**
 
-```ts {2,8-9}
-// 如果我们希望轨道高度为 50px
+```ts {1,5-6}
 manager.setTrackHeight('100% / 3');
 
-// 如果不设置渲染区域，轨道的高度会根据默认的 container.height / 3 得到，
-// 这可能导致轨道高度不是你想要的
 manager.setArea({
   y: {
     start: `50%`,
-    end: `50% + 150`, // 3 条轨道的总高度为 150px
+    end: `50% + 150`,
   },
 });
 ```
@@ -45,7 +43,7 @@ manager.setArea({
 
 限制为几条不连续的轨道，除了要做和连续轨道的操作之外，还需要借助 [**`willRender`**](../reference/manager-hooks/#hooks-willrender) 这个钩子来实现。
 
-```ts {2,7-8,15,18-21}
+```ts {2,7-9,16,19-22}
 // 如果我们希望轨道高度为 50px，并渲染 0，2，4 这几条轨道
 manager.setTrackHeight('100% / 6');
 
@@ -53,7 +51,8 @@ manager.setTrackHeight('100% / 6');
 manager.setArea({
   y: {
     start: 0,
-    end: 300, // 6 条轨道的总高度为 300px
+    // 6 条轨道的总高度为 300px
+    end: 300,
   },
 });
 
