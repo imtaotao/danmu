@@ -115,7 +115,7 @@ manager.push('content', {
 
 ### 5. Send Flexible Danmaku
 
-Facile Danmaku are subject to collision and rendering algorithm constraints. For danmaku that require special handling, such as top-positioned comments or comments at specific positions, you should use the [**`manager.pushFlexibleDanmaku`**](../reference/manager-api/#manager-pushflexibledanmaku) API to send flexible danmaku. Flexible danmaku are not constrained by the collision algorithm.
+Facile Danmaku are subject to collision and rendering algorithm constraints. For danmaku that require special handling, such as top-positioned danmaku or danmaku at specific positions, you should use the [**`manager.pushFlexibleDanmaku`**](../reference/manager-api/#manager-pushflexibledanmaku) API to send flexible danmaku. Flexible danmaku are not constrained by the collision algorithm.
 
 ```ts
 manager.pushFlexibleDanmaku('content', {

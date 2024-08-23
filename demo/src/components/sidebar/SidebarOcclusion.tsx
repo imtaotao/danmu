@@ -23,8 +23,8 @@ export const SidebarOcclusion = memo(
         <Switch
           id="occlusion"
           onCheckedChange={(v) => {
-            // The second parameter is optional, If not passed, the default is the built-in bullet container.
-            // But it should be noted that the bullet container will change with the display area, so the second parameter may be required.
+            // The second parameter is optional, If not passed, the default is the built-in danmaku container.
+            // But it should be noted that the danmaku container will change with the display area, so the second parameter may be required.
             manager.updateOccludedUrl(v ? maskPath : '', '#RenderContainer');
           }}
         />

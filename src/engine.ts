@@ -49,8 +49,8 @@ export class Engine<T> {
     flexible: new Set<FlexibleDanmaku<T>>(),
     stash: [] as Array<StashData<T> | FacileDanmaku<T>>,
   };
-  // Avoid frequent deletion of bullet comments.
-  // collect the bullet comments that need to be deleted within 2 seconds and delete them together.
+  // Avoid frequent deletion of danmaku.
+  // collect the danmaku that need to be deleted within 2 seconds and delete them together.
   private _addDestoryQueue = batchProcess<Danmaku<T>>({
     ms: 3000,
     processor: (ls) => ls.forEach((d) => d.destroy()),
@@ -332,7 +332,7 @@ export class Engine<T> {
     });
 
     // When the rate is less than or equal to 0,
-    // the bullet comment will never move, but it will be rendered,
+    // the danmaku will never move, but it will be rendered,
     // so just don't render it here.
     if (this._options.rate > 0 && prevent !== true) {
       // First createNode, users may add styles
@@ -449,7 +449,7 @@ export class Engine<T> {
     const { position } = options as PushFlexOptions<T>;
 
     // If it is a function, the postion will be updated after the node is created,
-    // so that the function can get accurate bullet comment data.
+    // so that the function can get accurate danmaku data.
     if (typeof position === 'function') {
       d.use({
         appendNode: () => {
