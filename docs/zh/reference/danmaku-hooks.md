@@ -79,13 +79,13 @@ danmaku.use({
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
-`removeNode` 钩子会在弹幕从容器胡总移除的时候触发。
+`removeNode` 钩子会在弹幕从容器中移除的时候触发。
 
 ## `hooks.createNode`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
-`createNode` 钩子会在弹幕的内置 HTML 节点创建后时候触发，你可以在这个钩子里面通过 `danmaku.node` 拿到这个节点，**进行一些样式和节点的渲染操作，这本框架扩展性很重要的一步操作，很重要**。
+`createNode` 钩子会在弹幕的内置 HTML 节点创建后时候触发，你可以在这个钩子里面通过 `danmaku.node` 拿到这个节点，**进行一些样式和节点的渲染操作，这是本框架扩展性很重要的一步操作，很重要**。
 
 **示例：**
 

@@ -230,12 +230,15 @@ const { stash, flexible, view, all } = manager.len();
 
 **类型：`(node?: HTMLElement | string, { clear?: boolean }) => void`**
 
-将内核的弹幕容器挂载到一个 HTML 节点上，可以是一个 `string` 类型的 `CSS` 选择器，`clear` 参数可以用来清除之前渲染的弹幕，默认为 `true`，如果你不想清除可以传 `false`，挂载之后你可以通过 `manager.container` 拿到这个节点。
+将内核的弹幕容器挂载到一个 HTML 节点上，可以是一个 `string` 类型的 `CSS` 选择器，`clear` 参数可以用来清除之前渲染的弹幕，默认为 `true`，如果你不想清除可以传 `false`，挂载之后你可以通过 `manager.container.parentNode` 拿到这个节点。
 
 > [!NOTE] 和内核的容器节点的区别
 > 内核的容器节点是所有弹幕渲染的节点，包括我们通过 `manager.setArea()` 来调整的时候也是更改的容器节点，但是容器节点**需要挂载到一个具体的 DOM 上**，所以这是他们之间的区别，容器节点的宽高都是 `100%`。
 
 ```ts
+manager.mount('#root');
+
+// 或者
 manager.mount('#root', { clear: false });
 ```
 
@@ -243,10 +246,10 @@ manager.mount('#root', { clear: false });
 
 **类型：`() => void`**
 
-将内核的弹幕容器从当前挂载的节点中卸载，卸载之后当你通过 `manager.container` 获取时会得到 `null`。
+将内核的弹幕容器从当前挂载的节点中卸载，卸载之后当你通过 `manager.container.parentNode` 获取时会得到 `null`。
 
 ```ts
-manager.mount('#root', { clear: false });
+manager.unmount();
 ```
 
 ## `manager.clear()`
@@ -433,7 +436,7 @@ interface AreaOptions {
 
 **类型：`(limits: { view?: number; stash?: number }) => void`**
 
-设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `1024`，如果超过会在控制台发出警告，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
+设置**要限制的内存区和渲染区域弹幕数量**，默认的 `stash` 数量是 `Infinity`，也就是不限制，你可以设置为一个新的值来灵活调整。 是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
 ## `manager.setInterval()`
 

@@ -24,7 +24,7 @@ const manager = create({
 
 ## 2. Register through `use`
 
-[**`manager.use()`**](./manager-api/#manager-use) is the API used to register plugins. If you have external plugins, you can also register them using this method.
+The [**`manager.use()`**](./manager-api/#manager-use) API is used to register plugins. If you have external plugins or self-written plugins available, you can also register them using this method.
 
 **Example:**
 
@@ -41,11 +41,37 @@ manager.use({
 
 The `init` hook is triggered when the `manager` is created. Generally, you will only use this when creating the `manager` through the `create` method. This is just syntactic sugar to conveniently get the `manager` instance.
 
+```ts {3}
+const manager = create({
+  plugin: {
+    init(manager) {
+      // .
+    },
+  },
+});
+```
+
 ## `hooks.push`
 
-**Type: `SyncHook<[PushData<T>, DanmakuType, boolean]>`**
+**Type: `SyncHook<[PushData | Danmaku<PushData>, DanmakuType, boolean]>`**
 
 The `push` hook is triggered when sending danmaku. It is triggered when calling `manager.push()`, `manager.unshift()`, and `manager.pushFlexibleDanmaku()`. You can use this hook to access the danmaku data to be sent, the danmaku type, whether it is `unshift`, and more.
+
+```ts {6}
+const manager = create({
+  plugin: {
+    push(data, type, isUnshift) {
+      if (manager.isDanmaku(data)) return;
+      // Handle flexible danmaku
+      if (type === 'flexible') {
+        // .
+      } else {
+        // .
+      }
+    },
+  },
+});
+```
 
 ## `hooks.start`
 

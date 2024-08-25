@@ -273,15 +273,12 @@ export class Manager<
           );
       return false;
     }
+    const isUnshift = _unshift === INTERNAL_FLAG;
     if (!this.isDanmaku(data)) {
       options = this._mergeOptions(options);
     }
-    this._engine.add(
-      data,
-      options as Required<PushOptions<T>>,
-      _unshift === INTERNAL_FLAG,
-    );
-    this.pluginSystem.lifecycle.push.emit(data, 'facile', true);
+    this._engine.add(data, options as Required<PushOptions<T>>, isUnshift);
+    this.pluginSystem.lifecycle.push.emit(data, 'facile', isUnshift);
     return true;
   }
 
@@ -314,7 +311,7 @@ export class Manager<
       },
     );
     if (res) {
-      this.pluginSystem.lifecycle.push.emit(data, 'flexible', true);
+      this.pluginSystem.lifecycle.push.emit(data, 'flexible', false);
       return true;
     }
     return false;

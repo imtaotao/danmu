@@ -230,12 +230,15 @@ Performs **asynchronous iteration** over the currently rendering danmaku. The it
 
 **Type: `(node?: HTMLElement | string, { clear?: boolean }) => void`**
 
-Mounts the danmaku container of the kernel to an `HTML node`. This can be a `string` type CSS selector. The `clear` parameter can be used to clear previously rendered danmaku, and it defaults to `true`. If you do not want to clear, you can pass `false`. After mounting, you can access this node through `manager.container`.
+Mounts the danmaku container of the kernel to an `HTML node`. This can be a `string` type CSS selector. The `clear` parameter can be used to clear previously rendered danmaku, and it defaults to `true`. If you do not want to clear, you can pass `false`. After mounting, you can access this node through `manager.container.parentNode`.
 
 > [!NOTE] Difference from the container node
 > The container node is the node where all danmaku are rendered. When we adjust it through `manager.setArea()`, we are modifying the container node. However, the container node **needs to be mounted to a specific DOM**. This is the distinction between them. The width and height of the container node are both `100%`.
 
 ```ts
+manager.mount('#root');
+
+// Or
 manager.mount('#root', { clear: false });
 ```
 
@@ -246,7 +249,7 @@ manager.mount('#root', { clear: false });
 Unmounts the danmaku container from the currently mounted node. After unmounting, when you access `manager.container`, it will return `null`.
 
 ```ts
-manager.mount('#root', { clear: false });
+manager.unmount();
 ```
 
 ## `manager.clear()`
@@ -433,7 +436,7 @@ Sets the **motion time range** for subsequent rendered danmaku. This is a syntac
 
 **Type: `(limits: { view?: number; stash?: number }) => void`**
 
-Sets the **number of danmaku to limit in the memory and rendering areas**. The default `stash` quantity is `1024`, and if exceeded, a warning will be issued in the console. You can set a new value to adjust it flexibly. This is a syntactic sugar for `manager.updateOptions()` and will trigger the `updateOptions` hook.
+Set the **number of danmaku to limit in the memory area and rendering area**. The default `stash` quantity is `Infinity`, which means no limit. You can set it to a new value for flexible adjustment. It is syntactic sugar for `manager.updateOptions()` and will trigger the `updateOptions` hook.
 
 ## `manager.setInterval()`
 

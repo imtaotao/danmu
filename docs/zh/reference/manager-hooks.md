@@ -24,7 +24,7 @@ const manager = create({
 
 ## 2. 通过 `manager.use` 来注册
 
-[**`manager.use()`**](./manager-api/#manager-use) 是用来注册插件的 api，如果你有外部插件，也可以通过此方法来注册。
+[**`manager.use()`**](./manager-api/#manager-use) 是用来注册插件的 api，如果你有外部插件或者自己编写的插件可用，也可以通过此方法来注册。
 
 **示例：**
 
@@ -41,11 +41,37 @@ manager.use({
 
 `init` 钩子会在创建 `manager` 的时候触发，一般情况下只有当你通过 `create` 方法创建 `manager` 的时候才会用到，这只是一个语法糖让你方便拿到 `manager` 实例。
 
+```ts {3}
+const manager = create({
+  plugin: {
+    init(manager) {
+      // .
+    },
+  },
+});
+```
+
 ## `hooks.push`
 
-**类型：`SyncHook<[PushData<T>, DanmakuType, boolean]>`**
+**Type: `SyncHook<[PushData | Danmaku<PushData>, DanmakuType, boolean]>`**
 
 `push` 钩子会在发送弹幕的时候触发，调用 `manager.push()`，`manager.unshift()`，和 `manager.pushFlexibleDanmaku()` 的时候都会触发，你可以在此钩子拿到将要发送的弹幕数据，弹幕类型，是否是 `unshift` 等。
+
+```ts {6}
+const manager = create({
+  plugin: {
+    push(data, type, isUnshift) {
+      if (manager.isDanmaku(data)) return;
+      // 处理高级弹幕
+      if (type === 'flexible') {
+        // .
+      } else {
+        // .
+      }
+    },
+  },
+});
+```
 
 ## `hooks.start`
 

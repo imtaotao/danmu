@@ -79,13 +79,13 @@ The `appendNode` hook is triggered when the danmaku node is added to the contain
 
 **Type: `SyncHook<[Danmaku<T>]>`**
 
-The `removeNode` hook is triggered when the danmaku is removed from the container.
+The `removeNode` hook will be triggered when the danmaku is removed from the container.
 
 ## `hooks.createNode`
 
 **Type: `SyncHook<[Danmaku<T>]>`**
 
-The `createNode` hook is triggered after the built-in HTML node of the danmaku is created. You can access this node through `danmaku.node` within this hook. **This is a crucial step for performing style and node rendering operations, and it is very important for the framework's extensibility.**
+The `createNode` hook will be triggered after the built-in HTML node of the danmaku is created. You can use `danmaku.node` to get this node within this hook and **perform some styling and rendering operations on the node. This is a very important step for the extensibility of this framework **.
 
 **Example:**
 
