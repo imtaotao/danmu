@@ -1,6 +1,6 @@
 {
   "name": "danmu",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Flexible, cross-platform, powerful danmu library.",
   "main": "./dist/danmu.cjs.js",
   "unpkg": "./dist/danmu.umd.js",
