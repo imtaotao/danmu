@@ -63,7 +63,7 @@ manager.use(
 
 ## 💬 Send Danmaku
 
-- **Will** be blocked from rendering by the plugin
+- ❌ **Will** be blocked from rendering by the plugin
 
 ```ts {2}
 manager.push({
@@ -72,7 +72,7 @@ manager.push({
 });
 ```
 
-- **Will** be blocked from rendering by the plugin
+- ❌ **Will** be blocked from rendering by the plugin
 
 ```ts {3}
 manager.push({
@@ -81,7 +81,7 @@ manager.push({
 });
 ```
 
-**Will not** be blocked from rendering by the plugin
+- ✔️ **Will not** be blocked from rendering by the plugin
 
 ```ts {2}
 manager.push({
@@ -90,7 +90,7 @@ manager.push({
 });
 ```
 
-**Will not** be blocked from rendering by the plugin
+- ✔️ **Will not** be blocked from rendering by the plugin
 
 ```ts {3}
 manager.push({

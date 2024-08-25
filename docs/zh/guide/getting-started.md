@@ -108,7 +108,7 @@ manager.push('弹幕内容', {
 
 ### 5. 发送高级弹幕
 
-普通弹幕会受到碰撞，渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`manager.pushFlexibleDanmaku`**](../reference/manager-api/#manager-pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
+普通弹幕会受到碰撞渲染算法的限制，对于那些需要特殊处理的弹幕，例如顶部弹幕，特殊位置的弹幕，则需要通过 [**`manager.pushFlexibleDanmaku`**](../reference/manager-api/#manager-pushflexibledanmaku) 这个 `API` 发送高级弹幕来渲染，高级弹幕不会受到碰撞算法的限制。
 
 ```ts
 manager.pushFlexibleDanmaku('弹幕内容', {

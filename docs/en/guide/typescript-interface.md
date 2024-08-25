@@ -2,7 +2,7 @@
 
 ## Description
 
-Danmaku's `TypeScript` type declarations are comprehensive and complete, so when you use it in `TypeScript`, you'll get excellent type hints. This is very friendly for a plugin system and can even be considered indispensable.
+The `TypeScript` type declarations for danmaku are very comprehensive, so when you use it in `TypeScript`, you will get excellent type hints. This is very friendly for a plugin-based system and can even be considered indispensable.
 
 ## Declare Danmaku Content Type
 
