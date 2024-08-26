@@ -115,15 +115,15 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 > [!NOTE] 提示
 > 这个参数会限制弹幕渲染的数量，内存和视图的**默认值都是不限制**。
 
-- `view` 限制渲染在容器中的弹幕数量，如果超过了此限制，普通弹幕会放在内存中，等待合适的实际渲染，高级弹幕会直接丢弃。
-- `stash` 限制存放在内存中的弹幕数量，如果超过此限制则会被丢弃并触发告警或调用插件钩子，你可以适当调整此参数。
+- `view` 限制渲染在容器中的弹幕数量，如果超过了此限制，普通弹幕会放在内存中，等待合适的时机渲染，高级弹幕会直接丢弃。
+- `stash` 限制存放在内存中的弹幕数量，如果超过此限制则会被丢弃，并触发告警或调用插件钩子，你可以适当调整此参数。
 
 ## `config.plugin`
 
 **类型：`ManagerPlugin<unknow> | Array<ManagerPlugin<unknow>>`**<br/>
 **默认值：`undefined`**
 
-创建 `manager` 的时候的默认 `managerPlugin`，`manager` 如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [**manager 钩子**](./manager-hooks) 和 [**编写插件**](../guide/create-plugin) 这两章。
+创建 `manager` 的时候默认的 `managerPlugin`，如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [**manager 钩子**](./manager-hooks) 和 [**编写插件**](../guide/create-plugin) 这两章。
 
 **示例：**
 

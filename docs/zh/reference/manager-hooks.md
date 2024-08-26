@@ -119,7 +119,7 @@ const manager = create({
 
 **类型：`SyncHook`**
 
-`freeze` 钩子会在冻结当前渲染的弹幕时候触发，调用 `manager.freeze()` 的时候才会触发。
+`freeze` 钩子会在冻结当前渲染的弹幕的时候触发，调用 `manager.freeze()` 的时候才会触发。
 
 ## `hooks.unfreeze`
 
