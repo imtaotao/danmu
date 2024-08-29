@@ -2,7 +2,7 @@
 
 ## 描述
 
-由于我们可以拿到弹幕的 DOM 节点，所以可以很方便的自定义 CSS 样式，主要是通过 [**`manager.setStyle`**](../reference/manager-api/#manager-setstyle) 和 [**`danmaku.setStyle`**](../reference/danmaku-methods/#danmaku-setstyle) 这两个 api 来实现。
+由于我们可以拿到弹幕的 DOM 节点，所以可以很方便的自定义 CSS 样式，主要是通过 [**`manager.setStyle`**](../reference/manager-api/#manager-setstyle) 和 [**`danmaku.setStyle`**](../reference/danmaku-api/#danmaku-setstyle) 这两个 api 来实现。
 
 > [!NOTE] 提示
 > 通过官方提供的 api 设置的样式，只会作用于弹幕的根节点上，也就是 [**`danmaku.node`**](../reference/danmaku-props/#danmaku-node)。

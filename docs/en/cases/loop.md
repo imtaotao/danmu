@@ -6,7 +6,7 @@ This section will provide examples on how to send a looping danmaku. There are t
 
 > [!NOTE] Hint
 >
-> 1. Implemented through [**`setloop`**](../reference/danmaku-methods/#danmaku-setloop). In this mode, the danmaku **will not participate in collision detection** during the looping playback, except for the first time.
+> 1. Implemented through [**`setloop`**](../reference/danmaku-api/#danmaku-setloop). In this mode, the danmaku **will not participate in collision detection** during the looping playback, except for the first time.
 > 2. Implemented recursively through the [**`destroy`**](../reference/danmaku-hooks/#hooks-destroy) hook. This method will allow the looping danmaku to **participate in collision detection**, but the motion time of the looping playback may be inconsistent.
 
 ### Implementation via `setloop()`

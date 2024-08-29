@@ -2,7 +2,7 @@
 
 ## Description
 
-Since we can access the DOM node of the danmaku, it is very convenient to customize CSS styles. This is mainly achieved through the [**`manager.setStyle`**](../reference/manager-api/#manager-setstyle) and [**`danmaku.setStyle`**](../reference/danmaku-methods/#danmaku-setstyle) APIs.
+Since we can access the DOM node of the danmaku, it is very convenient to customize CSS styles. This is mainly achieved through the [**`manager.setStyle`**](../reference/manager-api/#manager-setstyle) and [**`danmaku.setStyle`**](../reference/danmaku-api/#danmaku-setstyle) APIs.
 
 > [!NOTE] Hint
 > The styles set through the official API will only apply to the root node of the danmaku, which is [**`danmaku.node`**](../reference/danmaku-props/#danmaku-node).
