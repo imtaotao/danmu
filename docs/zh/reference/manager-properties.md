@@ -14,7 +14,7 @@
 
 **类型：`string`**
 
-当前 `danmu` 库的 npm 包版本。
+当前 `danmu` 库的版本。
 
 ## `manager.options`
 

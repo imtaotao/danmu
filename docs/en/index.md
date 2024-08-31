@@ -17,7 +17,7 @@ hero:
 
 features:
   - title: Multiple Rendering Algorithms
-    details: We offer strict collision detection algorithms, progressive collision detection algorithms, and standard full real-time rendering algorithms.
+    details: We provide strict and progressive, as well as ordinary full real-time rendering algorithms.
     icon: 🔍
   - title: Rich API
     details: Provides a variety of APIs needed for different business scenarios, greatly simplifying the development process.

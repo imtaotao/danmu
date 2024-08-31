@@ -14,7 +14,7 @@
 
 **Type: `string`**
 
-The current npm package version of the `danmu` library.
+The current version of the `danmu` library.
 
 ## `manager.options`
 
