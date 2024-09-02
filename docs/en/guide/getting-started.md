@@ -76,7 +76,8 @@ Once we have created a `manager`, we can mount it to a specific node and render 
 const container = document.getElementById('container');
 
 // Mount and Start Rendering
-manager.mount(container).startPlaying();
+manager.mount(container);
+manager.startPlaying();
 ```
 
 ### 4. Send Facile Danmaku

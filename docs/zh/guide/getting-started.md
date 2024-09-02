@@ -71,7 +71,8 @@ const manager = create({
 const container = document.getElementById('container');
 
 // 挂载，然后开始渲染
-manager.mount(container).startPlaying();
+manager.mount(container);
+manager.startPlaying();
 ```
 
 ### 4. 发送普通弹幕
