@@ -19,7 +19,7 @@ manager.pushFlexibleDanmaku('弹幕内容', {
   position(danmaku, container) {
     return {
       x: `50% - ${danmaku.getWidth() / 2}`,
-      y: 10, // 具体容器顶部的距离为 10px
+      y: 10, // 离容器顶部的距离为 10px
     };
   },
 });
