@@ -56,7 +56,7 @@ export const Transmitter = ({
     toast({
       duration: 800,
       variant: 'destructive',
-      description: msg || t('notEmpityValue'),
+      description: msg || t('notEmptyValue'),
     });
   };
 
@@ -115,11 +115,11 @@ export const Transmitter = ({
             </SheetTitle>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="postion-x" className="text-right font-bold">
+                <Label htmlFor="position-x" className="text-right font-bold">
                   {t('position')} X (%)
                 </Label>
                 <Input
-                  id="postion-x"
+                  id="position-x"
                   type="number"
                   min={0}
                   max={100}
@@ -129,11 +129,11 @@ export const Transmitter = ({
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="postion-y" className="text-right font-bold">
+                <Label htmlFor="position-y" className="text-right font-bold">
                   {t('position')} Y (%)
                 </Label>
                 <Input
-                  id="postion-y"
+                  id="position-y"
                   type="number"
                   min={0}
                   max={100}
@@ -143,11 +143,11 @@ export const Transmitter = ({
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="postion-y" className="text-right font-bold">
+                <Label htmlFor="position-y" className="text-right font-bold">
                   {t('time')} (ms)
                 </Label>
                 <Input
-                  id="postion-y"
+                  id="position-y"
                   type="number"
                   defaultValue={duration}
                   className="col-span-3 w-3/4"

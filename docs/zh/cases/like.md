@@ -40,18 +40,15 @@ export function Danmaku({ danmaku }) {
 
 ## 开发工具栏组件
 
-```tsx {14-15}
+```tsx {11-12}
 export function Tool() {
   // 发送 `点赞/点踩` 的请求，将结果存储在数据库
   const send = (type: string) => {
-    fetch(
-      'http://abc.com/like',
-      {
-        method: 'POST',
-        body: JSON.stringify({ type }),
-      },
-    );
-  }
+    fetch('http://abc.com/like', {
+      method: 'POST',
+      body: JSON.stringify({ type }),
+    });
+  };
   return (
     <div>
       <button onClick={() => send('good')}>点赞</button>

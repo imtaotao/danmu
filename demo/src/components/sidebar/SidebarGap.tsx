@@ -36,7 +36,7 @@ export const SidebarGap = memo(
         <Input
           className="h-4/5"
           type="number"
-          placeholder={t('danmakaGap')}
+          placeholder={t('danmakuGap')}
           defaultValue={manager.options.gap}
           onChange={throttle(1000, (e) => {
             manager.updateOptions({ gap: Number(e.target.value) });

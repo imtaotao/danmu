@@ -41,18 +41,15 @@ export function Danmaku({ danmaku }) {
 
 ## Developing the Toolbar Component
 
-```tsx {14-15}
+```tsx {11-12}
 export function Tool() {
   // Send `like/dislike` request and store the result in the database
   const send = (type: string) => {
-    fetch(
-      'http://abc.com/like',
-      {
-        method: 'POST',
-        body: JSON.stringify({ type }),
-      },
-    );
-  }
+    fetch('http://abc.com/like', {
+      method: 'POST',
+      body: JSON.stringify({ type }),
+    });
+  };
   return (
     <div>
       <button onClick={() => send('good')}>like</button>
