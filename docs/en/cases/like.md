@@ -55,8 +55,8 @@ export function Tool() {
   }
   return (
     <div>
-      <botton onClick={() => send('good')}>like</button>
-      <botton onClick={() => send('not-good')}>dislike</button>
+      <button onClick={() => send('good')}>like</button>
+      <button onClick={() => send('not-good')}>dislike</button>
     </div>
   );
 }

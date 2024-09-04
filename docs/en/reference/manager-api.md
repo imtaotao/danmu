@@ -180,7 +180,7 @@ manager.pushFlexibleDanmaku(
 );
 ```
 
-## `manager.clearTarck()`
+## `manager.clearTrack()`
 
 **Type: `(i: number) => void`**
 
@@ -190,10 +190,10 @@ Used to clear the danmaku rendered on a specific track. **If `i` is a positive i
 
 ```ts
 // Clear the danmaku on the first track
-manager.clearTarck(0);
+manager.clearTrack(0);
 
 // Clear the danmaku on the last track
-manager.clearTarck(-1);
+manager.clearTrack(-1);
 ```
 
 ## `manager.len()`

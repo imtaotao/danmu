@@ -128,9 +128,9 @@ export class Manager<
     return this._engine.asyncEach(fn);
   }
 
-  public clearTarck(i: number) {
+  public clearTrack(i: number) {
     i = i >= 0 ? i : this.trackCount + i;
-    this._engine.clearTarck(i);
+    this._engine.clearTrack(i);
   }
 
   public getTrackLocation(i: number) {

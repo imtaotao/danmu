@@ -27,7 +27,7 @@ for (const key in styles) {
 }
 ```
 
-## 通过 `danamaku.setStyle` 来设置
+## 通过 `danmaku.setStyle` 来设置
 
 在这种实现中，真实的业务场景里面你可能需要借用 [**`manager.statuses`**](../reference/manager-properties/#manager-statuses) 来简化实现。
 

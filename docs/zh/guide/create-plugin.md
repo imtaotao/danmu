@@ -42,7 +42,7 @@ export function filter({ userIds, keywords }) {
 
 ## 🛠️ 注册插件
 
-你需要通过 `mananger.use()` 来注册插件。
+你需要通过 `manager.use()` 来注册插件。
 
 ```ts {9-12}
 import { create } from 'danmu';

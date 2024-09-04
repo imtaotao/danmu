@@ -54,8 +54,8 @@ export function Tool() {
   }
   return (
     <div>
-      <botton onClick={() => send('good')}>点赞</button>
-      <botton onClick={() => send('not-good')}>点踩</button>
+      <button onClick={() => send('good')}>点赞</button>
+      <button onClick={() => send('not-good')}>点踩</button>
     </div>
   );
 }

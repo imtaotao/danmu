@@ -121,7 +121,7 @@ The movement duration for regular danmaku. This is a range value, and **regular 
 
 ## `config.plugin`
 
-**Type: `ManagerPlugin<unknow> | Array<ManagerPlugin<unknow>>`**<br/>
+**Type: `ManagerPlugin<unknown> | Array<ManagerPlugin<unknown>>`**<br/>
 **Default: `undefined`**
 
 The default `managerPlugin` when creating a `manager`. If you need to register new plugins, you can use the `manager.use` method. For more details, refer to the [**manager hooks**](./manager-hooks) and [**writing plugins**](../guide/create-plugin) sections.

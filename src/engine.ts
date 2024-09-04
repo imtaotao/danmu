@@ -51,7 +51,7 @@ export class Engine<T> {
   };
   // Avoid frequent deletion of danmaku.
   // collect the danmaku that need to be deleted within 2 seconds and delete them together.
-  private _addDestoryQueue = batchProcess<Danmaku<T>>({
+  private _addDestroyQueue = batchProcess<Danmaku<T>>({
     ms: 3000,
     processor: (ls) => ls.forEach((d) => d.destroy()),
   });
@@ -61,7 +61,7 @@ export class Engine<T> {
   // We have to make a copy.
   // During the loop, there are too many factors that change danmaku,
   // which makes it impossible to guarantee the stability of the list.
-  public clearTarck(i: number) {
+  public clearTrack(i: number) {
     for (const d of Array.from(this.tracks[i].list)) {
       d.destroy();
     }
@@ -101,7 +101,7 @@ export class Engine<T> {
     this._sets.flexible.clear();
     this._sets.stash.length = 0;
     for (let i = 0; i < this.tracks.length; i++) {
-      this.clearTarck(i);
+      this.clearTrack(i);
     }
   }
 
@@ -160,7 +160,7 @@ export class Engine<T> {
 
     if (h <= 0) {
       for (let i = 0; i < this.tracks.length; i++) {
-        this.clearTarck(i);
+        this.clearTrack(i);
       }
       return;
     }
@@ -176,14 +176,14 @@ export class Engine<T> {
       if (end > this.container.height) {
         this.rows--;
         if (track) {
-          this.clearTarck(i);
+          this.clearTrack(i);
           this.tracks.splice(i, 1);
         }
       } else if (track) {
         // If the reused track is larger than the container height,
         // the overflow needs to be deleted.
         if (track.location[2] > this.container.height) {
-          this.clearTarck(i);
+          this.clearTrack(i);
         } else {
           Array.from(track.list).forEach((d) =>
             d._format(width, height, track),
@@ -201,7 +201,7 @@ export class Engine<T> {
     // Delete the extra tracks and the danmaku inside
     if (this.tracks.length > this.rows) {
       for (let i = this.rows; i < this.tracks.length; i++) {
-        this.clearTarck(i);
+        this.clearTrack(i);
       }
       this.tracks.splice(this.rows, this.tracks.length - this.rows);
     }
@@ -354,7 +354,7 @@ export class Engine<T> {
             setup();
             return;
           }
-          this._addDestoryQueue(d);
+          this._addDestroyQueue(d);
           if (this.len().all === 0) {
             hooks.finished.call(null);
           }
@@ -448,7 +448,7 @@ export class Engine<T> {
     const d = new FlexibleDanmaku(config);
     const { position } = options as PushFlexOptions<T>;
 
-    // If it is a function, the postion will be updated after the node is created,
+    // If it is a function, the position will be updated after the node is created,
     // so that the function can get accurate danmaku data.
     if (typeof position === 'function') {
       d.use({

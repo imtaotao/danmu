@@ -55,7 +55,7 @@ danmaku.use({
 
 **类型：`SyncHook<[Danmaku<T>, unknown]>`**
 
-`destroy` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destory`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
+`destroy` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
 
 ## `hooks.moveStart`
 

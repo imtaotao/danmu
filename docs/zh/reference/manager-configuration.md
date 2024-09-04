@@ -120,7 +120,7 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 
 ## `config.plugin`
 
-**类型：`ManagerPlugin<unknow> | Array<ManagerPlugin<unknow>>`**<br/>
+**类型：`ManagerPlugin<unknown> | Array<ManagerPlugin<unknown>>`**<br/>
 **默认值：`undefined`**
 
 创建 `manager` 的时候默认的 `managerPlugin`，如果你需要注册新插件可以使用 `manager.use` 方法。详情可见 [**manager 钩子**](./manager-hooks) 和 [**编写插件**](../guide/create-plugin) 这两章。

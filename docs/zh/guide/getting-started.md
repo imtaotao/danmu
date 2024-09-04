@@ -30,7 +30,7 @@ $ pnpm install danmu
 ```
 
 ```sh [yarn]
-$ yarn add danamu
+$ yarn add danmu
 ```
 
 :::
@@ -100,7 +100,7 @@ manager.push('弹幕内容', {
   plugin: {
     moveStart(danmaku) {
       // moveStart 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
-      danmaku.setStyle(csskey, cssValue);
+      danmaku.setStyle(cssKey, cssValue);
     },
   },
   // .
@@ -117,7 +117,7 @@ manager.pushFlexibleDanmaku('弹幕内容', {
   duration: 1000, // 默认从 manager.options.times 中随机取一个值
   direction: 'none', // 默认取 manager.options.direction 的值
   position: (danmaku, container) => {
-    // 这会让弹幕在容器居中的位置出现，因为 direaction 为 none，所以会静止播放 1s
+    // 这会让弹幕在容器居中的位置出现，因为 direction 为 none，所以会静止播放 1s
     return {
       x: `50% - ${danmaku.getWidth() / 2}`, // [!code ++]
       y: `50% - ${danmaku.getHeight() / 2}`, // [!code ++]

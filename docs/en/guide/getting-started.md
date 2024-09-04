@@ -30,7 +30,7 @@ $ pnpm install danmu
 ```
 
 ```sh [yarn]
-$ yarn add danamu
+$ yarn add danmu
 ```
 
 :::
@@ -107,7 +107,7 @@ manager.push('content', {
     moveStart(danmaku) {
       // The moveStart hook is triggered just before the danmaku starts moving.
       // You can change the danmaku's style here.
-      danmaku.setStyle(csskey, cssValue);
+      danmaku.setStyle(cssKey, cssValue);
     },
   },
   // .

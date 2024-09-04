@@ -139,7 +139,7 @@ manager.pushFlexibleDanmaku('弹幕内容', {
 
 **类型：`(i: number) => { start: number, middle: number, end: number }`**
 
-用来获取某条轨道的位置信息，**单位为 `px`，为 Y 轴的数据**。**`i` 如果为正整数，则是取的是 `tarck[i]` 的位置信息，如果为负正整数则从后往前取。**
+用来获取某条轨道的位置信息，**单位为 `px`，为 Y 轴的数据**。**`i` 如果为正整数，则是取的是 `track[i]` 的位置信息，如果为负正整数则从后往前取。**
 
 > [!NOTE] 提示
 > 下标默认从 **`0`** 开始，也就是你传递为 0 时，取的是第一条轨道的数据。
@@ -180,20 +180,20 @@ manager.pushFlexibleDanmaku(
 );
 ```
 
-## `manager.clearTarck()`
+## `manager.clearTrack()`
 
 **类型：`(i: number) => void`**
 
-用来清除某条轨道上渲染的弹幕。**`i` 如果为正整数，则是清除 `tarck[i]` 上的弹幕，如果为负正整数则从后往前取。**
+用来清除某条轨道上渲染的弹幕。**`i` 如果为正整数，则是清除 `track[i]` 上的弹幕，如果为负正整数则从后往前取。**
 
 **示例：**
 
 ```ts
 // 清除第一条轨道上的弹幕
-manager.clearTarck(0);
+manager.clearTrack(0);
 
 // 清除最后一条轨道上的弹幕
-manager.clearTarck(-1);
+manager.clearTrack(-1);
 ```
 
 ## `manager.len()`
