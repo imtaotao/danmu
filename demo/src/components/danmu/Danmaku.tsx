@@ -39,9 +39,9 @@ export const DanmakuComponent = ({
     resume() {
       setOpen(false);
     },
-    moveStart(b) {
+    moveStart(dm) {
       for (const key in manager.statuses) {
-        b.setStyle(
+        dm.setStyle(
           key as keyof Statuses,
           manager.statuses[key as keyof Statuses],
         );

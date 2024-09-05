@@ -116,8 +116,8 @@ export class Manager<
     return this._renderTimer !== null;
   }
 
-  public isDanmaku(d: unknown): d is Danmaku<T> {
-    return d instanceof FacileDanmaku || d instanceof FlexibleDanmaku;
+  public isDanmaku(dm: unknown): dm is Danmaku<T> {
+    return dm instanceof FacileDanmaku || dm instanceof FlexibleDanmaku;
   }
 
   public each(fn: EachCallback<T>) {
@@ -145,7 +145,7 @@ export class Manager<
     if (preventEvents.includes('stop')) stopFlag = INTERNAL_FLAG;
     if (preventEvents.includes('pause')) pauseFlag = INTERNAL_FLAG;
     this.stopPlaying(stopFlag);
-    this.each((d) => d.pause(pauseFlag));
+    this.each((dm) => dm.pause(pauseFlag));
     this._internalStatuses.freeze = true;
     this.pluginSystem.lifecycle.freeze.emit();
   }
@@ -155,7 +155,7 @@ export class Manager<
     let resumeFlag: Symbol | undefined;
     if (preventEvents.includes('start')) startFlag = INTERNAL_FLAG;
     if (preventEvents.includes('resume')) resumeFlag = INTERNAL_FLAG;
-    this.each((d) => d.resume(resumeFlag));
+    this.each((dm) => dm.resume(resumeFlag));
     this.startPlaying(startFlag);
     this._internalStatuses.freeze = false;
     this.pluginSystem.lifecycle.unfreeze.emit();
@@ -392,9 +392,9 @@ export class Manager<
     const { styles } = this._internalStatuses;
     if (styles[key] !== val) {
       styles[key] = val;
-      this._engine.asyncEach((d) => {
-        if (d.moving) {
-          d.setStyle(key, val);
+      this._engine.asyncEach((dm) => {
+        if (dm.moving) {
+          dm.setStyle(key, val);
         }
       });
     }

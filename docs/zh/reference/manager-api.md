@@ -213,13 +213,13 @@ const { stash, flexible, view, all } = manager.len();
 
 ## `manager.each()`
 
-**类型：`(fn: (d: Danmaku<T>) => boolean | void) => void`**
+**类型：`(fn: (danmaku: Danmaku<T>) => boolean | void) => void`**
 
 对当前正在渲染的弹幕做**同步遍历**，回调函数返回 `false` 的时候会终止遍历。
 
 ## `manager.asyncEach()`
 
-**类型：`(fn: (d: Danmaku<T>) => boolean | void) => Promise<void>`**
+**类型：`(fn: (danmaku: Danmaku<T>) => boolean | void) => Promise<void>`**
 
 对当前正在渲染的弹幕做**异步遍历**，回调函数返回 `false` 的时候会终止遍历。
 

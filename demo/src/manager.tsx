@@ -16,10 +16,10 @@ export const initManager = () => {
           manager.container.node.classList.add(c);
         });
       },
-      $createNode(d) {
-        if (!d.node) return;
-        ReactDOM.createRoot(d.node).render(
-          <DanmakuComponent manager={manager} danmaku={d} />,
+      $createNode(dm) {
+        if (!dm.node) return;
+        ReactDOM.createRoot(dm.node).render(
+          <DanmakuComponent manager={manager} danmaku={dm} />,
         );
       },
     },

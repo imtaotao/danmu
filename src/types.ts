@@ -19,7 +19,7 @@ export type StyleKey = keyof Omit<CSSStyleDeclaration, 'length' | 'parentRule'>;
 export type FilterCallback<T> = EachCallback<T>;
 
 export type EachCallback<T> = (
-  d: FacileDanmaku<T> | FlexibleDanmaku<T>,
+  danmaku: FacileDanmaku<T> | FlexibleDanmaku<T>,
 ) => boolean | void;
 
 export type ValueType<M extends Manager<any>> = Exclude<

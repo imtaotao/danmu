@@ -387,7 +387,7 @@ export class FacileDanmaku<T> {
     this.pluginSystem.remove(pluginName);
   }
 
-  public use(plugin: DanmakuPlugin<T> | ((d: this) => DanmakuPlugin<T>)) {
+  public use(plugin: DanmakuPlugin<T> | ((danmaku: this) => DanmakuPlugin<T>)) {
     if (typeof plugin === 'function') plugin = plugin(this);
     if (!plugin.name) {
       plugin.name = `__facile_danmaku_plugin_${ids.danmu++}__`;

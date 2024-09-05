@@ -53,7 +53,7 @@ export class Engine<T> {
   // collect the danmaku that need to be deleted within 2 seconds and delete them together.
   private _addDestroyQueue = batchProcess<Danmaku<T>>({
     ms: 3000,
-    processor: (ls) => ls.forEach((d) => d.destroy()),
+    processor: (ls) => ls.forEach((dm) => dm.destroy()),
   });
 
   public constructor(private _options: EngineOptions) {}
@@ -62,8 +62,8 @@ export class Engine<T> {
   // During the loop, there are too many factors that change danmaku,
   // which makes it impossible to guarantee the stability of the list.
   public clearTrack(i: number) {
-    for (const d of Array.from(this.tracks[i].list)) {
-      d.destroy();
+    for (const dm of Array.from(this.tracks[i].list)) {
+      dm.destroy();
     }
   }
 
@@ -185,8 +185,8 @@ export class Engine<T> {
         if (track.location[2] > this.container.height) {
           this.clearTrack(i);
         } else {
-          Array.from(track.list).forEach((d) =>
-            d._format(width, height, track),
+          Array.from(track.list).forEach((dm) =>
+            dm._format(width, height, track),
           );
         }
         track.location = location;
@@ -206,11 +206,11 @@ export class Engine<T> {
       this.tracks.splice(this.rows, this.tracks.length - this.rows);
     }
     // If `flexible` danmaku is also outside the view, it also needs to be deleted
-    for (const d of this._sets.flexible) {
-      if (d.position.y > this.container.height) {
-        d.destroy();
+    for (const dm of this._sets.flexible) {
+      if (dm.position.y > this.container.height) {
+        dm.destroy();
       } else if (width !== this.container.width) {
-        d._format();
+        dm._format();
       }
     }
   }
@@ -223,36 +223,36 @@ export class Engine<T> {
     assert(this.container, 'Container not formatted');
     hooks.render.call(null, 'flexible');
 
-    const d = this._create('flexible', data, options, statuses);
-    if (d.position.x > this.container.width) return false;
-    if (d.position.y > this.container.height) return false;
-    if (options.plugin) d.use(options.plugin);
-    d.use(danmakuPlugin);
+    const dm = this._create('flexible', data, options, statuses);
+    if (dm.position.x > this.container.width) return false;
+    if (dm.position.y > this.container.height) return false;
+    if (options.plugin) dm.use(options.plugin);
+    dm.use(danmakuPlugin);
 
     const { prevent } = hooks.willRender.call(null, {
       type: 'flexible',
-      danmaku: d,
+      danmaku: dm,
       prevent: false,
       trackIndex: null,
     });
 
     if (this._options.rate > 0 && prevent !== true) {
       const setup = () => {
-        d._createNode();
-        this._sets.flexible.add(d as FlexibleDanmaku<T>);
-        this._setAction(d, statuses).then((isFreeze) => {
+        dm._createNode();
+        this._sets.flexible.add(dm as FlexibleDanmaku<T>);
+        this._setAction(dm, statuses).then((isFreeze) => {
           if (isFreeze) {
             console.error(
               'Currently in a freeze state, unable to render "FlexibleDanmaku"',
             );
             return;
           }
-          if (d.isLoop) {
-            d._setStartStatus();
+          if (dm.isLoop) {
+            dm._setStartStatus();
             setup();
             return;
           }
-          d.destroy();
+          dm.destroy();
           if (this.len().all === 0) {
             hooks.finished.call(null);
           }
@@ -304,7 +304,7 @@ export class Engine<T> {
     danmakuPlugin: DanmakuPlugin<T>,
     hooks: RenderOptions<T>['hooks'],
   ) {
-    let d: FacileDanmaku<T>;
+    let dm: FacileDanmaku<T>;
     const layer = this._sets.stash.shift();
     if (!layer) return;
     const trackData = this._getTrackData();
@@ -315,18 +315,18 @@ export class Engine<T> {
     }
 
     if (layer instanceof FacileDanmaku) {
-      d = layer;
+      dm = layer;
     } else {
-      d = this._create('facile', layer.data, layer.options, statuses);
+      dm = this._create('facile', layer.data, layer.options, statuses);
       if (layer.options.plugin) {
-        d.use(layer.options.plugin);
+        dm.use(layer.options.plugin);
       }
-      d.use(danmakuPlugin);
+      dm.use(danmakuPlugin);
     }
 
     const { prevent } = hooks.willRender.call(null, {
       type: 'facile',
-      danmaku: d,
+      danmaku: dm,
       prevent: false,
       trackIndex: trackData.i,
     });
@@ -336,25 +336,25 @@ export class Engine<T> {
     // so just don't render it here.
     if (this._options.rate > 0 && prevent !== true) {
       // First createNode, users may add styles
-      d._createNode();
-      d._appendNode(this.container.node);
-      d._updateTrackData(trackData);
+      dm._createNode();
+      dm._appendNode(this.container.node);
+      dm._updateTrackData(trackData);
 
       const setup = () => {
-        this._sets.view.add(d);
-        this._setAction(d, statuses).then((isStash) => {
+        this._sets.view.add(dm);
+        this._setAction(dm, statuses).then((isStash) => {
           if (isStash) {
-            d._reset();
-            this._sets.view.delete(d);
-            this._sets.stash.unshift(d);
+            dm._reset();
+            this._sets.view.delete(dm);
+            this._sets.stash.unshift(dm);
             return;
           }
-          if (d.isLoop) {
-            d._setStartStatus();
+          if (dm.isLoop) {
+            dm._setStartStatus();
             setup();
             return;
           }
-          this._addDestroyQueue(d);
+          this._addDestroyQueue(dm);
           if (this.len().all === 0) {
             hooks.finished.call(null);
           }
@@ -365,13 +365,13 @@ export class Engine<T> {
       let i = 0;
       const triggerSetup = () => {
         nextFrame(() => {
-          const height = d.getHeight();
+          const height = dm.getHeight();
           if (height === 0 && ++i < 20) {
             triggerSetup();
           } else {
             const y = trackData.location[1] - height / 2;
             if (y + height > this.container.height) return;
-            d._updatePosition({ y });
+            dm._updatePosition({ y });
             setup();
           }
         });
@@ -445,35 +445,35 @@ export class Engine<T> {
       return new FacileDanmaku(config);
     }
     // Create FlexibleDanmaku
-    const d = new FlexibleDanmaku(config);
+    const dm = new FlexibleDanmaku(config);
     const { position } = options as PushFlexOptions<T>;
 
     // If it is a function, the position will be updated after the node is created,
     // so that the function can get accurate danmaku data.
     if (typeof position === 'function') {
-      d.use({
+      dm.use({
         appendNode: () => {
-          const { x, y } = position(d, this.container);
-          d._updatePosition({
+          const { x, y } = position(dm, this.container);
+          dm._updatePosition({
             x: this._toNumber('width', x),
             y: this._toNumber('height', y),
           });
         },
       });
     } else {
-      d._updatePosition({
+      dm._updatePosition({
         x: this._toNumber('width', position.x),
         y: this._toNumber('height', position.y),
       });
     }
-    return d;
+    return dm;
   }
 
   private _last(ls: Array<FacileDanmaku<T>>, li: number) {
     for (let i = ls.length - 1; i >= 0; i--) {
-      const d = ls[i - li];
-      if (d && !d.paused && d.loops === 0 && d.type === 'facile') {
-        return d;
+      const dm = ls[i - li];
+      if (dm && !dm.paused && dm.loops === 0 && dm.type === 'facile') {
+        return dm;
       }
     }
     return null;

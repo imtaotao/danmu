@@ -213,13 +213,13 @@ const { stash, flexible, view, all } = manager.len();
 
 ## `manager.each()`
 
-**Type: `(fn: (d: Danmaku<T>) => boolean | void) => void`**
+**Type: `(fn: (danmaku: Danmaku<T>) => boolean | void) => void`**
 
 Performs **synchronous iteration** over the currently rendering danmaku. The iteration will terminate if the callback function returns `false`.
 
 ## `manager.asyncEach()`
 
-**Type: `(fn: (d: Danmaku<T>) => boolean | void) => Promise<void>`**
+**Type: `(fn: (danmaku: Danmaku<T>) => boolean | void) => Promise<void>`**
 
 Performs **asynchronous iteration** over the currently rendering danmaku. The iteration will terminate if the callback function returns `false`.
 

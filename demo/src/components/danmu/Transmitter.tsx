@@ -75,7 +75,7 @@ export const Transmitter = ({
           onClick={() => {
             const color = `#${randomColor('hex')}`;
             manager.statuses['background'] = color;
-            manager.asyncEach((b) => b.setStyle('background', color));
+            manager.asyncEach((dm) => dm.setStyle('background', color));
           }}
         >
           {t('randomColor')}
@@ -193,10 +193,10 @@ export const Transmitter = ({
                       id: uuid(),
                       duration,
                       direction,
-                      position: (danmaku, _container) => {
+                      position: (dm, _container) => {
                         return {
-                          x: `${x}% - ${danmaku.getWidth() / 2}`,
-                          y: `${y}% - ${danmaku.getHeight() / 2}`,
+                          x: `${x}% - ${dm.getWidth() / 2}`,
+                          y: `${y}% - ${dm.getHeight() / 2}`,
                         };
                       },
                     },

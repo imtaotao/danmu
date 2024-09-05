@@ -41,7 +41,7 @@ export const Container = memo(
           onClick={() => {
             if (!document.fullscreenElement) {
               if (ref.current) {
-                manager.each((d) => d.destroy());
+                manager.each((dm) => dm.destroy());
                 ref.current.requestFullscreen();
               }
             } else {
