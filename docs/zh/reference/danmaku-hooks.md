@@ -51,12 +51,6 @@ danmaku.use({
 
 `resume` 钩子会在弹幕从暂停恢复的时候触发。
 
-## `hooks.destroy`
-
-**类型：`SyncHook<[Danmaku<T>, unknown]>`**
-
-`destroy` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
-
 ## `hooks.moveStart`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
@@ -103,3 +97,10 @@ manager.use({
   },
 });
 ```
+
+## `hooks.destroyed`
+
+**类型：`SyncHook<[Danmaku<T>, unknown]>`**
+
+`destroyed` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
+

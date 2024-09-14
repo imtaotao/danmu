@@ -9,12 +9,12 @@ export function createDanmakuLifeCycle<T extends Danmaku<any>>() {
     show: new SyncHook<[T]>(),
     pause: new SyncHook<[T]>(),
     resume: new SyncHook<[T]>(),
-    destroy: new SyncHook<[T, unknown]>(),
     moveEnd: new SyncHook<[T]>(),
     moveStart: new SyncHook<[T]>(),
     createNode: new SyncHook<[T]>(),
     appendNode: new SyncHook<[T]>(),
     removeNode: new SyncHook<[T]>(),
+    destroyed: new SyncHook<[T, unknown]>(),
   });
 }
 
@@ -26,12 +26,12 @@ export function createManagerLifeCycle<T>() {
     $hide: lifecycle.hide,
     $pause: lifecycle.pause,
     $resume: lifecycle.resume,
-    $destroy: lifecycle.destroy,
     $moveEnd: lifecycle.moveEnd,
     $moveStart: lifecycle.moveStart,
     $createNode: lifecycle.createNode,
     $appendNode: lifecycle.appendNode,
     $removeNode: lifecycle.removeNode,
+    $destroyed: lifecycle.destroyed,
     // Global hooks
     format: new SyncHook<[]>(),
     start: new SyncHook<[]>(),

@@ -366,7 +366,7 @@ export class FacileDanmaku<T> {
       this.moveTimer.clear();
       this.moveTimer = null;
     }
-    this.pluginSystem.lifecycle.destroy.emit(this, mark);
+    this.pluginSystem.lifecycle.destroyed.emit(this, mark);
     this.node = null;
   }
 

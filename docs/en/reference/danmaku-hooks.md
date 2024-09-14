@@ -51,11 +51,6 @@ The `pause` hook is triggered when the danmaku is paused.
 
 The `resume` hook is triggered when the danmaku resumes from being paused.
 
-## `hooks.destroy`
-
-**Type: `SyncHook<[Danmaku<T>, unknown]>`**
-
-The `destroy` hook is triggered when the danmaku is destroyed. If you need to manually call the [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) method, you can try passing a `mark`.
 
 ## `hooks.moveStart`
 
@@ -103,3 +98,9 @@ manager.use({
   },
 });
 ```
+
+## `hooks.destroyed`
+
+**Type: `SyncHook<[Danmaku<T>, unknown]>`**
+
+The `destroyed` hook is triggered when the danmaku is destroyed. If you need to manually call the [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) method, you can try passing a `mark`.

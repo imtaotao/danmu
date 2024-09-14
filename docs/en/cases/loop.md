@@ -67,7 +67,7 @@ let loops = 0;
 
 manager.push('content', {
   plugin: {
-    destroy(danmaku, mark) {
+    destroyed(danmaku, mark) {
       // Stop loop playback after 3 looping
       if (++loops >= 3) return;
 

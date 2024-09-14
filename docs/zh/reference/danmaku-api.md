@@ -75,7 +75,7 @@ const manager = create({
       danmaku.destroy('mark');
     },
 
-    $destroy(danmaku, mark) {
+    $destroyed(danmaku, mark) {
       if (mark === 'mark') {
         // .
       }

@@ -67,7 +67,7 @@ let loops = 0;
 
 manager.push('弹幕内容', {
   plugin: {
-    destroy(danmaku, mark) {
+    destroyed(danmaku, mark) {
       // 循环播放 3 次后，终止循环播放
       if (++loops >= 3) return;
 
