@@ -27,7 +27,7 @@ export const SidebarNumbers = memo(
         push: () => update(),
         clear: () => update(),
         $destroyed: () => update(),
-        $moveStart: () => update(),
+        $beforeMove: () => update(),
       });
       return () => {
         manager.remove(name);

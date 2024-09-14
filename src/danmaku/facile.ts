@@ -176,13 +176,13 @@ export class FacileDanmaku<T> {
       }
       this.moving = true;
       this.recorder.startTime = now();
-      this.pluginSystem.lifecycle.moveStart.emit(this);
+      this.pluginSystem.lifecycle.beforeMove.emit(this);
 
       whenTransitionEnds(this.node).then(() => {
         this.loops++;
         this.moving = false;
         this.isEnded = true;
-        this.pluginSystem.lifecycle.moveEnd.emit(this);
+        this.pluginSystem.lifecycle.moved.emit(this);
         resolve();
       });
     });

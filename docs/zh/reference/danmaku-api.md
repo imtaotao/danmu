@@ -71,7 +71,7 @@ manager.use({
 ```ts {4,8,14}
 const manager = create({
   plugin: {
-    $moveEnd(danmaku) {
+    $moved(danmaku) {
       danmaku.destroy('mark');
     },
 

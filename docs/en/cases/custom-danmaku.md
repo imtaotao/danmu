@@ -44,7 +44,7 @@ const styles = {
 // Add hooks during initialization so that new danmaku will automatically have these styles applied when rendered
 const manager = create({
   plugin: {
-    $moveStart(danmaku) {
+    $beforeMove(danmaku) {
       for (const key in styles) {
         danmaku.setStyle(key, styles[key]);
       }

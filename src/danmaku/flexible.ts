@@ -48,7 +48,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
           this.moveTimer.clear();
           this.moveTimer = null;
         }
-        this.pluginSystem.lifecycle.moveEnd.emit(this);
+        this.pluginSystem.lifecycle.moved.emit(this);
         resolve();
       };
 
@@ -57,7 +57,7 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
       }
       this.moving = true;
       this.recorder.startTime = now();
-      this.pluginSystem.lifecycle.moveStart.emit(this);
+      this.pluginSystem.lifecycle.beforeMove.emit(this);
 
       if (this.direction === 'none') {
         let timer: unknown | null = setTimeout(onEnd, this.actualDuration());

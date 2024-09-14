@@ -51,17 +51,17 @@ danmaku.use({
 
 `resume` 钩子会在弹幕从暂停恢复的时候触发。
 
-## `hooks.moveStart`
+## `hooks.beforeMove`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
-`moveStart` 钩子会在弹幕即将运动的时候触发，你可以在此时对弹幕做一些样式变更操作。
+`beforeMove` 钩子会在弹幕即将运动的时候触发，你可以在此时对弹幕做一些样式变更操作。
 
-## `hooks.moveEnd`
+## `hooks.moved`
 
 **类型：`SyncHook<[Danmaku<T>]>`**
 
-`moveEnd` 钩子会在弹幕运动结束的时候触发，运动结束不代表会立即销毁，为了性能考虑，内核引擎会批量收集统一销毁。
+`moved` 钩子会在弹幕运动结束的时候触发，运动结束不代表会立即销毁，为了性能考虑，内核引擎会批量收集统一销毁。
 
 ## `hooks.appendNode`
 
@@ -97,7 +97,6 @@ manager.use({
   },
 });
 ```
-
 
 ## `hooks.beforeDestroy`
 

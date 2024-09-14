@@ -16,12 +16,12 @@ Adding a global hook will affect all danmaku.
 ```ts {5,11}
 const manager = create<string>({
   plugin: {
-    $moveStart(danmaku) {
+    $beforeMove(danmaku) {
       // Set loop
       danmaku.setloop();
     },
 
-    $moveEnd(danmaku) {
+    $moved(danmaku) {
       // Stop loop playback after 3 looping
       if (danmaku.loops >= 3) {
         danmaku.unloop();
@@ -38,12 +38,12 @@ By adding a plugin to the danmaku itself, you can make it effective for only a s
 ```ts {5,11}
 manager.push('content', {
   plugin: {
-    moveStart(danmaku) {
+    beforeMove(danmaku) {
       // Set loop
       danmaku.setloop();
     },
 
-    moveEnd(danmaku) {
+    moved(danmaku) {
       // Stop loop playback after 3 looping
       if (danmaku.loops >= 3) {
         danmaku.unloop();

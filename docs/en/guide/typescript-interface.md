@@ -12,7 +12,7 @@ When you get the `danmaku` instance type in various hooks, the type of its **con
 import { create } from 'danmu';
 
 const manager = create<{ content: string; img: string }>({
-  $moveStart(danmaku) {
+  $beforeMove(danmaku) {
     // You can see that the `data` type is `{ content: string, img: string }`
     danmaku.data;
   },

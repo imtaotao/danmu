@@ -71,7 +71,7 @@ Destroy the current danmaku instance from the container and remove it from memor
 ```ts {4,8,14}
 const manager = create({
   plugin: {
-    $moveEnd(danmaku) {
+    $moved(danmaku) {
       danmaku.destroy('mark');
     },
 

@@ -12,7 +12,7 @@ Danmaku 的 `TypeScript` 类型声明很齐全，所以当你在 `TypeScript` �
 import { create } from 'danmu';
 
 const manager = create<{ content: string; img: string }>({
-  $moveStart(danmaku) {
+  $beforeMove(danmaku) {
     // 你可以看到 data 类型为 { content: string, img: string }
     danmaku.data;
   },

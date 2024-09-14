@@ -16,12 +16,12 @@
 ```ts {5,11}
 const manager = create<string>({
   plugin: {
-    $moveStart(danmaku) {
+    $beforeMove(danmaku) {
       // 设置循环
       danmaku.setloop();
     },
 
-    $moveEnd(danmaku) {
+    $moved(danmaku) {
       // 循环播放 3 次后，终止循环播放
       if (danmaku.loops >= 3) {
         danmaku.unloop();
@@ -38,12 +38,12 @@ const manager = create<string>({
 ```ts {5,11}
 manager.push('弹幕内容', {
   plugin: {
-    moveStart(danmaku) {
+    beforeMove(danmaku) {
       // 设置循环
       danmaku.setloop();
     },
 
-    moveEnd(danmaku) {
+    moved(danmaku) {
       // 循环播放 3 次后，终止循环播放
       if (danmaku.loops >= 3) {
         danmaku.unloop();

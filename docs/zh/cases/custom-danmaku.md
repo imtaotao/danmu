@@ -44,7 +44,7 @@ const styles = {
 // 初始化的时候添加钩子处理，这样当有新的弹幕渲染时会自动添加上这些样式
 const manager = create({
   plugin: {
-    $moveStart(danmaku) {
+    $beforeMove(danmaku) {
       for (const key in styles) {
         danmaku.setStyle(key, styles[key]);
       }

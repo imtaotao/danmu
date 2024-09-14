@@ -51,17 +51,17 @@ The `pause` hook is triggered when the danmaku is paused.
 
 The `resume` hook is triggered when the danmaku resumes from being paused.
 
-## `hooks.moveStart`
+## `hooks.beforeMove`
 
 **Type: `SyncHook<[Danmaku<T>]>`**
 
-The `moveStart` hook is triggered just before the danmaku starts moving. You can make some style changes to the danmaku at this time.
+The `beforeMove` hook is triggered just before the danmaku starts moving. You can make some style changes to the danmaku at this time.
 
-## `hooks.moveEnd`
+## `hooks.moved`
 
 **Type: `SyncHook<[Danmaku<T>]>`**
 
-The `moveEnd` hook is triggered when the danmaku finishes moving. Finishing the movement does not mean it will be destroyed immediately. For performance reasons, the kernel will batch collect and destroy them together.
+The `moved` hook is triggered when the danmaku finishes moving. Finishing the movement does not mean it will be destroyed immediately. For performance reasons, the kernel will batch collect and destroy them together.
 
 ## `hooks.appendNode`
 

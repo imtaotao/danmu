@@ -98,8 +98,8 @@ manager.unshift('弹幕内容');
 ```ts
 manager.push('弹幕内容', {
   plugin: {
-    moveStart(danmaku) {
-      // moveStart 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
+    beforeMove(danmaku) {
+      // beforeMove 钩子会在弹幕即将开始运动之前触发，你可以在这里更改弹幕的样式
       danmaku.setStyle(cssKey, cssValue);
     },
   },

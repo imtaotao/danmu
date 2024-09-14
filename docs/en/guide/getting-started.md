@@ -104,8 +104,8 @@ However, when sending danmaku, you can also pass plugins specific to the danmaku
 ```ts
 manager.push('content', {
   plugin: {
-    moveStart(danmaku) {
-      // The moveStart hook is triggered just before the danmaku starts moving.
+    beforeMove(danmaku) {
+      // The beforeMove hook is triggered just before the danmaku starts moving.
       // You can change the danmaku's style here.
       danmaku.setStyle(cssKey, cssValue);
     },
