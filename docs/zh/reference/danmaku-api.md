@@ -64,15 +64,21 @@ manager.use({
 
 ## `danmaku.destroy()`
 
-**类型：`(mark?: unknown) => void`**
+**类型：`(mark?: unknown) => Promise<void>`**
 
-将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `destroy` 钩子，你也可以尝试传递 `mark` 标识符，引擎内置的 destroy 行为是不会传递标识符的。
+将当前弹幕实例从容器中销毁，并从内存中移除，会调用 `beforeDestroy` 和 `destroyed` 钩子，你也可以尝试传递 `mark` 标识符，引擎内置的 destroy 行为是不会传递标识符的。
 
-```ts {4,8}
+```ts {4,8,14}
 const manager = create({
   plugin: {
     $moveEnd(danmaku) {
       danmaku.destroy('mark');
+    },
+
+    $beforeDestroy(danmaku, mark) {
+      if (mark === 'mark') {
+        // .
+      }
     },
 
     $destroyed(danmaku, mark) {

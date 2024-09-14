@@ -83,7 +83,7 @@ danmaku.use({
 
 **示例：**
 
-```tsx
+```tsx {8-10}
 function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
   return <div>{props.danmaku.data.value}</div>;
 }
@@ -98,9 +98,40 @@ manager.use({
 });
 ```
 
+
+## `hooks.beforeDestroy`
+
+**类型：`AsyncHook<[Danmaku<T>, unknown]>`**
+
+`beforeDestroy` 钩子会在弹幕销毁之前触发，这个钩子允许返回一个 `promise`，如果你需要手动调用 [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
+
+**示例：**
+
+```ts{6}
+import { sleep } from 'aidly';
+
+manager.use({
+  async $beforeDestroy(danmaku, mark) {
+    // 将会阻止 1s，然后销毁当前弹幕
+    await sleep(1000);
+  },
+});
+```
+
 ## `hooks.destroyed`
 
 **类型：`SyncHook<[Danmaku<T>, unknown]>`**
 
-`destroyed` 钩子会在弹幕销毁的时候触发，如果你需要手动调用 [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
+`destroyed` 钩子会在弹幕销毁后触发，如果你需要手动调用 [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) 方法，可以尝试传递 `mark`。
 
+**示例：**
+
+```ts {3}
+manager.use({
+  $destroyed(danmaku, mark) {
+    if (mark) {
+      // .
+    }
+  },
+});
+```

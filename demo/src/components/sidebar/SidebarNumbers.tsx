@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from 'react';
+import { sleep } from 'aidly';
 import { Asterisk } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Manager } from 'danmu';
@@ -23,10 +24,10 @@ export const SidebarNumbers = memo(
       };
       manager.use({
         name,
-        $destroy: () => update(),
-        $moveStart: () => update(),
         push: () => update(),
         clear: () => update(),
+        $destroyed: () => update(),
+        $moveStart: () => update(),
       });
       return () => {
         manager.remove(name);

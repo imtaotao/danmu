@@ -1,4 +1,9 @@
-import { SyncHook, SyncWaterfallHook, PluginSystem } from 'hooks-plugin';
+import {
+  SyncHook,
+  AsyncHook,
+  SyncWaterfallHook,
+  PluginSystem,
+} from 'hooks-plugin';
 import { ids } from './utils';
 import type { Manager, ManagerOptions } from './manager';
 import type { Danmaku, DanmakuType, DanmakuPlugin } from './types';
@@ -14,6 +19,7 @@ export function createDanmakuLifeCycle<T extends Danmaku<any>>() {
     createNode: new SyncHook<[T]>(),
     appendNode: new SyncHook<[T]>(),
     removeNode: new SyncHook<[T]>(),
+    beforeDestroy: new AsyncHook<[T, unknown]>(),
     destroyed: new SyncHook<[T, unknown]>(),
   });
 }
@@ -31,6 +37,7 @@ export function createManagerLifeCycle<T>() {
     $createNode: lifecycle.createNode,
     $appendNode: lifecycle.appendNode,
     $removeNode: lifecycle.removeNode,
+    $beforeDestroy: lifecycle.beforeDestroy,
     $destroyed: lifecycle.destroyed,
     // Global hooks
     format: new SyncHook<[]>(),

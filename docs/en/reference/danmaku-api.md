@@ -64,15 +64,21 @@ Cancel the loop playback mode for the danmaku instance.
 
 ## `danmaku.destroy()`
 
-**Type: `(mark?: unknown) => void`**
+**Type: `(mark?: unknown) => Promise<void>`**
 
-Destroy the current danmaku instance from the container and remove it from memory, which will trigger the `destroy` hook. You can also try passing a `mark` identifier. The built-in destroy behavior of the engine does not pass an identifier.
+Destroy the current danmaku instance from the container and remove it from memory, which will trigger the `beforeDestroy` and `destroyed` hook. You can also try passing a `mark` identifier. The built-in destroy behavior of the engine does not pass an identifier.
 
-```ts {4,8}
+```ts {4,8,14}
 const manager = create({
   plugin: {
     $moveEnd(danmaku) {
       danmaku.destroy('mark');
+    },
+
+    $beforeDestroy(danmaku, mark) {
+      if (mark === 'mark') {
+        // .
+      }
     },
 
     $destroyed(danmaku, mark) {

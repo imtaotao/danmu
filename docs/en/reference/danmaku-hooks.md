@@ -51,7 +51,6 @@ The `pause` hook is triggered when the danmaku is paused.
 
 The `resume` hook is triggered when the danmaku resumes from being paused.
 
-
 ## `hooks.moveStart`
 
 **Type: `SyncHook<[Danmaku<T>]>`**
@@ -84,7 +83,7 @@ The `createNode` hook will be triggered after the built-in HTML node of the danm
 
 **Example:**
 
-```tsx
+```tsx {8-10}
 function DanmakuComponent(props: { danmaku: Danmaku<unknown> }) {
   return <div>{props.danmaku.data.value}</div>;
 }
@@ -99,8 +98,39 @@ manager.use({
 });
 ```
 
+## `hooks.beforeDestroy`
+
+**类型：`AsyncHook<[Danmaku<T>, unknown]>`**
+
+The `beforeDestroy` hook is triggered before the danmaku is destroyed. This hook allows returning a `promise`. If you need to manually call the [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) method, you can try passing a `mark`.
+
+**Example:**
+
+```ts{6}
+import { sleep } from 'aidly';
+
+manager.use({
+  async $beforeDestroy(danmaku, mark) {
+    // Will block for 1s, then destroy the current danmaku
+    await sleep(1000);
+  },
+});
+```
+
 ## `hooks.destroyed`
 
 **Type: `SyncHook<[Danmaku<T>, unknown]>`**
 
 The `destroyed` hook is triggered when the danmaku is destroyed. If you need to manually call the [**`danmaku.destroy`**](../reference/danmaku-api/#danmaku-destroy) method, you can try passing a `mark`.
+
+**Example:**
+
+```ts{3}
+manager.use({
+  $destroyed(danmaku, mark) {
+    if (mark) {
+      // .
+    }
+  },
+});
+```

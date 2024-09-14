@@ -358,7 +358,8 @@ export class FacileDanmaku<T> {
     }
   }
 
-  public destroy(mark?: unknown) {
+  public async destroy(mark?: unknown) {
+    await this.pluginSystem.lifecycle.beforeDestroy.emit(this, mark);
     this.moving = false;
     this._delInTrack();
     this._removeNode();
