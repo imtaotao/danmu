@@ -45,7 +45,7 @@ We also provide a `CDN` for development and debugging purposes. **Do not use thi
 
 The `danmu` core package exposes only a `create` method, which is used to create a `manager` instance. Yes, all our implementations are multi-instance. For the configuration options that can be passed during creation, please refer to the [**Configuration**](../reference/manager-configuration) section.
 
-```ts
+```ts {9}
 import { create } from 'danmu';
 
 // Create a manager instance here. If no configuration is passed,
@@ -53,6 +53,10 @@ import { create } from 'danmu';
 const manager = create({
   trackHeight: '20%',
   plugin: {
+    $createNode(danmaku) {
+      danmaku.node.textContent = danmaku.data;
+    },
+
     willRender(ref) {
       // Types of Danmaku to be Rendered
       console.log(ref.type);

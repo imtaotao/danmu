@@ -45,13 +45,17 @@ $ yarn add danmu
 
 `danmu` 核心包只暴露了一个 `create` 方法，用来创建一个 `manager` 实例，是的，我们所有的实现都是多实例的方式实现的，创建的时候传入的配置可以看[**配置**](../reference/manager-configuration)这一章节的介绍。
 
-```ts
+```ts {8}
 import { create } from 'danmu';
 
 // 在此处创建一个 manager 实例，如果不传递则会使用默认的配置
 const manager = create({
   trackHeight: '20%',
   plugin: {
+    $createNode(danmaku) {
+      danmaku.node.textContent = danmaku.data;
+    },
+
     willRender(ref) {
       console.log(ref.type); // 即将要渲染的弹幕类型
       console.log(ref.danmaku); // 即将要渲染的弹幕实例
