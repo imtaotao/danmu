@@ -23,7 +23,7 @@
 [**`manager.options`**](./manager-configuration)，你可以从这里取到一些初始值并使用。
 
 ```ts
-console.log(manager.options.times); // [number, number]
+console.log(manager.options.durationRange); // [number, number]
 ```
 
 ## `manager.statuses`

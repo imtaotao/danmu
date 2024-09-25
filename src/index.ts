@@ -12,7 +12,7 @@ const formatOptions = <T>(options?: CreateOption<T>) => {
       mode: 'strict',
       direction: 'right',
       trackHeight: '20%',
-      times: [4000, 6000],
+      durationRange: [4000, 6000],
     },
     options,
   );
@@ -39,7 +39,7 @@ export function create<
   return manager;
 }
 
-export type { Manager, ManagerOptions } from './manager';
+export type { Manager } from './manager';
 export type { HookOn, HooksOn, Plugin, HookType } from 'hooks-plugin';
 export type {
   Mode,
@@ -49,9 +49,10 @@ export type {
   PushFlexOptions,
   ValueType,
   Direction,
-  CreateOption,
   Danmaku,
   DanmakuType,
   DanmakuPlugin,
   ManagerPlugin,
+  ManagerOptions,
+  CreateOption,
 } from './types';

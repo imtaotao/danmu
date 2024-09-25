@@ -12,7 +12,7 @@ interface CreateOption {
   rate?: number;
   interval?: number;
   gap?: number | string;
-  times?: [number, number];
+  durationRange?: [number, number];
   trackHeight?: number | string;
   plugin?: ManagerPlugin;
   limits?: {
@@ -100,7 +100,7 @@ manager.setTrackHeight(100); // 高度为 100px
 manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 ```
 
-## `config.times`
+## `config.durationRange`
 
 **类型：`[number, number]`**<br/>
 **默认值：`[4000, 6000]`**

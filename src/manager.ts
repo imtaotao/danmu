@@ -1,7 +1,7 @@
 import { assert, hasOwn, random, isEmptyObject } from 'aidly';
+import { Engine } from './engine';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
-import { Engine, type EngineOptions } from './engine';
 import { ids, nextFrame, INTERNAL_FLAG } from './utils';
 import { createDanmakuPlugin, createManagerLifeCycle } from './lifeCycle';
 import type {
@@ -15,14 +15,11 @@ import type {
   FreezeOptions,
   FilterCallback,
   ManagerPlugin,
+  ManagerOptions,
   PushOptions,
   PushFlexOptions,
   InternalStatuses,
 } from './types';
-
-export interface ManagerOptions extends EngineOptions {
-  interval: number;
-}
 
 export class Manager<
   T extends unknown,
@@ -57,7 +54,7 @@ export class Manager<
       options.direction = this.options.direction;
     }
     if (!('duration' in options)) {
-      const duration = random(...this.options.times);
+      const duration = random(...this.options.durationRange);
       assert(duration > 0, `Invalid move time "${duration}"`);
       options.duration = duration;
     }
@@ -378,8 +375,8 @@ export class Manager<
     this.updateOptions({ interval });
   }
 
-  public setTimes(times: [number, number]) {
-    this.updateOptions({ times });
+  public setDurationRange(durationRange: [number, number]) {
+    this.updateOptions({ durationRange });
   }
 
   public setRate(rate: number) {

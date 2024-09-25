@@ -23,7 +23,7 @@ The current version of the `danmu` library.
 [**`manager.options`**](./manager-configuration), you can get some initial values from here and use them.
 
 ```ts
-console.log(manager.options.times); // [number, number]
+console.log(manager.options.durationRange); // [number, number]
 ```
 
 ## `manager.statuses`

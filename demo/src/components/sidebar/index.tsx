@@ -9,10 +9,10 @@ import { SidebarOpacity } from '@/components/sidebar/SidebarOpacity';
 import { SidebarNumbers } from '@/components/sidebar/SidebarNumbers';
 import { SidebarDirection } from '@/components/sidebar/SidebarDirection';
 import { SidebarFrequency } from '@/components/sidebar/SidebarFrequency';
-import { SidebarMoveTimes } from '@/components/sidebar/SidebarMoveTimes';
 import { SidebarOcclusion } from '@/components/sidebar/SidebarOcclusion';
 import { SidebarModeSelect } from '@/components/sidebar/SidebarModeSelect';
 import { SidebarShowAndHide } from '@/components/sidebar/SidebarShowAndHide';
+import { SidebarMoveDuration } from '@/components/sidebar/SidebarMoveDuration';
 import { SidebarStartAndStop } from '@/components/sidebar/SidebarStartAndStop';
 
 export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
@@ -23,7 +23,7 @@ export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
       <SidebarAreaY manager={manager} />
       <SidebarGap manager={manager} />
       <SidebarFrequency manager={manager} />
-      <SidebarMoveTimes manager={manager} />
+      <SidebarMoveDuration manager={manager} />
       <SidebarRate manager={manager} />
       <SidebarModeSelect manager={manager} />
       <SidebarFreeze manager={manager} />

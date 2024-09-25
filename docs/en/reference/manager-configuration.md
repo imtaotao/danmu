@@ -12,7 +12,7 @@ interface CreateOption {
   rate?: number;
   interval?: number;
   gap?: number | string;
-  times?: [number, number];
+  durationRange?: [number, number];
   trackHeight?: number | string;
   plugin?: ManagerPlugin;
   limits?: {
@@ -100,7 +100,7 @@ manager.setTrackHeight(100); // Height is 100px
 manager.setTrackHeight('33%'); // Height is 33% of the container height
 ```
 
-## `config.times`
+## `config.durationRange`
 
 **Type: `[number, number]`**<br/>
 **Default: `[4000, 6000]`**

@@ -34,8 +34,8 @@ export const enMap = {
     'When set to `strict` mode, strict collision detection will be performed, and if the conditions are not met, rendering will be delayed',
   setModeTipThree:
     'When set to `adaptive` mode, collision detection will be performed as much as possible under the premise of immediate rendering (recommended)',
-  setTimes: 'Times',
-  setTimesTip:
+  setDuration: 'Duration',
+  setDurationTip:
     'Normal danmaku will randomly take a value between these two values as the movement duration',
   setNumbersTitle: 'Real-time rendering danmaku',
   stashNumber: 'Stashed danmaku',

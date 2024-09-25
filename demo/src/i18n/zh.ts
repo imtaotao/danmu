@@ -31,8 +31,8 @@ export const zhMap = {
     '当设置为 strict 模式时，会进行严格的碰撞检测，如果不满足条件则会推迟渲染',
   setModeTipThree:
     '当设置为 adaptive 模式时，在满足立即渲染的前提下，会尽力进行碰撞检测（推荐）',
-  setTimes: '运动时长',
-  setTimesTip: '普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间',
+  setDuration: '运动时长',
+  setDurationTip: '普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间',
   setNumbersTitle: '实时渲染弹幕',
   stashNumber: '暂存区弹幕',
   allNumber: '弹幕总量（包含暂存区）',

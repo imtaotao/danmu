@@ -37,7 +37,9 @@ export const Transmitter = ({
   const [content, setContent] = useState('');
   const [x, setX] = useState(50);
   const [y, setY] = useState(50);
-  const [duration, setDuration] = useState(random(...manager.options.times));
+  const [duration, setDuration] = useState(
+    random(...manager.options.durationRange),
+  );
   const [direction, setDirection] = useState<Direction>(
     manager.options.direction,
   );
@@ -183,7 +185,7 @@ export const Transmitter = ({
                   }
                   setOpen(false);
                   setContent('');
-                  setDuration(random(...manager.options.times));
+                  setDuration(random(...manager.options.durationRange));
                   manager.pushFlexibleDanmaku(
                     {
                       content,

@@ -426,9 +426,9 @@ interface AreaOptions {
 
 设置后续渲染的弹幕之间的**横向间距**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 
-## `manager.setTimes()`
+## `manager.setDurationRange()`
 
-**类型：`(times: [number, number]) => void`**
+**类型：`(durationRange: [number, number]) => void`**
 
 设置后续渲染的弹幕之间的**运动时间取值范围**，是 `manager.updateOptions()` 的语法糖，会触发 `updateOptions` 钩子。
 

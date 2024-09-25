@@ -426,11 +426,11 @@ Sets the **collision detection algorithm** for subsequent rendered danmaku. This
 
 Sets the **horizontal spacing** between subsequent rendered danmaku. This is a syntactic sugar for `manager.updateOptions()` and will trigger the `updateOptions` hook.
 
-## `manager.setTimes()`
+## `manager.setDurationRange()`
 
-**Type: `(times: [number, number]) => void`**
+**Type: `(durationRange: [number, number]) => void`**
 
-Sets the **motion time range** for subsequent rendered danmaku. This is a syntactic sugar for `manager.updateOptions()` and will trigger the `updateOptions` hook.
+Sets the **motion duration range** for subsequent rendered danmaku. This is a syntactic sugar for `manager.updateOptions()` and will trigger the `updateOptions` hook.
 
 ## `manager.setLimits()`
 

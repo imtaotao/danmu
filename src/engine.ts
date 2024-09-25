@@ -12,10 +12,8 @@ import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
 import { toNumber, randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
-  Mode,
   TrackData,
   StashData,
-  Direction,
   EachCallback,
   Danmaku,
   PushOptions,
@@ -23,21 +21,9 @@ import type {
   DanmakuType,
   DanmakuPlugin,
   RenderOptions,
+  EngineOptions,
   InternalStatuses,
 } from './types';
-
-export interface EngineOptions {
-  mode: Mode;
-  rate: number;
-  gap: number | string;
-  trackHeight: number | string;
-  times: [number, number];
-  direction: Exclude<Direction, 'none'>;
-  limits: {
-    view?: number;
-    stash: number;
-  };
-}
 
 export class Engine<T> {
   public rows = 0;
@@ -387,7 +373,7 @@ export class Engine<T> {
           resolve(true);
           return;
         }
-        const { mode, times } = this._options;
+        const { mode, durationRange } = this._options;
         if (mode !== 'none' && cur.type === 'facile') {
           assert(cur.trackData, 'Danmaku missing "trackData"');
           const prev = this._last(cur.trackData.list, 1);
@@ -397,7 +383,7 @@ export class Engine<T> {
               cur as FacileDanmaku<T>,
             );
             if (fixTime !== null) {
-              if (isInBounds(times, fixTime)) {
+              if (isInBounds(durationRange, fixTime)) {
                 cur.updateDuration(fixTime, true);
               } else if (mode === 'strict') {
                 resolve(true);

@@ -1,8 +1,8 @@
 import type { HooksOn, RefinePlugin } from 'hooks-plugin';
+import type { Manager } from './manager';
 import type { Container } from './container';
 import type { FacileDanmaku } from './danmaku/facile';
 import type { FlexibleDanmaku } from './danmaku/flexible';
-import type { Manager, ManagerOptions } from './manager';
 
 export type DanmakuType = 'facile' | 'flexible';
 
@@ -57,6 +57,23 @@ export interface PushOptions<T> {
   plugin?: DanmakuPlugin<T>;
   rate?: ManagerOptions['rate'];
   direction?: ManagerOptions['direction'];
+}
+
+export interface EngineOptions {
+  mode: Mode;
+  rate: number;
+  gap: number | string;
+  trackHeight: number | string;
+  durationRange: [number, number];
+  direction: Exclude<Direction, 'none'>;
+  limits: {
+    view?: number;
+    stash: number;
+  };
+}
+
+export interface ManagerOptions extends EngineOptions {
+  interval: number;
 }
 
 export interface Position<T = number> {

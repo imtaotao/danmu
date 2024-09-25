@@ -9,7 +9,7 @@ export const initManager = () => {
   const manager = create<DanmakuValue, Statuses>({
     interval: 500,
     trackHeight: 40,
-    times: [10000, 13000],
+    durationRange: [10000, 13000],
     plugin: {
       init(manager) {
         'shadow shadow-slate-200 bg-slate-100'.split(' ').forEach((c) => {
