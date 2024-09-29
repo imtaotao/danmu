@@ -23,6 +23,9 @@ export const toNumber = (val: string, all: number) => {
       px: (n) => n,
       '%': (n) => (Number(n) / 100) * all,
     },
+    actuator(value) {
+      return +value;
+    },
   });
 };
 
