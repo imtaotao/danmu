@@ -1,4 +1,4 @@
-import { raf, once, mathExpreEvaluate } from 'aidly';
+import { raf, once, mathExprEvaluate } from 'aidly';
 
 export const INTERNAL_FLAG = Symbol();
 
@@ -17,7 +17,7 @@ export const randomIdx = (founds: Set<number>, rows: number): number => {
 };
 
 export const toNumber = (val: string, all: number) => {
-  return mathExpreEvaluate(val, {
+  return mathExprEvaluate(val, {
     units: {
       px: (n) => n,
       '%': (n) => (Number(n) / 100) * all,
