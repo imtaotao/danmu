@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aidly:
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.0
+        version: 1.8.0
       hooks-plugin:
         specifier: ^1.3.0
         version: 1.3.0
@@ -136,8 +136,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       aidly:
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.0
+        version: 1.8.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1759,8 +1759,8 @@ packages:
   '@vueuse/shared@11.0.1':
     resolution: {integrity: sha512-eAPf5CQB3HR0S76HqrhjBqFYstZfiHWZq8xF9EQmobGBkrhPfErJEhr8aMNQMqd6MkENIx2pblIEfJGlHpClug==}
 
-  aidly@1.7.0:
-    resolution: {integrity: sha512-wpTistdD0dGq8g8JQ0Olh1uQdhtG/ovOfFnW4YqJNR4IBmU/35Ns98bRsmvBXrROa+6vhjqAoddm09J+uX8h7g==}
+  aidly@1.8.0:
+    resolution: {integrity: sha512-7iujssLxRLdEnSDm6mgxKXVtLio44yGUvcSTLyNbMWGTUnuAuZntcgJmMl+BXE+Mm3R3KA5FtnFD0jJ9savyzA==}
 
   algoliasearch@4.24.0:
     resolution: {integrity: sha512-bf0QV/9jVejssFBmz2HQLxUadxk574t4iwjCKp5E7NBzwKkrDEhKPISIIjAU/p6K5qDx3qoeh4+26zWN1jmw3g==}
@@ -5576,7 +5576,7 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  aidly@1.7.0:
+  aidly@1.8.0:
     dependencies:
       small-queue: 1.1.2
 
@@ -6407,7 +6407,7 @@ snapshots:
 
   hooks-plugin@1.3.0:
     dependencies:
-      aidly: 1.7.0
+      aidly: 1.8.0
 
   html-escaper@2.0.2: {}
 

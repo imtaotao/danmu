@@ -90,7 +90,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "aidly": "^1.7.0",
+    "aidly": "^1.8.0",
     "hooks-plugin": "^1.3.0"
   }
 }
