@@ -17,7 +17,7 @@ export function App({ manager }: { manager: Manager<DanmakuValue> }) {
         )}
       >
         {isMobile ? null : (
-          <div className="min-w-96 w-96 mr-2 px-4 py-3 border-slate-400 border-indigo-500/50 rounded-sm bg-slate-300">
+          <div className="overflow-auto min-w-96 w-96 mr-2 px-4 py-3 border-slate-400 border-indigo-500/50 rounded-sm bg-slate-300">
             <Sidebar manager={manager} />
           </div>
         )}
