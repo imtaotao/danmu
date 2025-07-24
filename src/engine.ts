@@ -442,6 +442,7 @@ export class Engine<T> {
       container: this.container,
       duration: options.duration,
       direction: options.direction,
+      progress: options.progress,
       delInTrack: (b: Danmaku<T>) => {
         remove(this._sets.view, b);
         type === 'facile'

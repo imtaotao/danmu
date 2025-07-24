@@ -60,6 +60,7 @@ export interface PushOptions<T> {
   plugin?: DanmakuPlugin<T>;
   rate?: ManagerOptions['rate'];
   direction?: ManagerOptions['direction'];
+  progress?: number;
 }
 
 export interface EngineOptions {

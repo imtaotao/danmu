@@ -31,6 +31,7 @@ export interface FacileOptions<T> {
   container: Container;
   internalStatuses: InternalStatuses;
   delInTrack: (b: Danmaku<T>) => void;
+  progress?: number;
 }
 
 export class FacileDanmaku<T> {
@@ -94,7 +95,11 @@ export class FacileDanmaku<T> {
   public _getMovePercent() {
     const { pauseTime, startTime, prevPauseTime } = this.recorder;
     const ct = this.paused ? prevPauseTime : now();
-    return (ct - startTime - pauseTime) / this.actualDuration();
+    const movePercent = (ct - startTime - pauseTime) / this.actualDuration();
+    if (this._options.progress && this._options.progress > 0) {
+      return movePercent + this._options.progress;
+    }
+    return movePercent;
   }
 
   /**
@@ -168,11 +173,25 @@ export class FacileDanmaku<T> {
       this._internalStatuses.viewStatus === 'hide'
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
-      this.setStyle('transform', `translateX(${negative * cw}px)`);
-      this.setStyle(
-        'transition',
-        `transform linear ${this.actualDuration()}ms`,
-      );
+
+      if (this._options.progress && this._options.progress > 0) {
+        const startingPosition = negative * cw * this._options.progress;
+        this.setStyle('transform', `translateX(${startingPosition}px)`);
+
+        const remainingTime =
+          (1 - this._options.progress) * this.actualDuration();
+
+        nextFrame(() => {
+          this.setStyle('transition', `transform linear ${remainingTime}ms`);
+          this.setStyle('transform', `translateX(${negative * cw}px)`);
+        });
+      } else {
+        this.setStyle('transform', `translateX(${negative * cw}px)`);
+        this.setStyle(
+          'transition',
+          `transform linear ${this.actualDuration()}ms`,
+        );
+      }
       if (this.direction !== 'none') {
         this.setStyle(this.direction, `-${w}px`);
       }
