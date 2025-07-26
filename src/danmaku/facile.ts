@@ -174,24 +174,15 @@ export class FacileDanmaku<T> {
         ? this.hide(INTERNAL_FLAG)
         : this.show(INTERNAL_FLAG);
 
+      const actualDuration = this.actualDuration();
+      this.setStyle('transform', `translateX(${negative * cw}px)`);
+      this.setStyle('transition', `transform linear ${actualDuration}ms`);
+
       if (this._options.progress && this._options.progress > 0) {
-        const startingPosition = negative * cw * this._options.progress;
-        this.setStyle('transform', `translateX(${startingPosition}px)`);
-
-        const remainingTime =
-          (1 - this._options.progress) * this.actualDuration();
-
-        nextFrame(() => {
-          this.setStyle('transition', `transform linear ${remainingTime}ms`);
-          this.setStyle('transform', `translateX(${negative * cw}px)`);
-        });
-      } else {
-        this.setStyle('transform', `translateX(${negative * cw}px)`);
-        this.setStyle(
-          'transition',
-          `transform linear ${this.actualDuration()}ms`,
-        );
+        const remainingTime = this._options.progress * actualDuration;
+        this.setStyle('transitionDelay', `${-1 * remainingTime}ms`);
       }
+
       if (this.direction !== 'none') {
         this.setStyle(this.direction, `-${w}px`);
       }
@@ -372,6 +363,7 @@ export class FacileDanmaku<T> {
     this.setStyle('zIndex', '0');
     this.setStyle('transitionDuration', `${remainingTime}ms`);
     this.setStyle('transform', `translateX(${cw * negative}px)`);
+    this.setStyle('transitionDelay', '');
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.resume.emit(this);
     }
