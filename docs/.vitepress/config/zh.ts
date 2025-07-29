@@ -127,6 +127,10 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
             text: '直播和视频场景的建议',
             link: '/zh/cases/recommend',
           },
+          {
+            text: '弹幕初始进度',
+            link: '/zh/cases/danmaku-progress',
+          },
         ],
       },
     ],

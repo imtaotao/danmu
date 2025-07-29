@@ -43,6 +43,7 @@ export interface PushOptions<T> {
   speed?: number | string | null; // 优先级比 `duration` 更高
   plugin?: DanmakuPlugin<T>;
   direction?: 'right' | 'left';
+  progress?: number;
 }
 ```
 

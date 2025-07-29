@@ -129,6 +129,10 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
             text: 'Live Streaming and Video',
             link: '/en/cases/recommend',
           },
+          {
+            text: 'Setting Initial Progress',
+            link: '/en/cases/danmaku-progress',
+          },
         ],
       },
     ],
