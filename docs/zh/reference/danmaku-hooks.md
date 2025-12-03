@@ -63,6 +63,15 @@ danmaku.use({
 
 `moved` 钩子会在弹幕运动结束的时候触发，运动结束不代表会立即销毁，为了性能考虑，内核引擎会批量收集统一销毁。
 
+## `hooks.reachEdge`
+
+**类型：`SyncHook<[Danmaku<T>]>`**
+
+`reachEdge` 钩子会在弹幕的边缘触碰到容器边缘时触发。具体行为取决于弹幕的运动方向：
+
+- **`direction === 'left'`**（从左往右移动）：当弹幕的**右边缘**触碰到容器的**右边缘**时触发
+- **`direction === 'right'`**（从右往左移动）：当弹幕的**左边缘**触碰到容器的**左边缘**时触发
+
 ## `hooks.appendNode`
 
 **类型：`SyncHook<[Danmaku<T>, HTMLElement]>`**

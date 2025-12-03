@@ -81,6 +81,10 @@ export class FlexibleDanmaku<T> extends FacileDanmaku<T> {
           'transform',
           `translateX(${ex}px) translateY(${this.position.y}px)`,
         );
+
+        this._hasReachedEdge = false;
+        this._monitorEdge();
+
         whenTransitionEnds(this.node).then(onEnd);
       }
     });

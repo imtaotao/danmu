@@ -56,6 +56,7 @@ export class FacileDanmaku<T> {
 
   protected _internalStatuses: InternalStatuses;
   protected _initData: { width: number; duration: number };
+  protected _hasReachedEdge = false;
 
   public constructor(public _options: FacileOptions<T>) {
     this.data = _options.data;
@@ -191,6 +192,11 @@ export class FacileDanmaku<T> {
       this.recorder.startTime = now();
       this.pluginSystem.lifecycle.beforeMove.emit(this);
 
+      if (this.direction !== 'none') {
+        this._hasReachedEdge = false;
+        this._monitorEdge();
+      }
+
       whenTransitionEnds(this.node).then(() => {
         this.loops++;
         this.moving = false;
@@ -199,6 +205,53 @@ export class FacileDanmaku<T> {
         resolve();
       });
     });
+  }
+
+  /**
+   * @internal
+   */
+  protected _monitorEdge() {
+    if (!this.node || !this.moving) return;
+
+    const check = () => {
+      if (this._hasReachedEdge || !this.moving || !this.node) return;
+
+      const rect = this.node.getBoundingClientRect();
+      const containerRect =
+        this._options.container.node?.getBoundingClientRect();
+
+      if (!containerRect) return;
+
+      // Edge detection logic:
+      // 1. direction === 'left': danmaku moves from left to right, detect when right edge touches container's right edge
+      //    - Initial position: danmaku starts outside container left side (left: -${width}px)
+      //    - Moves right via translateX, triggers when rect.right approaches containerRect.right
+      //    - Condition: rect.right >= containerRect.right - threshold
+      //
+      // 2. direction === 'right': danmaku moves from right to left, detect when left edge touches container's left edge
+      //    - Initial position: danmaku starts outside container right side (right: -${width}px)
+      //    - Moves left via translateX, triggers when rect.left approaches containerRect.left
+      //    - Condition: rect.left <= containerRect.left + threshold
+      //
+      // threshold: Set to 1px to provide a tolerance range
+      //    - Due to animation frame rate and floating point precision, danmaku position might skip exact edge values
+      //    - Using threshold ensures the event triggers when danmaku is near the edge (±1px), preventing missed detections
+      const threshold = 1;
+      const hasReached =
+        this.direction === 'left'
+          ? rect.right >= containerRect.right - threshold
+          : rect.left <= containerRect.left + threshold;
+
+      if (hasReached) {
+        this._hasReachedEdge = true;
+        this.pluginSystem.lifecycle.reachEdge.emit(this);
+        return;
+      }
+
+      requestAnimationFrame(check);
+    };
+
+    requestAnimationFrame(check);
   }
 
   /**

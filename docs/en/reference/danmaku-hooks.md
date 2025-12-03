@@ -63,6 +63,15 @@ The `beforeMove` hook is triggered just before the danmaku starts moving. You ca
 
 The `moved` hook is triggered when the danmaku finishes moving. Finishing the movement does not mean it will be destroyed immediately. For performance reasons, the kernel will batch collect and destroy them together.
 
+## `hooks.reachEdge`
+
+**Type: `SyncHook<[Danmaku<T>]>`**
+
+The `reachEdge` hook is triggered when the danmaku's edge touches the container's edge. The specific behavior depends on the danmaku's movement direction:
+
+- **`direction === 'left'`** (moving from left to right): Triggers when the danmaku's **right edge** touches the container's **right edge**
+- **`direction === 'right'`** (moving from right to left): Triggers when the danmaku's **left edge** touches the container's **left edge**
+
 ## `hooks.appendNode`
 
 **Type: `SyncHook<[Danmaku<T>, HTMLElement]>`**
