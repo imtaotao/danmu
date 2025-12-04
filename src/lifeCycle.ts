@@ -87,7 +87,8 @@ export function createDanmakuPlugin<T>(
 
   if (cache.length) {
     for (const [k, nk] of cache) {
-      plugin[nk] = (...args: Array<unknown>) => {
+      // Use named function to make it identifiable as a bridge function
+      plugin[nk] = function __danmaku_bridge_fn(...args: Array<unknown>) {
         return (plSys.lifecycle as any)[k].emit(...args);
       };
     }
@@ -97,11 +98,85 @@ export function createDanmakuPlugin<T>(
       if (k.startsWith(scope)) {
         const nk = k.replace(scope, '');
         cache.push([k, nk]);
-        plugin[nk] = (...args: Array<unknown>) => {
+        // Use named function to make it identifiable as a bridge function
+        plugin[nk] = function __danmaku_bridge_fn(...args: Array<unknown>) {
           return (plSys.lifecycle as any)[k].emit(...args);
         };
       }
     }
   }
   return plugin;
+}
+
+/**
+ * Check if a hook has real user listeners (excluding bridge functions)
+ *
+ * Bridge functions are automatically created by createDanmakuPlugin to forward
+ * danmaku instance events to manager-level hooks. They are named '__danmaku_bridge_fn'.
+ * This function filters them out to detect if there are actual user-registered listeners.
+ *
+ * @param hook - The hook to check (SyncHook or AsyncHook)
+ * @returns true if there are real user listeners (non-bridge functions), false otherwise
+ */
+function hasRealListeners<T extends unknown[]>(
+  hook: SyncHook<T> | AsyncHook<T>,
+) {
+  if (hook.isEmpty()) return false;
+
+  for (const listener of hook.listeners) {
+    if (listener.name !== '__danmaku_bridge_fn') {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if there are any real user listeners interested in a specific lifecycle hook
+ *
+ * This function checks both:
+ * 1. Danmaku instance listeners - registered via push({ plugin: { reachEdge() {} } })
+ * 2. Manager listeners - registered via create({ plugin: { $reachEdge() {} } })
+ *
+ * It's useful for performance optimization to avoid unnecessary operations when
+ * no one is listening to a specific event.
+ *
+ * @param danmakuHook - The hook on danmaku instance
+ * @param managerPluginSystem - The manager's plugin system
+ * @param managerHookName - The name of the hook on manager
+ * @returns true if there are real user listeners on either danmaku or manager, false otherwise
+ *
+ * @example
+ * ```ts
+ * // In danmaku instance
+ * const hasListeners = hasAnyRealListeners(
+ *   this.pluginSystem.lifecycle.reachEdge,
+ *   this._options.managerPluginSystem,
+ *   '$reachEdge'
+ * );
+ *
+ * if (!hasListeners) {
+ *   // Skip expensive operations like requestAnimationFrame monitoring
+ *   return;
+ * }
+ * ```
+ */
+export function hasAnyRealListeners<
+  T extends unknown[],
+  U extends ReturnType<typeof createManagerLifeCycle<any>>,
+>(
+  danmakuHook: SyncHook<T> | AsyncHook<T>,
+  managerPluginSystem: U | undefined,
+  managerHookName: keyof U['lifecycle'],
+): boolean {
+  const hasDanmakuUserListeners = hasRealListeners(danmakuHook);
+  type K = keyof ReturnType<typeof createManagerLifeCycle<any>>['lifecycle'];
+
+  const hasManagerListeners =
+    managerPluginSystem !== undefined &&
+    managerPluginSystem.lifecycle[managerHookName as K] !== undefined &&
+    !managerPluginSystem.lifecycle[managerHookName as K].isEmpty();
+
+  return hasDanmakuUserListeners || hasManagerListeners;
 }

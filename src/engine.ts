@@ -13,6 +13,7 @@ import { Track } from './track';
 import { Container } from './container';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
+import { type createManagerLifeCycle } from './lifeCycle';
 import { randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
   Speed,
@@ -44,8 +45,18 @@ export class Engine<T> {
     ms: 3000,
     processor: (ls) => ls.forEach((dm) => dm.destroy()),
   });
+  private _managerPluginSystem?: ReturnType<typeof createManagerLifeCycle<T>>;
 
   public constructor(private _options: EngineOptions) {}
+
+  /**
+   * @internal
+   */
+  public _setManagerPluginSystem(
+    managerPluginSystem: NonNullable<typeof this._managerPluginSystem>,
+  ) {
+    this._managerPluginSystem = managerPluginSystem;
+  }
 
   public len() {
     const { stash, view, flexible } = this._sets;
@@ -443,6 +454,7 @@ export class Engine<T> {
       duration: options.duration,
       direction: options.direction,
       progress: options.progress,
+      managerPluginSystem: this._managerPluginSystem,
       delInTrack: (b: Danmaku<T>) => {
         remove(this._sets.view, b);
         type === 'facile'

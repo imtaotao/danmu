@@ -36,6 +36,7 @@ export class Manager<
 
   public constructor(public options: ManagerOptions) {
     this._engine = new Engine(options);
+    this._engine._setManagerPluginSystem(this.pluginSystem);
     this._internalStatuses.freeze = false;
     this._internalStatuses.viewStatus = 'show';
     this._internalStatuses.styles = Object.create(null);

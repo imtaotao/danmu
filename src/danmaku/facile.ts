@@ -1,7 +1,11 @@
 import { now } from 'aidly';
 import type { Track } from '../track';
 import type { Container } from '../container';
-import { createDanmakuLifeCycle } from '../lifeCycle';
+import {
+  createDanmakuLifeCycle,
+  type createManagerLifeCycle,
+  hasAnyRealListeners,
+} from '../lifeCycle';
 import { ids, nextFrame, INTERNAL_FLAG, whenTransitionEnds } from '../utils';
 import type {
   Speed,
@@ -32,6 +36,7 @@ export interface FacileOptions<T> {
   container: Container;
   internalStatuses: InternalStatuses;
   delInTrack: (b: Danmaku<T>) => void;
+  managerPluginSystem?: ReturnType<typeof createManagerLifeCycle<T>>;
 }
 
 export class FacileDanmaku<T> {
@@ -213,14 +218,27 @@ export class FacileDanmaku<T> {
   protected _monitorEdge() {
     if (!this.node || !this.moving) return;
 
+    // Check if there are any real user listeners interested in edge detection:
+    // 1. Danmaku instance listeners: Could be from push({ plugin: { reachEdge() {} } })
+    // 2. Manager listeners: Could be from create({ plugin: { $reachEdge() {} } })
+    if (
+      !hasAnyRealListeners(
+        this.pluginSystem.lifecycle.reachEdge,
+        this._options.managerPluginSystem,
+        '$reachEdge',
+      )
+    )
+      return;
+
     const check = () => {
       if (this._hasReachedEdge || !this.moving || !this.node) return;
 
-      const rect = this.node.getBoundingClientRect();
       const containerRect =
         this._options.container.node?.getBoundingClientRect();
 
       if (!containerRect) return;
+
+      const rect = this.node.getBoundingClientRect();
 
       // Edge detection logic:
       // 1. direction === 'left': danmaku moves from left to right, detect when right edge touches container's right edge
