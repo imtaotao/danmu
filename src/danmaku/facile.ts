@@ -231,7 +231,8 @@ export class FacileDanmaku<T> {
       return;
 
     const check = () => {
-      if (this._hasReachedEdge || !this.moving || !this.node) return;
+      if (this._hasReachedEdge || !this.moving || this.paused || !this.node)
+        return;
 
       const containerRect =
         this._options.container.node?.getBoundingClientRect();
@@ -269,7 +270,8 @@ export class FacileDanmaku<T> {
       requestAnimationFrame(check);
     };
 
-    requestAnimationFrame(check);
+    // Execute check immediately to avoid missing edge detection due to `requestAnimationFrame` delay
+    check();
   }
 
   /**
@@ -436,6 +438,11 @@ export class FacileDanmaku<T> {
     this.setStyle('transitionDuration', `${remainingTime}ms`);
     this.setStyle('transform', `translateX(${cw * negative}px)`);
     this.setStyle('transitionDelay', '');
+
+    if (this.direction !== 'none' && !this._hasReachedEdge) {
+      this._monitorEdge();
+    }
+
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.resume.emit(this);
     }
