@@ -34,6 +34,11 @@ export const enMap = {
     'When set to `strict` mode, strict collision detection will be performed, and if the conditions are not met, rendering will be delayed',
   setModeTipThree:
     'When set to `adaptive` mode, collision detection will be performed as much as possible under the premise of immediate rendering (recommended)',
+  setDistribution: 'Distribution',
+  setDistributionTipTitle:
+    'Controls how the engine selects a track for the danmaku',
+  setDistributionTipOne: 'Random: randomly selects a track',
+  setDistributionTipTwo: 'Order: selects tracks in order from top to bottom',
   setDuration: 'Duration',
   setDurationTip:
     'Normal danmaku will randomly take a value between these two values as the movement duration',

@@ -31,6 +31,10 @@ export const zhMap = {
     '当设置为 strict 模式时，会进行严格的碰撞检测，如果不满足条件则会推迟渲染',
   setModeTipThree:
     '当设置为 adaptive 模式时，在满足立即渲染的前提下，会尽力进行碰撞检测（推荐）',
+  setDistribution: '分发方式',
+  setDistributionTipTitle: '控制引擎如何为弹幕选择轨道',
+  setDistributionTipOne: 'Random: 随机选择轨道',
+  setDistributionTipTwo: 'Order: 从上到下按顺序选择轨道',
   setDuration: '运动时长',
   setDurationTip: '普通弹幕会从这两个值之间随机取一个值作为弹幕运动的时间',
   setNumbersTitle: '实时渲染弹幕',

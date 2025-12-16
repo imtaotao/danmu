@@ -44,6 +44,7 @@ export type { Manager } from './manager';
 export type { HookOn, HooksOn, Plugin, HookType } from 'hooks-plugin';
 export type {
   Mode,
+  Distribution,
   Speed,
   StyleKey,
   Position,

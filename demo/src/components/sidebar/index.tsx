@@ -15,6 +15,7 @@ import { SidebarModeSelect } from '@/components/sidebar/SidebarModeSelect';
 import { SidebarShowAndHide } from '@/components/sidebar/SidebarShowAndHide';
 import { SidebarMoveDuration } from '@/components/sidebar/SidebarMoveDuration';
 import { SidebarStartAndStop } from '@/components/sidebar/SidebarStartAndStop';
+import { SidebarDistribution } from '@/components/sidebar/SidebarDistribution';
 
 export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
   return (
@@ -28,6 +29,7 @@ export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
       <SidebarRate manager={manager} />
       <SidebarSpeed manager={manager} />
       <SidebarModeSelect manager={manager} />
+      <SidebarDistribution manager={manager} />
       <SidebarFreeze manager={manager} />
       <SidebarOcclusion manager={manager} />
       <SidebarDirection manager={manager} />

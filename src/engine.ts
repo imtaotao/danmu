@@ -14,7 +14,7 @@ import { Container } from './container';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
 import { type createManagerLifeCycle } from './lifeCycle';
-import { randomIdx, nextFrame, INTERNAL_FLAG } from './utils';
+import { getTrackIdx, nextFrame, INTERNAL_FLAG } from './utils';
 import type {
   Speed,
   StashData,
@@ -507,11 +507,11 @@ export class Engine<T> {
     prev?: Track<T>,
   ): Track<T> | null {
     if (this.rows === 0) return null;
-    const { gap, mode } = this._options;
+    const { gap, mode, distribution } = this._options;
     if (founds.size === this.tracks.length) {
       return mode === 'adaptive' ? prev || null : null;
     }
-    const i = randomIdx(founds, this.rows);
+    const i = getTrackIdx(founds, this.rows, distribution);
     const track = this.tracks[i];
 
     if (!track.isLock) {
