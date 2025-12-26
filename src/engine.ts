@@ -242,9 +242,9 @@ export class Engine<T> {
         this._sets.flexible.add(dm as FlexibleDanmaku<T>);
         this._setAction(dm, statuses).then((isFreeze) => {
           if (isFreeze) {
-            console.error(
-              'Currently in a freeze state, unable to render "FlexibleDanmaku"',
-            );
+            // console.error(
+            //   'Currently in a freeze state, unable to render "FlexibleDanmaku"',
+            // );
             return;
           }
           if (dm.isLoop) {
