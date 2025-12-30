@@ -14,7 +14,12 @@ import { Container } from './container';
 import { FacileDanmaku } from './danmaku/facile';
 import { FlexibleDanmaku } from './danmaku/flexible';
 import { type createManagerLifeCycle } from './lifeCycle';
-import { getTrackIdx, nextFrame, INTERNAL_FLAG } from './utils';
+import {
+  getTrackIdx,
+  nextFrame,
+  INTERNAL_FLAG,
+  getTrackRandomIdx,
+} from './utils';
 import type {
   Speed,
   StashData,
@@ -39,6 +44,7 @@ export class Engine<T> {
     flexible: new Set<FlexibleDanmaku<T>>(),
     stash: [] as Array<StashData<T> | FacileDanmaku<T>>,
   };
+  private _retryMap = new WeakMap<object, number>();
   // Avoid frequent deletion of danmaku.
   // collect the danmaku that need to be deleted within 2 seconds and delete them together.
   private _addDestroyQueue = batchProcess<Danmaku<T>>({
@@ -346,7 +352,15 @@ export class Engine<T> {
           if (isStash) {
             dm._reset();
             this._sets.view.delete(dm);
-            this._sets.stash.unshift(dm);
+            const retries = (this._retryMap.get(dm) || 0) + 1;
+            this._retryMap.set(dm, retries);
+            if (retries > 1 && this.len().stash > 100) {
+              // discard the danmaku when we have a lot of stash danmaku
+              this._retryMap.delete(dm);
+              this._addDestroyQueue(dm);
+            } else {
+              this._sets.stash.unshift(dm);
+            }
             return;
           }
           if (dm.isLoop) {
@@ -502,14 +516,17 @@ export class Engine<T> {
     return s as Nullable<number>;
   }
 
-  private _getTrack(
-    founds = new Set<number>(),
-    prev?: Track<T>,
-  ): Track<T> | null {
+  private _getTrackRandom(): Track<T> | null {
+    const i = getTrackRandomIdx(this.rows);
+    const track = this.tracks[i];
+    return track ?? null;
+  }
+
+  private _getTrack(founds = new Set<number>()): Track<T> | null {
     if (this.rows === 0) return null;
     const { gap, mode, distribution } = this._options;
     if (founds.size === this.tracks.length) {
-      return mode === 'adaptive' ? prev || null : null;
+      return mode === 'adaptive' ? (this._getTrackRandom() ?? null) : null;
     }
     const i = getTrackIdx(founds, this.rows, distribution);
     const track = this.tracks[i];
@@ -531,7 +548,7 @@ export class Engine<T> {
       }
     }
     founds.add(i);
-    return this._getTrack(founds, track);
+    return this._getTrack(founds);
   }
 
   private _collisionPrediction(prv: FacileDanmaku<T>, cur: FacileDanmaku<T>) {

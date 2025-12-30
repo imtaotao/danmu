@@ -24,8 +24,13 @@ export const getTrackIdx = (
       }
     }
   }
-  const n = Math.floor(Math.random() * rows);
+  const n = getTrackRandomIdx(rows);
   return founds.has(n) ? getTrackIdx(founds, rows, distribution) : n;
+};
+
+export const getTrackRandomIdx = (rows: number): number => {
+  const n = Math.floor(Math.random() * rows);
+  return n;
 };
 
 export const toNumber = (val: string, all: number) => {
