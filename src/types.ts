@@ -70,6 +70,7 @@ export interface EngineOptions {
   mode: Mode;
   rate: number;
   gap: number | string;
+  overlap?: number;
   trackHeight: number | string;
   durationRange: [number, number];
   direction: Exclude<Direction, 'none'>;

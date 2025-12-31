@@ -1,6 +1,7 @@
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
 import { SidebarGap } from '@/components/sidebar/SidebarGap';
+import { SidebarOverlap } from '@/components/sidebar/SidebarOverlap';
 import { SidebarRate } from '@/components/sidebar/SidebarRate';
 import { SidebarSpeed } from '@/components/sidebar/SidebarSpeed';
 import { SidebarAreaX } from '@/components/sidebar/SidebarAreaX';
@@ -24,6 +25,7 @@ export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
       <SidebarAreaX manager={manager} />
       <SidebarAreaY manager={manager} />
       <SidebarGap manager={manager} />
+      <SidebarOverlap manager={manager} />
       <SidebarFrequency manager={manager} />
       <SidebarMoveDuration manager={manager} />
       <SidebarRate manager={manager} />

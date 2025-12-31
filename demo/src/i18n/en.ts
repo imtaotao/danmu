@@ -25,6 +25,10 @@ export const enMap = {
   setGap: 'Gap between danmaku',
   setGapTip:
     'In the case of collision detection on the same track, the minimum distance between the following danmaku and the previous danmaku',
+  setOverlap: 'Overlap ratio',
+  setOverlapTip:
+    'Adjust how much overlap is allowed in strict mode (0 = no overlap, 1 = full overlap). This scales the width used for collision detection.',
+  danmakuOverlap: 'Overlap',
   setMode: 'Mode',
   setModeTipTitle:
     'The rendering mode determines the collision detection rules and the timing of danmaku rendering',

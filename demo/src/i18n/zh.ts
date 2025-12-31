@@ -24,6 +24,10 @@ export const zhMap = {
   setGap: '弹幕之间的间距',
   setGapTip:
     '同一条轨道在碰撞检测的啥情况下，后一条弹幕与前一条弹幕最小相隔的距离',
+  setOverlap: '重叠比例',
+  setOverlapTip:
+    '调节严格模式下允许的重叠程度（0 = 不重叠，1 = 完全重叠）。这会缩放用于碰撞检测的宽度。',
+  danmakuOverlap: '重叠程度',
   setMode: '渲染模式',
   setModeTipTitle: '渲染模式决定着碰撞检测的规则和弹幕渲染的时机',
   setModeTipOne: '当设置为 none 模式时，不会有任何碰撞检测，弹幕会立即渲染',

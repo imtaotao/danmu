@@ -88,6 +88,12 @@ export class Engine<T> {
     if (hasOwn(newOptions, 'gap')) {
       this._options.gap = this.container._toNumber('width', this._options.gap);
     }
+    if (hasOwn(newOptions, 'overlap')) {
+      let overlap = this._options.overlap!;
+      if (overlap < 0) overlap = 0;
+      if (overlap > 1) overlap = 1;
+      this._options.overlap = overlap;
+    }
     if (hasOwn(newOptions, 'trackHeight')) {
       this.format();
     }
@@ -557,7 +563,8 @@ export class Engine<T> {
     const acceleration = cs - ps;
     if (acceleration <= 0) return null;
 
-    const cw = cur.getWidth();
+    const overlap = this._options.overlap!;
+    const cw = cur.getWidth() * (1 - overlap);
     const pw = prv.getWidth();
     const { gap } = this._options;
     const distance = prv._getMoveDistance() - cw - pw - (gap as number);
