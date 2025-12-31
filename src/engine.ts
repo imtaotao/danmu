@@ -91,7 +91,6 @@ export class Engine<T> {
     if (hasOwn(newOptions, 'overlap')) {
       let overlap = this._options.overlap!;
       if (overlap < 0) overlap = 0;
-      if (overlap > 1) overlap = 1;
       this._options.overlap = overlap;
     }
     if (hasOwn(newOptions, 'trackHeight')) {

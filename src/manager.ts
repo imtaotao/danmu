@@ -448,7 +448,6 @@ export class Manager<
 
   public setOverlap(overlap: number) {
     if (overlap < 0) overlap = 0;
-    if (overlap > 1) overlap = 1;
     this.updateOptions({ overlap }, 'overlap');
   }
 
