@@ -448,7 +448,6 @@ export class FacileDanmaku<T> {
 
   public hide(_flag?: Symbol) {
     this.setStyle('visibility', 'hidden');
-    this.setStyle('pointerEvents', 'none');
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.hide.emit(this);
     }
@@ -456,7 +455,6 @@ export class FacileDanmaku<T> {
 
   public show(_flag?: Symbol) {
     this.setStyle('visibility', 'visible');
-    this.setStyle('pointerEvents', 'auto');
     if (_flag !== INTERNAL_FLAG) {
       this.pluginSystem.lifecycle.show.emit(this);
     }
