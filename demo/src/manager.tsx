@@ -10,6 +10,7 @@ export const initManager = () => {
     interval: 100,
     trackHeight: 40,
     durationRange: [10000, 13000],
+    distribution: 'random',
     plugin: {
       init(manager) {
         'shadow shadow-slate-200 bg-slate-100'.split(' ').forEach((c) => {

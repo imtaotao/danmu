@@ -1,4 +1,5 @@
 import { raf, once, mathExprEvaluate } from 'aidly';
+import { Distribution } from './types';
 
 export const INTERNAL_FLAG = Symbol();
 
@@ -11,9 +12,25 @@ export const ids = {
 
 export const nextFrame = (fn: FrameRequestCallback) => raf(() => raf(fn));
 
-export const randomIdx = (founds: Set<number>, rows: number): number => {
+export const getTrackIdx = (
+  founds: Set<number>,
+  rows: number,
+  distribution: Distribution = 'random',
+): number => {
+  if (distribution === 'order') {
+    for (let i = 0; i < rows; i++) {
+      if (!founds.has(i)) {
+        return i;
+      }
+    }
+  }
+  const n = getTrackRandomIdx(rows);
+  return founds.has(n) ? getTrackIdx(founds, rows, distribution) : n;
+};
+
+export const getTrackRandomIdx = (rows: number): number => {
   const n = Math.floor(Math.random() * rows);
-  return founds.has(n) ? randomIdx(founds, rows) : n;
+  return n;
 };
 
 export const toNumber = (val: string, all: number) => {

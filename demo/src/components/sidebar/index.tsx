@@ -1,6 +1,7 @@
 import type { Manager } from 'danmu';
 import type { DanmakuValue } from '@/types';
 import { SidebarGap } from '@/components/sidebar/SidebarGap';
+import { SidebarOverlap } from '@/components/sidebar/SidebarOverlap';
 import { SidebarRate } from '@/components/sidebar/SidebarRate';
 import { SidebarSpeed } from '@/components/sidebar/SidebarSpeed';
 import { SidebarAreaX } from '@/components/sidebar/SidebarAreaX';
@@ -15,6 +16,7 @@ import { SidebarModeSelect } from '@/components/sidebar/SidebarModeSelect';
 import { SidebarShowAndHide } from '@/components/sidebar/SidebarShowAndHide';
 import { SidebarMoveDuration } from '@/components/sidebar/SidebarMoveDuration';
 import { SidebarStartAndStop } from '@/components/sidebar/SidebarStartAndStop';
+import { SidebarDistribution } from '@/components/sidebar/SidebarDistribution';
 
 export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
   return (
@@ -23,11 +25,13 @@ export const Sidebar = ({ manager }: { manager: Manager<DanmakuValue> }) => {
       <SidebarAreaX manager={manager} />
       <SidebarAreaY manager={manager} />
       <SidebarGap manager={manager} />
+      <SidebarOverlap manager={manager} />
       <SidebarFrequency manager={manager} />
       <SidebarMoveDuration manager={manager} />
       <SidebarRate manager={manager} />
       <SidebarSpeed manager={manager} />
       <SidebarModeSelect manager={manager} />
+      <SidebarDistribution manager={manager} />
       <SidebarFreeze manager={manager} />
       <SidebarOcclusion manager={manager} />
       <SidebarDirection manager={manager} />

@@ -141,6 +141,16 @@ manager.setTrackHeight('33%'); // 高度为容器高度的 33%
 - `view` 限制渲染在容器中的弹幕数量，如果超过了此限制，普通弹幕会放在内存中，等待合适的时机渲染，高级弹幕会直接丢弃。
 - `stash` 限制存放在内存中的弹幕数量，如果超过此限制则会被丢弃，并触发告警或调用插件钩子，你可以适当调整此参数。
 
+## `config.distribution`
+
+**类型: `'random' | 'order'`**<br/>
+**默认值: `'random'`**
+
+控制引擎如何为弹幕选择轨道。
+
+- **`random`** 随机选择轨道。
+- **`order`** 从上到下按顺序选择轨道。
+
 ## `config.plugin`
 
 **类型：`ManagerPlugin<unknown> | Array<ManagerPlugin<unknown>>`**<br/>

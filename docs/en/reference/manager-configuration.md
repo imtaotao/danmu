@@ -142,6 +142,16 @@ The movement duration for regular danmaku. This is a range value, and **regular 
 
 - `stash` limits the number of danmaku stored in memory. If this limit is exceeded, they will be discarded and an alert will be triggered or a plugin hook will be called. You can adjust this parameter as needed.
 
+## `config.distribution`
+
+**Type: `'random' | 'order'`**<br/>
+**Default: `'random'`**
+
+Controls how the engine selects a track for the danmaku.
+
+- **`random`** Randomly selects a track.
+- **`order`** Selects tracks in order from top to bottom.
+
 ## `config.plugin`
 
 **Type: `ManagerPlugin<unknown> | Array<ManagerPlugin<unknown>>`**<br/>

@@ -42,6 +42,7 @@ export class Manager<
     this._internalStatuses.styles = Object.create(null);
     this._internalStatuses.styles.opacity = '';
     this.pluginSystem.lifecycle.init.emit(this);
+    this.options.overlap ??= 0;
   }
 
   /**
@@ -208,6 +209,7 @@ export class Manager<
     key?: Nullable<keyof ManagerOptions>,
   ) {
     this._engine.updateOptions(newOptions);
+    newOptions.overlap ??= this.options.overlap;
     this.options = Object.assign(this.options, newOptions);
 
     if (hasOwn(newOptions, 'interval')) {
@@ -442,6 +444,11 @@ export class Manager<
 
   public setDirection(direction: Exclude<Direction, 'none'>) {
     this.updateOptions({ direction }, 'direction');
+  }
+
+  public setOverlap(overlap: number) {
+    if (overlap < 0) overlap = 0;
+    this.updateOptions({ overlap }, 'overlap');
   }
 
   public setLimits({ view, stash }: { view?: number; stash?: number }) {

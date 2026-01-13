@@ -11,6 +11,8 @@ export type Direction = 'left' | 'right' | 'none';
 
 export type Mode = 'none' | 'strict' | 'adaptive';
 
+export type Distribution = 'random' | 'order';
+
 export type Speed = Nullable<string | number>;
 
 export type Layer<T> = StashData<T> | FacileDanmaku<T>;
@@ -68,6 +70,7 @@ export interface EngineOptions {
   mode: Mode;
   rate: number;
   gap: number | string;
+  overlap?: number;
   trackHeight: number | string;
   durationRange: [number, number];
   direction: Exclude<Direction, 'none'>;
@@ -75,6 +78,7 @@ export interface EngineOptions {
     view?: number;
     stash: number;
   };
+  distribution?: Distribution;
 }
 
 export interface ManagerOptions extends EngineOptions {
